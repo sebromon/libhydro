@@ -1,34 +1,46 @@
+===============================================================================
+MERCURIAL WORKFLOW
+===============================================================================
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- REF: http://mercurial.selenic.com/
-      http://mercurial.selenic.com/wiki/QuickReferenceCardsAndCheatSheets - Reference cards and cheat sheets
-TUTO: http://hginit.com/ - A tutorial by Joel Spolsky
+0./ References
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-===============================================================================
-Basic workflow
-===============================================================================
-(clone once)
+ `Le site de Mercurial <http://mercurial.selenic.com/>`_.
 
-    -->  --> <make changes>, commit (save changes)
-    |    |_____
-    |
-    |    pull and merge (sync working directory <> local repository)
-    |______
+`Reference cards and cheat sheets <http://mercurial.selenic.com/wiki/QuickReferenceCardsAndCheatSheets>`_.
 
-    push (local repo => main repo)
+`A tutorial by Joel Spolsky <http://hginit.com/>`_.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1./ Basic workflow
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    (clone once)
+
+        -->  --> <make changes>, commit (save changes)
+        |    |_____
+        |
+        |    pull and merge (sync working directory <> local repository)
+        |______
+
+        push (local repo => main repo)
 
 
-Merge often! This makes merging easier for everyone and you find out
-about conflicts (which are often rooted in incompatible design decisions)
-earlier.
+    Merge often! This makes merging easier for everyone and you find out
+    about conflicts (which are often rooted in incompatible design decisions)
+    earlier.
 
-===============================================================================
-Basic commands
-===============================================================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2./ Basic commands
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 hg commit -m '(message)'
-hg pull (project)   # pull changesets from project
-hg merge            # merge the new tip from project into our working directory
-hg push (project)   # push changesets from project
+hg pull (project)         # pull changesets from project
+hg merge                  # merge the new tip from project into our working directory
+hg push (project)         # push changesets from project
 
 hg parents
 hg status
