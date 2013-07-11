@@ -30,17 +30,18 @@ Windows:
 
 Linux:
 
-    ~/.hgrc file
+    ~/.hgrc pour un fichier de config générale
+    (repo)/.hg/hgrc pour un fichier de config spécifique au dépot (prioritaire)
 
 Windows:
 
     %USERPROFILE%\mercurial.ini file
 
-Basic content::
-
+Minimum content::
     [ui]
     username = Firstname Lastname <firstname.lastname@example.net>
-    verbose = True
+
+** TODO ** installer un outil de merge
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 3./ Cloner le dépôt de référence
@@ -48,9 +49,9 @@ Basic content::
 
 Dépôt de test:
 
-    hg clone http://arc.schapi:8000/ sandbox
+    hg clone http://arc.schapi:8000/ (dest)
 
 Libhydro:
 
-    hg clone http://arc.schapi:8001/ libhydro
+    hg clone http://arc.schapi:8001/ (dest)
 

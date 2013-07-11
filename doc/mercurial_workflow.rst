@@ -37,11 +37,12 @@ MERCURIAL WORKFLOW
 2./ Basic commands
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+hg status
+hg log
+hg parents
 hg commit -m '(message)'
+hg update
+
 hg pull (project)         # pull changesets from project
 hg merge                  # merge the new tip from project into our working directory
 hg push (project)         # push changesets from project
-
-hg parents
-hg status
-hg log

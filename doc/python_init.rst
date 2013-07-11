@@ -7,7 +7,7 @@ INSTALLATION D'UN ENVIRONNEMENT DE DEVELOPPEMENT EN PYTHON POUR LIBHYDRO
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Installation sous Windows
 -------------------------------------------------------------------------------
-TODO
+** TODO **
 
 Installation sous Linux
 -------------------------------------------------------------------------------
@@ -58,47 +58,29 @@ On peux forcer l'interpréteur à utiliser avec -p (python path)
 On peux spécifier un prompt spécifique avec --prompt=(prompt)
 
 Pour utiliser l'environnement virtuel:
-    # soit utiliser la commande (virtualenv)/bin/activate | deactivate pour sortir (!! commande générale)
+    # soit utiliser la commande 'source (virtualenv)/bin/activate' | 'deactivate' pour sortir (!! commande générale)
     # soit modifier le python PATH
     # utiliser virtualenvwrapper
-
-
-
-
-
 
 ------------------------------------------------------------------------------
 3. Installer les dépendances dans l'environnement virtuel
 ------------------------------------------------------------------------------
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-TODO pip install < pip_freeze  OU cf pip bundle FIXME
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-=> utiliser pip freeze <=
-pip install -r (file)
+Avec pip freeze:
+    pip install -r (pip_freeze_file)
 
-IPYTHON 0.12 et IPDB 0.7 (developpement):
-    su -c '/usr/local/virtualenv/bdlamedo/bin/easy_install ipython==0.12' (0.13 bug)
-    su -c '/usr/local/virtualenv/bdlamedo/bin/easy_install ipdb'
+** TODO ** ------------
+Ou manuellement:
 
-GENSHI 0.6 (templating engine used by Turbogears)
-pip install genshi
+    GENSHI 0.6 (templating engine)
+    pip install genshi
 
+    NUMPY 1.6.2 -- remplace NUMERIC --
+        su -c '/usr/local/virtualenv/bdimage/bin/easy_install numpy'
+    !!! Suppress numpy.loadtxt() inappropriate warnings: !!!
+    * vi (python)/lib/python2.7/site-packages/numpy-1.6.2-py2.7-linux-x86_64.egg/numpy/lib/npyio.py
+            OU    /lib/python2.7/site-packages/numpy/lib/npyio.py
+    * comment line 773 '''warnings.warn('loadtxt: Empty input file: "%s"' % fname)'''
+    * comment line 1311 '''warnings.warn('genfromtxt: Empty input file: "%s"' % fname)'''
 
-
-NUMPY 1.6.2 -- remplace NUMERIC --
-    su -c '/usr/local/virtualenv/bdimage/bin/easy_install numpy'
-!!! Suppress numpy.loadtxt() inappropriate warnings: !!!
-  * vi (python)/lib/python2.7/site-packages/numpy-1.6.2-py2.7-linux-x86_64.egg/numpy/lib/npyio.py
-        OU    /lib/python2.7/site-packages/numpy/lib/npyio.py
-  * comment line 773 '''warnings.warn('loadtxt: Empty input file: "%s"' % fname)'''
-  * comment line 1311 '''warnings.warn('genfromtxt: Empty input file: "%s"' % fname)'''
-
-
-PANDA
-
-
-
-Outils de dev
-Mercurial
-quality code tools
-Merge tool
+    PANDA
+** TODO ** ------------
