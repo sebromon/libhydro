@@ -43,14 +43,18 @@ class Sitehydro(object):
         Paramètres:
             codehydro (string(8))
             libellé (string)
-            stations (a Station or a iterable of Station)
+            stations (a Station or a iterable of Station) => une liste
 
         """
         # super(Sitehydro, self).__init__()
-        self._code = self._libelle = self._stations = None
-        self.code = code or None
-        self.libelle = libelle or None
-        self.stations = stations or None
+        self._code = self._libelle = None
+        self._stations = []
+        if code:
+            self.code = code
+        if libelle:
+            self.libelle = libelle
+        if stations:
+            self.stations = stations
 
     # -- property code --
     @property
@@ -119,7 +123,9 @@ class Sitehydro(object):
     # -- other methods --
     def __str__(self):
         """String representation."""
-        return 'site {0}::{1}'.format(self._code, self._libelle).encode('utf-8')
+        return 'site {0}::{1}::{2} stations'.format(
+            self._code, self._libelle, len(self.stations)
+        ).encode('utf-8')
 
 
 class Stationhydro(object):
@@ -139,8 +145,10 @@ class Stationhydro(object):
         """
         # super(Sitehydro, self).__init__()
         self._code = self._libelle = None
-        self.code = code or None
-        self.libelle = libelle or None
+        if code:
+            self.code = code
+        if libelle:
+            self.libelle = libelle
 
     # -- property code --
     @property
@@ -184,4 +192,6 @@ class Stationhydro(object):
     # -- other methods --
     def __str__(self):
         """String representation."""
-        return 'station {0}::{1}'.format(self._code, self._libelle).encode('utf-8')
+        return 'station {0}::{1}'.format(
+            self._code, self._libelle
+        ).encode('utf-8')
