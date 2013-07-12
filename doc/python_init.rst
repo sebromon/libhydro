@@ -53,7 +53,9 @@ Installer et configurer virtualenv
 pip install virtualenv
 
 Creer un environnement virtuel:
-    virtualenv (dest_dir)
+    virtualenv --system-site-packages (dest_dir)
+On peux utiliser les paquets de l'environnement de base avec --system-site-packages
+(ces paquets sont surchargés par ceux du virtualenv)
 On peux forcer l'interpréteur à utiliser avec -p (python path)
 On peux spécifier un prompt spécifique avec --prompt=(prompt)
 
@@ -65,22 +67,37 @@ Pour utiliser l'environnement virtuel:
 ------------------------------------------------------------------------------
 3. Installer les dépendances dans l'environnement virtuel
 ------------------------------------------------------------------------------
-Avec pip freeze:
-    pip install -r (pip_freeze_file)
 
-** TODO ** ------------
-Ou manuellement:
+Numpy
+    install Numpy first ! (c module, could be tricky)
+    could need: yum install python-devel
+    (virtualenv)/bin/pip install numpy
 
-    GENSHI 0.6 (templating engine)
-    pip install genshi
-
-    NUMPY 1.6.2 -- remplace NUMERIC --
-        su -c '/usr/local/virtualenv/bdimage/bin/easy_install numpy'
+    --- ** bdimage doc ** ----------
     !!! Suppress numpy.loadtxt() inappropriate warnings: !!!
     * vi (python)/lib/python2.7/site-packages/numpy-1.6.2-py2.7-linux-x86_64.egg/numpy/lib/npyio.py
             OU    /lib/python2.7/site-packages/numpy/lib/npyio.py
     * comment line 773 '''warnings.warn('loadtxt: Empty input file: "%s"' % fname)'''
     * comment line 1311 '''warnings.warn('genfromtxt: Empty input file: "%s"' % fname)'''
+    --- ** bdimage doc ** ----------
 
-    PANDA
+Pandas (do not forget the 's' !!)
+    pip install pandas
+    (dependencies python-dateutil, pytz and six)
+
 ** TODO ** ------------
+    GENSHI 0.6 (templating engine)
+    pip install genshi
+** TODO ** ------------
+
+Check with pip freeze:
+
+    pip freeze:
+
+        numpy==1.7.1
+        pandas==0.11.0
+        python-dateutil==2.1
+        pytz==2013b
+        six==1.3.0
+
+    pip install -r (pip_freeze_file)
