@@ -12,8 +12,8 @@ Ce module contient les classes:
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1a"""
-__date__ = """2013-07-12"""
+__version__ = """version 0.1b"""
+__date__ = """2013-07-15"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -27,6 +27,8 @@ __date__ = """2013-07-12"""
 
 #-- imports -------------------------------------------------------------------
 from string import ascii_uppercase, digits
+# from libhydro.core.nomenclature import NOMENCLATURE
+from nomenclature import NOMENCLATURE
 
 
 #-- class ---------------------------------------------------------------------
@@ -35,26 +37,62 @@ class Sitehydro(object):
 
     Classe pour manipuler des sites hydrométriques.
 
+    Propriétés:
+        typesite (string in NOMENCLATURE[530])
+        code (string(8)) = code hydro
+        libellé (string)
+        stations (a list of Station)
+
     """
 
-    def __init__(self, code=None, libelle=None, stations=None):
+    def __init__(self, typesite=None, code=None, libelle=None, stations=None):
         """Constructor.
 
         Paramètres:
-            codehydro (string(8))
+            typesite (string in NOMENCLATURE[530])
+            code (string(8)) = code hydro
             libellé (string)
-            stations (a Station or a iterable of Station) => une liste
+            stations (a Station or a iterable of Station)
 
         """
         # super(Sitehydro, self).__init__()
-        self._code = self._libelle = None
+
+        # -- full properties --
+        self._typesite = self._code = None
         self._stations = []
+        if typesite:
+            self.typesite = typesite
         if code:
             self.code = code
-        if libelle:
-            self.libelle = libelle
         if stations:
             self.stations = stations
+
+        # -- simple properties --
+        if libelle:
+            self.libelle = unicode(libelle)
+        else:
+            self.libelle = None
+
+    # -- property typesite --
+    @property
+    def typesite(self):
+        """typesite hydro."""
+        return self._typesite
+
+    @typesite.setter
+    def typesite(self, typesite):
+        try:
+            typesite = unicode(typesite)
+            if typesite in NOMENCLATURE[530]:
+                self._typesite = typesite
+            else:
+                raise Exception
+        except:
+            raise ValueError('typesite incorrect')
+
+    # @typesite.deleter
+    # def typesite(self):
+    #     del self._typesite
 
     # -- property code --
     @property
@@ -81,20 +119,6 @@ class Sitehydro(object):
     # def code(self):
     #     del self._code
 
-    # -- property libelle --
-    @property
-    def libelle(self):
-        """Libelle."""
-        return self._libelle
-
-    @libelle.setter
-    def libelle(self, libelle):
-        self._libelle = unicode(libelle)
-
-    # @libelle.deleter
-    # def libelle(self):
-    #     del self._code
-
     # -- property stations --
     @property
     def stations(self):
@@ -104,7 +128,7 @@ class Sitehydro(object):
     @stations.setter
     def stations(self, stations):
         if isinstance(stations, Stationhydro):
-            self._stations = list(stations)
+            self._stations = [stations]
         else:
             try:
                 self._stations = []
@@ -123,8 +147,11 @@ class Sitehydro(object):
     # -- other methods --
     def __str__(self):
         """String representation."""
-        return 'site {0}::{1}::{2} stations'.format(
-            self._code, self._libelle, len(self.stations)
+        return 'site {0} {1}::{2} - {3} stations'.format(
+            self.typesite or '-',
+            self.code or '-',
+            self.libelle or '-',
+            len(self.stations)
         ).encode('utf-8')
 
 
@@ -133,22 +160,57 @@ class Stationhydro(object):
 
     Classe pour manipuler des stations hydrométriques.
 
+    Propriétés:
+        typestation (string in NOMENCLATURE[531])
+        code (string(10)) = code hydro
+        libellé (string)
+
     """
 
-    def __init__(self, code=None, libelle=None):
+    def __init__(self, typestation=None, code=None, libelle=None):
         """Constructor.
 
         Paramètres:
-            codehydro (string(10))
+            typestation (string in NOMENCLATURE[531])
+            code (string(10)) = code hydro
             libellé (string)
 
         """
         # super(Sitehydro, self).__init__()
-        self._code = self._libelle = None
+
+        # -- full properties --
+        self._typestation = self._code = None
+        if typestation:
+            self.typestation = typestation
         if code:
             self.code = code
+
+        # -- simple properties --
         if libelle:
-            self.libelle = libelle
+            self.libelle = unicode(libelle)
+        else:
+            self.libelle = None
+
+    # -- property typestation --
+    @property
+    def typestation(self):
+        """typestation hydro."""
+        return self._typestation
+
+    @typestation.setter
+    def typestation(self, typestation):
+        try:
+            typestation = unicode(typestation)
+            if typestation in NOMENCLATURE[531]:
+                self._typestation = typestation
+            else:
+                raise Exception
+        except:
+            raise ValueError('typestation incorrect')
+
+    # @typestation.deleter
+    # def typestation(self):
+    #     del self._typestation
 
     # -- property code --
     @property
@@ -175,23 +237,11 @@ class Stationhydro(object):
     # def code(self):
     #     del self._code
 
-    # -- property libelle --
-    @property
-    def libelle(self):
-        """Libelle."""
-        return self._libelle
-
-    @libelle.setter
-    def libelle(self, libelle):
-        self._libelle = unicode(libelle)
-
-    # @libelle.deleter
-    # def libelle(self):
-    #     del self._code
-
     # -- other methods --
     def __str__(self):
         """String representation."""
-        return 'station {0}::{1}'.format(
-            self._code, self._libelle
+        return 'station {0} {1}::{2}'.format(
+            self.typestation or '-',
+            self.code or '-',
+            self.libelle or '-'
         ).encode('utf-8')
