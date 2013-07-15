@@ -27,8 +27,7 @@ __date__ = """2013-07-15"""
 
 #-- imports -------------------------------------------------------------------
 from string import ascii_uppercase, digits
-# from libhydro.core.nomenclature import NOMENCLATURE
-from nomenclature import NOMENCLATURE
+from libhydro.core.nomenclature import NOMENCLATURE
 
 
 #-- class ---------------------------------------------------------------------

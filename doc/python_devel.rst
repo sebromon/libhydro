@@ -31,3 +31,5 @@ ipython qtconsole:
     installer PyQt4 et les autres dépendances
 
 ** TODO ** quality code tools
+
+Tests: nose et coverage

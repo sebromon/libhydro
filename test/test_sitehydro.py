@@ -32,7 +32,7 @@ __date__ = """2013-07-15"""
 import unittest
 
 import sys
-sys.path.append('../core')
+sys.path.extend(['..', './core', '../..', '../core'])
 from sitehydro import Sitehydro, Stationhydro
 
 
