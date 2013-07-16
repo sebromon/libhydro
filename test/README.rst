@@ -1,5 +1,4 @@
-Run all test with nosetests::
-    nosetests test/*.py
+All tests must be run from inside the test directory.
 
-Coverage::
-   ** TODO **
+Run all test with nosetests::
+    nosetests --with-coverage test_*.py

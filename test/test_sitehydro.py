@@ -30,9 +30,10 @@ __date__ = """2013-07-15"""
 
 #-- imports -------------------------------------------------------------------
 import unittest
-
+import os
 import sys
-sys.path.extend(['..', './core', '../..', '../core'])
+
+sys.path.extend([os.path.join('..', '..'), os.path.join('..', 'core')])
 from sitehydro import Sitehydro, Stationhydro
 
 
