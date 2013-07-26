@@ -2,7 +2,7 @@
 from __future__ import unicode_literals, absolute_import, division, print_function
 """Module python nomenclature.
 
-Contient les nomenclatures Sandre utilisées pour l'Hydrométrie.
+Contient les nomenclatures Sandre utilisees pour l'Hydrometrie.
 
 Usage:
 
@@ -10,7 +10,7 @@ Usage:
         Les codes des nomenclatures sont toujours des entiers.
 
     NOMENCLATURE[i] est la nomenclature i, sous la forme d'un dictionnaire
-        {code: mnémonique, ...}. Les codes des items d'une nomenclature sont
+        {code: mnemonique, ...}. Les codes des items d'une nomenclature sont
         des entiers ou des chaînes.
 
 """
@@ -30,31 +30,44 @@ __date__ = """2013-07-12"""
 # -- config -------------------------------------------------------------------
 NOMENCLATURE = {
 
-    #Syntaxe: "reférence : {code: mnémonique, ...}"
+    #Syntaxe: "reference : {code: mnemonique, ...}"
 
-    # Grandeur observée de la série
-    509: {'H': 'Hauteur', 'Q': 'Débit'},
+    # Methode d'obtention du resultat de l'observation hydro
+    507: {0: 'Mesure', 4: 'Reconstitution', 12: 'Interpolation'},
 
-    # Statut de la série
+    # Grandeur observee de la serie
+    509: {'H': 'Hauteur', 'Q': 'Debit'},
+
+    # Statut de la serie
     510: {
-        0: 'Sans validation', 4: 'Brute', 8: 'Corrigé',
-        12: 'Pré-validé', 16: 'Validé'
+        0: 'Sans validation', 4: 'Brute', 8: 'Corrige',
+        12: 'Pre-valide', 16: 'Valide'
     },
 
-    # Type de site hydrométrique
+    # Qualification de la donnees de l'observation hydrometrique
+    515: {
+        0: 'Neutre',
+        4: 'Faible',
+        8: 'Forte',
+        12: 'Valeur incertaine',
+        16: 'Valeur non qualifiee',
+        20: 'Valeur bonne'
+    },
+
+    # Type de site hydrometrique
     530: {
-        'REEL': 'Site réel', 'FICTIF': 'Site fictif',
-        'MAREGRAPHE': 'Marégraphe', 'PONCTUEL': 'Site de jaugeage ponctuel',
+        'REEL': 'Site reel', 'FICTIF': 'Site fictif',
+        'MAREGRAPHE': 'Maregraphe', 'PONCTUEL': 'Site de jaugeage ponctuel',
         'VIRTUEL': 'Site virtuel',
-        'RECONSTITUE': 'Site à débit moyen mensuel reconstitué',
+        'RECONSTITUE': 'Site a debit moyen mensuel reconstitue',
         'PLANDEAU': "Plan d'eau", 'SOURCE': 'Source'
     },
 
-    # Type de station hydrométrique
+    # Type de station hydrometrique
     531: {
-        'LIMNI': 'Limnimètre', 'DEB': 'Débitmètre', 'HC': 'Hauteur calculée',
-        'LIMNIMERE': 'Limnimètre station mère',
-        'LIMNIFILLE': 'Limnimètre station fille'
+        'LIMNI': 'Limnimetre', 'DEB': 'Debitmetre', 'HC': 'Hauteur calculee',
+        'LIMNIMERE': 'Limnimetre station mere',
+        'LIMNIFILLE': 'Limnimetre station fille'
     }
 
 }

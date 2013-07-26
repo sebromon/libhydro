@@ -13,7 +13,7 @@ Ce module contient les classes:
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """version 0.1b"""
-__date__ = """2013-07-15"""
+__date__ = """2013-07-26"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -27,19 +27,23 @@ __date__ = """2013-07-15"""
 
 #-- imports -------------------------------------------------------------------
 from string import ascii_uppercase, digits
-from libhydro.core.nomenclature import NOMENCLATURE
+
+try:
+    from nomenclature import NOMENCLATURE
+except Exception:
+    from libhydro.core.nomenclature import NOMENCLATURE
 
 
-#-- class ---------------------------------------------------------------------
+#-- class Sitehydro -----------------------------------------------------------
 class Sitehydro(object):
     """Class Sitehydro.
 
-    Classe pour manipuler des sites hydrométriques.
+    Classe pour manipuler des sites hydrometriques.
 
-    Propriétés:
+    Proprietes:
         typesite (string in NOMENCLATURE[530])
         code (string(8)) = code hydro
-        libellé (string)
+        libelle (string)
         stations (a list of Station)
 
     """
@@ -47,14 +51,13 @@ class Sitehydro(object):
     def __init__(self, typesite=None, code=None, libelle=None, stations=None):
         """Constructor.
 
-        Paramètres:
+        Parametres:
             typesite (string in NOMENCLATURE[530])
             code (string(8)) = code hydro
-            libellé (string)
+            libelle (string)
             stations (a Station or a iterable of Station)
 
         """
-        # super(Sitehydro, self).__init__()
 
         # -- full properties --
         self._typesite = self._code = None
@@ -154,28 +157,28 @@ class Sitehydro(object):
         ).encode('utf-8')
 
 
+#-- class Stationhydro --------------------------------------------------------
 class Stationhydro(object):
     """Class Stationhydro.
 
-    Classe pour manipuler des stations hydrométriques.
+    Classe pour manipuler des stations hydrometriques.
 
-    Propriétés:
+    Proprietes:
         typestation (string in NOMENCLATURE[531])
         code (string(10)) = code hydro
-        libellé (string)
+        libelle (string)
 
     """
 
     def __init__(self, typestation=None, code=None, libelle=None):
         """Constructor.
 
-        Paramètres:
+        Parametres:
             typestation (string in NOMENCLATURE[531])
             code (string(10)) = code hydro
-            libellé (string)
+            libelle (string)
 
         """
-        # super(Sitehydro, self).__init__()
 
         # -- full properties --
         self._typestation = self._code = None

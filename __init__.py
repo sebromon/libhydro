@@ -3,15 +3,16 @@
 # package libhydro
 """Package python libhydro.
 
-Ce package expose les classes modélisées par le Sandre dans les dictionnaires:
-    # Référentiel hydrométrique
-    # Processus d'acquisition des données hydrométriques
+Ce package expose les classes modelisees par le Sandre dans les dictionnaires:
+    # Referentiel hydrometrique
+    # Processus d'acquisition des donnees hydrometriques
 
-Le sous package conv contient des convertisseurs de et vers différents formats.
+Le sous package conv contient des convertisseurs de et vers differents formats.
 
 """
 from core.nomenclature import *
 from core.sitehydro import *
+from core.obshydro import *
 
 # alarm
 # courbecorrection
@@ -22,7 +23,6 @@ from core.sitehydro import *
 # jaugeage
 # modeleprevision
 # obselaboreehydro
-# obshydro
 # obsmeteo
 # qualifannee
 # scenario

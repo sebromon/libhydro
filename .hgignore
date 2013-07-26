@@ -6,6 +6,7 @@ syntax: glob
 *.swp
 *.pyc
 .hgrc
+.coverage
 # specific files
 activate
 

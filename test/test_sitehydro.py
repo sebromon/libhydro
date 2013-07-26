@@ -34,12 +34,13 @@ import os
 import sys
 
 sys.path.extend([os.path.join('..', '..'), os.path.join('..', 'core')])
+
 from sitehydro import Sitehydro, Stationhydro
 
 
 #-- config --------------------------------------------------------------------
 
-#-- class ---------------------------------------------------------------------
+#-- class TestSiteHydro -------------------------------------------------------
 class TestSiteHydro(unittest.TestCase):
     """"""
 
@@ -66,7 +67,7 @@ class TestSiteHydro(unittest.TestCase):
         # test 02 - 1 station
         typesite = 'REEL'
         code = 'A3334550'
-        libelle = 'La Saône [après la crue] à Montélimar [hé oui]'
+        libelle = 'La Saône [apres la crue] a Montelimar [he oui]'
         stations = Stationhydro()
         s = Sitehydro(
             typesite=typesite, code=code, libelle=libelle, stations=stations
@@ -80,7 +81,7 @@ class TestSiteHydro(unittest.TestCase):
         # test 03 - n stations
         typesite = 'REEL'
         code = 'A3334550'
-        libelle = 'La Saône [après la crue] à Montélimar [hé oui]'
+        libelle = 'La Saône [apres la crue] a Montelimar [he oui]'
         stations = (Stationhydro(), Stationhydro())
         s = Sitehydro(
             typesite=typesite, code=code, libelle=libelle, stations=stations
@@ -115,6 +116,7 @@ class TestSiteHydro(unittest.TestCase):
         )
 
 
+#-- class TestStationHydro ----------------------------------------------------
 class TestStationHydro(unittest.TestCase):
     """"""
 
@@ -140,7 +142,7 @@ class TestStationHydro(unittest.TestCase):
         # test 02
         typestation = 'LIMNI'
         code = 'A033465001'
-        libelle = 'La Seine à Paris - rive droite'
+        libelle = 'La Seine a Paris - rive droite'
         s = Stationhydro(typestation=typestation, code=code, libelle=libelle)
         self.assertEqual(
             (s.typestation, s.code, s.libelle),
@@ -165,6 +167,7 @@ class TestStationHydro(unittest.TestCase):
             Stationhydro,
             {'libelle': [3, 2]}
         )
+
 
 #-- main ----------------------------------------------------------------------
 if __name__ == '__main__':
