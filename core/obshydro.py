@@ -70,8 +70,8 @@ class Observation(numpy.ndarray):
         dte (numpy.datetime64 ou string) = date UTC de l'observation au format
             ISO 8601, arrondie a la seconde. A l'initialisation si le fuseau
             horaire n'est pas precise, la date est consideree en heure locale.
-            Pour forcer la sasie d'une date UTC utiliser le fuseau +0000:
-                np.datetime64('2000-01-01T09:28:00+0000')
+            Pour forcer la sasie d'une date UTC utiliser le fuseau +00:
+                np.datetime64('2000-01-01T09:28:00+00')
         res (numpy.float) = resultat
         mth (numpy.int8, defaut 0) = methode d'obtention de la donnees suivant
             la NOMENCLATURE[507])
@@ -132,6 +132,12 @@ class Observations(pandas.DataFrame):
 
     Les donnees sont contenues dans 4 colonnes du DataFrame (voir Observation).
 
+Propriétés
+
+Méthodes:
+
+
+
     Un objet Obervations peux etre instancie de multiples façons a l'aide des
     fonctions proposees par Pandas, sous reserve de respecter le nom des
     colonnes et leur typage:
@@ -153,11 +159,10 @@ class Observations(pandas.DataFrame):
         Parametres:
             observations (un nombre quelconque d'Observation)
 
-        Exemples avec obsx une instance de Observation et observations une
-        liste d'Observation:
-            obs = Observations(obs1)
-            obs = Observations(obs1, obs2, ..., obsn)
-            obs = Observations(*observations)
+        Exemples:
+            obs = Observations(obs1)  # une seule Observation
+            obs = Observations(obs1, obs2, ..., obsn)  # n Observation
+            obs = Observations(*observations)  #  une liste d'Observation
 
         """
 
@@ -180,11 +185,32 @@ class Observations(pandas.DataFrame):
             data=array[list(array.dtype.names[1:])],
             index=array['dte']
         )
+        # obj.concat = Observations.__concat
         return obj
 
     def __array_finalize__(self, obj):
         if obj is None:
             return
+
+    # def __concat(obs, observations):
+    #     """Ajoute (concatène) une ou plusieurs observations.
+
+    #     Arguments: observations (Observation ou Observations)
+
+    #     """
+    #     try:
+    #         # if isinstance(observations, Observations):
+    #             # observation is an Observations instance
+    #             # self = pandas.concat([self, observations])
+    #             return pandas.concat([obs, observations])
+    #         # else:
+    #             # otherwise it might be a simple Observation
+    #             # self = pandas.concat([self, Observations(Observations)])
+
+    #     except Exception:
+    #         # self = pandas.concat([self, Observations(Observations)])
+    #         return pandas.concat([obs, Observations(Observations)])
+    #         # raise TypeError("observations can't be concateneted")
 
 
 #-- class Serie ---------------------------------------------------------------

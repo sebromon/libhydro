@@ -12,8 +12,8 @@ Ce module contient les classes:
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1b"""
-__date__ = """2013-07-26"""
+__version__ = """version 0.1c"""
+__date__ = """2013-07-30"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -41,23 +41,35 @@ class Sitehydro(object):
     Classe pour manipuler des sites hydrometriques.
 
     Proprietes:
-        typesite (string in NOMENCLATURE[530])
+        typesite (string parmi NOMENCLATURE[530])
         code (string(8)) = code hydro
         libelle (string)
-        stations (a list of Station)
+        stations (un iterable de Station)
 
     """
 
-    def __init__(self, typesite=None, code=None, libelle=None, stations=None):
+    def __init__(
+        self, typesite=None, code=None, libelle=None, stations=None,
+        strict=True
+    ):
         """Constructor.
 
         Parametres:
-            typesite (string in NOMENCLATURE[530])
+            typesite (string parmi NOMENCLATURE[530])
             code (string(8)) = code hydro
             libelle (string)
-            stations (a Station or a iterable of Station)
+            stations (une Station ou un iterable de Station)
+            strict (bool, defaut True) = en mode permissif il n'y a pas de
+                controles de validite du type, du code et des stations
 
         """
+
+        # -- simple properties --
+        self._strict = strict
+        if libelle:
+            self.libelle = unicode(libelle)
+        else:
+            self.libelle = None
 
         # -- full properties --
         self._typesite = self._code = None
@@ -69,12 +81,6 @@ class Sitehydro(object):
         if stations:
             self.stations = stations
 
-        # -- simple properties --
-        if libelle:
-            self.libelle = unicode(libelle)
-        else:
-            self.libelle = None
-
     # -- property typesite --
     @property
     def typesite(self):
@@ -85,10 +91,9 @@ class Sitehydro(object):
     def typesite(self, typesite):
         try:
             typesite = unicode(typesite)
-            if typesite in NOMENCLATURE[530]:
-                self._typesite = typesite
-            else:
+            if (self._strict) and (typesite not in NOMENCLATURE[530]):
                 raise Exception
+            self._typesite = typesite
         except:
             raise ValueError('typesite incorrect')
 
@@ -108,9 +113,11 @@ class Sitehydro(object):
         try:
             code = unicode(code)
             if (
-                (len(code) != 8) or
-                (code[0] not in ascii_uppercase) or
-                (not set(code[1:]).issubset(set(digits)))
+                self._strict and (
+                    (len(code) != 8) or
+                    (code[0] not in ascii_uppercase) or
+                    (not set(code[1:]).issubset(set(digits)))
+                )
             ):
                 raise Exception
         except:
@@ -129,17 +136,20 @@ class Sitehydro(object):
 
     @stations.setter
     def stations(self, stations):
-        if isinstance(stations, Stationhydro):
+        if stations is None:
+            self._stations = []
+        elif isinstance(stations, Stationhydro):
             self._stations = [stations]
         else:
             try:
                 self._stations = []
                 for station in stations:
-                    if isinstance(station, Stationhydro):
-                        self._stations.append(station)
+                    if (self._strict) and (not isinstance(station, Stationhydro)):
+                        raise Exception
+                    self._stations.append(station)
             except:
                 raise TypeError(
-                    'stations must be a Station or a iterable of Stations'
+                    'stations must be a Station or a iterable of Station'
                 )
 
     # @stations.deleter
@@ -149,11 +159,12 @@ class Sitehydro(object):
     # -- other methods --
     def __str__(self):
         """String representation."""
-        return 'site {0} {1}::{2} - {3} stations'.format(
+        return 'site {0} {1}::{2} [{3} station{4}]'.format(
             self.typesite or '-',
             self.code or '-',
             self.libelle or '-',
-            len(self.stations)
+            len(self.stations),
+            '' if (len(self.stations) < 2) else 's'
         ).encode('utf-8')
 
 
@@ -164,21 +175,30 @@ class Stationhydro(object):
     Classe pour manipuler des stations hydrometriques.
 
     Proprietes:
-        typestation (string in NOMENCLATURE[531])
+        typestation (string parmi NOMENCLATURE[531])
         code (string(10)) = code hydro
         libelle (string)
 
     """
 
-    def __init__(self, typestation=None, code=None, libelle=None):
+    def __init__(self, typestation=None, code=None, libelle=None, strict=True):
         """Constructor.
 
         Parametres:
-            typestation (string in NOMENCLATURE[531])
+            typestation (string parmi NOMENCLATURE[531])
             code (string(10)) = code hydro
             libelle (string)
+            strict (bool, defaut True) = en mode permissif il n'y a pas de
+                controles de validite du type et du code
 
         """
+
+        # -- simple properties --
+        self._strict = strict
+        if libelle:
+            self.libelle = unicode(libelle)
+        else:
+            self.libelle = None
 
         # -- full properties --
         self._typestation = self._code = None
@@ -186,12 +206,6 @@ class Stationhydro(object):
             self.typestation = typestation
         if code:
             self.code = code
-
-        # -- simple properties --
-        if libelle:
-            self.libelle = unicode(libelle)
-        else:
-            self.libelle = None
 
     # -- property typestation --
     @property
@@ -203,10 +217,9 @@ class Stationhydro(object):
     def typestation(self, typestation):
         try:
             typestation = unicode(typestation)
-            if typestation in NOMENCLATURE[531]:
-                self._typestation = typestation
-            else:
+            if (self._strict) and (typestation not in NOMENCLATURE[531]):
                 raise Exception
+            self._typestation = typestation
         except:
             raise ValueError('typestation incorrect')
 
@@ -226,9 +239,11 @@ class Stationhydro(object):
         try:
             code = unicode(code)
             if (
-                (len(code) != 10) or
-                (code[0] not in ascii_uppercase) or
-                (not set(code[1:]).issubset(set(digits)))
+                (self._strict) and (
+                    (len(code) != 10) or
+                    (code[0] not in ascii_uppercase) or
+                    (not set(code[1:]).issubset(set(digits)))
+                )
             ):
                 raise Exception
         except:
