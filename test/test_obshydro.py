@@ -43,7 +43,7 @@ import obshydro
 
 #-- class TestObservation -----------------------------------------------------
 class TestObservation(unittest.TestCase):
-    """"""
+    """Observation class tests."""
 
     # def setUp(self):
     #     """Hook method for setting up the test fixture before exercising it."""
@@ -130,7 +130,7 @@ class TestObservation(unittest.TestCase):
 
 #-- class TestObservations ----------------------------------------------------
 class TestObservations(unittest.TestCase):
-    """"""
+    """Observations class tests."""
 
     # def setUp(self):
     #     """Hook method for setting up the test fixture before exercising it."""
@@ -140,8 +140,8 @@ class TestObservations(unittest.TestCase):
     #     """Hook method for deconstructing the test fixture after testing it."""
     #     pass
 
-    def test_base(self):
-        """Base case tests."""
+    def test_base_01(self):
+        """Simple test."""
         # The simpliest __init_: datetime and res
         obs = obshydro.Observations(
             obshydro.Observation('2012-10-03 06:00', 33),
@@ -150,10 +150,11 @@ class TestObservations(unittest.TestCase):
         )
         self.assertEqual(
             obs['res'].tolist(),
-            [33, 37, 42],
-            'erreur %s' % (self.__class__.__name__)
+            [33, 37, 42]
         )
 
+    def test_base_02(self):
+        """Base case test."""
         # Datetime, res and others attributes
         obs = obshydro.Observations(
             obshydro.Observation('2012-10-03 06:00', 33, mth=4, qal=0, cnt=True),
@@ -162,35 +163,34 @@ class TestObservations(unittest.TestCase):
         )
         self.assertEqual(
             obs['mth'].tolist(),
-            [4, 0, 12],
-            'erreur %s' % (self.__class__.__name__)
+            [4, 0, 12]
         )
         self.assertEqual(
             obs['qal'].tolist(),
-            [0, 12, 20],
-            'erreur %s' % (self.__class__.__name__)
+            [0, 12, 20]
         )
         self.assertEqual(
             obs['cnt'].tolist(),
-            [True, False, True],
-            'erreur %s' % (self.__class__.__name__)
+            [True, False, True]
         )
 
-    def test_errors(self):
-        """Errors tests."""
-        obs = obshydro.Observation('2012-10-03 06:00', 33, mth=4, qal=0, cnt=True)
-        obshydro.Observations(obs)
-        obs = [obs, obs, 33]
+    def test_error_01(self):
+        """List of observation error."""
+        # check that init works when call regurlaly...
+        o = obshydro.Observation('2012-10-03 06:00', 33, mth=4, qal=0, cnt=True)
+        obshydro.Observations(*[o, o])
+        # ...and fails otherwise
         self.assertRaises(
             TypeError,
             obshydro.Observations,
-            obs
+            # *[o, o]  # is good !
+            *[o, 33]  # is wrong !!
         )
 
 
 #-- class TestSerie -----------------------------------------------------------
 class TestSerie(unittest.TestCase):
-    """"""
+    """Serie class tests."""
 
     # def setUp(self):
     #     """Hook method for setting up the test fixture before exercising it."""
@@ -200,27 +200,102 @@ class TestSerie(unittest.TestCase):
     #     """Hook method for deconstructing the test fixture after testing it."""
     #     pass
 
-    def test_base(self):
-        """."""
-        # test 01
-        pass
-        # typesite = code = libelle = None
-        # stations = []
-        # s = Sitehydro()
-        # self.assertEqual(
-        #     (s.typesite, s.code, s.libelle, s.stations),
-        #     (typesite, code, libelle, stations),
-        #     'erreur %s' % (self.__class__.__name__)
-        # )
+    def test_base_01(self):
+        """Serie on a site."""
+        s = obshydro.sitehydro.Sitehydro(code='A0445810', libelle='Le Rhône à Marseille')
+        g = 'Q'
+        t = 16
+        o = obshydro.Observations(
+            obshydro.Observation('2012-10-03 06:00', 33),
+            obshydro.Observation('2012-10-03 07:00', 37),
+            obshydro.Observation('2012-10-03 08:00', 42)
+        )
+        i = True
+        serie = obshydro.Serie(
+            entite=s, grandeur=g, statut=t, observations=o, strict=i
+        )
+        self.assertEqual(
+            (
+                serie.entite, serie.grandeur, serie.statut,
+                serie.observations, serie._strict
+            ),
+            (s, g, t, o, i)
+        )
 
-    def test_errors(self):
-        """Errors tests."""
-        pass
-        # self.assertRaises(
-        #     ValueError,
-        #     Sitehydro,
-        #     {'typesite': 'REEEL'}
-        # )
+    def test_base_02(self):
+        """Serie on a station with no statut."""
+        s = obshydro.sitehydro.Stationhydro(code='A044581001')
+        o = obshydro.Observations(
+            obshydro.Observation('2012-10-03 06:00', 33),
+            obshydro.Observation('2012-10-03 08:00', 42)
+        )
+        serie = obshydro.Serie(entite=s, observations=o)
+        self.assertEqual(
+            (
+                serie.entite, serie.grandeur, serie.statut,
+                serie.observations, serie._strict
+            ),
+            (s, None, 0, o, True)
+        )
+
+    def test_base_03(self):
+        """Serie should accept bad observations in strict mode."""
+        s = obshydro.sitehydro.Stationhydro()
+        o = 44  # no control on observations
+        serie = obshydro.Serie(entite=s, observations=o)
+        self.assertEqual(
+            (
+                serie.entite, serie.grandeur, serie.statut,
+                serie.observations, serie._strict
+            ),
+            (s, None, 0, o, True)
+        )
+
+    def test_lazy_mode_01(self):
+        """Base case test."""
+        s = 4
+        g = 'RR'
+        t = 123
+        o = [10, 13, 25, 8]
+        i = False
+        serie = obshydro.Serie(
+            entite=s, grandeur=g, statut=t, observations=o, strict=i
+        )
+        self.assertEqual(
+            (
+                serie.entite, serie.grandeur, serie.statut,
+                serie.observations, serie._strict
+            ),
+            (s, g, 0, o, i)
+        )
+
+    def test_error_01(self):
+        """Entite error."""
+        # s = obshydro.sitehydro.Stationhydro(code='A044581001')
+        self.assertRaises(
+            TypeError,
+            obshydro.Serie,
+            # **{'entite': s}  # good !
+            **{'entite': 'X'}  # bad !!
+        )
+
+    def test_error_02(self):
+        """Grandeur error."""
+        self.assertRaises(
+            ValueError,
+            obshydro.Serie,
+            # **{'grandeur': 'H'}  # good !
+            **{'grandeur': 'X'}  # bad !!
+        )
+
+    def test_error_03(self):
+        """Statut error."""
+        self.assertRaises(
+            ValueError,
+            obshydro.Serie,
+            # **{'statut': 12}  # good !
+            **{'statut': 124}  # bad !!
+        )
 
 
 #-- main ----------------------------------------------------------------------

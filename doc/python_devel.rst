@@ -33,3 +33,9 @@ ipython qtconsole:
 ** TODO ** quality code tools
 
 Tests: nose et coverage
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3./ iPython, QtConsole and matplotlib
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Laucnh iPython QtConsole with dark colors and inbeded matplotlib graphs:
+    ipython qtconsole --colors=linux --pylab=inline

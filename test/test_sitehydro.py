@@ -17,8 +17,8 @@ To run only a specific test:
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1a"""
-__date__ = """2013-07-15"""
+__version__ = """Version 0.1b"""
+__date__ = """2013-08-01"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -42,7 +42,7 @@ from sitehydro import Sitehydro, Stationhydro
 
 #-- class TestSiteHydro -------------------------------------------------------
 class TestSiteHydro(unittest.TestCase):
-    """"""
+    """Sitehydro class tests."""
 
     # def setUp(self):
     #     """Hook method for setting up the test fixture before exercising it."""
@@ -52,19 +52,18 @@ class TestSiteHydro(unittest.TestCase):
     #     """Hook method for deconstructing the test fixture after testing it."""
     #     pass
 
-    def test_base(self):
-        """."""
-        # test 01
+    def test_base_01(self):
+        """Empty site."""
         typesite = code = libelle = None
         stations = []
         s = Sitehydro()
         self.assertEqual(
             (s.typesite, s.code, s.libelle, s.stations),
-            (typesite, code, libelle, stations),
-            'erreur %s' % (self.__class__.__name__)
+            (typesite, code, libelle, stations)
         )
 
-        # test 02 - 1 station
+    def test_base_02(self):
+        """Site with 1 station."""
         typesite = 'REEL'
         code = 'A3334550'
         libelle = 'La Saône [apres la crue] a Montelimar [he oui]'
@@ -74,41 +73,62 @@ class TestSiteHydro(unittest.TestCase):
         )
         self.assertEqual(
             (s.typesite, s.code, s.libelle, s.stations),
-            (typesite, code, libelle, [stations]),
-            'erreur %s' % (self.__class__.__name__)
+            (typesite, code, libelle, [stations])
         )
 
-        # test 03 - n stations
+    def test_base_03(self):
+        """Site with n station."""
         typesite = 'REEL'
         code = 'A3334550'
-        libelle = 'La Saône [apres la crue] a Montelimar [he oui]'
+        libelle = 'La Saône [apres la crue] a Montelimar [hé oui]'
         stations = (Stationhydro(), Stationhydro())
         s = Sitehydro(
             typesite=typesite, code=code, libelle=libelle, stations=stations
         )
         self.assertEqual(
             (s.typesite, s.code, s.libelle, s.stations),
-            (typesite, code, libelle, [s for s in stations]),
-            'erreur %s' % (self.__class__.__name__)
+            (typesite, code, libelle, [s for s in stations])
         )
 
-    def test_errors(self):
-        """Errors tests."""
+    def test_lazy_mode_01(self):
+        """Lazy mode test."""
+        typesite = '6'
+        code = '3'
+        stations = [1, 2, 3]
+        s = Sitehydro(
+            typesite=typesite, code=code,  stations=stations, strict=False
+        )
+        self.assertEqual(
+            (s.typesite, s.code, s.stations),
+            (typesite, code, stations)
+        )
+
+    def test_error_01(self):
+        """Typesite error."""
         self.assertRaises(
             ValueError,
             Sitehydro,
             {'typesite': 'REEEL'}
         )
+
+    def test_error_02(self):
+        """Code error."""
         self.assertRaises(
             ValueError,
             Sitehydro,
             {'code': 'B4400000'}
         )
+
+    def test_error_03(self):
+        """Libelle error."""
         self.assertRaises(
             ValueError,
             Sitehydro,
             {'libelle': [3, 2]}
         )
+
+    def test_error_04(self):
+        """Stations error."""
         self.assertRaises(
             ValueError,
             Sitehydro,
@@ -118,7 +138,7 @@ class TestSiteHydro(unittest.TestCase):
 
 #-- class TestStationHydro ----------------------------------------------------
 class TestStationHydro(unittest.TestCase):
-    """"""
+    """Stationhydro class tests."""
 
     # def setUp(self):
     #     """Hook method for setting up the test fixture before exercising it."""
@@ -128,40 +148,54 @@ class TestStationHydro(unittest.TestCase):
     #     """Hook method for deconstructing the test fixture after testing it."""
     #     pass
 
-    def test_base(self):
-        """Base case tests."""
-        # test 01
+    def test_base_01(self):
+        """Base case with empty station."""
         typestation = code = libelle = None
         s = Stationhydro()
         self.assertEqual(
             (s.typestation, s.code, s.libelle),
-            (typestation, code, libelle),
-            'erreur %s' % (self.__class__.__name__)
+            (typestation, code, libelle)
         )
 
-        # test 02
+    def test_base_02(self):
+        """Base case test."""
         typestation = 'LIMNI'
         code = 'A033465001'
         libelle = 'La Seine a Paris - rive droite'
         s = Stationhydro(typestation=typestation, code=code, libelle=libelle)
         self.assertEqual(
             (s.typestation, s.code, s.libelle),
-            (typestation, code, libelle),
-            'erreur %s' % (self.__class__.__name__)
+            (typestation, code, libelle)
         )
 
-    def test_errors(self):
-        """Errors tests."""
+    def test_lazy_mode_01(self):
+        """Lazy mode test."""
+        typestation = '6'
+        code = '3'
+        s = Stationhydro(typestation=typestation, code=code, strict=False)
+        self.assertEqual(
+            (s.typestation, s.code),
+            (typestation, code)
+        )
+
+    def test_error_01(self):
+        """Typestation error."""
         self.assertRaises(
             ValueError,
             Stationhydro,
             {'typestation': 'LIMMMMNI'}
         )
+
+    def test_error_02(self):
+        """Code error."""
         self.assertRaises(
             ValueError,
             Stationhydro,
             {'code': 'B440000'}
         )
+
+    def test_error_03(self):
+        """Libelle error."""
         self.assertRaises(
             ValueError,
             Stationhydro,

@@ -7,8 +7,12 @@ Ce module contient les classes:
     # Observations
     # Serie
 
-Pour des usages simples, on peux utiliser directement les classes de la
-    librairie Pandas, les Series ou les DataFrame.
+et quelques fonctions utiles:
+    # concat pour concatener des observations
+
+
+On peux utiliser directement les classes de la librairie Pandas, les Series
+ou les DataFrame.
 
 Exemple pour instancier une Series:
     hauteurs = pandas.Series(
@@ -34,7 +38,7 @@ Exemple pour instancier un DataFrame:
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """version 0.1b"""
-__date__ = """2013-07-26"""
+__date__ = """2013-07-31"""
 
 #HISTORY
 #V0.1 - 2013-07-18
@@ -54,6 +58,8 @@ try:
     from nomenclature import NOMENCLATURE
 except Exception:
     from libhydro.core.nomenclature import NOMENCLATURE
+
+import sitehydro
 
 
 #-- class Observation ---------------------------------------------------------
@@ -126,17 +132,11 @@ class Observations(pandas.DataFrame):
     """Class Observations.
 
     Classe pour manipuler une collection d'observations hydrometriques, sous la
-    forme d'un pandas.DataFrame.
+    forme d'un pandas.DataFrame (les objets instanciés sont des DataFrame).
 
     L'index est un pandas.DatetimeIndex qui represente les dates d'observation.
 
     Les donnees sont contenues dans 4 colonnes du DataFrame (voir Observation).
-
-Propriétés
-
-Méthodes:
-
-
 
     Un objet Obervations peux etre instancie de multiples façons a l'aide des
     fonctions proposees par Pandas, sous reserve de respecter le nom des
@@ -171,11 +171,11 @@ Méthodes:
         try:
             for obs in observations:
                 if not isinstance(obs, Observation):
-                    raise Exception
+                    raise TypeError('{} in not an Observation'.format(obs))
                 obss.append(obs)
 
         except Exception:
-            raise TypeError('{} in not an Observation'.format(obs))
+            raise
 
         # prepare a tmp numpy.array
         array = numpy.array(object=obss)
@@ -185,32 +185,35 @@ Méthodes:
             data=array[list(array.dtype.names[1:])],
             index=array['dte']
         )
-        # obj.concat = Observations.__concat
         return obj
 
-    def __array_finalize__(self, obj):
-        if obj is None:
-            return
+    # def __array_finalize__(self, obj):
+    #     if obj is None:
+    #         return
 
-    # def __concat(obs, observations):
-    #     """Ajoute (concatène) une ou plusieurs observations.
 
-    #     Arguments: observations (Observation ou Observations)
+#-- Observations functions ----------------------------------------------------
+def concat(observations, others):
+    """Ajoute (concatène) une ou plusieurs observations.
 
-    #     """
-    #     try:
-    #         # if isinstance(observations, Observations):
-    #             # observation is an Observations instance
-    #             # self = pandas.concat([self, observations])
-    #             return pandas.concat([obs, observations])
-    #         # else:
-    #             # otherwise it might be a simple Observation
-    #             # self = pandas.concat([self, Observations(Observations)])
+    Arguments:
+        observations (Observations)
+        others (Observation ou Observations) = observation(s) à ajouter
 
-    #     except Exception:
-    #         # self = pandas.concat([self, Observations(Observations)])
-    #         return pandas.concat([obs, Observations(Observations)])
-    #         # raise TypeError("observations can't be concateneted")
+    Pour agréger 2 Observations, on peux aussi utiliser la méthode append des
+    DataFrame ou bien directement la fonction concat de pandas.
+
+    Attention, les DataFrame ne sont JAMAIS modifiés, ces fonctions retournent
+    un nouveau DataFrame.
+
+    """
+
+    # TODO - can't write a method to do that (subclassing DataFrame is hard !)
+
+    try:
+        return pandas.concat([observations, others])
+    except Exception:
+        return pandas.concat([observations, Observations(others)])
 
 
 #-- class Serie ---------------------------------------------------------------
@@ -220,14 +223,14 @@ class Serie(object):
     Classe pour manipuler des series d'observations hydrometriques.
 
     Proprietes:
-        entitehydro (site, station ou capteur)
+        entite (Sitehydro, Stationhydro ou Capteur)
         grandeur (char in NOMENCLATURE[509]) = H ou Q
         statut (int in NOMENCALTURE[510]) = donnee brute, corrigee...
         observations (Observations)
 
     """
 
-    # ** TODO **
+    # ** TODO - others attributes **
     # strict (bool, defaut True) = en mode permissif, les contrôles de
     #     validite sur les proprietes ne sont paa appliques
     # datedebut
@@ -238,114 +241,139 @@ class Serie(object):
     # contact
     # refalti OU courbetarage
 
-    pass
+    def __init__(
+        self, entite=None, grandeur=None, statut=0,
+        observations=None, strict=True
+    ):
+        """Constructeur.
 
-    #
-    #     def __init__(self, typesite=None, code=None, libelle=None, stations=None):
-    #         """Constructeur.
-    #
-    #         Parametres:
-    #             typesite (string in NOMENCLATURE[530])
-    #             code (string(8)) = code hydro
-    #             libelle (string)
-    #             stations (a Station or a iterable of Station)
-    #
-    #         """
-    #         # super(Sitehydro, self).__init__()
-    #
-    #         # -- full properties --
-    #         self._typesite = self._code = None
-    #         self._stations = []
-    #         if typesite:
-    #             self.typesite = typesite
-    #         if code:
-    #             self.code = code
-    #         if stations:
-    #             self.stations = stations
-    #
-    #         # -- simple properties --
-    #         if libelle:
-    #             self.libelle = unicode(libelle)
-    #         else:
-    #             self.libelle = None
-    #
-    #     # -- property typesite --
-    #     @property
-    #     def typesite(self):
-    #         """typesite hydro."""
-    #         return self._typesite
-    #
-    #     @typesite.setter
-    #     def typesite(self, typesite):
-    #         try:
-    #             typesite = unicode(typesite)
-    #             if typesite in NOMENCLATURE[530]:
-    #                 self._typesite = typesite
-    #             else:
-    #                 raise Exception
-    #         except:
-    #             raise ValueError('typesite incorrect')
-    #
-    #     # @typesite.deleter
-    #     # def typesite(self):
-    #     #     del self._typesite
-    #
-    #     # -- property code --
-    #     @property
-    #     def code(self):
-    #         """Code hydro."""
-    #         return self._code
-    #
-    #     @code.setter
-    #     def code(self, code):
-    #         #code sitehydro is like 'A0334450'
-    #         try:
-    #             code = unicode(code)
-    #             if (
-    #                 (len(code) != 8) or
-    #                 (code[0] not in ascii_uppercase) or
-    #                 (not set(code[1:]).issubset(set(digits)))
-    #             ):
-    #                 raise Exception
-    #         except:
-    #             raise ValueError('code incorrect')
-    #         self._code = code
-    #
-    #     # @code.deleter
-    #     # def code(self):
-    #     #     del self._code
-    #
-    #     # -- property stations --
-    #     @property
-    #     def stations(self):
-    #         """Stations."""
-    #         return self._stations
-    #
-    #     @stations.setter
-    #     def stations(self, stations):
-    #         if isinstance(stations, Stationhydro):
-    #             self._stations = [stations]
-    #         else:
-    #             try:
-    #                 self._stations = []
-    #                 for station in stations:
-    #                     if isinstance(station, Stationhydro):
-    #                         self._stations.append(station)
-    #             except:
-    #                 raise TypeError(
-    #                     'stations must be a Station or a iterable of Stations'
-    #                 )
-    #
-    #     # @stations.deleter
-    #     # def stations(self):
-    #     #     del self._code
-    #
-    #     # -- other methods --
-    #     def __str__(self):
-    #         """String representation."""
-    #         return 'site {0} {1}::{2} - {3} stations'.format(
-    #             self.typesite or '-',
-    #             self.code or '-',
-    #             self.libelle or '-',
-    #             len(self.stations)
-    #         ).encode('utf-8')
+        Parametres:
+            entite (Sitehydro, Stationhydro ou Capteur)
+            grandeur (char in NOMENCLATURE[509]) = H ou Q
+            statut (int in NOMENCALTURE[510], defaut 0) = donnee brute,
+                corrigee...
+            observations (Observations)
+            strict (bool, defaut True) = en mode permissif il n'y a pas de
+                controles de validite des parametres
+
+        """
+
+        # -- simple properties --
+        self._strict = strict
+        self.observations = observations
+
+        # -- full properties --
+        self._entite = self._grandeur = self._observations = None
+        self._statut = 0
+        if entite:
+            self.entite = entite
+        if grandeur:
+            self.grandeur = grandeur
+        if statut:
+            self.statut = statut
+
+    # -- property entite --
+    @property
+    def entite(self):
+        """entite hydro."""
+        return self._entite
+
+    @entite.setter
+    def entite(self, entite):
+        # entite must be a site, a station or a capteur
+        try:
+            if (
+                (self._strict) and (
+                    not isinstance(
+                        entite,
+                        (
+                            sitehydro.Sitehydro, sitehydro.Stationhydro,
+                            sitehydro.Capteur
+                        )
+                    )
+                )
+            ):
+                raise Exception
+            self._entite = entite
+        except:
+            raise TypeError(
+                'entite must be a Sitehydro, a Stationhydro or a Capteur'
+            )
+
+    # @entite.deleter
+    # def entite(self):
+    #     del self._entite
+
+    # -- property grandeur --
+    @property
+    def grandeur(self):
+        """grandeur hydro."""
+        return self._grandeur
+
+    @grandeur.setter
+    def grandeur(self, grandeur):
+        try:
+            grandeur = unicode(grandeur)
+            if (self._strict) and (grandeur not in NOMENCLATURE[509]):
+                raise Exception
+            self._grandeur = grandeur
+        except:
+            raise ValueError('grandeur incorrect')
+
+    # @grandeur.deleter
+    # def grandeur(self):
+    #     del self._grandeur
+
+    # -- property statut --
+    @property
+    def statut(self):
+        """statut hydro."""
+        return self._statut
+
+    @statut.setter
+    def statut(self, statut):
+        try:
+            statut = int(statut)
+            if statut in NOMENCLATURE[510]:
+                self._statut = statut
+            else:
+                if (self._strict):
+                    raise Exception
+                else:
+                    self._statut = 0
+        except:
+            raise ValueError('statut incorrect')
+
+    # @statut.deleter
+    # def statut(self):
+    #     del self._statut
+
+    # -- other methods --
+    def __str__(self):
+        """String representation."""
+        # compute class name: cls = (article, classe)
+        if self.entite is not None:
+            try:
+                cls = unicode(self.entite.__class__.__name__)
+                cls = ('{} '.format(sitehydro.ARTICLE[cls]), cls.lower())
+            except Exception:
+                cls = ("l'", 'entite')
+
+        # compute code
+        if self.entite is not None:
+            try:
+                code = self.entite.code
+            except Exception:
+                code = self.entite
+
+        # action !
+        return 'serie {0} sur {1}{2} {3}\nstatut {4}::{5}\n{6}\n{7} '.format(
+            self.grandeur or '-',
+            cls[0],
+            cls[1],
+            code,
+            self.statut,
+            NOMENCLATURE[510][self.statut].lower(),
+            '-' * 72,
+            self.observations.__str__ or '-'
+        ).encode('utf-8')

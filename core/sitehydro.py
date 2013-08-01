@@ -5,15 +5,14 @@ from __future__ import unicode_literals, absolute_import, division, print_functi
 Ce module contient les classes:
     # Sitehydro
     # Stationhydro
-    # Capteur
-
+    # Capteur -- NOT IMPLEMENTED --
 
 """
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """version 0.1c"""
-__date__ = """2013-07-30"""
+__date__ = """2013-07-31"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -32,6 +31,14 @@ try:
     from nomenclature import NOMENCLATURE
 except Exception:
     from libhydro.core.nomenclature import NOMENCLATURE
+
+# -- config -------------------------------------------------------------------
+# classe name, article
+ARTICLE = {
+    'Sitehydro': 'le',
+    'Stationhydro': 'la',
+    'Capteur': 'le'
+}
 
 
 #-- class Sitehydro -----------------------------------------------------------
@@ -120,9 +127,9 @@ class Sitehydro(object):
                 )
             ):
                 raise Exception
+            self._code = code
         except:
             raise ValueError('code incorrect')
-        self._code = code
 
     # @code.deleter
     # def code(self):
@@ -246,9 +253,9 @@ class Stationhydro(object):
                 )
             ):
                 raise Exception
+            self._code = code
         except:
             raise ValueError('code incorrect')
-        self._code = code
 
     # @code.deleter
     # def code(self):
@@ -262,3 +269,12 @@ class Stationhydro(object):
             self.code or '-',
             self.libelle or '-'
         ).encode('utf-8')
+
+
+#-- class Capteur -------------------------------------------------------------
+class Capteur(object):
+
+    # TODO - not implemented
+
+    def __init__(self, code):
+        self.code = code
