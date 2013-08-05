@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, absolute_import, division, print_function
 """Test program for sitehydro.
 
 To run all tests just type:
@@ -14,31 +13,35 @@ To run only a specific test:
     python -m unittest test_sitehydro.TestClass.test_method
 
 """
-
-#-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1b"""
-__date__ = """2013-08-01"""
-
-#HISTORY
-#V0.1 - 2013-07-15
-#    first shot
-
-#-- todos ---------------------------------------------------------------------
-# TODO - nothing
-# FIXME - nothing
-
 #-- imports -------------------------------------------------------------------
+from __future__ import unicode_literals, absolute_import, division, print_function
 import unittest
 import os
 import sys
 
 sys.path.extend([os.path.join('..', '..'), os.path.join('..', 'core')])
 
-from sitehydro import Sitehydro, Stationhydro
+from sitehydro import Sitehydro, Stationhydro, Capteur
+
+
+#-- strings -------------------------------------------------------------------
+__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
+__version__ = """Version 0.1c"""
+__date__ = """2013-08-05"""
+
+#HISTORY
+#V0.1 - 2013-07-15
+#    first shot
+
+
+
+#-- todos ---------------------------------------------------------------------
+# TODO - nothing
+# FIXME - nothing
 
 
 #-- config --------------------------------------------------------------------
+
 
 #-- class TestSiteHydro -------------------------------------------------------
 class TestSiteHydro(unittest.TestCase):
@@ -90,8 +93,8 @@ class TestSiteHydro(unittest.TestCase):
             (typesite, code, libelle, [s for s in stations])
         )
 
-    def test_lazy_mode_01(self):
-        """Lazy mode test."""
+    def test_dim_mode_01(self):
+        """dim mode test."""
         typesite = '6'
         code = '3'
         stations = [1, 2, 3]
@@ -168,8 +171,8 @@ class TestStationHydro(unittest.TestCase):
             (typestation, code, libelle)
         )
 
-    def test_lazy_mode_01(self):
-        """Lazy mode test."""
+    def test_dim_mode_01(self):
+        """dim mode test."""
         typestation = '6'
         code = '3'
         s = Stationhydro(typestation=typestation, code=code, strict=False)
@@ -202,6 +205,72 @@ class TestStationHydro(unittest.TestCase):
             {'libelle': [3, 2]}
         )
 
+
+#-- class TestCapteur ----------------------------------------------------
+class TestCapteur(unittest.TestCase):
+    """Capteur class tests."""
+
+    # def setUp(self):
+    #     """Hook method for setting up the test fixture before exercising it."""
+    #     pass
+
+    # def tearDown(self):
+    #     """Hook method for deconstructing the test fixture after testing it."""
+    #     pass
+
+    def test_base_01(self):
+        """Base case with empty capteur."""
+        typemesure = code = libelle = None
+        c = Capteur()
+        self.assertEqual(
+            (c.typemesure, c.code, c.libelle),
+            (typemesure, code, libelle)
+        )
+
+    def test_base_02(self):
+        """Base case test."""
+        typemesure = 'H'
+        code = 'A03346500101'
+        libelle = 'Capteur de secours'
+        c = Capteur(typemesure=typemesure, code=code, libelle=libelle)
+        self.assertEqual(
+            (c.typemesure, c.code, c.libelle),
+            (typemesure, code, libelle)
+        )
+
+    def test_dim_mode_01(self):
+        """dim mode test."""
+        typemesure = 'RR'
+        code = 'C1'
+        c = Capteur(typemesure=typemesure, code=code, strict=False)
+        self.assertEqual(
+            (c.typemesure, c.code),
+            (typemesure, code)
+        )
+
+    def test_error_01(self):
+        """Typestation error."""
+        self.assertRaises(
+            ValueError,
+            Capteur,
+            {'typesmesure': 'RR'}
+        )
+
+    def test_error_02(self):
+        """Code error."""
+        self.assertRaises(
+            ValueError,
+            Capteur,
+            {'code': 'B440000'}
+        )
+
+    def test_error_03(self):
+        """Libelle error."""
+        self.assertRaises(
+            ValueError,
+            Capteur,
+            {'libelle': [3, 2]}
+        )
 
 #-- main ----------------------------------------------------------------------
 if __name__ == '__main__':

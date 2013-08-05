@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, absolute_import, division, print_function
 """Module python nomenclature.
 
 Contient les nomenclatures Sandre utilisees pour l'Hydrometrie.
@@ -14,18 +13,23 @@ Usage:
         des entiers ou des chaînes.
 
 """
+#-- imports -------------------------------------------------------------------
+from __future__ import unicode_literals, absolute_import, division, print_function
+
 
 #-- strings -------------------------------------------------------------------
 __author__ = """philippe.gouin@developpement-durable.gouv.fr"""
-__version__ = """version 0.1a"""
-__date__ = """2013-07-12"""
+__version__ = """version 0.1b"""
+__date__ = """2013-08-05"""
 
 #HISTORY
 #V0.1 - 2013-07-12
 #    first shot
 
+
 #-- todos ---------------------------------------------------------------------
 # TODO - all nomenclatures
+
 
 # -- config -------------------------------------------------------------------
 NOMENCLATURE = {
@@ -53,6 +57,9 @@ NOMENCLATURE = {
         16: 'Valeur non qualifiee',
         20: 'Valeur bonne'
     },
+
+    # Type de mesure du cpateur hydro
+    520: {'H': 'Hauteur', 'Q': 'Debit'},
 
     # Type de site hydrometrique
     530: {

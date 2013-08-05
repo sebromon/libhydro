@@ -1,18 +1,26 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, absolute_import, division, print_function
-"""Module de classe python sitehydro.
+"""Module sitehydro.
 
 Ce module contient les classes:
     # Sitehydro
     # Stationhydro
-    # Capteur -- NOT IMPLEMENTED --
+    # Capteur
 
 """
+#-- imports -------------------------------------------------------------------
+from __future__ import unicode_literals, absolute_import, division, print_function
+from string import ascii_uppercase, digits
+
+try:
+    from nomenclature import NOMENCLATURE
+except ImportError:
+    from libhydro.core.nomenclature import NOMENCLATURE
+
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1c"""
-__date__ = """2013-07-31"""
+__version__ = """version 0.1d"""
+__date__ = """2013-08-05"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -23,14 +31,6 @@ __date__ = """2013-07-31"""
 # TODO - many many properties
 # FIXME - nothing
 
-
-#-- imports -------------------------------------------------------------------
-from string import ascii_uppercase, digits
-
-try:
-    from nomenclature import NOMENCLATURE
-except Exception:
-    from libhydro.core.nomenclature import NOMENCLATURE
 
 # -- config -------------------------------------------------------------------
 # classe name, article
@@ -55,6 +55,44 @@ class Sitehydro(object):
 
     """
 
+    #libelleusuel
+    #libellecomplement
+    #mnemonique
+    #precisionce
+    #x
+    #y
+    #sysproj
+    #pkamont
+    #pkaval
+    #altitude
+    #sysalti
+    #dtmaj
+    #bv
+    #fuseau
+    #statut
+    #ponctuel
+    #dtpremieredonnee
+    #moisetiage
+    #moisanneehydro
+    #publication
+    #essai
+    #influence
+    #influencecommentaire
+    #codeh2
+    #commentaire
+
+    #siteattache
+    #siteassocie
+    #masses
+    #entitehydro
+    #loistats
+    #images
+    #rolecontact
+    #zonehydro
+    #tronconhydro
+    #communes
+    #tronconsvivilance
+
     def __init__(
         self, typesite=None, code=None, libelle=None, stations=None,
         strict=True
@@ -66,7 +104,7 @@ class Sitehydro(object):
             code (string(8)) = code hydro
             libelle (string)
             stations (une Station ou un iterable de Station)
-            strict (bool, defaut True) = en mode permissif il n'y a pas de
+            strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite du type, du code et des stations
 
         """
@@ -104,10 +142,6 @@ class Sitehydro(object):
         except:
             raise ValueError('typesite incorrect')
 
-    # @typesite.deleter
-    # def typesite(self):
-    #     del self._typesite
-
     # -- property code --
     @property
     def code(self):
@@ -130,10 +164,6 @@ class Sitehydro(object):
             self._code = code
         except:
             raise ValueError('code incorrect')
-
-    # @code.deleter
-    # def code(self):
-    #     del self._code
 
     # -- property stations --
     @property
@@ -158,10 +188,6 @@ class Sitehydro(object):
                 raise TypeError(
                     'stations must be a Station or a iterable of Station'
                 )
-
-    # @stations.deleter
-    # def stations(self):
-    #     del self._code
 
     # -- other methods --
     def __str__(self):
@@ -195,10 +221,43 @@ class Stationhydro(object):
             typestation (string parmi NOMENCLATURE[531])
             code (string(10)) = code hydro
             libelle (string)
-            strict (bool, defaut True) = en mode permissif il n'y a pas de
+            strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite du type et du code
 
         """
+
+        #capteurs
+
+        #libellecomplement
+        #descriptif
+        #dtmaj
+        #x
+        #y
+        #projection
+        #pk
+        #dtes
+        #dths
+        #surveillance
+        #niveauaffichage
+        #publication
+        #delaidiscontinuite
+        #delaiabsence
+        #essai
+        #cdh2
+        #influence
+        #influencecommentaire
+        #commentaire
+
+        #remplace
+        #stationfille
+        #qualifications
+        #finalites
+        #loisstat
+        #sitehydro
+        #images
+        #rolecontact
+        #stationattachee
+        #plageutilisation
 
         # -- simple properties --
         self._strict = strict
@@ -230,10 +289,6 @@ class Stationhydro(object):
         except:
             raise ValueError('typestation incorrect')
 
-    # @typestation.deleter
-    # def typestation(self):
-    #     del self._typestation
-
     # -- property code --
     @property
     def code(self):
@@ -257,10 +312,6 @@ class Stationhydro(object):
         except:
             raise ValueError('code incorrect')
 
-    # @code.deleter
-    # def code(self):
-    #     del self._code
-
     # -- other methods --
     def __str__(self):
         """String representation."""
@@ -274,7 +325,79 @@ class Stationhydro(object):
 #-- class Capteur -------------------------------------------------------------
 class Capteur(object):
 
-    # TODO - not implemented
+    def __init__(self, code=None, libelle=None, typemesure=None, strict=True):
 
-    def __init__(self, code):
-        self.code = code
+        #mnemonique
+        #typecapteur
+        #surveillance
+        #dtmaj
+        #pdt
+        #essai
+        #codeh2
+        #commentaire
+
+        #stationhydro
+        #plageutilisation
+        #observateur
+
+        # -- simple properties --
+        self._strict = strict
+        if libelle:
+            self.libelle = unicode(libelle)
+        else:
+            self.libelle = None
+
+        # -- full properties --
+        self._typemesure = self._code = None
+        if typemesure:
+            self.typemesure = typemesure
+        if code:
+            self.code = code
+
+    # -- property code --
+    @property
+    def code(self):
+        """Code hydro."""
+        return self._code
+
+    @code.setter
+    def code(self, code):
+        #code capteur is like 'A03344500101'
+        try:
+            code = unicode(code)
+            if (
+                (self._strict) and (
+                    (len(code) != 12) or
+                    (code[0] not in ascii_uppercase) or
+                    (not set(code[1:]).issubset(set(digits)))
+                )
+            ):
+                raise Exception
+            self._code = code
+        except:
+            raise ValueError('code incorrect')
+
+    # -- property typemesure --
+    @property
+    def typemesure(self):
+        """typemesure hydro."""
+        return self._typemesure
+
+    @typemesure.setter
+    def typemesure(self, typemesure):
+        try:
+            typemesure = unicode(typemesure)
+            if (self._strict) and (typemesure not in NOMENCLATURE[520]):
+                raise Exception
+            self._typemesure = typemesure
+        except:
+            raise ValueError('typemesure incorrect')
+
+    # -- other methods --
+    def __str__(self):
+        """String representation."""
+        return 'capteur {0} {1}::{2}'.format(
+            self.typemesure or '-',
+            self.code or '-',
+            self.libelle or '-'
+        ).encode('utf-8')

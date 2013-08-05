@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, absolute_import, division, print_function
 """Test program for obshydro.
 
 To run all tests just type:
@@ -14,21 +13,8 @@ To run only a specific test:
     python -m unittest test_obshydro.TestClass.test_method
 
 """
-
-#-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1a"""
-__date__ = """2013-07-26"""
-
-#HISTORY
-#V0.1 - 2013-07-15
-#    first shot
-
-#-- todos ---------------------------------------------------------------------
-# TODO - nothing
-# FIXME - nothing
-
 #-- imports -------------------------------------------------------------------
+from __future__ import unicode_literals, absolute_import, division, print_function
 import unittest
 import os
 import sys
@@ -39,7 +25,24 @@ sys.path.extend([os.path.join('..', '..'), os.path.join('..', 'core')])
 import obshydro
 
 
+#-- strings -------------------------------------------------------------------
+__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
+__version__ = """Version 0.1a"""
+__date__ = """2013-07-26"""
+
+#HISTORY
+#V0.1 - 2013-07-15
+#    first shot
+
+
+
+#-- todos ---------------------------------------------------------------------
+# TODO - nothing
+# FIXME - nothing
+
+
 #-- config --------------------------------------------------------------------
+
 
 #-- class TestObservation -----------------------------------------------------
 class TestObservation(unittest.TestCase):

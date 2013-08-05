@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, absolute_import, division, print_function
-"""Module de classe python obshydro.
+"""Module obshydro.
 
 Ce module contient les classes:
     # Observation
@@ -8,11 +7,11 @@ Ce module contient les classes:
     # Serie
 
 et quelques fonctions utiles:
-    # concat pour concatener des observations
+    # concat() pour concatener des observations
 
 
-On peux utiliser directement les classes de la librairie Pandas, les Series
-ou les DataFrame.
+On peux aussi utiliser directement les classes de la librairie Pandas, les
+Series ou les DataFrame.
 
 Exemple pour instancier une Series:
     hauteurs = pandas.Series(
@@ -34,6 +33,21 @@ Exemple pour instancier un DataFrame:
     })
 
 """
+#-- imports -------------------------------------------------------------------
+from __future__ import unicode_literals, absolute_import, division, print_function
+import numpy
+import pandas
+
+try:
+    from nomenclature import NOMENCLATURE
+except ImportError:
+    from libhydro.core.nomenclature import NOMENCLATURE
+
+try:
+    import sitehydro
+except ImportError:
+    import libhydro.core.sitehydro as sitehydro
+
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
@@ -48,18 +62,6 @@ __date__ = """2013-07-31"""
 #-- todos ---------------------------------------------------------------------
 # TODO - many many properties
 # FIXME - nothing
-
-
-#-- imports -------------------------------------------------------------------
-import numpy
-import pandas
-
-try:
-    from nomenclature import NOMENCLATURE
-except Exception:
-    from libhydro.core.nomenclature import NOMENCLATURE
-
-import sitehydro
 
 
 #-- class Observation ---------------------------------------------------------
@@ -152,7 +154,6 @@ class Observations(pandas.DataFrame):
         obs = observations[['res']]
 
     """
-
     def __new__(cls, *observations):
         """Constructeur.
 
@@ -185,11 +186,9 @@ class Observations(pandas.DataFrame):
             data=array[list(array.dtype.names[1:])],
             index=array['dte']
         )
+        # FIXME - can't subclass the DataFRame object
+        # return obj.view(cls)
         return obj
-
-    # def __array_finalize__(self, obj):
-    #     if obj is None:
-    #         return
 
 
 #-- Observations functions ----------------------------------------------------
@@ -260,7 +259,7 @@ class Serie(object):
 
         # -- simple properties --
         self._strict = strict
-        self.observations = observations
+        self.observations = observations  # FIXME - should we control something here ?
 
         # -- full properties --
         self._entite = self._grandeur = self._observations = None
@@ -352,12 +351,11 @@ class Serie(object):
     def __str__(self):
         """String representation."""
         # compute class name: cls = (article, classe)
-        if self.entite is not None:
-            try:
-                cls = unicode(self.entite.__class__.__name__)
-                cls = ('{} '.format(sitehydro.ARTICLE[cls]), cls.lower())
-            except Exception:
-                cls = ("l'", 'entite')
+        try:
+            cls = unicode(self.entite.__class__.__name__)
+            cls = ('{} '.format(sitehydro.ARTICLE[cls]), cls.lower())
+        except Exception:
+            cls = ("l'", 'entite')
 
         # compute code
         if self.entite is not None:
