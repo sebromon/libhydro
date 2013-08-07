@@ -28,14 +28,16 @@ Exemple:
 
 """
 #-- imports -------------------------------------------------------------------
-from __future__ import unicode_literals, absolute_import, division, print_function
+from __future__ import (
+    unicode_literals as _unicode_literals,
+    absolute_import as _absolute_import,
+    division as _division,
+    print_function as _print_function
+)
 
-import pandas
+import pandas as _pd
 
-try:
-    import obshydro
-except ImportError:
-    from libhydro.core import obshydro
+from ...core import obshydro as _obshydro
 
 
 #-- strings -------------------------------------------------------------------
@@ -55,11 +57,13 @@ __date__ = """2013-08-01"""
 
 #-- functions -----------------------------------------------------------------
 def simulation_from_hsf():
+    """Not implemented."""
     # TODO
     raise NotImplementedError()
 
 
 def simulation_to_hsf():
+    """Not implemented."""
     # TODO
     raise NotImplementedError()
 
@@ -75,7 +79,7 @@ def serie_from_hsf(src, begin=None, end=None, entite=None):
 
     """
     # parse file and update the DataFrame
-    df = pandas.read_table(
+    df = _pd.read_table(
         src,
         header=None,
         delim_whitespace=True,
@@ -85,7 +89,7 @@ def serie_from_hsf(src, begin=None, end=None, entite=None):
     )
     df.index.name = None
     # return serie
-    return obshydro.Serie(
+    return _obshydro.Serie(
         entite=entite,
         grandeur='H',
         observations=df
@@ -93,5 +97,6 @@ def serie_from_hsf(src, begin=None, end=None, entite=None):
 
 
 def serie_to_hsf(dst):
+    """Not implemented."""
     # TODO
     raise NotImplementedError()

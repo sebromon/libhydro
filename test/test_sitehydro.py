@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for sitehydro.
 
@@ -14,30 +13,33 @@ To run only a specific test:
 
 """
 #-- imports -------------------------------------------------------------------
-from __future__ import unicode_literals, absolute_import, division, print_function
-import unittest
-import os
+from __future__ import (
+    unicode_literals as _unicode_literals,
+    absolute_import as _absolute_import,
+    division as _division,
+    print_function as _print_function
+)
+
 import sys
+import os
+sys.path.append(os.path.join('..', '..'))
 
-sys.path.extend([os.path.join('..', '..'), os.path.join('..', 'core')])
+import unittest
 
-from sitehydro import Sitehydro, Stationhydro, Capteur
+from libhydro.core.sitehydro import Sitehydro, Stationhydro, Capteur
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1c"""
-__date__ = """2013-08-05"""
+__version__ = """Version 0.1d"""
+__date__ = """2013-08-07"""
 
 #HISTORY
 #V0.1 - 2013-07-15
 #    first shot
 
 
-
 #-- todos ---------------------------------------------------------------------
-# TODO - nothing
-# FIXME - nothing
 
 
 #-- config --------------------------------------------------------------------
@@ -94,7 +96,7 @@ class TestSiteHydro(unittest.TestCase):
         )
 
     def test_dim_mode_01(self):
-        """dim mode test."""
+        """Dim mode test."""
         typesite = '6'
         code = '3'
         stations = [1, 2, 3]
@@ -108,34 +110,36 @@ class TestSiteHydro(unittest.TestCase):
 
     def test_error_01(self):
         """Typesite error."""
+        Sitehydro(**{'typesite': 'REEL'})
         self.assertRaises(
             ValueError,
             Sitehydro,
-            {'typesite': 'REEEL'}
+            **{'typesite': 'REEEL'}
         )
 
     def test_error_02(self):
         """Code error."""
+        Sitehydro(**{'code': 'B4401122'})
         self.assertRaises(
             ValueError,
             Sitehydro,
-            {'code': 'B4400000'}
+            **{'code': 'B440112201'}
+        )
+        Sitehydro(**{'code': 'B4401122'})
+        self.assertRaises(
+            ValueError,
+            Sitehydro,
+            **{'code': 'B44011'}
         )
 
     def test_error_03(self):
-        """Libelle error."""
-        self.assertRaises(
-            ValueError,
-            Sitehydro,
-            {'libelle': [3, 2]}
-        )
-
-    def test_error_04(self):
         """Stations error."""
+        stations = (Stationhydro(), Stationhydro())
+        Sitehydro(**{'stations': stations})
         self.assertRaises(
-            ValueError,
+            TypeError,
             Sitehydro,
-            {'stations': ['station']}
+            **{'stations': ['station']}
         )
 
 
@@ -172,7 +176,7 @@ class TestStationHydro(unittest.TestCase):
         )
 
     def test_dim_mode_01(self):
-        """dim mode test."""
+        """Dim mode test."""
         typestation = '6'
         code = '3'
         s = Stationhydro(typestation=typestation, code=code, strict=False)
@@ -183,26 +187,25 @@ class TestStationHydro(unittest.TestCase):
 
     def test_error_01(self):
         """Typestation error."""
+        Stationhydro(**{'typestation': 'LIMNI'})
         self.assertRaises(
             ValueError,
             Stationhydro,
-            {'typestation': 'LIMMMMNI'}
+            **{'typestation': 'LIMMMMNI'}
         )
 
     def test_error_02(self):
         """Code error."""
+        Stationhydro(**{'code': 'B440112201'})
         self.assertRaises(
             ValueError,
             Stationhydro,
-            {'code': 'B440000'}
+            **{'code': 'B4401122'}
         )
-
-    def test_error_03(self):
-        """Libelle error."""
         self.assertRaises(
             ValueError,
             Stationhydro,
-            {'libelle': [3, 2]}
+            **{'code': 'B44011220101'}
         )
 
 
@@ -239,7 +242,7 @@ class TestCapteur(unittest.TestCase):
         )
 
     def test_dim_mode_01(self):
-        """dim mode test."""
+        """Dim mode test."""
         typemesure = 'RR'
         code = 'C1'
         c = Capteur(typemesure=typemesure, code=code, strict=False)
@@ -249,28 +252,28 @@ class TestCapteur(unittest.TestCase):
         )
 
     def test_error_01(self):
-        """Typestation error."""
+        """Typemesure error."""
+        Capteur(**{'typemesure': 'H'})
         self.assertRaises(
             ValueError,
             Capteur,
-            {'typesmesure': 'RR'}
+            **{'typemesure': 'RR'}
         )
 
     def test_error_02(self):
         """Code error."""
+        Capteur(**{'code': 'B44011220101'})
         self.assertRaises(
             ValueError,
             Capteur,
-            {'code': 'B440000'}
+            **{'code': 'B440112201'}
+        )
+        self.assertRaises(
+            ValueError,
+            Capteur,
+            **{'code': 'B4401122010133'}
         )
 
-    def test_error_03(self):
-        """Libelle error."""
-        self.assertRaises(
-            ValueError,
-            Capteur,
-            {'libelle': [3, 2]}
-        )
 
 #-- main ----------------------------------------------------------------------
 if __name__ == '__main__':

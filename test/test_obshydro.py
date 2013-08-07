@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for obshydro.
 
@@ -14,31 +13,35 @@ To run only a specific test:
 
 """
 #-- imports -------------------------------------------------------------------
-from __future__ import unicode_literals, absolute_import, division, print_function
-import unittest
-import os
+from __future__ import (
+    unicode_literals as _unicode_literals,
+    absolute_import as _absolute_import,
+    division as _division,
+    print_function as _print_function
+)
+
 import sys
+import os
+sys.path.append(os.path.join('..', '..'))
+
+import unittest
 import datetime
 
-sys.path.extend([os.path.join('..', '..'), os.path.join('..', 'core')])
-
-import obshydro
+from libhydro.core import obshydro
+from libhydro.core.sitehydro import Sitehydro, Stationhydro
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1a"""
-__date__ = """2013-07-26"""
+__version__ = """Version 0.1b"""
+__date__ = """2013-08-06"""
 
 #HISTORY
 #V0.1 - 2013-07-15
 #    first shot
 
 
-
 #-- todos ---------------------------------------------------------------------
-# TODO - nothing
-# FIXME - nothing
 
 
 #-- config --------------------------------------------------------------------
@@ -56,78 +59,67 @@ class TestObservation(unittest.TestCase):
     #     """Hook method for deconstructing the test fixture after testing it."""
     #     pass
 
-    def test_base(self):
-        """Base case tests."""
-        # test 01
-        obs = obshydro.Observation('2000-01-01 10:33:01+0000', 20.5, 4, 8, False)
+    def test_base_01(self):
+        """Base case test."""
+        dte = '2000-01-01 10:33:01+0000'
+        res = 20.5
+        mth = 4
+        qal = 8
+        cnt = False
+        obs = obshydro.Observation(dte, res, mth, qal, cnt)
         self.assertEqual(
-            obs['dte'].item(),
-            datetime.datetime(2000, 1, 1, 10, 33, 1),
-            'erreur %s, wrong dte' % (self.__class__.__name__)
-        )
-        self.assertEqual(
-            obs['res'].item(),
-            20.5,
-            'erreur %s, wrong res' % (self.__class__.__name__)
-        )
-        self.assertEqual(
-            obs['mth'].item(),
-            4,
-            'erreur %s, wrong mth' % (self.__class__.__name__)
-        )
-        self.assertEqual(
-            obs['qal'].item(),
-            8,
-            'erreur %s, wrong qal' % (self.__class__.__name__)
-        )
-        self.assertEqual(
-            obs['cnt'].item(),
-            False,
-            'erreur %s, wrong cnt' % (self.__class__.__name__)
+            obs.item(),
+            (datetime.datetime(2000, 1, 1, 10, 33, 1), res, mth, qal, cnt)
         )
 
-        # test 02
-        obs = obshydro.Observation('2000-01-01 10:33:01', 20)
-        obs = obshydro.Observation('2000-01-01 10:33', 0, 4)
-        obs = obshydro.Observation('2000-01-01 00:00+0100', 10, 4, 8, True)
-        obs = obshydro.Observation(datetime.datetime(2000, 1, 1, 10), 10, mth=4, qal=8)
-        obs = obshydro.Observation(datetime.datetime(2000, 1, 1), '20', cnt=True)
+    def test_base_02(self):
+        """Some instanciation use cases."""
+        obshydro.Observation('2000-01-01 10:33:01', 20)
+        obshydro.Observation('2000-01-01 10:33', 0, 4)
+        obshydro.Observation('2000-01-01 00:00+0100', 10, 4, 8, True)
+        obshydro.Observation(
+            datetime.datetime(2000, 1, 1, 10), 10, mth=4, qal=8
+        )
+        obshydro.Observation(datetime.datetime(2000, 1, 1), '20', cnt=True)
 
-    def test_errors(self):
-        """Errors tests."""
-
-        # test 01
+    def test_error_01(self):
+        """Date error."""
+        obshydro.Observation(**{'dte': '2000-10-10 10:00', 'res': 10})
         self.assertRaises(
             TypeError,
             obshydro.Observation,
-            # *('2000-10-10 10:00', 10)
-            *('2000', 10)
+            **{'dte': '2000-10', 'res': 10}
         )
 
-        # test 02
+    def test_error_02(self):
+        """Res error."""
+        obshydro.Observation(**{'dte': '2000-10-05 10:00', 'res': 10})
         self.assertRaises(
             ValueError,
             obshydro.Observation,
-            # *('2000-10-05 10:00', 10)
-            *('2000-10-05 10:00', 'aaa')
+            **{'dte': '2000-10-05 10:00', 'res': 'aaa'}
         )
 
-        # test 03
+    def test_error_03(self):
+        """Mth error."""
+        obshydro.Observation(
+            **{'dte': '2000-10-05 10:00', 'res': 20, 'mth': 4}
+        )
         self.assertRaises(
             ValueError,
             obshydro.Observation,
-            *('2000-10-05 10:00', 20),
-            # **{'mth': 4}
-            **{'mth': 1000}
+            **{'dte': '2000-10-05 10:00', 'res': 20, 'mth': 1000}
         )
 
-        # test 04
+    def test_error_04(self):
+        """Qal error."""
+        obshydro.Observation(
+            **{'dte': '2000-10-05 10:00', 'res': 20, 'qal': 16}
+        )
         self.assertRaises(
             ValueError,
             obshydro.Observation,
-            *('2000-10-05 10:00', 20),
-            # **{'qal': 16}
-            **{'qal': 1000}
+            **{'dte': '2000-10-05 10:00', 'res': 20, 'qal': 1000}
         )
 
 
@@ -205,7 +197,7 @@ class TestSerie(unittest.TestCase):
 
     def test_base_01(self):
         """Serie on a site."""
-        s = obshydro.sitehydro.Sitehydro(code='A0445810', libelle='Le Rhône à Marseille')
+        s = Sitehydro(code='A0445810', libelle='Le Rhône à Marseille')
         g = 'Q'
         t = 16
         o = obshydro.Observations(
@@ -227,7 +219,7 @@ class TestSerie(unittest.TestCase):
 
     def test_base_02(self):
         """Serie on a station with no statut."""
-        s = obshydro.sitehydro.Stationhydro(code='A044581001')
+        s = Stationhydro(code='A044581001')
         o = obshydro.Observations(
             obshydro.Observation('2012-10-03 06:00', 33),
             obshydro.Observation('2012-10-03 08:00', 42)
@@ -243,7 +235,7 @@ class TestSerie(unittest.TestCase):
 
     def test_base_03(self):
         """Serie should accept bad observations in strict mode."""
-        s = obshydro.sitehydro.Stationhydro()
+        s = Stationhydro()
         o = 44  # no control on observations
         serie = obshydro.Serie(entite=s, observations=o)
         self.assertEqual(
@@ -254,7 +246,7 @@ class TestSerie(unittest.TestCase):
             (s, None, 0, o, True)
         )
 
-    def test_lazy_mode_01(self):
+    def test_dim_mode_01(self):
         """Base case test."""
         s = 4
         g = 'RR'
@@ -274,30 +266,30 @@ class TestSerie(unittest.TestCase):
 
     def test_error_01(self):
         """Entite error."""
-        # s = obshydro.sitehydro.Stationhydro(code='A044581001')
+        s = Stationhydro(code='A044581001')
+        obshydro.Serie(**{'entite': s})
         self.assertRaises(
             TypeError,
             obshydro.Serie,
-            # **{'entite': s}  # good !
-            **{'entite': 'X'}  # bad !!
+            **{'entite': 'X'}
         )
 
     def test_error_02(self):
         """Grandeur error."""
+        obshydro.Serie(**{'grandeur': 'H'})
         self.assertRaises(
             ValueError,
             obshydro.Serie,
-            # **{'grandeur': 'H'}  # good !
-            **{'grandeur': 'X'}  # bad !!
+            **{'grandeur': 'X'}
         )
 
     def test_error_03(self):
         """Statut error."""
+        obshydro.Serie(**{'statut': 12})
         self.assertRaises(
             ValueError,
             obshydro.Serie,
-            # **{'statut': 12}  # good !
-            **{'statut': 124}  # bad !!
+            **{'statut': 124}
         )
 
 

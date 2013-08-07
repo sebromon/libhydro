@@ -8,13 +8,16 @@ Ce module contient les classes:
 
 """
 #-- imports -------------------------------------------------------------------
-from __future__ import unicode_literals, absolute_import, division, print_function
-from string import ascii_uppercase, digits
+from __future__ import (
+    unicode_literals as _unicode_literals,
+    absolute_import as _absolute_import,
+    division as _division,
+    print_function as _print_function
+)
 
-try:
-    from nomenclature import NOMENCLATURE
-except ImportError:
-    from libhydro.core.nomenclature import NOMENCLATURE
+from string import (ascii_uppercase as _ascii_uppercase, digits as _digits)
+
+from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
 #-- strings -------------------------------------------------------------------
@@ -97,7 +100,7 @@ class Sitehydro(object):
         self, typesite=None, code=None, libelle=None, stations=None,
         strict=True
     ):
-        """Constructor.
+        """Constructeur.
 
         Parametres:
             typesite (string parmi NOMENCLATURE[530])
@@ -136,7 +139,7 @@ class Sitehydro(object):
     def typesite(self, typesite):
         try:
             typesite = unicode(typesite)
-            if (self._strict) and (typesite not in NOMENCLATURE[530]):
+            if (self._strict) and (typesite not in _NOMENCLATURE[530]):
                 raise Exception
             self._typesite = typesite
         except:
@@ -156,8 +159,8 @@ class Sitehydro(object):
             if (
                 self._strict and (
                     (len(code) != 8) or
-                    (code[0] not in ascii_uppercase) or
-                    (not set(code[1:]).issubset(set(digits)))
+                    (code[0] not in _ascii_uppercase) or
+                    (not set(code[1:]).issubset(set(_digits)))
                 )
             ):
                 raise Exception
@@ -192,7 +195,7 @@ class Sitehydro(object):
     # -- other methods --
     def __str__(self):
         """String representation."""
-        return 'site {0} {1}::{2} [{3} station{4}]'.format(
+        return 'Site {0} {1}::{2} [{3} station{4}]'.format(
             self.typesite or '-',
             self.code or '-',
             self.libelle or '-',
@@ -215,7 +218,7 @@ class Stationhydro(object):
     """
 
     def __init__(self, typestation=None, code=None, libelle=None, strict=True):
-        """Constructor.
+        """Constructeur.
 
         Parametres:
             typestation (string parmi NOMENCLATURE[531])
@@ -283,7 +286,7 @@ class Stationhydro(object):
     def typestation(self, typestation):
         try:
             typestation = unicode(typestation)
-            if (self._strict) and (typestation not in NOMENCLATURE[531]):
+            if (self._strict) and (typestation not in _NOMENCLATURE[531]):
                 raise Exception
             self._typestation = typestation
         except:
@@ -303,8 +306,8 @@ class Stationhydro(object):
             if (
                 (self._strict) and (
                     (len(code) != 10) or
-                    (code[0] not in ascii_uppercase) or
-                    (not set(code[1:]).issubset(set(digits)))
+                    (code[0] not in _ascii_uppercase) or
+                    (not set(code[1:]).issubset(set(_digits)))
                 )
             ):
                 raise Exception
@@ -315,7 +318,7 @@ class Stationhydro(object):
     # -- other methods --
     def __str__(self):
         """String representation."""
-        return 'station {0} {1}::{2}'.format(
+        return 'Station {0} {1}::{2}'.format(
             self.typestation or '-',
             self.code or '-',
             self.libelle or '-'
@@ -324,8 +327,28 @@ class Stationhydro(object):
 
 #-- class Capteur -------------------------------------------------------------
 class Capteur(object):
+    """Class Capteur.
+
+    Classe pour manipuler des capteurs hydrometriques.
+
+    Proprietes:
+        code (string(12)) = code hydro
+        libelle (string)
+        typemesure (caractere parmi NOMENCLATURE[531]) = H ou Q
+
+    """
 
     def __init__(self, code=None, libelle=None, typemesure=None, strict=True):
+        """Constructeur.
+
+        Parametres:
+            code (string(12)) = code hydro
+            libelle (string)
+            typemesure (caractere parmi NOMENCLATURE[531]) = H ou Q
+            strict (bool, defaut True) = le mode permissif permet de lever les
+                controles de validite du code et du type de mesure
+
+        """
 
         #mnemonique
         #typecapteur
@@ -368,8 +391,8 @@ class Capteur(object):
             if (
                 (self._strict) and (
                     (len(code) != 12) or
-                    (code[0] not in ascii_uppercase) or
-                    (not set(code[1:]).issubset(set(digits)))
+                    (code[0] not in _ascii_uppercase) or
+                    (not set(code[1:]).issubset(set(_digits)))
                 )
             ):
                 raise Exception
@@ -387,7 +410,7 @@ class Capteur(object):
     def typemesure(self, typemesure):
         try:
             typemesure = unicode(typemesure)
-            if (self._strict) and (typemesure not in NOMENCLATURE[520]):
+            if (self._strict) and (typemesure not in _NOMENCLATURE[520]):
                 raise Exception
             self._typemesure = typemesure
         except:
@@ -396,7 +419,7 @@ class Capteur(object):
     # -- other methods --
     def __str__(self):
         """String representation."""
-        return 'capteur {0} {1}::{2}'.format(
+        return 'Capteur {0} {1}::{2}'.format(
             self.typemesure or '-',
             self.code or '-',
             self.libelle or '-'

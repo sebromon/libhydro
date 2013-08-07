@@ -14,7 +14,7 @@ On peux aussi utiliser directement les classes de la librairie Pandas, les
 Series ou les DataFrame.
 
 Exemple pour instancier une Series:
-    hauteurs = pandas.Series(
+    datas = pandas.Series(
         data = [100, 110, 120],
         index = [
             datetime.datetime(2012, 5, 1),
@@ -22,7 +22,7 @@ Exemple pour instancier une Series:
             datetime.datetime(2012, 5, 3)
         ]
         dtype = None,
-        name='H2352303'
+        name='observations de debit'
 )
 
 Exemple pour instancier un DataFrame:
@@ -34,19 +34,18 @@ Exemple pour instancier un DataFrame:
 
 """
 #-- imports -------------------------------------------------------------------
-from __future__ import unicode_literals, absolute_import, division, print_function
-import numpy
-import pandas
+from __future__ import (
+    unicode_literals as _unicode_literals,
+    absolute_import as _absolute_import,
+    division as _division,
+    print_function as _print_function
+)
 
-try:
-    from nomenclature import NOMENCLATURE
-except ImportError:
-    from libhydro.core.nomenclature import NOMENCLATURE
+import numpy as _np
+import pandas as _pd
 
-try:
-    import sitehydro
-except ImportError:
-    import libhydro.core.sitehydro as sitehydro
+from .nomenclature import NOMENCLATURE as _NOMENCLATURE
+from . import sitehydro as _sitehydro
 
 
 #-- strings -------------------------------------------------------------------
@@ -61,12 +60,13 @@ __date__ = """2013-07-31"""
 
 #-- todos ---------------------------------------------------------------------
 # TODO - many many properties
-# FIXME - nothing
 
 
 #-- class Observation ---------------------------------------------------------
-class Observation(numpy.ndarray):
-    """Une observation.
+class Observation(_np.ndarray):
+    """Classe observation.
+
+    Classe pour manipuler une observation elementaire.
 
     Subclasse de numpy.array('dte', 'res', 'mth', 'qal', 'cnt'), les elements
     etant du type DTYPE.
@@ -87,28 +87,28 @@ class Observation(numpy.ndarray):
             NOMENCLATURE[515]
         cnt (numpy.bool, defaut True) = continuite
 
-    Usage:¬
+    Usage:
         Getter => observation.['x'].item()
         Setter => observation.['x'] = value
 
     """
 
-    DTYPE = numpy.dtype([
-        (str('dte'), numpy.datetime64(None, str('s'))),
-        (str('res'), numpy.float),
-        (str('mth'), numpy.int8),
-        (str('qal'), numpy.int8),
-        (str('cnt'), numpy.bool)
+    DTYPE = _np.dtype([
+        (str('dte'), _np.datetime64(None, str('s'))),
+        (str('res'), _np.float),
+        (str('mth'), _np.int8),
+        (str('qal'), _np.int8),
+        (str('cnt'), _np.bool)
     ])
 
     def __new__(cls, dte, res, mth=0, qal=16, cnt=True):
-        if not isinstance(dte, numpy.datetime64):
-            dte = numpy.datetime64(dte)
-        if (mth != 0) and (mth not in NOMENCLATURE[507]):
+        if not isinstance(dte, _np.datetime64):
+            dte = _np.datetime64(dte)
+        if (mth != 0) and (mth not in _NOMENCLATURE[507]):
             raise ValueError('methode incorrecte')
-        if (qal != 16) and (qal not in NOMENCLATURE[515]):
+        if (qal != 16) and (qal not in _NOMENCLATURE[515]):
             raise ValueError('qualification incorrecte')
-        obj = numpy.array(
+        obj = _np.array(
             (dte, res, mth, qal, cnt),
             dtype=Observation.DTYPE
         ).view(cls)
@@ -122,25 +122,25 @@ class Observation(numpy.ndarray):
         """String representation."""
         return '{0} le {4} a {5} UTC (valeur obtenue par {1}, {2} et {3})'.format(
             self['res'].item(),
-            NOMENCLATURE[507][self['mth'].item()],
-            NOMENCLATURE[515][self['qal'].item()],
+            _NOMENCLATURE[507][self['mth'].item()],
+            _NOMENCLATURE[515][self['qal'].item()],
             'continue' if self['cnt'].item() else 'discontinue',
             *self['dte'].item().isoformat().split('T')
         ).encode('utf-8')
 
 
 #-- class Observations --------------------------------------------------------
-class Observations(pandas.DataFrame):
+class Observations(_pd.DataFrame):
     """Class Observations.
 
     Classe pour manipuler une collection d'observations hydrometriques, sous la
-    forme d'un pandas.DataFrame (les objets instanciés sont des DataFrame).
+    forme d'un pandas.DataFrame (les objets instancies sont des DataFrame).
 
     L'index est un pandas.DatetimeIndex qui represente les dates d'observation.
 
     Les donnees sont contenues dans 4 colonnes du DataFrame (voir Observation).
 
-    Un objet Obervations peux etre instancie de multiples façons a l'aide des
+    Un objet Obervations peux etre instancie de multiples facons a l'aide des
     fonctions proposees par Pandas, sous reserve de respecter le nom des
     colonnes et leur typage:
         DataFrame.from_records: constructor from tuples, also record arrays
@@ -179,10 +179,10 @@ class Observations(pandas.DataFrame):
             raise
 
         # prepare a tmp numpy.array
-        array = numpy.array(object=obss)
+        array = _np.array(object=obss)
 
         # get the pandas.DataFrame
-        obj = pandas.DataFrame(
+        obj = _pd.DataFrame(
             data=array[list(array.dtype.names[1:])],
             index=array['dte']
         )
@@ -193,16 +193,16 @@ class Observations(pandas.DataFrame):
 
 #-- Observations functions ----------------------------------------------------
 def concat(observations, others):
-    """Ajoute (concatène) une ou plusieurs observations.
+    """Ajoute (concatene) une ou plusieurs observations.
 
     Arguments:
         observations (Observations)
-        others (Observation ou Observations) = observation(s) à ajouter
+        others (Observation ou Observations) = observation(s) a ajouter
 
-    Pour agréger 2 Observations, on peux aussi utiliser la méthode append des
+    Pour agreger 2 Observations, on peux aussi utiliser la methode append des
     DataFrame ou bien directement la fonction concat de pandas.
 
-    Attention, les DataFrame ne sont JAMAIS modifiés, ces fonctions retournent
+    Attention, les DataFrame ne sont JAMAIS modifies, ces fonctions retournent
     un nouveau DataFrame.
 
     """
@@ -210,9 +210,9 @@ def concat(observations, others):
     # TODO - can't write a method to do that (subclassing DataFrame is hard !)
 
     try:
-        return pandas.concat([observations, others])
+        return _pd.concat([observations, others])
     except Exception:
-        return pandas.concat([observations, Observations(others)])
+        return _pd.concat([observations, Observations(others)])
 
 
 #-- class Serie ---------------------------------------------------------------
@@ -259,7 +259,9 @@ class Serie(object):
 
         # -- simple properties --
         self._strict = strict
-        self.observations = observations  # FIXME - should we control something here ?
+
+        # FIXME - shouldn't we control something here ?
+        self.observations = observations
 
         # -- full properties --
         self._entite = self._grandeur = self._observations = None
@@ -286,8 +288,8 @@ class Serie(object):
                     not isinstance(
                         entite,
                         (
-                            sitehydro.Sitehydro, sitehydro.Stationhydro,
-                            sitehydro.Capteur
+                            _sitehydro.Sitehydro, _sitehydro.Stationhydro,
+                            _sitehydro.Capteur
                         )
                     )
                 )
@@ -313,7 +315,7 @@ class Serie(object):
     def grandeur(self, grandeur):
         try:
             grandeur = unicode(grandeur)
-            if (self._strict) and (grandeur not in NOMENCLATURE[509]):
+            if (self._strict) and (grandeur not in _NOMENCLATURE[509]):
                 raise Exception
             self._grandeur = grandeur
         except:
@@ -333,7 +335,7 @@ class Serie(object):
     def statut(self, statut):
         try:
             statut = int(statut)
-            if statut in NOMENCLATURE[510]:
+            if statut in _NOMENCLATURE[510]:
                 self._statut = statut
             else:
                 if (self._strict):
@@ -353,7 +355,7 @@ class Serie(object):
         # compute class name: cls = (article, classe)
         try:
             cls = unicode(self.entite.__class__.__name__)
-            cls = ('{} '.format(sitehydro.ARTICLE[cls]), cls.lower())
+            cls = ('{} '.format(_sitehydro.ARTICLE[cls]), cls.lower())
         except Exception:
             cls = ("l'", 'entite')
 
@@ -365,13 +367,13 @@ class Serie(object):
                 code = self.entite
 
         # action !
-        return 'serie {0} sur {1}{2} {3}\nstatut {4}::{5}\n{6}\n{7} '.format(
+        return 'Serie {0} sur {1}{2} {3}\nstatut {4}::{5}\n{6}\n{7} '.format(
             self.grandeur or '-',
             cls[0],
             cls[1],
             code,
             self.statut,
-            NOMENCLATURE[510][self.statut].lower(),
+            _NOMENCLATURE[510][self.statut].lower(),
             '-' * 72,
             self.observations.__str__ or '-'
         ).encode('utf-8')

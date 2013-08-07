@@ -10,17 +10,22 @@ Usage:
 
     NOMENCLATURE[i] est la nomenclature i, sous la forme d'un dictionnaire
         {code: mnemonique, ...}. Les codes des items d'une nomenclature sont
-        des entiers ou des chaînes.
+        des entiers ou des chaines.
 
 """
 #-- imports -------------------------------------------------------------------
-from __future__ import unicode_literals, absolute_import, division, print_function
+from __future__ import (
+    unicode_literals as _unicode_literals,
+    absolute_import as _absolute_import,
+    division as _division,
+    print_function as _print_function
+)
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """philippe.gouin@developpement-durable.gouv.fr"""
-__version__ = """version 0.1b"""
-__date__ = """2013-08-05"""
+__version__ = """version 0.1c"""
+__date__ = """2013-08-06"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -60,6 +65,18 @@ NOMENCLATURE = {
 
     # Type de mesure du cpateur hydro
     520: {'H': 'Hauteur', 'Q': 'Debit'},
+
+    # Type du modele de prevision
+    525: {
+        0: 'Inconnu',
+        1: "Prevision d'expert",
+        2: 'Modele hydrologique empirique',
+        3: 'Modele hydrologique a base physique',
+        4: 'Modele hydraulique',
+        5: 'Modele statistique',
+        6: 'Enchainement de modeles',
+        7: 'Modele a propagation empirique'
+    },
 
     # Type de site hydrometrique
     530: {
