@@ -24,8 +24,8 @@ from __future__ import (
 
 #-- strings -------------------------------------------------------------------
 __author__ = """philippe.gouin@developpement-durable.gouv.fr"""
-__version__ = """version 0.1c"""
-__date__ = """2013-08-06"""
+__version__ = """version 0.1d"""
+__date__ = """2013-08-09"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -62,6 +62,9 @@ NOMENCLATURE = {
         16: 'Valeur non qualifiee',
         20: 'Valeur bonne'
     },
+
+    # Statut de la simulation
+    516: {4: 'Brute', 16: 'Critiquee'},
 
     # Type de mesure du cpateur hydro
     520: {'H': 'Hauteur', 'Q': 'Debit'},

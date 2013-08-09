@@ -132,7 +132,7 @@ class Sitehydro(object):
     # -- property typesite --
     @property
     def typesite(self):
-        """typesite hydro."""
+        """Type de site hydro."""
         return self._typesite
 
     @typesite.setter
@@ -279,7 +279,7 @@ class Stationhydro(object):
     # -- property typestation --
     @property
     def typestation(self):
-        """typestation hydro."""
+        """Type de station hydro."""
         return self._typestation
 
     @typestation.setter
@@ -403,7 +403,7 @@ class Capteur(object):
     # -- property typemesure --
     @property
     def typemesure(self):
-        """typemesure hydro."""
+        """Type de mesure."""
         return self._typemesure
 
     @typemesure.setter

@@ -105,7 +105,7 @@ class Modeleprevision(object):
     # -- property typemodele --
     @property
     def typemodele(self):
-        """typemodele hydro."""
+        """Type de modele."""
         return self._typemodele
 
     @typemodele.setter

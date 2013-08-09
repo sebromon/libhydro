@@ -37,16 +37,17 @@ from __future__ import (
 )
 
 import numpy as _np
-# import pandas as _pd
+import pandas as _pd
+import datetime as _datetime
 
-# from .nomenclature import NOMENCLATURE as _NOMENCLATURE
-# from . import sitehydro as _sitehydro
+from .nomenclature import NOMENCLATURE as _NOMENCLATURE
+from . import sitehydro as _sitehydro
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1a"""
-__date__ = """2013-08-07"""
+__version__ = """version 0.1b"""
+__date__ = """2013-08-09"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -55,31 +56,6 @@ __date__ = """2013-08-07"""
 
 #-- todos ---------------------------------------------------------------------
 # TODO - many properties
-
-
-#-- class Simulation ----------------------------------------------------------
-class Simulation(object):
-    """
-    grandeur
-    dtprod
-    qualite
-    statut
-    publication
-    commentaire
-    modeleprevision
-    entite
-
-    previsions
-
-    """
-
-    # sysalti
-    # responsable
-    # refalti
-    # courbetarage
-
-    # TODO
-    pass
 
 
 #-- class Prevision -----------------------------------------------------------
@@ -143,3 +119,316 @@ class Prevision(_np.ndarray):
             self['prb'].item(),
             *self['dte'].item().isoformat().split('T')
         ).encode('utf-8')
+
+
+#-- class Previsions ----------------------------------------------------------
+class Previsions(_pd.Series):
+    """Classe Previsions.
+
+    Classe pour manipuler un jeud e previsions, sous la forme d'une Series
+    pandas avec un double index, le premier etant la date du resultat, le second
+    sa probabilite.
+
+    Illustration d'une Series pandas de previsions pour 3 dates et avec 2 jeux
+    de probabilite:
+        dte                  prb
+        1972-10-01 10:00:00  50     33
+                             40     44
+        1972-10-01 11:00:00  50     35
+                             40     45
+        1972-10-01 12:00:00  50     55
+                             40     60
+        Name: res, dtype: float64
+
+    Se reporter a la documentation de la classe Prevision pour l'utilisation du
+    parametre prb.
+
+    Pour filtrer la Serie de resultats de meme probabilite, par exemple 50%:
+        previsions.swaplevel('dte', 'prb')[50]
+
+    """
+
+    def __new__(cls, *previsions):
+
+        """Constructeur+
+        Parametres:
+            previsions (un nombre quelconque de Prevision)
+
+        Exemples:
+            prv = Previsions(prv1)  # une seule Prevision
+            prv = Previsions(prv1, prv2, ..., prvn)  # n Prevision
+            prv = Previsions(*previsions)  #  une liste de Prevision
+
+        """
+
+        # prepare a list of previsions
+        prvs = []
+        try:
+            for prv in previsions:
+                if not isinstance(prv, Prevision):
+                    raise TypeError('{} in not a Prevision'.format(prv))
+                prvs.append(prv)
+
+        except Exception:
+            raise
+
+        # prepare a tmp numpy.array
+        array = _np.array(object=prvs)
+
+        # make index
+        index = _pd.MultiIndex.from_tuples(
+            zip(array['dte'], array['prb']),
+            names=['dte', 'prb']
+        )
+
+        # get the pandas.Series
+        obj = _pd.Series(
+            data=array['res'],
+            index=index,
+            name='res'
+        )
+        # FIXME - can't subclass the DataFRame object
+        # return obj.view(cls)
+        return obj
+
+
+#-- class Simulation ----------------------------------------------------------
+class Simulation(object):
+    """Classe simulation.
+
+    classe pour manipuler les simulations hydrauliques ou hydrologiques.
+
+    Proprietes:
+        entite (Sitehydro, Stationhydro ou Capteur)
+        modeleprevision (Modeleprevision)
+        grandeur (char in NOMENCLATURE[509]) = H ou Q
+        statut (int in NOMENCALTURE[516]) = brute ou critiquee
+        qualite (0 < int < 100) = indice de qualite
+        public (bool, defaut False) = si True publication libre
+        commentaire (texte)
+        dtprod (datetime) = date de production
+        previsions (Previsions)
+
+    """
+
+    # ** TODO - others attributes **
+    # sysalti
+    # responsable
+    # refalti
+    # courbetarage
+
+    def __init__(
+        self, entite=None, modeleprevision=None, grandeur=None, statut=4,
+        qualite=None, public=False, commentaire=None, dtprod=None,
+        previsions=None, strict=True
+    ):
+        """Constructeur.
+
+        Parametres:
+            entite (Sitehydro, Stationhydro ou Capteur)
+            modeleprevision (Modeleprevision)
+            grandeur (char in NOMENCLATURE[509]) = H ou Q
+            statut (int in NOMENCLATURE[516], defaut 4) = brute ou critiquee
+            qualite (0 < int < 100) = indice de qualite
+            public (bool, defaut False) = si True publication libre
+            commentaire (texte)
+            dtprod (datetime.datetime) = date de production
+            previsions (Previsions)
+            strict (bool, defaut True) = en mode permissif il n'y a pas de
+                controles de validite des parametres
+
+        """
+
+        # -- simple properties --
+        self.public = bool(public)
+        self.commentaire = unicode(commentaire) if commentaire else None
+        self._strict = strict
+
+        # -- full properties --
+        self._entite = self._modeleprevision = self._grandeur = None
+        self._statut = 4
+        self._qualite = self._dtprod = self._previsions = None
+        if entite:
+            self.entite = entite
+        if modeleprevision:
+            self.modeleprevision = modeleprevision
+        if grandeur:
+            self.grandeur = grandeur
+        if statut != 4:
+            self.statut = statut
+        if qualite:
+            self.qualite = qualite
+        if dtprod:
+            self.dtprod = dtprod
+        if previsions is not None:
+            self.previsions = previsions
+
+    # -- property entite --
+    @property
+    def entite(self):
+        """Entite hydro."""
+        return self._entite
+
+    @entite.setter
+    def entite(self, entite):
+        # entite must be a site, a station or a capteur
+        try:
+            if (
+                (self._strict) and (
+                    not isinstance(
+                        entite,
+                        (
+                            _sitehydro.Sitehydro, _sitehydro.Stationhydro,
+                            _sitehydro.Capteur
+                        )
+                    )
+                )
+            ):
+                raise Exception
+            self._entite = entite
+        except:
+            raise TypeError(
+                'entite must be a Sitehydro, a Stationhydro or a Capteur'
+            )
+
+    # -- property modeleprevision --
+    @property
+    def modeleprevision(self):
+        """Modele de prevision."""
+        return self._modeleprevision
+
+    @modeleprevision.setter
+    def modeleprevision(self, modeleprevision):
+        try:
+            if (
+                (self._strict) and (
+                    not isinstance(
+                        modeleprevision,
+                        modeleprevision.Modeleprevsion
+                    )
+                )
+            ):
+                raise Exception
+            self._modeleprevision = modeleprevision
+        except:
+            raise TypeError('modeleprevision incorrect')
+
+    # -- property grandeur --
+    @property
+    def grandeur(self):
+        """Grandeur."""
+        return self._grandeur
+
+    @grandeur.setter
+    def grandeur(self, grandeur):
+        try:
+            grandeur = unicode(grandeur)
+            if (self._strict) and (grandeur not in _NOMENCLATURE[509]):
+                raise Exception
+            self._grandeur = grandeur
+        except:
+            raise ValueError('grandeur incorrect')
+
+    # -- property statut --
+    @property
+    def statut(self):
+        """Statut."""
+        return self._statut
+
+    @statut.setter
+    def statut(self, statut):
+        try:
+            statut = int(statut)
+            if statut in _NOMENCLATURE[516]:
+                self._statut = statut
+            else:
+                if (self._strict):
+                    raise Exception
+                else:
+                    self._statut = 4
+        except:
+            raise ValueError('statut incorrect')
+
+    # -- property qualite --
+    @property
+    def qualite(self):
+        """Indice de qualite."""
+        return self._qualite
+
+    @qualite.setter
+    def qualite(self, qualite):
+        try:
+            qualite = int(qualite)
+            if (qualite < 0) or (qualite > 100):
+                raise ValueError('qualite incorrect')
+            self._qualite = qualite
+        except:
+            raise
+
+    # -- property dtprod --
+    @property
+    def dtprod(self):
+        """Date de production."""
+        return self._dtprod
+
+    @dtprod.setter
+    def dtprod(self, dtprod):
+        if not isinstance(dtprod, _datetime.datetime):
+            raise TypeError('dtprod must be a datetime')
+        self._dtprod = dtprod
+
+    # -- property previsions --
+    @property
+    def previsions(self):
+        """Previsions."""
+        return self._previsions
+
+    @previsions.setter
+    def previsions(self, previsions):
+        try:
+            # we check we have a Series...
+            # ... and that index contains datetimes
+            if not isinstance(previsions, _pd.Series):
+                raise TypeError
+            previsions.index[0][0].isoformat()
+            # seeem's ok :-)
+            self._previsions = previsions
+        except:
+            raise TypeError('previsions incorrect')
+
+    # -- other methods --
+    def __str__(self):
+        """String representation."""
+        # compute class name: cls = (article, classe)
+        try:
+            cls = unicode(self.entite.__class__.__name__)
+            cls = ('{} '.format(_sitehydro.ARTICLE[cls]), cls.lower())
+        except Exception:
+            cls = ("l'", 'entite')
+
+        # compute code
+        code = '<sans code>'
+        if self.entite is not None:
+            try:
+                code = self.entite.code
+            except Exception:
+                code = self.entite
+
+        # action !
+        return  'Simulation {0} de {1} sur {2}{3} {4}\n'\
+                'Modele {5} - qualite {6} - date de production: {7}\n'\
+                'Commentaire: {8}\n'\
+                '{9}\n'\
+                'Previsions: {10}'.format(
+                    '<sans statut>' if self.statut is None else _NOMENCLATURE[516][self.statut].lower(),
+                    self.grandeur or '<sans grandeur>',
+                    cls[0],
+                    cls[1],
+                    code,
+                    self.modeleprevision or '<inconnu>',
+                    '<inconnue>' if not self.qualite else '%i%%' % self.qualite,
+                    '<inconnue>' if not self.dtprod else self.dtprod.isoformat(),
+                    self.commentaire or '<sans>',
+                    '-' * 72,
+                    self.previsions if (self.previsions is not None) else '<sans previsions>'
+                ).encode('utf-8')

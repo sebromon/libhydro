@@ -87,8 +87,6 @@ def serie_from_hsf(src, begin=None, end=None, entite=None):
         index_col=0,
         names=['date', 'heure', 'res']
     )
-    df.index.name = None
-    # return serie
     return _obshydro.Serie(
         entite=entite,
         grandeur='H',

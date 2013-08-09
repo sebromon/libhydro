@@ -50,8 +50,8 @@ from . import sitehydro as _sitehydro
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1b"""
-__date__ = """2013-07-31"""
+__version__ = """version 0.1d"""
+__date__ = """2013-08-09"""
 
 #HISTORY
 #V0.1 - 2013-07-18
@@ -131,7 +131,7 @@ class Observation(_np.ndarray):
 
 #-- class Observations --------------------------------------------------------
 class Observations(_pd.DataFrame):
-    """Class Observations.
+    """Classe Observations.
 
     Classe pour manipuler une collection d'observations hydrometriques, sous la
     forme d'un pandas.DataFrame (les objets instancies sont des DataFrame).
@@ -150,8 +150,8 @@ class Observations(_pd.DataFrame):
         read_csv / read_table / read_clipboard
         ...
 
-    Un objet simplifie ne contenant que l'index et res est obtenu avec:
-        obs = observations[['res']]
+    On peux obtenir une pandas.Series ne contenant que l'index et res avec:
+        obs = observations.res
 
     """
     def __new__(cls, *observations):
@@ -182,9 +182,10 @@ class Observations(_pd.DataFrame):
         array = _np.array(object=obss)
 
         # get the pandas.DataFrame
+        index = _pd.Index(array['dte'], name='dte')
         obj = _pd.DataFrame(
             data=array[list(array.dtype.names[1:])],
-            index=array['dte']
+            index=index
         )
         # FIXME - can't subclass the DataFRame object
         # return obj.view(cls)
@@ -249,7 +250,7 @@ class Serie(object):
         Parametres:
             entite (Sitehydro, Stationhydro ou Capteur)
             grandeur (char in NOMENCLATURE[509]) = H ou Q
-            statut (int in NOMENCALTURE[510], defaut 0) = donnee brute,
+            statut (int in NOMENCLATURE[510], defaut 0) = donnee brute,
                 corrigee...
             observations (Observations)
             strict (bool, defaut True) = en mode permissif il n'y a pas de
@@ -260,9 +261,6 @@ class Serie(object):
         # -- simple properties --
         self._strict = strict
 
-        # FIXME - shouldn't we control something here ?
-        self.observations = observations
-
         # -- full properties --
         self._entite = self._grandeur = self._observations = None
         self._statut = 0
@@ -272,11 +270,13 @@ class Serie(object):
             self.grandeur = grandeur
         if statut:
             self.statut = statut
+        if self.observations:
+            self.observations = observations
 
     # -- property entite --
     @property
     def entite(self):
-        """entite hydro."""
+        """Entite hydro."""
         return self._entite
 
     @entite.setter
@@ -301,14 +301,10 @@ class Serie(object):
                 'entite must be a Sitehydro, a Stationhydro or a Capteur'
             )
 
-    # @entite.deleter
-    # def entite(self):
-    #     del self._entite
-
     # -- property grandeur --
     @property
     def grandeur(self):
-        """grandeur hydro."""
+        """Grandeur."""
         return self._grandeur
 
     @grandeur.setter
@@ -321,14 +317,10 @@ class Serie(object):
         except:
             raise ValueError('grandeur incorrect')
 
-    # @grandeur.deleter
-    # def grandeur(self):
-    #     del self._grandeur
-
     # -- property statut --
     @property
     def statut(self):
-        """statut hydro."""
+        """Statut."""
         return self._statut
 
     @statut.setter
@@ -345,9 +337,23 @@ class Serie(object):
         except:
             raise ValueError('statut incorrect')
 
-    # @statut.deleter
-    # def statut(self):
-    #     del self._statut
+    # -- property observations --
+    @property
+    def observations(self):
+        """Observations."""
+        return self._observations
+
+    @observations.setter
+    def observations(self, observations):
+        try:
+            # we check we have a res column...
+            # ... and that index contains datetimes
+            observations.res
+            observations.index[0].isoformat()
+            # seeem's ok :-)
+            self._observations = observations
+        except:
+            raise TypeError('observations incorrect')
 
     # -- other methods --
     def __str__(self):
@@ -360,6 +366,7 @@ class Serie(object):
             cls = ("l'", 'entite')
 
         # compute code
+        code = '<sans code>'
         if self.entite is not None:
             try:
                 code = self.entite.code
@@ -368,12 +375,12 @@ class Serie(object):
 
         # action !
         return 'Serie {0} sur {1}{2} {3}\nstatut {4}::{5}\n{6}\n{7} '.format(
-            self.grandeur or '-',
+            self.grandeur or '<grandeur inconnue>',
             cls[0],
             cls[1],
             code,
             self.statut,
             _NOMENCLATURE[510][self.statut].lower(),
             '-' * 72,
-            self.observations.__str__ or '-'
+            self.observations.__str__ or '<sans observations>'
         ).encode('utf-8')
