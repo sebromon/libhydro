@@ -27,8 +27,6 @@ __date__ = """2013-08-06"""
 
 
 #-- todos ---------------------------------------------------------------------
-# TODO - nothing
-# FIXME - nothing
 
 
 # -- config -------------------------------------------------------------------
@@ -122,8 +120,8 @@ class Modeleprevision(object):
     def __str__(self):
         """String representation."""
         return 'Modele de type {0} {1}::{2}\nDescription: {3}'.format(
-            self.typemodele or '-',
-            self.code or '-',
-            self.libelle or '-',
-            self.description or '-'
+            self.typemodele or '<inconnu>',
+            self.code or '<sans code>',
+            self.libelle or '<sans libelle>',
+            self.description or '<sans description>'
         ).encode('utf-8')

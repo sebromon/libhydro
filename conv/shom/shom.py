@@ -3,11 +3,11 @@
 
 Ce module contient des convertisseurs de et vers les fichiers de predictions
 de marees du SHOM:
-    simulation_from_hsf()  -- TODO not implemented --
+    simulation_from_hsf()
     simulation_to_hsf()  -- TODO not implemented --
 
-On peux aussi manipuler ces donnees comme des observations a l'aide des
-fonctions suivantes:
+On peux aussi manipuler ces donnees comme des observations simplifiee a l'aide
+des fonctions suivantes:
     serie_from_hsh()
     serie_to_hsf()  -- TODO not implemented --
 
@@ -35,15 +35,19 @@ from __future__ import (
     print_function as _print_function
 )
 
-import pandas as _pd
+import os as _os
+import pandas as _pandas
 
-from ...core import obshydro as _obshydro
+from ...core import (
+    sitehydro as _sitehydro, modeleprevision as _modeleprevision,
+    obshydro as _obshydro, simulation as _simulation
+)
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1a"""
-__date__ = """2013-08-01"""
+__version__ = """version 0.1b"""
+__date__ = """2013-08-13"""
 
 #HISTORY
 #V0.1 - 2013-08-01
@@ -51,15 +55,33 @@ __date__ = """2013-08-01"""
 
 
 #-- todos ---------------------------------------------------------------------
-# TODO - nothing
-# FIXME - nothing
 
 
 #-- functions -----------------------------------------------------------------
-def simulation_from_hsf():
-    """Not implemented."""
-    # TODO
-    raise NotImplementedError()
+def simulation_from_hsf(src, begin=None, end=None, entite=None, dtprod=None):
+    """Retourne une simulation.Simulation a partir d'un fichier HSF.
+
+    Arguments:
+        src (str o ou file) = fichier source
+        begin, end (isoformat string) = dates de debut/fin de la plage de
+            valeurs a conserver, bornes incluses
+        entite( Sitehydro, Stationhydro ou Capteur)
+
+    """
+
+    prevs = None
+
+    return _simulation.Simulation(
+        entite=entite,
+        modeleprevision=_modeleprevision.Modeleprevision(code='SCnMERshom'),
+        grandeur='H',
+        statut=16,
+        qualite=100,
+        public=False,
+        commentaire='data SHOM',
+        dtprod=dtprod,
+        previsions=prevs
+    )
 
 
 def simulation_to_hsf():
@@ -69,17 +91,19 @@ def simulation_to_hsf():
 
 
 def serie_from_hsf(src, begin=None, end=None, entite=None):
-    """Retourne une obshydro.Serie a partir d'un fichier hsf.
+    """Retourne une obshydro.Serie a partir d'un fichier HSF.
+
+    La Serie est simplifiee et ne contient que la colonne res.
 
     Arguments:
         src (str o ou file) = fichier source
-        begin, end (datetime) = dates de debut/fin de la plage de valeurs a
-            conserver
+        begin, end (isoformat string) = dates de debut/fin de la plage de
+            valeurs a conserver, bornes incluses
         entite( Sitehydro, Stationhydro ou Capteur)
 
     """
-    # parse file and update the DataFrame
-    df = _pd.read_table(
+    # parse file
+    df = _pandas.read_table(
         src,
         header=None,
         delim_whitespace=True,
@@ -87,10 +111,19 @@ def serie_from_hsf(src, begin=None, end=None, entite=None):
         index_col=0,
         names=['date', 'heure', 'res']
     )
+    # update the DataFrame
+    df.index.name = 'dte'
+    # if entite is None, get HSF file name
+    if not entite:
+        entite = _sitehydro.Sitehydro(
+            typesite='MAREGRAPHE',
+            libelle=_os.path.splitext(_os.path.split(src)[-1])[0]
+        )
+    # skip rows and return
     return _obshydro.Serie(
         entite=entite,
         grandeur='H',
-        observations=df
+        observations=df[begin:end]
     )
 
 

@@ -41,8 +41,8 @@ from __future__ import (
     print_function as _print_function
 )
 
-import numpy as _np
-import pandas as _pd
+import numpy as _numpy
+import pandas as _pandas
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 from . import sitehydro as _sitehydro
@@ -50,8 +50,8 @@ from . import sitehydro as _sitehydro
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1d"""
-__date__ = """2013-08-09"""
+__version__ = """version 0.1e"""
+__date__ = """2013-08-12"""
 
 #HISTORY
 #V0.1 - 2013-07-18
@@ -63,7 +63,7 @@ __date__ = """2013-08-09"""
 
 
 #-- class Observation ---------------------------------------------------------
-class Observation(_np.ndarray):
+class Observation(_numpy.ndarray):
     """Classe observation.
 
     Classe pour manipuler une observation elementaire.
@@ -93,22 +93,22 @@ class Observation(_np.ndarray):
 
     """
 
-    DTYPE = _np.dtype([
-        (str('dte'), _np.datetime64(None, str('s'))),
-        (str('res'), _np.float),
-        (str('mth'), _np.int8),
-        (str('qal'), _np.int8),
-        (str('cnt'), _np.bool)
+    DTYPE = _numpy.dtype([
+        (str('dte'), _numpy.datetime64(None, str('s'))),
+        (str('res'), _numpy.float),
+        (str('mth'), _numpy.int8),
+        (str('qal'), _numpy.int8),
+        (str('cnt'), _numpy.bool)
     ])
 
     def __new__(cls, dte, res, mth=0, qal=16, cnt=True):
-        if not isinstance(dte, _np.datetime64):
-            dte = _np.datetime64(dte)
+        if not isinstance(dte, _numpy.datetime64):
+            dte = _numpy.datetime64(dte)
         if (mth != 0) and (mth not in _NOMENCLATURE[507]):
             raise ValueError('methode incorrecte')
         if (qal != 16) and (qal not in _NOMENCLATURE[515]):
             raise ValueError('qualification incorrecte')
-        obj = _np.array(
+        obj = _numpy.array(
             (dte, res, mth, qal, cnt),
             dtype=Observation.DTYPE
         ).view(cls)
@@ -130,7 +130,7 @@ class Observation(_np.ndarray):
 
 
 #-- class Observations --------------------------------------------------------
-class Observations(_pd.DataFrame):
+class Observations(_pandas.DataFrame):
     """Classe Observations.
 
     Classe pour manipuler une collection d'observations hydrometriques, sous la
@@ -179,11 +179,11 @@ class Observations(_pd.DataFrame):
             raise
 
         # prepare a tmp numpy.array
-        array = _np.array(object=obss)
+        array = _numpy.array(object=obss)
 
         # get the pandas.DataFrame
-        index = _pd.Index(array['dte'], name='dte')
-        obj = _pd.DataFrame(
+        index = _pandas.Index(array['dte'], name='dte')
+        obj = _pandas.DataFrame(
             data=array[list(array.dtype.names[1:])],
             index=index
         )
@@ -211,9 +211,9 @@ def concat(observations, others):
     # TODO - can't write a method to do that (subclassing DataFrame is hard !)
 
     try:
-        return _pd.concat([observations, others])
+        return _pandas.concat([observations, others])
     except Exception:
-        return _pd.concat([observations, Observations(others)])
+        return _pandas.concat([observations, Observations(others)])
 
 
 #-- class Serie ---------------------------------------------------------------
@@ -270,7 +270,7 @@ class Serie(object):
             self.grandeur = grandeur
         if statut:
             self.statut = statut
-        if self.observations:
+        if observations is not None:
             self.observations = observations
 
     # -- property entite --
@@ -346,11 +346,11 @@ class Serie(object):
     @observations.setter
     def observations(self, observations):
         try:
-            # we check we have a res column...
-            # ... and that index contains datetimes
-            observations.res
-            observations.index[0].isoformat()
-            # seeem's ok :-)
+            if (self._strict):
+                # we check we have a res column...
+                # ... and that index contains datetimes
+                observations.res
+                observations.index[0].isoformat()
             self._observations = observations
         except:
             raise TypeError('observations incorrect')
@@ -367,20 +367,18 @@ class Serie(object):
 
         # compute code
         code = '<sans code>'
-        if self.entite is not None:
-            try:
-                code = self.entite.code
-            except Exception:
-                code = self.entite
+        if self.entite and self.entite.code:
+            code = self.entite.code
 
         # action !
-        return 'Serie {0} sur {1}{2} {3}\nstatut {4}::{5}\n{6}\n{7} '.format(
+        return 'Serie {0} sur {1}{2} {3}::{4}\nstatut {5}::{6}\n{7}\n{8} '.format(
             self.grandeur or '<grandeur inconnue>',
             cls[0],
             cls[1],
             code,
+            self.entite.libelle if self.entite.libelle else '<sans libelle>',
             self.statut,
             _NOMENCLATURE[510][self.statut].lower(),
             '-' * 72,
-            self.observations.__str__ or '<sans observations>'
+            self.observations.__str__() or '<sans observations>'
         ).encode('utf-8')

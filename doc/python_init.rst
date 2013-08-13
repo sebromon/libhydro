@@ -85,10 +85,9 @@ Pandas (do not forget the 's' !!)
     pip install pandas
     (dependencies python-dateutil, pytz and six)
 
-** TODO ** ------------
-    GENSHI 0.6 (templating engine)
-    pip install genshi
-** TODO ** ------------
+Libxml:
+    sudo yum install libxslt-devel.x86_64 libxml2-devel.x86_64
+    pip install lxml  # 3.2.3
 
 Check with pip freeze:
 
@@ -96,6 +95,7 @@ Check with pip freeze:
 
         numpy==1.7.1
         pandas==0.11.0
+        mxml==3.2.3
         python-dateutil==2.1
         pytz==2013b
         six==1.3.0

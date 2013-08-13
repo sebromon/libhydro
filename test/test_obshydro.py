@@ -27,14 +27,13 @@ sys.path.append(os.path.join('..', '..'))
 import unittest
 import datetime
 
-from libhydro.core import obshydro
-from libhydro.core.sitehydro import Sitehydro, Stationhydro
+from libhydro.core import (sitehydro, obshydro)
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1b"""
-__date__ = """2013-08-06"""
+__version__ = """Version 0.1c"""
+__date__ = """2013-08-12"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -197,7 +196,7 @@ class TestSerie(unittest.TestCase):
 
     def test_base_01(self):
         """Serie on a site."""
-        s = Sitehydro(code='A0445810', libelle='Le Rhône à Marseille')
+        s = sitehydro.Sitehydro(code='A0445810', libelle='Le Rhône à Marseille')
         g = 'Q'
         t = 16
         o = obshydro.Observations(
@@ -219,7 +218,7 @@ class TestSerie(unittest.TestCase):
 
     def test_base_02(self):
         """Serie on a station with no statut."""
-        s = Stationhydro(code='A044581001')
+        s = sitehydro.Stationhydro(code='A044581001')
         o = obshydro.Observations(
             obshydro.Observation('2012-10-03 06:00', 33),
             obshydro.Observation('2012-10-03 08:00', 42)
@@ -233,21 +232,8 @@ class TestSerie(unittest.TestCase):
             (s, None, 0, o, True)
         )
 
-    def test_base_03(self):
-        """Serie should accept bad observations in strict mode."""
-        s = Stationhydro()
-        o = 44  # no control on observations
-        serie = obshydro.Serie(entite=s, observations=o)
-        self.assertEqual(
-            (
-                serie.entite, serie.grandeur, serie.statut,
-                serie.observations, serie._strict
-            ),
-            (s, None, 0, o, True)
-        )
-
     def test_dim_mode_01(self):
-        """Base case test."""
+        """Dim mode test."""
         s = 4
         g = 'RR'
         t = 123
@@ -266,7 +252,7 @@ class TestSerie(unittest.TestCase):
 
     def test_error_01(self):
         """Entite error."""
-        s = Stationhydro(code='A044581001')
+        s = sitehydro.Stationhydro(code='A044581001')
         obshydro.Serie(**{'entite': s})
         self.assertRaises(
             TypeError,
@@ -290,6 +276,15 @@ class TestSerie(unittest.TestCase):
             ValueError,
             obshydro.Serie,
             **{'statut': 124}
+        )
+
+    def test_error_04(self):
+        """Observations error."""
+        obshydro.Serie(**{'observations': 12, 'strict': False})
+        self.assertRaises(
+            TypeError,
+            obshydro.Serie,
+            **{'observations': 12, 'strict': True}
         )
 
 

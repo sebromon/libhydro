@@ -24,5 +24,4 @@ __all__ = [
 # obselaboreehydro
 # obsmeteo
 # qualifannee
-# scenario
 # sitemeteo

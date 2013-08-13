@@ -15,15 +15,13 @@ from __future__ import (
     print_function as _print_function
 )
 
-from string import (ascii_uppercase as _ascii_uppercase, digits as _digits)
-
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1d"""
-__date__ = """2013-08-05"""
+__version__ = """version 0.1e"""
+__date__ = """2013-08-13"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -32,7 +30,6 @@ __date__ = """2013-08-05"""
 
 #-- todos ---------------------------------------------------------------------
 # TODO - many many properties
-# FIXME - nothing
 
 
 # -- config -------------------------------------------------------------------
@@ -159,8 +156,8 @@ class Sitehydro(object):
             if (
                 self._strict and (
                     (len(code) != 8) or
-                    (code[0] not in _ascii_uppercase) or
-                    (not set(code[1:]).issubset(set(_digits)))
+                    code[0].islower() or
+                    (not code[1:].isdigit())
                 )
             ):
                 raise Exception
@@ -196,9 +193,9 @@ class Sitehydro(object):
     def __str__(self):
         """String representation."""
         return 'Site {0} {1}::{2} [{3} station{4}]'.format(
-            self.typesite or '-',
-            self.code or '-',
-            self.libelle or '-',
+            self.typesite or '<sans type>',
+            self.code or '<sans code>',
+            self.libelle or '<sans libelle>',
             len(self.stations),
             '' if (len(self.stations) < 2) else 's'
         ).encode('utf-8')
@@ -306,8 +303,8 @@ class Stationhydro(object):
             if (
                 (self._strict) and (
                     (len(code) != 10) or
-                    (code[0] not in _ascii_uppercase) or
-                    (not set(code[1:]).issubset(set(_digits)))
+                    code[0].islower() or
+                    (not code[1:].isdigit())
                 )
             ):
                 raise Exception
@@ -319,9 +316,9 @@ class Stationhydro(object):
     def __str__(self):
         """String representation."""
         return 'Station {0} {1}::{2}'.format(
-            self.typestation or '-',
-            self.code or '-',
-            self.libelle or '-'
+            self.typestation or '<sans type>',
+            self.code or '<sans code>',
+            self.libelle or '<sans libelle>'
         ).encode('utf-8')
 
 
@@ -391,8 +388,8 @@ class Capteur(object):
             if (
                 (self._strict) and (
                     (len(code) != 12) or
-                    (code[0] not in _ascii_uppercase) or
-                    (not set(code[1:]).issubset(set(_digits)))
+                    code[0].islower() or
+                    (not code[1:].isdigit())
                 )
             ):
                 raise Exception
@@ -420,7 +417,7 @@ class Capteur(object):
     def __str__(self):
         """String representation."""
         return 'Capteur {0} {1}::{2}'.format(
-            self.typemesure or '-',
-            self.code or '-',
-            self.libelle or '-'
+            self.typemesure or '<sans type de mesure>',
+            self.code or '<sans code>',
+            self.libelle or '<sans libelle>'
         ).encode('utf-8')

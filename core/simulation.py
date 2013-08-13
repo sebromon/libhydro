@@ -3,6 +3,7 @@
 
 Ce module contient les classes:
     # Prevision
+    # Previsions
     # Simulation
 
 On peux aussi utiliser directement les classes de la librairie Pandas, les
@@ -36,18 +37,18 @@ from __future__ import (
     print_function as _print_function
 )
 
-import numpy as _np
-import pandas as _pd
+import numpy as _numpy
+import pandas as _pandas
 import datetime as _datetime
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
-from . import sitehydro as _sitehydro
+from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1b"""
-__date__ = """2013-08-09"""
+__version__ = """version 0.1c"""
+__date__ = """2013-08-12"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -59,7 +60,7 @@ __date__ = """2013-08-09"""
 
 
 #-- class Prevision -----------------------------------------------------------
-class Prevision(_np.ndarray):
+class Prevision(_numpy.ndarray):
     """Classe prevision.
 
     Classe pour manipuler une prevision elementaire.
@@ -87,22 +88,22 @@ class Prevision(_np.ndarray):
 
     """
 
-    DTYPE = _np.dtype([
-        (str('dte'), _np.datetime64(None, str('s'))),
-        (str('res'), _np.float),
-        (str('prb'), _np.int8)
+    DTYPE = _numpy.dtype([
+        (str('dte'), _numpy.datetime64(None, str('s'))),
+        (str('res'), _numpy.float),
+        (str('prb'), _numpy.int8)
     ])
 
     def __new__(cls, dte, res, prb=50):
-        if not isinstance(dte, _np.datetime64):
-            dte = _np.datetime64(dte)
+        if not isinstance(dte, _numpy.datetime64):
+            dte = _numpy.datetime64(dte)
         try:
             prb = int(prb)
             if (prb < 0) or (prb > 100):
                 raise ValueError('probabilite incorrecte')
         except Exception:
             raise
-        obj = _np.array(
+        obj = _numpy.array(
             (dte, res, prb),
             dtype=Prevision.DTYPE
         ).view(cls)
@@ -122,10 +123,10 @@ class Prevision(_np.ndarray):
 
 
 #-- class Previsions ----------------------------------------------------------
-class Previsions(_pd.Series):
+class Previsions(_pandas.Series):
     """Classe Previsions.
 
-    Classe pour manipuler un jeud e previsions, sous la forme d'une Series
+    Classe pour manipuler un jeux de previsions, sous la forme d'une Series
     pandas avec un double index, le premier etant la date du resultat, le second
     sa probabilite.
 
@@ -173,16 +174,16 @@ class Previsions(_pd.Series):
             raise
 
         # prepare a tmp numpy.array
-        array = _np.array(object=prvs)
+        array = _numpy.array(object=prvs)
 
         # make index
-        index = _pd.MultiIndex.from_tuples(
+        index = _pandas.MultiIndex.from_tuples(
             zip(array['dte'], array['prb']),
             names=['dte', 'prb']
         )
 
         # get the pandas.Series
-        obj = _pd.Series(
+        obj = _pandas.Series(
             data=array['res'],
             index=index,
             name='res'
@@ -202,7 +203,7 @@ class Simulation(object):
         entite (Sitehydro, Stationhydro ou Capteur)
         modeleprevision (Modeleprevision)
         grandeur (char in NOMENCLATURE[509]) = H ou Q
-        statut (int in NOMENCALTURE[516]) = brute ou critiquee
+        statut (int in NOMENCLATURE[516]) = brute ou critiquee
         qualite (0 < int < 100) = indice de qualite
         public (bool, defaut False) = si True publication libre
         commentaire (texte)
@@ -304,7 +305,7 @@ class Simulation(object):
                 (self._strict) and (
                     not isinstance(
                         modeleprevision,
-                        modeleprevision.Modeleprevsion
+                        _modeleprevision.Modeleprevision
                     )
                 )
             ):
@@ -339,13 +340,9 @@ class Simulation(object):
     def statut(self, statut):
         try:
             statut = int(statut)
-            if statut in _NOMENCLATURE[516]:
-                self._statut = statut
-            else:
-                if (self._strict):
-                    raise Exception
-                else:
-                    self._statut = 4
+            if (self._strict) and (statut not in _NOMENCLATURE[516]):
+                raise Exception
+            self._statut = statut
         except:
             raise ValueError('statut incorrect')
 
@@ -360,7 +357,7 @@ class Simulation(object):
         try:
             qualite = int(qualite)
             if (qualite < 0) or (qualite > 100):
-                raise ValueError('qualite incorrect')
+                raise ValueError('qualite is not in 0-100 range')
             self._qualite = qualite
         except:
             raise
@@ -388,9 +385,10 @@ class Simulation(object):
         try:
             # we check we have a Series...
             # ... and that index contains datetimes
-            if not isinstance(previsions, _pd.Series):
-                raise TypeError
-            previsions.index[0][0].isoformat()
+            if (self._strict):
+                if not isinstance(previsions, _pandas.Series):
+                    raise TypeError
+                previsions.index[0][0].isoformat()
             # seeem's ok :-)
             self._previsions = previsions
         except:
@@ -420,7 +418,7 @@ class Simulation(object):
                 'Commentaire: {8}\n'\
                 '{9}\n'\
                 'Previsions: {10}'.format(
-                    '<sans statut>' if self.statut is None else _NOMENCLATURE[516][self.statut].lower(),
+                    '<sans statut>' if (self.statut is None) else _NOMENCLATURE[516][self.statut].lower(),
                     self.grandeur or '<sans grandeur>',
                     cls[0],
                     cls[1],
@@ -430,5 +428,5 @@ class Simulation(object):
                     '<inconnue>' if not self.dtprod else self.dtprod.isoformat(),
                     self.commentaire or '<sans>',
                     '-' * 72,
-                    self.previsions if (self.previsions is not None) else '<sans previsions>'
+                    self.previsions.__str__() if (self.previsions is not None) else '<sans previsions>'
                 ).encode('utf-8')

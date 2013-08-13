@@ -26,7 +26,7 @@ sys.path.append(os.path.join('..', '..'))
 
 import unittest
 
-from libhydro.core.modeleprevision import Modeleprevision
+from libhydro.core import modeleprevision
 
 
 #-- strings -------------------------------------------------------------------
@@ -45,7 +45,7 @@ __date__ = """2013-08-06"""
 #-- config --------------------------------------------------------------------
 
 
-#-- class TestModeleprevision -------------------------------------------------------
+#-- class TestModeleprevision -------------------------------------------------
 class TestModeleprevision(unittest.TestCase):
     """Modeleprevision class tests."""
 
@@ -61,7 +61,7 @@ class TestModeleprevision(unittest.TestCase):
         """Empty modele."""
         code = libelle = description = None
         typemodele = 0
-        m = Modeleprevision()
+        m = modeleprevision.Modeleprevision()
         self.assertEqual(
             (m.code, m.libelle, m.typemodele, m.description),
             (code, libelle, typemodele, description)
@@ -73,7 +73,7 @@ class TestModeleprevision(unittest.TestCase):
         libelle = 'Maree SHOM'
         typemodele = 5
         description = 'Les predictions de maree du SHOM.'
-        m = Modeleprevision(
+        m = modeleprevision.Modeleprevision(
             code=code, libelle=libelle,
             typemodele=typemodele, description=description
         )
@@ -88,7 +88,7 @@ class TestModeleprevision(unittest.TestCase):
         libelle = 'Surcote Arpege'
         typemodele = 4
         description = 'Surcote MF.'
-        m = Modeleprevision(
+        m = modeleprevision.Modeleprevision(
             code=code, libelle=libelle,
             typemodele=typemodele, description=description
         )
@@ -101,7 +101,7 @@ class TestModeleprevision(unittest.TestCase):
         """Dim mode test."""
         code = 'SCyMERarp this one is too long !'
         typemodele = 8545
-        m = Modeleprevision(
+        m = modeleprevision.Modeleprevision(
             code=code, typemodele=typemodele, strict=False
         )
         self.assertEqual(
@@ -111,19 +111,19 @@ class TestModeleprevision(unittest.TestCase):
 
     def test_error_01(self):
         """Code error."""
-        Modeleprevision(**{'code': '0123456789'})
+        modeleprevision.Modeleprevision(**{'code': '0123456789'})
         self.assertRaises(
             ValueError,
-            Modeleprevision,
+            modeleprevision.Modeleprevision,
             **{'code': '0123456789x'}
         )
 
     def test_error_02(self):
         """Typemodele error."""
-        Modeleprevision(**{'typemodele': 1})
+        modeleprevision.Modeleprevision(**{'typemodele': 1})
         self.assertRaises(
             ValueError,
-            Modeleprevision,
+            modeleprevision.Modeleprevision,
             **{'typemodele': 1000}
         )
 
