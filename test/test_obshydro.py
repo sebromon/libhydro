@@ -232,8 +232,8 @@ class TestSerie(unittest.TestCase):
             (s, None, 0, o, True)
         )
 
-    def test_dim_mode_01(self):
-        """Dim mode test."""
+    def test_fuzzy_mode_01(self):
+        """Fuzzy mode test."""
         s = 4
         g = 'RR'
         t = 123

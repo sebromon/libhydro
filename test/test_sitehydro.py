@@ -95,8 +95,8 @@ class TestSiteHydro(unittest.TestCase):
             (typesite, code, libelle, [s for s in stations])
         )
 
-    def test_dim_mode_01(self):
-        """Dim mode test."""
+    def test_fuzzy_mode_01(self):
+        """Fuzzy mode test."""
         typesite = '6'
         code = '3'
         stations = [1, 2, 3]
@@ -177,8 +177,8 @@ class TestStationHydro(unittest.TestCase):
             (typestation, code, libelle)
         )
 
-    def test_dim_mode_01(self):
-        """Dim mode test."""
+    def test_fuzzy_mode_01(self):
+        """Fuzzy mode test."""
         typestation = '6'
         code = '3'
         s = sitehydro.Stationhydro(
@@ -247,8 +247,8 @@ class TestCapteur(unittest.TestCase):
             (typemesure, code, libelle)
         )
 
-    def test_dim_mode_01(self):
-        """Dim mode test."""
+    def test_fuzzy_mode_01(self):
+        """Fuzzy mode test."""
         typemesure = 'RR'
         code = 'C1'
         c = sitehydro.Capteur(

@@ -33,7 +33,7 @@ from libhydro.core import (simulation, modeleprevision, sitehydro)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """Version 0.1b"""
-__date__ = """2013-08-12"""
+__date__ = """2013-08-14"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -241,8 +241,15 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(sim.dtprod, dtprod)
         self.assertEqual(sim.previsions, previsions)
 
-    def test_dim_mode_01(self):
-        """Dim mode."""
+    def test_base_03(self):
+        """Dtprod can be a string."""
+        sim = simulation.Simulation(dtprod='2012-05-18T18:36Z')
+        self.assertEqual(sim.dtprod, datetime.datetime(2012, 5, 18, 18, 36))
+        sim = simulation.Simulation(dtprod='2012-05-18 18:36+02')
+        self.assertEqual(sim.dtprod, datetime.datetime(2012, 5, 18, 16, 36))
+
+    def test_fuzzy_mode_01(self):
+        """Fuzzy mode test."""
         entite = 'station'
         modeleprevision = 'modele'
         grandeur = 'RR'
@@ -330,11 +337,13 @@ class TestSimulation(unittest.TestCase):
         """Dtprod error."""
         dtprod = datetime.datetime(2020, 1, 1, 10, 0)
         simulation.Simulation(**{'dtprod': dtprod})
+        dtprod = '2020-01-01 10:00'
+        simulation.Simulation(**{'dtprod': dtprod})
         self.assertRaises(
             TypeError,
             simulation.Simulation,
             # **{'dtprod': dtprod}
-            **{'dtprod': '2020-10-08T10:00'}
+            **{'dtprod': '2020-10 10:00'}
         )
 
     def test_error_07(self):

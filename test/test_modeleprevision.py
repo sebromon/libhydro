@@ -97,8 +97,8 @@ class TestModeleprevision(unittest.TestCase):
             (code, libelle, typemodele, description)
         )
 
-    def test_dim_mode_01(self):
-        """Dim mode test."""
+    def test_fuzzy_mode_01(self):
+        """Fuzzy mode test."""
         code = 'SCyMERarp this one is too long !'
         typemodele = 8545
         m = modeleprevision.Modeleprevision(

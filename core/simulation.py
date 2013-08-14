@@ -48,7 +48,7 @@ from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """version 0.1c"""
-__date__ = """2013-08-12"""
+__date__ = """2013-08-14"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -233,7 +233,7 @@ class Simulation(object):
             qualite (0 < int < 100) = indice de qualite
             public (bool, defaut False) = si True publication libre
             commentaire (texte)
-            dtprod (datetime.datetime) = date de production
+            dtprod (string ou datetime.datetime) = date de production
             previsions (Previsions)
             strict (bool, defaut True) = en mode permissif il n'y a pas de
                 controles de validite des parametres
@@ -370,8 +370,11 @@ class Simulation(object):
 
     @dtprod.setter
     def dtprod(self, dtprod):
-        if not isinstance(dtprod, _datetime.datetime):
-            raise TypeError('dtprod must be a datetime')
+        if not isinstance(dtprod, (_datetime.datetime, _numpy.datetime64)):
+            try:
+                dtprod = _numpy.datetime64(dtprod)
+            except Exception:
+                raise TypeError('incorrect dtprod')
         self._dtprod = dtprod
 
     # -- property previsions --

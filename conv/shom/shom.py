@@ -37,6 +37,7 @@ from __future__ import (
 
 import os as _os
 import pandas as _pandas
+import numpy as _numpy
 
 from ...core import (
     sitehydro as _sitehydro, modeleprevision as _modeleprevision,
@@ -66,13 +67,20 @@ def simulation_from_hsf(src, begin=None, end=None, entite=None, dtprod=None):
         begin, end (isoformat string) = dates de debut/fin de la plage de
             valeurs a conserver, bornes incluses
         entite( Sitehydro, Stationhydro ou Capteur)
+        dtprod (string ou datetime) = date de production
 
     """
+    # use the Serie decoder
+    serie = serie_from_hsf(src=src, begin=begin, end=end, entite=entite)
+    prev = serie['res']  # TODO indice prob
 
-    prevs = None
+    # make dtprod a date
+    if isinstance(dtprod, (unicode, str)):
+        dtprod = _numpy.datetime64(dtprod)
 
+    # return Simulation
     return _simulation.Simulation(
-        entite=entite,
+        entite=serie.entite,
         modeleprevision=_modeleprevision.Modeleprevision(code='SCnMERshom'),
         grandeur='H',
         statut=16,
@@ -80,7 +88,7 @@ def simulation_from_hsf(src, begin=None, end=None, entite=None, dtprod=None):
         public=False,
         commentaire='data SHOM',
         dtprod=dtprod,
-        previsions=prevs
+        previsions=prev
     )
 
 
