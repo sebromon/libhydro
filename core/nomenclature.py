@@ -66,7 +66,7 @@ NOMENCLATURE = {
     # Statut de la simulation
     516: {4: 'Brute', 16: 'Critiquee'},
 
-    # Type de mesure du cpateur hydro
+    # Type de mesure du capteur hydro
     520: {'H': 'Hauteur', 'Q': 'Debit'},
 
     # Type du modele de prevision

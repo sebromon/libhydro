@@ -3,15 +3,15 @@
 
 Ce module contient des convertisseurs de et vers les fichiers de predictions
 de marees du SHOM:
-    simulation_from_hsf()
-    simulation_to_hsf()  -- TODO not implemented --
+    simulation_from_hfs()
+    simulation_to_hfs()  -- not implemented --
 
 On peux aussi manipuler ces donnees comme des observations simplifiee a l'aide
 des fonctions suivantes:
-    serie_from_hsh()
-    serie_to_hsf()  -- TODO not implemented --
+    serie_from_hfs()
+    serie_to_hfs()  -- not implemented --
 
-Format des fichiers HSF:
+Format des fichiers HFS:
     # fichier texte avec extension hfs
     # le nom du fichier est le nom du maregraphe ou du port en majuscule
     # une ligne par donnee au format "yyyy-mm-dd hh:mm:ss xx.xx"
@@ -47,8 +47,8 @@ from ...core import (
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1b"""
-__date__ = """2013-08-13"""
+__version__ = """version 0.1c"""
+__date__ = """2013-08-16"""
 
 #HISTORY
 #V0.1 - 2013-08-01
@@ -56,11 +56,13 @@ __date__ = """2013-08-13"""
 
 
 #-- todos ---------------------------------------------------------------------
+# TODO - try to read a complete 4 years file. If it's too big, use skiprows and
+#        nrows read_table options
 
 
 #-- functions -----------------------------------------------------------------
-def simulation_from_hsf(src, begin=None, end=None, entite=None, dtprod=None):
-    """Retourne une simulation.Simulation a partir d'un fichier HSF.
+def simulation_from_hfs(src, begin=None, end=None, entite=None, dtprod=None):
+    """Retourne une simulation.Simulation a partir d'un fichier HFS.
 
     Arguments:
         src (str o ou file) = fichier source
@@ -70,11 +72,26 @@ def simulation_from_hsf(src, begin=None, end=None, entite=None, dtprod=None):
         dtprod (string ou datetime) = date de production
 
     """
-    # use the Serie decoder
-    serie = serie_from_hsf(src=src, begin=begin, end=end, entite=entite)
-    prev = serie['res']  # TODO indice prob
+    # get a obshydro.Serie from the Serie decoder
+    serie = serie_from_hfs(src=src, begin=begin, end=end, entite=entite)
 
-    # make dtprod a date
+    # make a multiindex with probability 50 for every value
+    index = _pandas.MultiIndex.from_tuples(
+        zip(
+            serie.observations.index.tolist(),
+            [50] * len(serie.observations)
+        ),
+        names=['dte', 'prb']
+    )
+
+    # make a pandas.Series
+    prev = _pandas.Series(
+        data=serie.observations['res'].values,
+        index=index,
+        name='res'
+    )
+
+    # make dtprod a datetime
     if isinstance(dtprod, (unicode, str)):
         dtprod = _numpy.datetime64(dtprod)
 
@@ -92,14 +109,13 @@ def simulation_from_hsf(src, begin=None, end=None, entite=None, dtprod=None):
     )
 
 
-def simulation_to_hsf():
+def simulation_to_hfs():
     """Not implemented."""
-    # TODO
-    raise NotImplementedError()
+    raise NotImplementedError()  # TODO
 
 
-def serie_from_hsf(src, begin=None, end=None, entite=None):
-    """Retourne une obshydro.Serie a partir d'un fichier HSF.
+def serie_from_hfs(src, begin=None, end=None, entite=None):
+    """Retourne une obshydro.Serie a partir d'un fichier HFS.
 
     La Serie est simplifiee et ne contient que la colonne res.
 
@@ -119,23 +135,30 @@ def serie_from_hsf(src, begin=None, end=None, entite=None):
         index_col=0,
         names=['date', 'heure', 'res']
     )
+
     # update the DataFrame
     df.index.name = 'dte'
-    # if entite is None, get HSF file name
+
+    # if entite is None we use the HFS file name to build a station
     if not entite:
-        entite = _sitehydro.Sitehydro(
-            typesite='MAREGRAPHE',
+        entite = _sitehydro.Stationhydro(
+            typestation='LIMNI',
             libelle=_os.path.splitext(_os.path.split(src)[-1])[0]
         )
-    # skip rows and return
+
+    # skip rows
+    df = df[begin:end]
+    if df.empty:
+        raise ValueError('empty DataFrame, begin or end do not match any value')
+
+    # return
     return _obshydro.Serie(
         entite=entite,
         grandeur='H',
-        observations=df[begin:end]
+        observations=df
     )
 
 
-def serie_to_hsf(dst):
+def serie_to_hfs(dst):
     """Not implemented."""
-    # TODO
-    raise NotImplementedError()
+    raise NotImplementedError()  # TODO

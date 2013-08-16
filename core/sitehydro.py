@@ -20,8 +20,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1e"""
-__date__ = """2013-08-13"""
+__version__ = """version 0.2a"""
+__date__ = """2013-08-16"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -30,19 +30,84 @@ __date__ = """2013-08-13"""
 
 #-- todos ---------------------------------------------------------------------
 # TODO - many many properties
-
+# TODO - generalize typexxx in _Entite.typentite ???
 
 # -- config -------------------------------------------------------------------
-# classe name, article
-ARTICLE = {
-    'Sitehydro': 'le',
-    'Stationhydro': 'la',
-    'Capteur': 'le'
-}
+# look at end of file
+
+
+#-- class _Entitehydro --------------------------------------------------------
+class _Entitehydro(object):
+    """Abstract base class for hydro entities.
+
+    Properties:
+        code (string(x)) = hydro code
+        libelle (string)
+        _strict (bool) = strict or fuzzy mode
+
+    """
+
+    def __init__(self, code=None, libelle=None, strict=True):
+        """Constructor.
+
+        Parameters:
+            code (string(8, 10, 12)) = hydro code
+            libelle (string)
+            strict (bool, defaut True) = strict or fuzzy mode
+
+        """
+
+        # -- simple properties --
+        self._strict = strict
+        if libelle:
+            self.libelle = unicode(libelle)
+        else:
+            self.libelle = None
+
+        # -- full properties --
+        self._code = None
+        if code:
+            self.code = code
+
+    # -- property code --
+    @property
+    def code(self):
+        """Code hydro."""
+        return self._code
+
+    @code.setter
+    def code(self, code):
+        try:
+            code = unicode(code)
+            if self._strict and (self.__class__ in CODE_LENGTH):
+                #code must be like 'A0334450(xx)(yy)'
+                if (
+                    (len(code) != CODE_LENGTH[self.__class__]) or
+                    (not code[0].isupper()) or
+                    (not code[1:].isdigit())
+                ):
+                    raise ValueError('code incorrect')
+            self._code = code
+        except:
+            raise
+
+    # -- other methods --
+    # FIXME
+    # def _admit_serie(self, grandeur, statut):
+    #     if not self.typemesure:
+    #         raise
+    #     if self.typemesure != grandeur:
+    #         return False
+    #     if statut not in (4, 8):  # brute, corrige
+    #         return False
+    #     return True
+
+    # def _admit_simulation(self, grandeur):
+    #      return ADMIT_SIMULATION[self.__class][grandeur]
 
 
 #-- class Sitehydro -----------------------------------------------------------
-class Sitehydro(object):
+class Sitehydro(_Entitehydro):
     """Class Sitehydro.
 
     Classe pour manipuler des sites hydrometriques.
@@ -109,20 +174,18 @@ class Sitehydro(object):
 
         """
 
+        # -- super --
+        super(Sitehydro, self).__init__(
+            code=code, libelle=libelle, strict=strict
+        )
+
         # -- simple properties --
-        self._strict = strict
-        if libelle:
-            self.libelle = unicode(libelle)
-        else:
-            self.libelle = None
 
         # -- full properties --
-        self._typesite = self._code = None
+        self._typesite = None
         self._stations = []
         if typesite:
             self.typesite = typesite
-        if code:
-            self.code = code
         if stations:
             self.stations = stations
 
@@ -141,29 +204,6 @@ class Sitehydro(object):
             self._typesite = typesite
         except:
             raise ValueError('typesite incorrect')
-
-    # -- property code --
-    @property
-    def code(self):
-        """Code hydro."""
-        return self._code
-
-    @code.setter
-    def code(self, code):
-        #code sitehydro is like 'A0334450'
-        try:
-            code = unicode(code)
-            if (
-                self._strict and (
-                    (len(code) != 8) or
-                    code[0].islower() or
-                    (not code[1:].isdigit())
-                )
-            ):
-                raise Exception
-            self._code = code
-        except:
-            raise ValueError('code incorrect')
 
     # -- property stations --
     @property
@@ -202,7 +242,7 @@ class Sitehydro(object):
 
 
 #-- class Stationhydro --------------------------------------------------------
-class Stationhydro(object):
+class Stationhydro(_Entitehydro):
     """Class Stationhydro.
 
     Classe pour manipuler des stations hydrometriques.
@@ -213,6 +253,39 @@ class Stationhydro(object):
         libelle (string)
 
     """
+
+    #capteurs
+
+    #libellecomplement
+    #descriptif
+    #dtmaj
+    #x
+    #y
+    #projection
+    #pk
+    #dtes
+    #dths
+    #surveillance
+    #niveauaffichage
+    #publication
+    #delaidiscontinuite
+    #delaiabsence
+    #essai
+    #cdh2
+    #influence
+    #influencecommentaire
+    #commentaire
+
+    #remplace
+    #stationfille
+    #qualifications
+    #finalites
+    #loisstat
+    #sitehydro
+    #images
+    #rolecontact
+    #stationattachee
+    #plageutilisation
 
     def __init__(self, typestation=None, code=None, libelle=None, strict=True):
         """Constructeur.
@@ -226,52 +299,17 @@ class Stationhydro(object):
 
         """
 
-        #capteurs
-
-        #libellecomplement
-        #descriptif
-        #dtmaj
-        #x
-        #y
-        #projection
-        #pk
-        #dtes
-        #dths
-        #surveillance
-        #niveauaffichage
-        #publication
-        #delaidiscontinuite
-        #delaiabsence
-        #essai
-        #cdh2
-        #influence
-        #influencecommentaire
-        #commentaire
-
-        #remplace
-        #stationfille
-        #qualifications
-        #finalites
-        #loisstat
-        #sitehydro
-        #images
-        #rolecontact
-        #stationattachee
-        #plageutilisation
+        # -- super --
+        super(Stationhydro, self).__init__(
+            code=code, libelle=libelle, strict=strict
+        )
 
         # -- simple properties --
-        self._strict = strict
-        if libelle:
-            self.libelle = unicode(libelle)
-        else:
-            self.libelle = None
 
         # -- full properties --
-        self._typestation = self._code = None
+        self._typestation = None
         if typestation:
             self.typestation = typestation
-        if code:
-            self.code = code
 
     # -- property typestation --
     @property
@@ -289,29 +327,6 @@ class Stationhydro(object):
         except:
             raise ValueError('typestation incorrect')
 
-    # -- property code --
-    @property
-    def code(self):
-        """Code hydro."""
-        return self._code
-
-    @code.setter
-    def code(self, code):
-        #code stationhydro is like 'A033445001'
-        try:
-            code = unicode(code)
-            if (
-                (self._strict) and (
-                    (len(code) != 10) or
-                    code[0].islower() or
-                    (not code[1:].isdigit())
-                )
-            ):
-                raise Exception
-            self._code = code
-        except:
-            raise ValueError('code incorrect')
-
     # -- other methods --
     def __str__(self):
         """String representation."""
@@ -323,7 +338,7 @@ class Stationhydro(object):
 
 
 #-- class Capteur -------------------------------------------------------------
-class Capteur(object):
+class Capteur(_Entitehydro):
     """Class Capteur.
 
     Classe pour manipuler des capteurs hydrometriques.
@@ -334,6 +349,19 @@ class Capteur(object):
         typemesure (caractere parmi NOMENCLATURE[531]) = H ou Q
 
     """
+
+    #mnemonique
+    #typecapteur
+    #surveillance
+    #dtmaj
+    #pdt
+    #essai
+    #codeh2
+    #commentaire
+
+    #stationhydro
+    #plageutilisation
+    #observateur
 
     def __init__(self, code=None, libelle=None, typemesure=None, strict=True):
         """Constructeur.
@@ -347,55 +375,17 @@ class Capteur(object):
 
         """
 
-        #mnemonique
-        #typecapteur
-        #surveillance
-        #dtmaj
-        #pdt
-        #essai
-        #codeh2
-        #commentaire
-
-        #stationhydro
-        #plageutilisation
-        #observateur
+        # -- super --
+        super(Capteur, self).__init__(
+            code=code, libelle=libelle, strict=strict
+        )
 
         # -- simple properties --
-        self._strict = strict
-        if libelle:
-            self.libelle = unicode(libelle)
-        else:
-            self.libelle = None
 
         # -- full properties --
-        self._typemesure = self._code = None
+        self._typemesure = None
         if typemesure:
             self.typemesure = typemesure
-        if code:
-            self.code = code
-
-    # -- property code --
-    @property
-    def code(self):
-        """Code hydro."""
-        return self._code
-
-    @code.setter
-    def code(self, code):
-        #code capteur is like 'A03344500101'
-        try:
-            code = unicode(code)
-            if (
-                (self._strict) and (
-                    (len(code) != 12) or
-                    code[0].islower() or
-                    (not code[1:].isdigit())
-                )
-            ):
-                raise Exception
-            self._code = code
-        except:
-            raise ValueError('code incorrect')
 
     # -- property typemesure --
     @property
@@ -421,3 +411,34 @@ class Capteur(object):
             self.code or '<sans code>',
             self.libelle or '<sans libelle>'
         ).encode('utf-8')
+
+
+# -- config -------------------------------------------------------------------
+# -- HYDRO ENTITY ARTICLE --
+# classe name, article
+ARTICLE = {
+    Sitehydro: 'le',
+    Stationhydro: 'la',
+    Capteur: 'le'
+}
+
+# -- HYDRO CODE LENGTH --
+# class name, hydro code length
+CODE_LENGTH = {
+    Sitehydro: 8,
+    Stationhydro: 10,
+    Capteur: 12
+}
+
+
+# ADMIT_SERIE = {
+#     Sitehydro: True,
+#     Stationhydro: True,
+#     Capteur: True
+# }
+#
+# ADMIT_SIMULATION = {
+#     Sitehydro: {'H': False, 'Q': True},
+#     Stationhydro: {'H': True, 'Q': False},
+#     Capteur: {'H': False, 'Q':False}
+# }

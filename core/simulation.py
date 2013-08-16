@@ -47,8 +47,8 @@ from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1c"""
-__date__ = """2013-08-14"""
+__version__ = """version 0.1d"""
+__date__ = """2013-08-16"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -188,6 +188,8 @@ class Previsions(_pandas.Series):
             index=index,
             name='res'
         )
+
+        # return
         # FIXME - can't subclass the DataFRame object
         # return obj.view(cls)
         return obj
@@ -272,25 +274,39 @@ class Simulation(object):
 
     @entite.setter
     def entite(self, entite):
-        # entite must be a site, a station or a capteur
         try:
-            if (
-                (self._strict) and (
-                    not isinstance(
-                        entite,
-                        (
-                            _sitehydro.Sitehydro, _sitehydro.Stationhydro,
-                            _sitehydro.Capteur
-                        )
+            if self._strict:
+
+                # entite must be a site or a station
+                if not isinstance(
+                    entite,
+                    (_sitehydro.Sitehydro, _sitehydro.Stationhydro)
+                ):
+                    raise TypeError(
+                        'entite must be a Sitehydro or a Stationhydro'
                     )
-                )
-            ):
-                raise Exception
+
+                # Q prevs on Sitehydro only, H prevs on Stationhydro
+
+                # FIXME - make a function in sitehydro module # xxxxxxxxxxxxxxxxxxxxxxxxxx
+
+                if self.grandeur:
+                    if (self.grandeur == 'Q') and \
+                            not isinstance(entite, _sitehydro.Sitehydro):
+                        raise TypeError(
+                            'Q previsions, entite must be a Sitehydro'
+                        )
+                    if (self.grandeur == 'H') and \
+                            not isinstance(entite, _sitehydro.Stationhydro):
+                        raise TypeError(
+                            'H previsions, entite must be a Stationhydro'
+                        )
+
+            # all is well
             self._entite = entite
-        except:
-            raise TypeError(
-                'entite must be a Sitehydro, a Stationhydro or a Capteur'
-            )
+
+        except Exception:
+            raise
 
     # -- property modeleprevision --
     @property
@@ -415,21 +431,35 @@ class Simulation(object):
             except Exception:
                 code = self.entite
 
+        # prepare previsions
+        if self.previsions is None:
+            prev = '<sans previsions>'
+        elif len(self.previsions) <= 30:
+            prev = self.previsions.__str__()
+        else:
+            prev = '{0}\n...\n{1}'.format(
+                '\n'.join(self.previsions[:15].__str__().split('\n')[:-1]),
+                '\n'.join(self.previsions[-15:].__str__().split('\n')[1:])
+            )
+
         # action !
         return  'Simulation {0} de {1} sur {2}{3} {4}\n'\
-                'Modele {5} - qualite {6} - date de production: {7}\n'\
-                'Commentaire: {8}\n'\
+                'Date de production: {5} - Qualite {6}\n'\
+                'Commentaire: {7}\n'\
+                '{8}\n'\
                 '{9}\n'\
-                'Previsions: {10}'.format(
+                '{10}\n'\
+                'Previsions:\n {11}'.format(
                     '<sans statut>' if (self.statut is None) else _NOMENCLATURE[516][self.statut].lower(),
                     self.grandeur or '<sans grandeur>',
                     cls[0],
                     cls[1],
-                    code,
-                    self.modeleprevision or '<inconnu>',
+                    code or '<sans code>',
+                    '<inconnue>' if not self.dtprod else self.dtprod.__str__(),
                     '<inconnue>' if not self.qualite else '%i%%' % self.qualite,
-                    '<inconnue>' if not self.dtprod else self.dtprod.isoformat(),
                     self.commentaire or '<sans>',
                     '-' * 72,
-                    self.previsions.__str__() if (self.previsions is not None) else '<sans previsions>'
+                    self.modeleprevision or '<modele inconnu>',
+                    '-' * 72,
+                    prev
                 ).encode('utf-8')

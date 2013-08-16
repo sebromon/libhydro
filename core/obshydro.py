@@ -50,8 +50,8 @@ from . import sitehydro as _sitehydro
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1e"""
-__date__ = """2013-08-12"""
+__version__ = """version 0.1f"""
+__date__ = """2013-08-16"""
 
 #HISTORY
 #V0.1 - 2013-07-18
@@ -233,6 +233,7 @@ class Serie(object):
     """
 
     # ** TODO - others attributes **
+
     # strict (bool, defaut True) = en mode permissif, les contrôles de
     #     validite sur les proprietes ne sont paa appliques
     # datedebut
@@ -283,6 +284,9 @@ class Serie(object):
 
     @entite.setter
     def entite(self, entite):
+
+        # FIXME - add integrity checks between grandeur and entite
+
         # entite must be a site, a station or a capteur
         try:
             if (
@@ -311,6 +315,9 @@ class Serie(object):
 
     @grandeur.setter
     def grandeur(self, grandeur):
+
+        # FIXME - add integrity checks between grandeur and entite
+
         try:
             grandeur = unicode(grandeur)
             if (self._strict) and (grandeur not in _NOMENCLATURE[509]):
@@ -372,15 +379,31 @@ class Serie(object):
         if self.entite and self.entite.code:
             code = self.entite.code
 
+        # prepare observations
+        if self.observations is None:
+            obs = '<sans observations>'
+        elif len(self.observations) <= 30:
+            obs = self.observations.to_string()
+        else:
+            obs = '{0}\n...\n{1}'.format(
+                self.observations[:15].to_string(),
+                '\n'.join(self.observations[-15:].to_string().split('\n')[2:])
+            )
+
         # action !
-        return 'Serie {0} sur {1}{2} {3}::{4}\nstatut {5}::{6}\n{7}\n{8} '.format(
-            self.grandeur or '<grandeur inconnue>',
-            cls[0],
-            cls[1],
-            code,
-            self.entite.libelle if self.entite.libelle else '<sans libelle>',
-            self.statut,
-            _NOMENCLATURE[510][self.statut].lower(),
-            '-' * 72,
-            self.observations.__str__() or '<sans observations>'
-        ).encode('utf-8')
+        return 'Serie {0} sur {1}{2} {3}::{4}\n'\
+               'Statut {5}::{6}\n'\
+               '{7}\n'\
+               'Observations:\n{8}'.format(
+                   self.grandeur or '<grandeur inconnue>',
+                   cls[0],
+                   cls[1],
+                   code or '<sans code>',
+                   self.entite.libelle if (
+                       self.entite and self.entite.libelle
+                   ) else '<sans libelle>',
+                   self.statut,
+                   _NOMENCLATURE[510][self.statut].lower(),
+                   '-' * 72,
+                   obs
+               ).encode('utf-8')
