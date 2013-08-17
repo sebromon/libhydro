@@ -56,7 +56,14 @@ __date__ = """2013-08-16"""
 
 
 #-- todos ---------------------------------------------------------------------
-# TODO - many properties
+# FIXME - integrity checks entite / grandeur
+# ADMIT_SIMULATION = {
+#     Sitehydro: {'H': False, 'Q': True},
+#     Stationhydro: {'H': True, 'Q': False},
+#     Capteur: {'H': False, 'Q':False}
+# }
+# def _admit_simulation(self, grandeur):
+#      return ADMIT_SIMULATION[self.__class][grandeur]
 
 
 #-- class Prevision -----------------------------------------------------------
@@ -190,7 +197,7 @@ class Previsions(_pandas.Series):
         )
 
         # return
-        # FIXME - can't subclass the DataFRame object
+        # TODO - can't subclass the DataFRame object
         # return obj.view(cls)
         return obj
 
@@ -214,7 +221,8 @@ class Simulation(object):
 
     """
 
-    # ** TODO - others attributes **
+    # TODO - Simulation others attributes
+
     # sysalti
     # responsable
     # refalti
@@ -288,7 +296,7 @@ class Simulation(object):
 
                 # Q prevs on Sitehydro only, H prevs on Stationhydro
 
-                # FIXME - make a function in sitehydro module # xxxxxxxxxxxxxxxxxxxxxxxxxx
+                # FIXME - integrity checks
 
                 if self.grandeur:
                     if (self.grandeur == 'Q') and \
@@ -450,7 +458,8 @@ class Simulation(object):
                 '{9}\n'\
                 '{10}\n'\
                 'Previsions:\n {11}'.format(
-                    '<sans statut>' if (self.statut is None) else _NOMENCLATURE[516][self.statut].lower(),
+                    '<sans statut>' if (self.statut is None)
+                    else _NOMENCLATURE[516][self.statut].lower(),
                     self.grandeur or '<sans grandeur>',
                     cls[0],
                     cls[1],

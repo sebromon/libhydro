@@ -4,5 +4,6 @@
 Ce package contient des convertisseurs de et vers differents formats.
 
 """
-# let subpackage shom be imported as a simple module
+# let subpackage be imported as a simple module
 from shom import shom as shom
+from xml import xml as xml

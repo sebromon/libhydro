@@ -34,6 +34,7 @@ __date__ = """2013-08-09"""
 
 #-- todos ---------------------------------------------------------------------
 # TODO - all nomenclatures
+# FIXME - write a decorator to check an attribute validity
 
 
 # -- config -------------------------------------------------------------------

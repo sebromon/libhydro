@@ -59,7 +59,23 @@ __date__ = """2013-08-16"""
 
 
 #-- todos ---------------------------------------------------------------------
-# TODO - many many properties
+# FIXME - integriey checks entity / grandeur /statut
+# ADMIT_SERIE = {
+#     Sitehydro: 'Q',
+
+#     Stationhydro: type station...
+
+#     Capteur: 'H', brut corrige
+#                'Q' brut corrige
+# }
+# def _admit_serie(self, grandeur, statut):
+#     if not self.typemesure:
+#         raise
+#     if self.typemesure != grandeur:
+#         return False
+#     if statut not in (4, 8):  # brute, corrige
+#         return False
+#     return True
 
 
 #-- class Observation ---------------------------------------------------------
@@ -189,7 +205,7 @@ class Observations(_pandas.DataFrame):
             data=array[list(array.dtype.names[1:])],
             index=index
         )
-        # FIXME - can't subclass the DataFRame object
+        # TODO - can't subclass the DataFRame object
         # return obj.view(cls)
         return obj
 
@@ -232,10 +248,8 @@ class Serie(object):
 
     """
 
-    # ** TODO - others attributes **
+    # TODO - Serie others attributes
 
-    # strict (bool, defaut True) = en mode permissif, les contrôles de
-    #     validite sur les proprietes ne sont paa appliques
     # datedebut
     # datefin
     # dateprod
@@ -284,9 +298,6 @@ class Serie(object):
 
     @entite.setter
     def entite(self, entite):
-
-        # FIXME - add integrity checks between grandeur and entite
-
         # entite must be a site, a station or a capteur
         try:
             if (
@@ -315,9 +326,6 @@ class Serie(object):
 
     @grandeur.setter
     def grandeur(self, grandeur):
-
-        # FIXME - add integrity checks between grandeur and entite
-
         try:
             grandeur = unicode(grandeur)
             if (self._strict) and (grandeur not in _NOMENCLATURE[509]):

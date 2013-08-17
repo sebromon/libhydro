@@ -31,8 +31,8 @@ from libhydro.core import sitehydro
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1d"""
-__date__ = """2013-08-07"""
+__version__ = """Version 0.1e"""
+__date__ = """2013-08-17"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -45,8 +45,8 @@ __date__ = """2013-08-07"""
 #-- config --------------------------------------------------------------------
 
 
-#-- class TestSiteHydro -------------------------------------------------------
-class TestSiteHydro(unittest.TestCase):
+#-- class TestSitehydro -------------------------------------------------------
+class TestSitehydro(unittest.TestCase):
     """Sitehydro class tests."""
 
     # def setUp(self):
@@ -59,46 +59,57 @@ class TestSiteHydro(unittest.TestCase):
 
     def test_base_01(self):
         """Empty site."""
-        typesite = code = libelle = None
-        stations = []
-        s = sitehydro.Sitehydro()
+        code = 'R5330101'
+        s = sitehydro.Sitehydro(code=code)
         self.assertEqual(
-            (s.typesite, s.code, s.libelle, s.stations),
-            (typesite, code, libelle, stations)
+            (s.code, s.typesite, s.libelle, s.stations),
+            (code, 'REEL', None, [])
         )
 
     def test_base_02(self):
         """Site with 1 station."""
-        typesite = 'REEL'
         code = 'A3334550'
+        typesite = 'MAREGRAPHE'
         libelle = 'La Saône [apres la crue] a Montelimar [he oui]'
-        stations = sitehydro.Stationhydro()
+        stations = sitehydro.Stationhydro(
+            code='%s01' % code, typestation='LIMNI'
+        )
         s = sitehydro.Sitehydro(
-            typesite=typesite, code=code, libelle=libelle, stations=stations
+            code=code, typesite=typesite, libelle=libelle, stations=stations
         )
         self.assertEqual(
-            (s.typesite, s.code, s.libelle, s.stations),
-            (typesite, code, libelle, [stations])
+            (s.code, s.typesite, s.libelle, s.stations),
+            (code, typesite, libelle, [stations])
         )
 
     def test_base_03(self):
         """Site with n station."""
-        typesite = 'REEL'
         code = 'A3334550'
+        typesite = 'REEL'
         libelle = 'La Saône [apres la crue] a Montelimar [hé oui]'
-        stations = (sitehydro.Stationhydro(), sitehydro.Stationhydro())
+        stations = (
+            sitehydro.Stationhydro(
+                code='%s01' % code, typestation='DEB'
+            ),
+            sitehydro.Stationhydro(
+                code='%s02' % code, typestation='LIMNIMERE'
+            ),
+            sitehydro.Stationhydro(
+                code='%s03' % code, typestation='LIMNIFILLE'
+            )
+        )
         s = sitehydro.Sitehydro(
-            typesite=typesite, code=code, libelle=libelle, stations=stations
+            code=code, typesite=typesite, libelle=libelle, stations=stations
         )
         self.assertEqual(
-            (s.typesite, s.code, s.libelle, s.stations),
-            (typesite, code, libelle, [s for s in stations])
+            (s.code, s.typesite, s.libelle, s.stations),
+            (code, typesite, libelle, [s for s in stations])
         )
 
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test."""
-        typesite = '6'
         code = '3'
+        typesite = '6'
         stations = [1, 2, 3]
         s = sitehydro.Sitehydro(
             typesite=typesite, code=code,  stations=stations, strict=False
@@ -110,41 +121,61 @@ class TestSiteHydro(unittest.TestCase):
 
     def test_error_01(self):
         """Typesite error."""
-        sitehydro.Sitehydro(**{'typesite': 'REEL'})
+        code = 'H0001010'
+        sitehydro.Sitehydro(**{'code': code, 'typesite': 'REEL'})
         self.assertRaises(
             ValueError,
             sitehydro.Sitehydro,
-            **{'typesite': 'REEEL'}
+            **{'code': code, 'typesite': 'REEEL'}
         )
 
     def test_error_02(self):
         """Code error."""
-        sitehydro.Sitehydro(**{'code': 'B4401122'})
+        code = 'B4401122'
+        sitehydro.Sitehydro(**{'code': code})
         self.assertRaises(
             ValueError,
             sitehydro.Sitehydro,
-            **{'code': 'B440112201'}
+            **{'code': '%s01' % code}
         )
-        sitehydro.Sitehydro(**{'code': 'B4401122'})
         self.assertRaises(
             ValueError,
             sitehydro.Sitehydro,
-            **{'code': 'B44011'}
+            **{'code': code[:-1]}
         )
 
     def test_error_03(self):
         """Stations error."""
-        stations = (sitehydro.Stationhydro(), sitehydro.Stationhydro())
-        sitehydro.Sitehydro(**{'stations': stations})
+        code = 'B4401122'
+        stations = (
+            sitehydro.Stationhydro(code='%s01' % code),
+            sitehydro.Stationhydro(code='%s02' % code)
+        )
+        sitehydro.Sitehydro(**{'code': code, 'stations': stations})
         self.assertRaises(
             TypeError,
             sitehydro.Sitehydro,
-            **{'stations': ['station']}
+            **{'code': code, 'stations': ['station']}
+        )
+        self.assertRaises(
+            ValueError,
+            sitehydro.Sitehydro,
+            **{'code': code, 'typesite': 'PONCTUEL', 'stations': stations}
+        )
+        self.assertRaises(
+            ValueError,
+            sitehydro.Sitehydro,
+            **{'code': code, 'typesite': 'FICTIF', 'stations': stations}
+        )
+        self.assertRaises(
+            ValueError,
+            sitehydro.Sitehydro,
+            **{'code': code, 'typesite': 'VIRTUEL', 'stations': stations}
         )
 
 
-#-- class TestStationHydro ----------------------------------------------------
-class TestStationHydro(unittest.TestCase):
+#-- class TestStationhydro ----------------------------------------------------
+class TestStationhydro(unittest.TestCase):
     """Stationhydro class tests."""
 
     # def setUp(self):
@@ -157,59 +188,87 @@ class TestStationHydro(unittest.TestCase):
 
     def test_base_01(self):
         """Base case with empty station."""
-        typestation = code = libelle = None
-        s = sitehydro.Stationhydro()
+        code = 'O033401101'
+        s = sitehydro.Stationhydro(code=code)
         self.assertEqual(
-            (s.typestation, s.code, s.libelle),
-            (typestation, code, libelle)
+            (s.code, s.typestation, s.libelle),
+            (code, 'LIMNI', None)
         )
 
     def test_base_02(self):
         """Base case test."""
-        typestation = 'LIMNI'
         code = 'A033465001'
+        typestation = 'LIMNI'
         libelle = 'La Seine a Paris - rive droite'
         s = sitehydro.Stationhydro(
-            typestation=typestation, code=code, libelle=libelle
+            code=code, typestation=typestation, libelle=libelle
         )
         self.assertEqual(
-            (s.typestation, s.code, s.libelle),
-            (typestation, code, libelle)
+            (s.code, s.typestation, s.libelle),
+            (code, typestation, libelle)
         )
 
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test."""
-        typestation = '6'
         code = '3'
+        typestation = '6'
         s = sitehydro.Stationhydro(
-            typestation=typestation, code=code, strict=False
+            code=code, typestation=typestation, strict=False
         )
         self.assertEqual(
-            (s.typestation, s.code),
-            (typestation, code)
+            (s.code, s.typestation),
+            (code, typestation)
         )
 
     def test_error_01(self):
         """Typestation error."""
-        sitehydro.Stationhydro(**{'typestation': 'LIMNI'})
+        code = 'A033465001'
+        sitehydro.Stationhydro(**{'code': code, 'typestation': 'LIMNI'})
         self.assertRaises(
             ValueError,
             sitehydro.Stationhydro,
-            **{'typestation': 'LIMMMMNI'}
+            **{'code': code, 'typestation': 'LIMMMMNI'}
         )
 
     def test_error_02(self):
         """Code error."""
-        sitehydro.Stationhydro(**{'code': 'B440112201'})
+        code = 'B440112201'
+        sitehydro.Stationhydro(**{'code': code})
         self.assertRaises(
             ValueError,
             sitehydro.Stationhydro,
-            **{'code': 'B4401122'}
+            **{'code': code[:-1]}
         )
         self.assertRaises(
             ValueError,
             sitehydro.Stationhydro,
-            **{'code': 'B44011220101'}
+            **{'code': '%s0' % code}
+        )
+
+    def test_error_03(self):
+        """Capteurs error."""
+        code = 'B440112201'
+        capteurs = (
+            sitehydro.Capteur(code='%s01' % code, typemesure='Q'),
+            sitehydro.Capteur(code='%s02' % code, typemesure='H'),
+        )
+        sitehydro.Stationhydro(**{
+            'code': code, 'typestation': 'DEB', 'capteurs': capteurs
+        })
+        self.assertRaises(
+            ValueError,
+            sitehydro.Stationhydro,
+            **{'code': code, 'capteurs': capteurs}
+        )
+        self.assertRaises(
+            ValueError,
+            sitehydro.Stationhydro,
+            **{'code': code, 'typestation': 'LIMNI', 'capteurs': capteurs}
+        )
+        self.assertRaises(
+            ValueError,
+            sitehydro.Stationhydro,
+            **{'code': code, 'typestation': 'HC', 'capteurs': capteurs}
         )
 
 
@@ -227,24 +286,24 @@ class TestCapteur(unittest.TestCase):
 
     def test_base_01(self):
         """Base case with empty capteur."""
-        typemesure = code = libelle = None
-        c = sitehydro.Capteur()
+        code = 'V83310100101'
+        c = sitehydro.Capteur(code=code)
         self.assertEqual(
-            (c.typemesure, c.code, c.libelle),
-            (typemesure, code, libelle)
+            (c.code, c.typemesure, c.libelle),
+            (code, 'H', None)
         )
 
     def test_base_02(self):
         """Base case test."""
-        typemesure = 'H'
+        typemesure = 'Q'
         code = 'A03346500101'
         libelle = 'Capteur de secours'
         c = sitehydro.Capteur(
-            typemesure=typemesure, code=code, libelle=libelle
+            code=code, typemesure=typemesure, libelle=libelle
         )
         self.assertEqual(
-            (c.typemesure, c.code, c.libelle),
-            (typemesure, code, libelle)
+            (c.code, c.typemesure, c.libelle),
+            (code, typemesure, libelle)
         )
 
     def test_fuzzy_mode_01(self):
@@ -252,20 +311,20 @@ class TestCapteur(unittest.TestCase):
         typemesure = 'RR'
         code = 'C1'
         c = sitehydro.Capteur(
-            typemesure=typemesure, code=code, strict=False
+            code=code, typemesure=typemesure, strict=False
         )
         self.assertEqual(
-            (c.typemesure, c.code),
-            (typemesure, code)
+            (c.code, c.typemesure),
+            (code, typemesure)
         )
 
     def test_error_01(self):
         """Typemesure error."""
-        sitehydro.Capteur(**{'typemesure': 'H'})
+        sitehydro.Capteur(**{'code': 'A14410010201', 'typemesure': 'H'})
         self.assertRaises(
             ValueError,
             sitehydro.Capteur,
-            **{'typemesure': 'RR'}
+            **{'code': 'A14410010201', 'typemesure': 'RR'}
         )
 
     def test_error_02(self):

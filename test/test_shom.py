@@ -35,8 +35,8 @@ from libhydro.core import sitehydro
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1a"""
-__date__ = """2013-08-16"""
+__version__ = """Version 0.1b"""
+__date__ = """2013-08-17"""
 
 #HISTORY
 #V0.1 - 2013-08-16
@@ -66,8 +66,8 @@ class TestSimulationFromHSF(unittest.TestCase):
         """Base test."""
         sim = shom.simulation_from_hfs(SRC)
         self.assertEqual(
-            (sim.entite.typestation, sim.entite.libelle),
-            ('LIMNI', 'LOCMARIAQUER')
+            (sim.entite.code, sim.entite.typestation, sim.entite.libelle),
+            ('-' * 8, 'LIMNI', 'LOCMARIAQUER')
         )
         self.assertEqual(
             (sim.grandeur, sim.qualite, sim.commentaire),
@@ -82,11 +82,11 @@ class TestSimulationFromHSF(unittest.TestCase):
 
     def test_base_02(self):
         """Second base test."""
-        station = sitehydro.Stationhydro(libelle='LOC')
+        station = sitehydro.Stationhydro(code='-', libelle='LOC', strict=False)
         dtprod = '2010-12-12 15:33'
         sim = shom.simulation_from_hfs(
             src=SRC,
-            entite=station,
+            stationhydro=station,
             begin='2013-01-23 12:00',
             end='2013-01-23 12:25',
             dtprod=dtprod
@@ -102,6 +102,15 @@ class TestSimulationFromHSF(unittest.TestCase):
             (sim.previsions[1], sim.previsions.index[1]),
             (3.34, (datetime.datetime(2013, 1, 23, 12, 10), 50))
         )
+
+    def test_fuzzy_mode_01(self):
+        """Fuzzy mode test."""
+        sim = shom.simulation_from_hfs(
+            src=SRC,
+            stationhydro='X1',
+            strict=False
+        )
+        self.assertEqual(sim.entite, 'X1')
 
     def test_error_01(self):
         """Dtprod error."""
@@ -129,8 +138,8 @@ class TestSerieFromHSF(unittest.TestCase):
         """Base test."""
         serie = shom.serie_from_hfs(SRC)
         self.assertEqual(
-            (serie.entite.typestation, serie.entite.libelle),
-            ('LIMNI', 'LOCMARIAQUER')
+            (serie.entite.code, serie.entite.typestation, serie.entite.libelle),
+            ('-' * 8, 'LIMNI', 'LOCMARIAQUER')
         )
         self.assertEqual(
             (serie.grandeur, serie.statut),
@@ -144,10 +153,10 @@ class TestSerieFromHSF(unittest.TestCase):
 
     def test_base_02(self):
         """Second base test."""
-        station = sitehydro.Stationhydro(libelle='LOC')
+        station = sitehydro.Stationhydro(code='X231101001', libelle='LOC')
         serie = shom.serie_from_hfs(
             src=SRC,
-            entite=station,
+            stationhydro=station,
             begin='2013-01-23 12:00',
             end='2013-01-23 12:25'
         )
@@ -159,6 +168,24 @@ class TestSerieFromHSF(unittest.TestCase):
         self.assertEqual(len(serie.observations), 3)
         self.assertEqual(
             (serie.observations.irow(1), serie.observations.irow(1).name),
+            (3.34, datetime.datetime(2013, 1, 23, 12, 10))
+        )
+
+    def test_fuzzy_mode_01(self):
+        """Fuzzy mode test."""
+        serie = shom.serie_from_hfs(
+            src=SRC,
+            stationhydro='X1',
+            strict=False
+        )
+        self.assertEqual(serie.entite, 'X1')
+        self.assertEqual(
+            (serie.grandeur, serie.statut),
+            ('H', 0)
+        )
+        self.assertEqual(len(serie.observations), 144)
+        self.assertEqual(
+            (serie.observations.irow(73), serie.observations.irow(73).name),
             (3.34, datetime.datetime(2013, 1, 23, 12, 10))
         )
 
@@ -202,10 +229,15 @@ class TestSerieFromHSF(unittest.TestCase):
 
     def test_error_04(self):
         """Entity error."""
+        station = sitehydro.Stationhydro(code='X1', strict=False)
+        shom.serie_from_hfs(
+            src=SRC,
+            stationhydro=station
+        )
         self.assertRaises(
             TypeError,
             shom.serie_from_hfs,
-            **{'src': SRC, 'entite': 33}
+            **{'src': SRC, 'stationhydro': 33}
         )
 
 

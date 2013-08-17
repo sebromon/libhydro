@@ -47,8 +47,8 @@ from ...core import (
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1c"""
-__date__ = """2013-08-16"""
+__version__ = """version 0.1d"""
+__date__ = """2013-08-17"""
 
 #HISTORY
 #V0.1 - 2013-08-01
@@ -61,19 +61,26 @@ __date__ = """2013-08-16"""
 
 
 #-- functions -----------------------------------------------------------------
-def simulation_from_hfs(src, begin=None, end=None, entite=None, dtprod=None):
+def simulation_from_hfs(
+    src, stationhydro=None, begin=None, end=None, dtprod=None, strict=True
+):
     """Retourne une simulation.Simulation a partir d'un fichier HFS.
 
     Arguments:
         src (str o ou file) = fichier source
+        stationhydro (Stationhydro) = par defaut utilise le nom du fichier src
         begin, end (isoformat string) = dates de debut/fin de la plage de
             valeurs a conserver, bornes incluses
         entite( Sitehydro, Stationhydro ou Capteur)
         dtprod (string ou datetime) = date de production
+        strict (bool, defaut True) = le mode permissif permet de lever le
+            controle de validite de la stationhydro
 
     """
     # get a obshydro.Serie from the Serie decoder
-    serie = serie_from_hfs(src=src, begin=begin, end=end, entite=entite)
+    serie = serie_from_hfs(
+        src=src, stationhydro=stationhydro, begin=begin, end=end, strict=strict
+    )
 
     # make a multiindex with probability 50 for every value
     index = _pandas.MultiIndex.from_tuples(
@@ -105,7 +112,8 @@ def simulation_from_hfs(src, begin=None, end=None, entite=None, dtprod=None):
         public=False,
         commentaire='data SHOM',
         dtprod=dtprod,
-        previsions=prev
+        previsions=prev,
+        strict=strict
     )
 
 
@@ -114,16 +122,18 @@ def simulation_to_hfs():
     raise NotImplementedError()  # TODO
 
 
-def serie_from_hfs(src, begin=None, end=None, entite=None):
+def serie_from_hfs(src, stationhydro=None, begin=None, end=None, strict=True):
     """Retourne une obshydro.Serie a partir d'un fichier HFS.
 
     La Serie est simplifiee et ne contient que la colonne res.
 
     Arguments:
         src (str o ou file) = fichier source
+        stationhydro (Stationhydro) = par defaut utilise le nom du fichier src
         begin, end (isoformat string) = dates de debut/fin de la plage de
             valeurs a conserver, bornes incluses
-        entite( Sitehydro, Stationhydro ou Capteur)
+        strict (bool, defaut True) = le mode permissif permet de lever le
+            controle de validite de la stationhydro
 
     """
     # parse file
@@ -140,10 +150,15 @@ def serie_from_hfs(src, begin=None, end=None, entite=None):
     df.index.name = 'dte'
 
     # if entite is None we use the HFS file name to build a station
-    if not entite:
-        entite = _sitehydro.Stationhydro(
+    if stationhydro and strict:
+        if not isinstance(stationhydro, _sitehydro.Stationhydro):
+            raise TypeError('a stationhydro is required')
+    if not stationhydro:
+        stationhydro = _sitehydro.Stationhydro(
+            code='-' * 8,
             typestation='LIMNI',
-            libelle=_os.path.splitext(_os.path.split(src)[-1])[0]
+            libelle=_os.path.splitext(_os.path.split(src)[-1])[0],
+            strict=False
         )
 
     # skip rows
@@ -153,9 +168,10 @@ def serie_from_hfs(src, begin=None, end=None, entite=None):
 
     # return
     return _obshydro.Serie(
-        entite=entite,
+        entite=stationhydro,
         grandeur='H',
-        observations=df
+        observations=df,
+        strict=strict
     )
 
 
