@@ -363,10 +363,13 @@ class Stationhydro(_Entitehydro):
     # -- other methods --
     def __str__(self):
         """String representation."""
-        return 'Station {0} {1}::{2}'.format(
+        return 'Station {0} {1}::{2} [{3} capteur{4}]'.format(
             self.typestation or '<sans type>',
             self.code or '<sans code>',
-            self.libelle or '<sans libelle>'
+            self.libelle or '<sans libelle>',
+            len(self.capteurs),
+            '' if (len(self.capteurs) < 2) else 's'
+
         ).encode('utf-8')
 
 
@@ -378,8 +381,8 @@ class Capteur(_Entitehydro):
 
     Proprietes:
         code (string(12)) = code hydro
-        libelle (string)
         typemesure (caractere parmi NOMENCLATURE[531]) = H ou Q
+        libelle (string)
 
     """
 
