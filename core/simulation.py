@@ -209,7 +209,7 @@ class Simulation(object):
     classe pour manipuler les simulations hydrauliques ou hydrologiques.
 
     Proprietes:
-        entite (Sitehydro, Stationhydro ou Capteur)
+        entite (Sitehydro, Stationhydro)
         modeleprevision (Modeleprevision)
         grandeur (char in NOMENCLATURE[509]) = H ou Q
         statut (int in NOMENCLATURE[516]) = brute ou critiquee
@@ -236,7 +236,7 @@ class Simulation(object):
         """Constructeur.
 
         Parametres:
-            entite (Sitehydro, Stationhydro ou Capteur)
+            entite (Sitehydro ou Stationhydro)
             modeleprevision (Modeleprevision)
             grandeur (char in NOMENCLATURE[509]) = H ou Q
             statut (int in NOMENCLATURE[516], defaut 4) = brute ou critiquee
@@ -431,13 +431,13 @@ class Simulation(object):
         except Exception:
             cls = ("l'", 'entite')
 
-        # compute code
-        code = '<sans code>'
+        # compute code and libelle
+        code, libelle = '<sans code>', '<sans libelle>'
         if self.entite is not None:
-            try:
+            if self.entite.code is not None:
                 code = self.entite.code
-            except Exception:
-                code = self.entite
+            if self.entite.libelle is not None:
+                libelle = self.entite.libelle
 
         # prepare previsions
         if self.previsions is None:
@@ -451,19 +451,20 @@ class Simulation(object):
             )
 
         # action !
-        return  'Simulation {0} de {1} sur {2}{3} {4}\n'\
-                'Date de production: {5} - Qualite {6}\n'\
-                'Commentaire: {7}\n'\
-                '{8}\n'\
+        return  'Simulation {0} de {1} sur {2}{3} {4}::{5}\n'\
+                'Date de production: {6} - Qualite {7}\n'\
+                'Commentaire: {8}\n'\
                 '{9}\n'\
                 '{10}\n'\
+                '{11}\n'\
                 'Previsions:\n {11}'.format(
                     '<sans statut>' if (self.statut is None)
                     else _NOMENCLATURE[516][self.statut].lower(),
                     self.grandeur or '<sans grandeur>',
                     cls[0],
                     cls[1],
-                    code or '<sans code>',
+                    code,
+                    libelle,
                     '<inconnue>' if not self.dtprod else self.dtprod.__str__(),
                     '<inconnue>' if not self.qualite else '%i%%' % self.qualite,
                     self.commentaire or '<sans>',

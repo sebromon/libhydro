@@ -50,8 +50,8 @@ from . import sitehydro as _sitehydro
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1f"""
-__date__ = """2013-08-16"""
+__version__ = """version 0.1g"""
+__date__ = """2013-08-19"""
 
 #HISTORY
 #V0.1 - 2013-07-18
@@ -382,10 +382,13 @@ class Serie(object):
         except Exception:
             cls = ("l'", 'entite')
 
-        # compute code
-        code = '<sans code>'
-        if self.entite and self.entite.code:
-            code = self.entite.code
+        # compute code and libelle
+        code, libelle = '<sans code>', '<sans libelle>'
+        if self.entite is not None:
+            if self.entite.code is not None:
+                code = self.entite.code
+            if self.entite.libelle is not None:
+                libelle = self.entite.libelle
 
         # prepare observations
         if self.observations is None:
@@ -406,10 +409,8 @@ class Serie(object):
                    self.grandeur or '<grandeur inconnue>',
                    cls[0],
                    cls[1],
-                   code or '<sans code>',
-                   self.entite.libelle if (
-                       self.entite and self.entite.libelle
-                   ) else '<sans libelle>',
+                   code,
+                   libelle,
                    self.statut,
                    _NOMENCLATURE[510][self.statut].lower(),
                    '-' * 72,

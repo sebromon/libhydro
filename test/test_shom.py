@@ -67,7 +67,7 @@ class TestSimulationFromHSF(unittest.TestCase):
         sim = shom.simulation_from_hfs(SRC)
         self.assertEqual(
             (sim.entite.code, sim.entite.typestation, sim.entite.libelle),
-            ('-' * 8, 'LIMNI', 'LOCMARIAQUER')
+            (None, 'LIMNI', 'LOCMARIAQUER')
         )
         self.assertEqual(
             (sim.grandeur, sim.qualite, sim.commentaire),
@@ -139,7 +139,7 @@ class TestSerieFromHSF(unittest.TestCase):
         serie = shom.serie_from_hfs(SRC)
         self.assertEqual(
             (serie.entite.code, serie.entite.typestation, serie.entite.libelle),
-            ('-' * 8, 'LIMNI', 'LOCMARIAQUER')
+            (None, 'LIMNI', 'LOCMARIAQUER')
         )
         self.assertEqual(
             (serie.grandeur, serie.statut),

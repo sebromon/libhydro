@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
 """Module xml.
 
-Ce module contient des convertisseurs pour lire le Xml Hydrometrie:
-    (liste)
+Ce module contient des convertisseurs de et vers les fichiers au format
+Xml Hydrometrie (version 1.1 exclusivement).
 
-Et pour le generer:
-    (liste fonctions)
+Fonctions de lecture:
+    (TODO)
 
-La version de reference du scenario Xml Hydrometrie est 1.1.
+Fonctions d'écriture:
+    (TODO)
+
+Le module contient egalement la classe:
+    # Scenario
 
 Exemples d'utilisation:
-    (todo)
+    (TODO)
 
 """
 #-- imports -------------------------------------------------------------------
@@ -22,17 +26,20 @@ from __future__ import (
 )
 
 import datetime as _datetime
+import numpy as _numpy
 from lxml import etree as _etree
 
 from . import mapping
 from libhydro.core import sitehydro as _sitehydro
+from libhydro.core import modeleprevision as _modeleprevision
 from libhydro.core import obshydro as _obshydro
+from libhydro.core import simulation as _simulation
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1a"""
-__date__ = """2013-08-18"""
+__version__ = """version 0.1b"""
+__date__ = """2013-08-19"""
 
 #HISTORY
 #V0.1 - 2013-08-18
@@ -40,11 +47,13 @@ __date__ = """2013-08-18"""
 
 
 #-- todos ---------------------------------------------------------------------
-# TODO - if xpath is too slow to acess elements, use indexing:
-#    code=element[0].text,
-# but xpath is more readable and do not care of xml order
+# TODO - if xpath is too slow to acess elements, use indexing
+#        code=element[0].text,
+#        but xpath is more readable and do not care of xml order
 
-# make 2 modules: to_xml et from_xml ??
+# TODO - make 2 modules: to_xml et from_xml ??
+
+# TODO - XSD validation
 
 
 # -- class Scenario -----------------------------------------------------------
@@ -64,7 +73,7 @@ class Scenario(object):
         # destinataire = destinataire
 
 
-#-- functions -----------------------------------------------------------------
+#-- to xml functions ----------------------------------------------------------
 def to_xml(scenario, *args):
 
     # FIXME
@@ -88,7 +97,7 @@ def to_xml(scenario, *args):
     )
     return tree
 
-
+# -- from xml functions -------------------------------------------------------
 # def get_sitehydro(src, code=None):
 
     # # FIXME - probleme avec les namespace
@@ -102,11 +111,11 @@ def to_xml(scenario, *args):
 
 
 def _sitehydro_from_element(element):
-    """Return a sitehydro.Sitehydro from a SiteHydro element."""
+    """Return a sitehydro.Sitehydro from a <SiteHydro> element."""
     return _sitehydro.Sitehydro(
-        code=element.find('CdSiteHydro').text,
-        typesite=element.find('TypSiteHydro'),
-        libelle=element.find('LbSiteHydro').text,
+        code=_get_value(element, 'CdSiteHydro'),
+        typesite=_get_value(element, 'TypSiteHydro'),
+        libelle=_get_value(element, 'LbSiteHydro'),
         stations=[
             _stationhydro_from_element(e)
             for e in element.findall('StationsHydro/StationHydro')
@@ -115,11 +124,11 @@ def _sitehydro_from_element(element):
 
 
 def _stationhydro_from_element(element):
-    """Return a sitehydro.Stationhydro from a Stationhydro element."""
+    """Return a sitehydro.Stationhydro from a <Stationhydro> element."""
     return _sitehydro.Stationhydro(
-        code=element.find('CdStationHydro').text,
-        typestation=element.find('TypStationHydro'),
-        libelle=element.find('LbStationHydro').text,
+        code=_get_value(element, 'CdStationHydro'),
+        typestation=_get_value(element, 'TypStationHydro'),
+        libelle=_get_value(element, 'LbStationHydro'),
         capteurs=[
             _capteur_from_element(e)
             for e in element.findall('Capteurs/Capteur')
@@ -128,52 +137,91 @@ def _stationhydro_from_element(element):
 
 
 def _capteur_from_element(element):
-    """Return a sitehydro.Capteur from a Capteur element."""
+    """Return a sitehydro.Capteur from a <Capteur> element."""
     return _sitehydro.Capteur(
-        code=element.find('CdCapteur').text,
-        typemesure=element.find('TypMesureCapteur'),
-        libelle=element.find('LbCapteur').text
+        code=_get_value(element, 'CdCapteur'),
+        typemesure=_get_value(element, 'TypMesureCapteur'),
+        libelle=_get_value(element, 'LbCapteur')
     )
 
 
 def _serie_from_element(element):
-    """Return a obshydro.Serie from a Serie element."""
+    """Return a obshydro.Serie from a <Serie> element."""
     # entite can be a Sitehydro, a Stationhydro or a Capteur
     entite = None
-    if element.find('CdSiteHydro'):
+    if element.find('CdSiteHydro') is not None:
         entite = _sitehydro.Sitehydro(
-            code=element.find('CdSiteHydro').text
+            code=_get_value(element, 'CdSiteHydro')
         )
-    elif element.find('CdStationHydro'):
+    elif element.find('CdStationHydro') is not None:
         entite = _sitehydro.Stationhydro(
-            code=element.find('CdStationHydro').text
+            code=_get_value(element, 'CdStationHydro')
         )
-    elif element.find('CdCapteur'):
+    elif element.find('CdCapteur') is not None:
         entite = _sitehydro.Capteur(
-            code=element.find('CdCapteur').text
+            code=_get_value(element, 'CdCapteur')
         )
-    # get the Serie
+    # make the Serie
     return _obshydro.Serie(
         entite=entite,
-        grandeur=element.find('GrdSerie').text,
-        statut=element.find('StatutSerie').text,
+        grandeur=_get_value('GrdSerie'),
+        statut=_get_value('StatutSerie'),
         observations=_obshydro.Observations(element.find('ObssHydro'))
     )
 
 
 def _observations_from_element(element):
-    """Return a obshydro.Observations for a ObssHydro element."""
+    """Return a obshydro.Observations from a <ObssHydro> element."""
     return _obshydro.Observations(
         *[_obshydro.Observation(
-            dte=o.find('DtObsHydro').text,
-            res=o.find('ResObsHydro').text,
-            mth=int(o.find('MethObsHydro').text),
-            qal=int(o.find('QualifObsHydro').text),
-            cnt=o.find('Cont')  # FIXME - check tag name + pb if None
+            dte=_get_value(o, 'DtObsHydro'),
+            res=_get_value(o, 'ResObsHydro'),
+            mth=_get_value(o, 'MethObsHydro', int),
+            qal=_get_value(o, 'QualifObsHydro', int),
+            cnt=_get_value(o, 'ContObsHydro', bool)
         ) for o in element]
     )
 
 
 def _simulation_from_element(element):
+    """Return a simulation.Simulation from a <Simul> element."""
+    # entite can be a Sitehydro or a Stationhydro
+    entite = None
+    if element.find('CdSiteHydro') is not None:
+        entite = _sitehydro.Sitehydro(
+            code=_get_value(element, 'CdSiteHydro')
+        )
+    elif element.find('CdStationHydro') is not None:
+        entite = _sitehydro.Stationhydro(
+            code=_get_value(element, 'CdStationHydro')
+        )
+    # make the Simulation
+    return _simulation.Simulation(
+        entite=entite,
+        modeleprevision=_modeleprevision.Modeleprevision(
+            code=_get_value(element, 'CdModelePrevision')
+        ),
+        grandeur=_get_value(element, 'GrdSimul'),
+        statut=_get_value(element, 'StatutSimul', int),
+        qualite=_get_value(element, 'IndicequaliteSimul', int),
+        public=_get_value(element, 'PubliSimul', bool),
+        commentaire=_get_value(element, 'ComSimul'),
+        dtprod=_get_value(element, 'DtProdSimul', _numpy.datetime64),
+        previsions=_previsions_from_element(element.find('Prevs'))
+    )
+
+
+def _previsions_from_element(element):
+    """Return a simulation.Previsions from a <Prevs> element."""
     # TODO
-    pass
+    # _simulation.Previsions())
+    return None
+
+
+def _get_value(element, tag, cast=unicode):
+    """Return cast(element/tag.text) or None."""
+    # FIXME - a method should be better to avoid the copy of element
+    e = element.find(tag)
+    if e is not None:
+        return cast(e.text)
+    return e

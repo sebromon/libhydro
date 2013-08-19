@@ -17,6 +17,55 @@
   </Scenario>
   <RefHyd>
     <SitesHydro>
+      <!-- 1 site avec juste un code -->
+      <SiteHydro>
+        <CdSiteHydro>A1984310</CdSiteHydro>
+      </SiteHydro>
+      <!-- 1 site + 3 stations -->
+      <SiteHydro>
+        <CdSiteHydro>O1984310</CdSiteHydro>
+        <LbSiteHydro>Le Touch à Toulouse [Saint-Martin-du-Touch]</LbSiteHydro>
+        <LbUsuelSiteHydro>St-Martin-du-Touch</LbUsuelSiteHydro>
+        <TypSiteHydro>SOURCE</TypSiteHydro>
+        <StationsHydro>
+          <StationHydro>
+            <CdStationHydro>O198431001</CdStationHydro>
+            <LbStationHydro>station 1</LbStationHydro>
+            <TypStationHydro>LIMNI</TypStationHydro>
+          </StationHydro>
+          <StationHydro>
+            <CdStationHydro>O198431002</CdStationHydro>
+            <LbStationHydro>station 2</LbStationHydro>
+            <TypStationHydro>LIMNI</TypStationHydro>
+          </StationHydro>
+          <StationHydro>
+            <CdStationHydro>O198431003</CdStationHydro>
+            <LbStationHydro>station 3</LbStationHydro>
+            <TypStationHydro>LIMNI</TypStationHydro>
+          </StationHydro>
+        </StationsHydro>
+      </SiteHydro>
+      <!-- 1 site + 1 station -->
+      <SiteHydro>
+        <CdSiteHydro>O2000040</CdSiteHydro>
+        <LbSiteHydro>La Garonne à Toulouse</LbSiteHydro>
+        <LbUsuelSiteHydro>Toulouse</LbUsuelSiteHydro>
+        <TypSiteHydro>REEL</TypSiteHydro>
+        <StationsHydro>
+          <StationHydro>
+            <CdStationHydro>O200004001</CdStationHydro>
+            <LbStationHydro>La Garonne à Toulouse</LbStationHydro>
+            <TypStationHydro>LIMNI</TypStationHydro>
+            <CoordStationHydro>
+              <CoordXStationHydro>15.0</CoordXStationHydro>
+              <CoordYStationHydro>16.0</CoordYStationHydro>
+              <ProjCoordStationHydro>26</ProjCoordStationHydro>
+            </CoordStationHydro>
+            <PkStationHydro>1.0</PkStationHydro>
+          </StationHydro>
+        </StationsHydro>
+      </SiteHydro>
+      <!-- 1 site + 1 station + 2 capteurs -->
       <SiteHydro>
         <CdSiteHydro>O1712510</CdSiteHydro>
         <LbSiteHydro>L'Ariège à Auterive</LbSiteHydro>
@@ -157,6 +206,13 @@
               <CodeSandreRdd>1000000001</CodeSandreRdd>
             </ReseauxMesureStationHydro>
             <Capteurs>
+              <Capteur>
+                <CdCapteur>O17125100102</CdCapteur>
+                <LbCapteur>Radar</LbCapteur>
+                <MnCapteur>Rad</MnCapteur>
+                <TypCapteur>2</TypCapteur>
+                <TypMesureCapteur>H</TypMesureCapteur>
+              </Capteur>
               <Capteur>
                 <CdCapteur>O17125100101</CdCapteur>
                 <LbCapteur>Ultrasons principal</LbCapteur>

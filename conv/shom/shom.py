@@ -56,8 +56,10 @@ __date__ = """2013-08-17"""
 
 
 #-- todos ---------------------------------------------------------------------
-# TODO - try to read a complete 4 years file. If it's too big, use skiprows and
-#        nrows read_table options
+# FIXME - simulation_from_hfs is rather slow
+#         15s to load a complete 4 years file in a simulation from DVD
+#         (5s in a serie is quite good)
+#         One could use use skiprows and nrows read_table options
 
 
 #-- functions -----------------------------------------------------------------
@@ -155,7 +157,7 @@ def serie_from_hfs(src, stationhydro=None, begin=None, end=None, strict=True):
             raise TypeError('a stationhydro is required')
     if not stationhydro:
         stationhydro = _sitehydro.Stationhydro(
-            code='-' * 8,
+            code=None,
             typestation='LIMNI',
             libelle=_os.path.splitext(_os.path.split(src)[-1])[0],
             strict=False

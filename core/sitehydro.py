@@ -20,8 +20,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.2b"""
-__date__ = """2013-08-17"""
+__version__ = """version 0.2c"""
+__date__ = """2013-08-19"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -76,16 +76,24 @@ class _Entitehydro(object):
     @code.setter
     def code(self, code):
         try:
-            code = unicode(code)
-            if self._strict and (self.__class__ in CODE_HYDRO_LENGTH):
-                #code must be like 'A0334450(xx)(yy)'
-                if (
-                    (len(code) != CODE_HYDRO_LENGTH[self.__class__]) or
-                    (not code[0].isupper()) or
-                    (not code[1:].isdigit())
-                ):
-                    raise ValueError('code incorrect')
-            self._code = code
+            if code is None:
+                # None code
+                if self._strict:
+                    raise ValueError('code is required')
+                else:
+                    self._code = None
+            else:
+                # not None code
+                code = unicode(code)
+                if self._strict and (self.__class__ in CODE_HYDRO_LENGTH):
+                    #code must be like 'A0334450(xx)(yy)'
+                    if (
+                        (len(code) != CODE_HYDRO_LENGTH[self.__class__]) or
+                        (not code[0].isupper()) or
+                        (not code[1:].isdigit())
+                    ):
+                        raise ValueError('code incorrect')
+                self._code = code
         except:
             raise
 
