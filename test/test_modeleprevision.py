@@ -31,8 +31,8 @@ from libhydro.core import modeleprevision
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1a"""
-__date__ = """2013-08-06"""
+__version__ = """Version 0.1b"""
+__date__ = """2013-08-20"""
 
 #HISTORY
 #V0.1 - 2013-08-06
@@ -58,7 +58,7 @@ class TestModeleprevision(unittest.TestCase):
     #     pass
 
     def test_base_01(self):
-        """Empty modele."""
+        """Empty Modeleprevision."""
         code = libelle = description = None
         typemodele = 0
         m = modeleprevision.Modeleprevision()
@@ -96,6 +96,11 @@ class TestModeleprevision(unittest.TestCase):
             (m.code, m.libelle, m.typemodele, m.description),
             (code, libelle, typemodele, description)
         )
+
+    def test_str_01(self):
+        """Test __str__ method with None values."""
+        m = modeleprevision.Modeleprevision()
+        self.assertTrue(m.__str__().rfind('Modele') > -1)
 
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test."""

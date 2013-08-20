@@ -1,17 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Module xml.
+"""Module xml.from_xml.
 
-Ce module contient des convertisseurs de et vers les fichiers au format
+Ce module contient des fonctions de lecture de fichiers au format
 Xml Hydrometrie (version 1.1 exclusivement).
 
-Fonctions de lecture:
+Fonctions disponibles:
     (TODO)
-
-Fonctions d'écriture:
-    (TODO)
-
-Le module contient egalement la classe:
-    # Scenario
 
 Exemples d'utilisation:
     (TODO)
@@ -25,11 +19,9 @@ from __future__ import (
     print_function as _print_function
 )
 
-import datetime as _datetime
 import numpy as _numpy
-from lxml import etree as _etree
+# from lxml import etree as _etree
 
-from . import mapping
 from libhydro.core import sitehydro as _sitehydro
 from libhydro.core import modeleprevision as _modeleprevision
 from libhydro.core import obshydro as _obshydro
@@ -51,54 +43,12 @@ __date__ = """2013-08-19"""
 #        code=element[0].text,
 #        but xpath is more readable and do not care of xml order
 
-# TODO - make 2 modules: to_xml et from_xml ??
-
 # TODO - XSD validation
 
 
-# -- class Scenario -----------------------------------------------------------
-class Scenario(object):
-
-    # FIXME
-
-    def __init__(self):
-        self.code = 'hydrometrie'
-        self.version = 1.1
-        self.nom = 'Echange de données hydrométriques'
-        self.dtfichier = _datetime.datetime.utcnow()
-
-    # <Emetteur><CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
-    #           <CdContact schemeAgencyID="SANDRE">1</CdContact>
-
-        # destinataire = destinataire
-
-
-#-- to xml functions ----------------------------------------------------------
-def to_xml(scenario, *args):
-
-    # FIXME
-    # import ipdb; ipdb.set_trace()
-
-    tree = _etree.Element('hydrometrie')
-
-    # add scenario
-    s = _etree.SubElement(tree, 'Scenario')
-    for (k, v) in mapping.scenario.iteritems():
-        child = _etree.SubElement(s, v)
-        child.text = unicode(getattr(scenario, k))
-
-    # add args
-
-    # return
-    print(
-        _etree.tostring(
-            tree, encoding='utf-8', xml_declaration=1,  pretty_print=1
-        )
-    )
-    return tree
-
-# -- from xml functions -------------------------------------------------------
-# def get_sitehydro(src, code=None):
+# -- public functions ---------------------------------------------------------
+def get_sitehydro(src, code=None):
+    """Fonction get_sitehydro."""
 
     # # FIXME - probleme avec les namespace
 
@@ -107,9 +57,10 @@ def to_xml(scenario, *args):
     # siteshydro = []
     # for sitehydro in tree.findall('*//SiteHydro'):
     #     siteshydro.append(
-    # pass
+    pass
 
 
+# -- atomic functions ---------------------------------------------------------
 def _sitehydro_from_element(element):
     """Return a sitehydro.Sitehydro from a <SiteHydro> element."""
     return _sitehydro.Sitehydro(
@@ -218,6 +169,7 @@ def _previsions_from_element(element):
     return None
 
 
+# -- utilities functions ------------------------------------------------------
 def _get_value(element, tag, cast=unicode):
     """Return cast(element/tag.text) or None."""
     # FIXME - a method should be better to avoid the copy of element

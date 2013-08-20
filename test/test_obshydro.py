@@ -26,14 +26,15 @@ sys.path.append(os.path.join('..', '..'))
 
 import unittest
 import datetime
+import numpy
 
 from libhydro.core import (sitehydro, obshydro)
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1c"""
-__date__ = """2013-08-12"""
+__version__ = """Version 0.1d"""
+__date__ = """2013-08-20"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -80,6 +81,17 @@ class TestObservation(unittest.TestCase):
             datetime.datetime(2000, 1, 1, 10), 10, mth=4, qal=8
         )
         obshydro.Observation(datetime.datetime(2000, 1, 1), '20', cnt=True)
+
+    def test_str_01(self):
+        """Test __str__ method."""
+        dte = '2000-01-01 10:33:01+0000'
+        res = 20.5
+        mth = 4
+        qal = 8
+        cnt = False
+        obs = obshydro.Observation(dte, res, mth, qal, cnt)
+        self.assertTrue(obs.__str__().rfind('UTC') > -1)
+        self.assertTrue(obs.__str__().rfind('continue') > -1)
 
     def test_error_01(self):
         """Date error."""
@@ -232,6 +244,37 @@ class TestSerie(unittest.TestCase):
             (s, None, 0, o, True)
         )
 
+    def test_str_01(self):
+        """Test __str__ method with None values."""
+        serie = obshydro.Serie(strict=False)
+        self.assertTrue(serie.__str__().rfind('Serie') > -1)
+        self.assertTrue(serie.__str__().rfind('Statut') > -1)
+        self.assertTrue(serie.__str__().rfind('Observations') > -1)
+
+    def test_str_02(self):
+        """Test __str__ method with a small Observations."""
+        s = sitehydro.Stationhydro(code='A044581001')
+        o = obshydro.Observations(
+            obshydro.Observation('2012-10-03 06:00', 33),
+            obshydro.Observation('2012-10-03 08:00', 42)
+        )
+        serie = obshydro.Serie(entite=s, observations=o)
+        self.assertTrue(serie.__str__().rfind('Serie') > -1)
+        self.assertTrue(serie.__str__().rfind('Statut') > -1)
+        self.assertTrue(serie.__str__().rfind('Observations') > -1)
+
+    def test_str_03(self):
+        """Test __str__ method with a big Observations."""
+        s = sitehydro.Stationhydro(code='A044581001', libelle='Toulouse')
+        o = obshydro.Observations(
+            *[obshydro.Observation('20%i-01-01 00:00' % x, x)
+              for x in xrange(10, 50)]
+        )
+        serie = obshydro.Serie(entite=s, observations=o)
+        self.assertTrue(serie.__str__().rfind('Serie') > -1)
+        self.assertTrue(serie.__str__().rfind('Statut') > -1)
+        self.assertTrue(serie.__str__().rfind('Observations') > -1)
+
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test."""
         s = 4
@@ -285,6 +328,47 @@ class TestSerie(unittest.TestCase):
             TypeError,
             obshydro.Serie,
             **{'observations': 12, 'strict': True}
+        )
+
+
+#-- class TestConcat ----------------------------------------------------------
+class TestConcat(unittest.TestCase):
+    """Concat function tests."""
+
+    def test_base_01(self):
+        """Concat base test."""
+        obs1 = obshydro.Observations(
+            obshydro.Observation('2012-10-03 06:00', 33),
+            obshydro.Observation('2012-10-03 07:00', 37),
+            obshydro.Observation('2012-10-03 08:00', 42)
+        )
+        obs2 = obshydro.Observations(
+            obshydro.Observation('2014-10-03 06:00', 330),
+            obshydro.Observation('2014-10-03 07:00', 370),
+            obshydro.Observation('2014-10-03 08:00', 420)
+        )
+        expected = obshydro.Observations(
+            obshydro.Observation('2012-10-03 06:00', 33),
+            obshydro.Observation('2012-10-03 07:00', 37),
+            obshydro.Observation('2012-10-03 08:00', 42),
+            obshydro.Observation('2014-10-03 06:00', 330),
+            obshydro.Observation('2014-10-03 07:00', 370),
+            obshydro.Observation('2014-10-03 08:00', 420)
+        )
+        concat = obshydro.concat(obs1, obs2)
+        self.assertTrue(numpy.array_equal(concat, expected))
+
+    def test_error_01(self):
+        """Concat error test."""
+        obs1 = obshydro.Observations(
+            obshydro.Observation('2012-10-03 06:00', 33),
+            obshydro.Observation('2012-10-03 07:00', 37),
+            obshydro.Observation('2012-10-03 08:00', 42)
+        )
+        self.assertRaises(
+            TypeError,
+            obshydro.concat,
+            *(obs1, '33')
         )
 
 

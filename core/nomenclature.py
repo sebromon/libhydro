@@ -96,8 +96,12 @@ NOMENCLATURE = {
         'LIMNI': 'Limnimetre', 'DEB': 'Debitmetre', 'HC': 'Hauteur calculee',
         'LIMNIMERE': 'Limnimetre station mere',
         'LIMNIFILLE': 'Limnimetre station fille'
-    }
+    },
 
+    # Civilité du contact
+    538: {
+        1: 'Monsieur', 2: 'Madame', 3: 'Mademoiselle'
+    }
 }
 
 NOMENCLATURES = NOMENCLATURE.keys()

@@ -31,6 +31,8 @@ __date__ = """2013-08-19"""
 #-- todos ---------------------------------------------------------------------
 # FIXME - generalize typeentite in _Entite.typentite
 
+# TODO - add navigability for Capteur => Station and Station => Site
+
 
 # -- config -------------------------------------------------------------------
 # config use classes definitions and is at the bottom
@@ -50,7 +52,7 @@ class _Entitehydro(object):
     def __init__(self, code, libelle=None, strict=True):
         """Constructor.
 
-        Parameters:
+        Arguments:
             code (string(8, 10, 12)) = hydro code
             libelle (string)
             strict (bool, defaut True) = strict or fuzzy mode
@@ -97,12 +99,10 @@ class _Entitehydro(object):
         except:
             raise
 
-    # -- other methods --
-
 
 #-- class Sitehydro -----------------------------------------------------------
 class Sitehydro(_Entitehydro):
-    """Class Sitehydro.
+    """Classe Sitehydro.
 
     Classe pour manipuler des sites hydrometriques.
 
@@ -110,11 +110,11 @@ class Sitehydro(_Entitehydro):
         code (string(8)) = code hydro
         typesite (string parmi NOMENCLATURE[530])
         libelle (string)
-        stations (un iterable de Station)
+        stations (une liste de Station)
 
     """
 
-    # TODO - sitehydro other properties
+    # TODO - Sitehydro other properties
 
     #libelleusuel
     #libellecomplement
@@ -160,7 +160,7 @@ class Sitehydro(_Entitehydro):
     ):
         """Constructeur.
 
-        Parametres:
+        Arguments:
             code (string(8)) = code hydro
             typesite (string parmi NOMENCLATURE[530], defaut REEL)
             libelle (string)
@@ -196,10 +196,10 @@ class Sitehydro(_Entitehydro):
         try:
             typesite = unicode(typesite)
             if (self._strict) and (typesite not in _NOMENCLATURE[530]):
-                raise Exception
+                raise ValueError('typesite incorrect')
             self._typesite = typesite
         except:
-            raise ValueError('typesite incorrect')
+            raise
 
     # -- property stations --
     @property
@@ -245,7 +245,7 @@ class Sitehydro(_Entitehydro):
 
 #-- class Stationhydro --------------------------------------------------------
 class Stationhydro(_Entitehydro):
-    """Class Stationhydro.
+    """Classe Stationhydro.
 
     Classe pour manipuler des stations hydrometriques.
 
@@ -253,10 +253,11 @@ class Stationhydro(_Entitehydro):
         code (string(10)) = code hydro
         typestation (string parmi NOMENCLATURE[531])
         libelle (string)
+        capteurs (une liste de Capteur)
 
     """
 
-    # TODO - stationhydro other properties
+    # TODO - Stationhydro other properties
 
     #capteurs
 
@@ -297,7 +298,7 @@ class Stationhydro(_Entitehydro):
     ):
         """Constructeur.
 
-        Parametres:
+        Arguments:
             code (string(10)) = code hydro
             typestation (string parmi NOMENCLATURE[531], defaut LIMNI)
             libelle (string)
@@ -333,10 +334,10 @@ class Stationhydro(_Entitehydro):
         try:
             typestation = unicode(typestation)
             if (self._strict) and (typestation not in _NOMENCLATURE[531]):
-                raise Exception
+                raise ValueError('typestation incorrect')
             self._typestation = typestation
         except:
-            raise ValueError('typestation incorrect')
+            raise
 
     # -- property capteurs --
     @property
@@ -383,7 +384,7 @@ class Stationhydro(_Entitehydro):
 
 #-- class Capteur -------------------------------------------------------------
 class Capteur(_Entitehydro):
-    """Class Capteur.
+    """Classe Capteur.
 
     Classe pour manipuler des capteurs hydrometriques.
 
@@ -412,7 +413,7 @@ class Capteur(_Entitehydro):
     def __init__(self, code, typemesure='H', libelle=None, strict=True):
         """Constructeur.
 
-        Parametres:
+        Arguments:
             code (string(12)) = code hydro
             typemesure (caractere parmi NOMENCLATURE[531], defaut H) = H ou Q
             libelle (string)
@@ -444,10 +445,10 @@ class Capteur(_Entitehydro):
         try:
             typemesure = unicode(typemesure)
             if (self._strict) and (typemesure not in _NOMENCLATURE[520]):
-                raise Exception
+                raise ValueError('typemesure incorrect')
             self._typemesure = typemesure
         except:
-            raise ValueError('typemesure incorrect')
+            raise
 
     # -- other methods --
     def __str__(self):

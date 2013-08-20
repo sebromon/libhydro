@@ -175,7 +175,7 @@ class Observations(_pandas.DataFrame):
     def __new__(cls, *observations):
         """Constructeur.
 
-        Parametres:
+        Arguments:
             observations (un nombre quelconque d'Observation)
 
         Exemples:
@@ -264,7 +264,7 @@ class Serie(object):
     ):
         """Constructeur.
 
-        Parametres:
+        Arguments:
             entite (Sitehydro, Stationhydro ou Capteur)
             grandeur (char in NOMENCLATURE[509]) = H ou Q
             statut (int in NOMENCLATURE[510], defaut 0) = donnee brute,
@@ -311,12 +311,12 @@ class Serie(object):
                     )
                 )
             ):
-                raise Exception
+                raise TypeError(
+                    'entite must be a Sitehydro, a Stationhydro or a Capteur'
+                )
             self._entite = entite
         except:
-            raise TypeError(
-                'entite must be a Sitehydro, a Stationhydro or a Capteur'
-            )
+            raise
 
     # -- property grandeur --
     @property
@@ -329,10 +329,10 @@ class Serie(object):
         try:
             grandeur = unicode(grandeur)
             if (self._strict) and (grandeur not in _NOMENCLATURE[509]):
-                raise Exception
+                raise ValueError('grandeur incorrect')
             self._grandeur = grandeur
         except:
-            raise ValueError('grandeur incorrect')
+            raise
 
     # -- property statut --
     @property
@@ -348,11 +348,11 @@ class Serie(object):
                 self._statut = statut
             else:
                 if (self._strict):
-                    raise Exception
+                    raise ValueError('statut incorrect')
                 else:
                     self._statut = 0
         except:
-            raise ValueError('statut incorrect')
+            raise
 
     # -- property observations --
     @property

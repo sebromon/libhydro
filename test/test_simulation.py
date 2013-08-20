@@ -32,8 +32,8 @@ from libhydro.core import (simulation, modeleprevision, sitehydro)
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1b"""
-__date__ = """2013-08-14"""
+__version__ = """Version 0.1c"""
+__date__ = """2013-08-20"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -82,6 +82,14 @@ class TestPrevision(unittest.TestCase):
             (p['dte'].item(), p['res'].item(), p['prb'].item()),
             (datetime.datetime(2012, 5, 18), res, int(prb))
         )
+
+    def test_str_01(self):
+        """Test __str__ method with minimum values."""
+        dte = '2012-05-18 00:00+00'
+        res = 33
+        p = simulation.Prevision(dte=dte, res=res)
+        self.assertTrue(p.__str__().rfind('avec une probabilite') > -1)
+        self.assertTrue(p.__str__().rfind('UTC') > -1)
 
     def test_error_01(self):
         """Date error."""
@@ -247,6 +255,49 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(sim.dtprod, datetime.datetime(2012, 5, 18, 18, 36))
         sim = simulation.Simulation(dtprod='2012-05-18 18:36+02')
         self.assertEqual(sim.dtprod, datetime.datetime(2012, 5, 18, 16, 36))
+
+    def test_str_01(self):
+        """Test __str__ method with None values."""
+        sim = simulation.Simulation()
+        self.assertTrue(sim.__str__().rfind('Simulation') > -1)
+        self.assertTrue(sim.__str__().rfind('Date de production') > -1)
+        self.assertTrue(sim.__str__().rfind('Commentaire') > -1)
+        self.assertTrue(sim.__str__().rfind('Previsions') > -1)
+
+    def test_str_02(self):
+        """Test __str__ method with basic values."""
+        previsions = simulation.Previsions(
+            simulation.Prevision(
+                **{'dte': '2012-10-10 10', 'res': 25.8, 'prb': 3}
+            )
+        )
+        sim = simulation.Simulation(
+            dtprod='2012-05-18T18:36Z',
+            entite=sitehydro.Stationhydro(
+                code=0, libelle='Toulouse', strict=False
+            ),
+            previsions=previsions
+        )
+        self.assertTrue(sim.__str__().rfind('Simulation') > -1)
+        self.assertTrue(sim.__str__().rfind('Date de production') > -1)
+        self.assertTrue(sim.__str__().rfind('Commentaire') > -1)
+        self.assertTrue(sim.__str__().rfind('Previsions') > -1)
+
+    def test_str_03(self):
+        """Test __str__ method with big Previsions."""
+        previsions = simulation.Previsions(
+            *[simulation.Prevision(dte='20%i-10-10 10' % x, res=x)
+              for x in range(10, 50)]
+        )
+        sim = simulation.Simulation(
+            dtprod='2012-05-18T18:36Z',
+            entite=sitehydro.Stationhydro(code=0, strict=False),
+            previsions=previsions
+        )
+        self.assertTrue(sim.__str__().rfind('Simulation') > -1)
+        self.assertTrue(sim.__str__().rfind('Date de production') > -1)
+        self.assertTrue(sim.__str__().rfind('Commentaire') > -1)
+        self.assertTrue(sim.__str__().rfind('Previsions') > -1)
 
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test."""

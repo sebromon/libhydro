@@ -55,7 +55,7 @@ class Modeleprevision(object):
     ):
         """Constructeur.
 
-        Parametres:
+        Arguments:
             code (string <= 10)
             libelle (string)
             typemodele (integer parmi NOMENCLATURE[525], defaut 0)
@@ -95,10 +95,10 @@ class Modeleprevision(object):
         try:
             code = unicode(code)
             if (self._strict and (len(code) > 10)):
-                raise Exception
+                raise ValueError('code incorrect')
             self._code = code
         except:
-            raise ValueError('code incorrect')
+            raise
 
     # -- property typemodele --
     @property
@@ -111,10 +111,10 @@ class Modeleprevision(object):
         try:
             typemodele = int(typemodele)
             if (self._strict) and (typemodele not in _NOMENCLATURE[525]):
-                raise Exception
+                raise ValueError('typemodele incorrect')
             self._typemodele = typemodele
         except:
-            raise ValueError('typemodele incorrect')
+            raise
 
     # -- other methods --
     def __str__(self):

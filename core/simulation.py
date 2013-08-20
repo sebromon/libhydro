@@ -157,9 +157,9 @@ class Previsions(_pandas.Series):
     """
 
     def __new__(cls, *previsions):
-
         """Constructeur+
-        Parametres:
+
+        Arguments:
             previsions (un nombre quelconque de Prevision)
 
         Exemples:
@@ -235,7 +235,7 @@ class Simulation(object):
     ):
         """Constructeur.
 
-        Parametres:
+        Arguments:
             entite (Sitehydro ou Stationhydro)
             modeleprevision (Modeleprevision)
             grandeur (char in NOMENCLATURE[509]) = H ou Q
@@ -333,10 +333,10 @@ class Simulation(object):
                     )
                 )
             ):
-                raise Exception
+                raise TypeError('modeleprevision must be a Modeleprevision')
             self._modeleprevision = modeleprevision
         except:
-            raise TypeError('modeleprevision incorrect')
+            raise
 
     # -- property grandeur --
     @property
@@ -349,10 +349,10 @@ class Simulation(object):
         try:
             grandeur = unicode(grandeur)
             if (self._strict) and (grandeur not in _NOMENCLATURE[509]):
-                raise Exception
+                raise ValueError('grandeur incorrect')
             self._grandeur = grandeur
         except:
-            raise ValueError('grandeur incorrect')
+            raise
 
     # -- property statut --
     @property
@@ -365,10 +365,10 @@ class Simulation(object):
         try:
             statut = int(statut)
             if (self._strict) and (statut not in _NOMENCLATURE[516]):
-                raise Exception
+                raise ValueError('statut incorrect')
             self._statut = statut
         except:
-            raise ValueError('statut incorrect')
+            raise
 
     # -- property qualite --
     @property
@@ -398,7 +398,7 @@ class Simulation(object):
             try:
                 dtprod = _numpy.datetime64(dtprod)
             except Exception:
-                raise TypeError('incorrect dtprod')
+                raise TypeError('dtprod must be a datetime.datetime')
         self._dtprod = dtprod
 
     # -- property previsions --
@@ -414,12 +414,12 @@ class Simulation(object):
             # ... and that index contains datetimes
             if (self._strict):
                 if not isinstance(previsions, _pandas.Series):
-                    raise TypeError
+                    raise TypeError('previsions incorrect')
                 previsions.index[0][0].isoformat()
             # seeem's ok :-)
             self._previsions = previsions
         except:
-            raise TypeError('previsions incorrect')
+            raise
 
     # -- other methods --
     def __str__(self):

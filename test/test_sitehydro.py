@@ -31,8 +31,8 @@ from libhydro.core import sitehydro
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1e"""
-__date__ = """2013-08-17"""
+__version__ = """Version 0.1f"""
+__date__ = """2013-08-20"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -106,7 +106,42 @@ class TestSitehydro(unittest.TestCase):
             (code, typesite, libelle, [s for s in stations])
         )
 
+    def test_base_04(self):
+        """Update stations attribute."""
+        code = 'A3334550'
+        typesite = 'REEL'
+        libelle = 'La Saône [apres la crue] a Montelimar [hé oui]'
+        stations = [
+            sitehydro.Stationhydro(code='%s01' % code, typestation='DEB')
+        ]
+        s = sitehydro.Sitehydro(
+            code=code, typesite=typesite, libelle=libelle, stations=stations
+        )
+        self.assertEqual(s.stations, stations)
+        s.stations = None
+        self.assertEqual(s.stations, [])
+        s.stations = stations[0]
+        self.assertEqual(s.stations, stations)
+        s.stations = stations
+        self.assertEqual(s.stations, stations)
+
+    def test_str_01(self):
+        """Test __str__ method with None values."""
+        s = sitehydro.Sitehydro(code=0, strict=False)
+        self.assertTrue(s.__str__().rfind('Site') > -1)
+
     def test_fuzzy_mode_01(self):
+        """Fuzzy mode test with None values."""
+        code = typesite = stations = None
+        s = sitehydro.Sitehydro(
+            typesite=typesite, code=code,  stations=stations, strict=False
+        )
+        self.assertEqual(
+            (s.typesite, s.code, s.stations),
+            ('REEL', code, [])
+        )
+
+    def test_fuzzy_mode_02(self):
         """Fuzzy mode test."""
         code = '3'
         typesite = '6'
@@ -133,6 +168,11 @@ class TestSitehydro(unittest.TestCase):
         """Code error."""
         code = 'B4401122'
         sitehydro.Sitehydro(**{'code': code})
+        self.assertRaises(
+            ValueError,
+            sitehydro.Sitehydro,
+            **{'code': None}
+        )
         self.assertRaises(
             ValueError,
             sitehydro.Sitehydro,
@@ -200,13 +240,41 @@ class TestStationhydro(unittest.TestCase):
         code = 'A033465001'
         typestation = 'LIMNI'
         libelle = 'La Seine a Paris - rive droite'
+        capteurs = [sitehydro.Capteur(code='V83310100101')]
         s = sitehydro.Stationhydro(
-            code=code, typestation=typestation, libelle=libelle
+            code=code, typestation=typestation,
+            libelle=libelle, capteurs=capteurs
+        )
+        self.assertEqual(
+            (s.code, s.typestation, s.libelle, s.capteurs),
+            (code, typestation, libelle, capteurs)
+        )
+
+    def test_base_03(self):
+        """Update capteurs attribute."""
+        code = 'A033465001'
+        typestation = 'LIMNI'
+        libelle = 'La Seine a Paris - rive droite'
+        capteurs = [sitehydro.Capteur(code='V83310100101')]
+        s = sitehydro.Stationhydro(
+            code=code, typestation=typestation,
+            libelle=libelle, capteurs=capteurs
         )
         self.assertEqual(
             (s.code, s.typestation, s.libelle),
             (code, typestation, libelle)
         )
+        s.capteurs = None
+        self.assertEqual(s.capteurs, [])
+        s.capteurs = capteurs[0]
+        self.assertEqual(s.capteurs, capteurs)
+        s.capteurs = capteurs
+        self.assertEqual(s.capteurs, capteurs)
+
+    def test_str_01(self):
+        """Test __str__ method with None values."""
+        s = sitehydro.Stationhydro(code=0, strict=False)
+        self.assertTrue(s.__str__().rfind('Station') > -1)
 
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test."""
@@ -255,6 +323,11 @@ class TestStationhydro(unittest.TestCase):
         sitehydro.Stationhydro(**{
             'code': code, 'typestation': 'DEB', 'capteurs': capteurs
         })
+        self.assertRaises(
+            TypeError,
+            sitehydro.Stationhydro,
+            **{'code': code, 'capteurs': 'c'}
+        )
         self.assertRaises(
             ValueError,
             sitehydro.Stationhydro,
@@ -305,6 +378,11 @@ class TestCapteur(unittest.TestCase):
             (c.code, c.typemesure, c.libelle),
             (code, typemesure, libelle)
         )
+
+    def test_str_01(self):
+        """Test __str__ method with None values."""
+        c = sitehydro.Capteur(code=0, strict=False)
+        self.assertTrue(c.__str__().rfind('Capteur') > -1)
 
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test."""
