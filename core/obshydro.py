@@ -7,7 +7,7 @@ Ce module contient les classes:
     # Serie
 
 et quelques fonctions utiles:
-    # concat() pour concatener des observations
+    # Observations.concat() pour concatener des observations
 
 
 On peux aussi utiliser directement les classes de la librairie Pandas, les
@@ -51,7 +51,7 @@ from . import sitehydro as _sitehydro
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """version 0.1g"""
-__date__ = """2013-08-19"""
+__date__ = """2013-08-21"""
 
 #HISTORY
 #V0.1 - 2013-07-18
@@ -132,9 +132,9 @@ class Observation(_numpy.ndarray):
         ).view(cls)
         return obj
 
-    def __array_finalize__(self, obj):
-        if obj is None:
-            return
+    # def __array_finalize__(self, obj):
+    #     if obj is None:
+    #         return
 
     def __str__(self):
         """String representation."""
@@ -173,7 +173,7 @@ class Observations(_pandas.DataFrame):
 
     """
     def __new__(cls, *observations):
-        """Constructeur.
+        """Initialisation.
 
         Arguments:
             observations (un nombre quelconque d'Observation)
@@ -209,29 +209,29 @@ class Observations(_pandas.DataFrame):
         # return obj.view(cls)
         return obj
 
+    @staticmethod
+    def concat(observations, others):
+        """Ajoute (concatene) une ou plusieurs observations.
 
-#-- Observations functions ----------------------------------------------------
-def concat(observations, others):
-    """Ajoute (concatene) une ou plusieurs observations.
+        Arguments:
+            observations (Observations)
+            others (Observation ou Observations) = observation(s) a ajouter
 
-    Arguments:
-        observations (Observations)
-        others (Observation ou Observations) = observation(s) a ajouter
+        Pour agreger 2 Observations, on peux aussi utiliser la methode append des
+        DataFrame ou bien directement la fonction concat de pandas.
 
-    Pour agreger 2 Observations, on peux aussi utiliser la methode append des
-    DataFrame ou bien directement la fonction concat de pandas.
+        Attention, les DataFrame ne sont JAMAIS modifies, ces fonctions retournent
+        un nouveau DataFrame.
 
-    Attention, les DataFrame ne sont JAMAIS modifies, ces fonctions retournent
-    un nouveau DataFrame.
+        """
 
-    """
+        # TODO - can't write a instance method to do that
+        #        (can't subclass DataFrame !)
 
-    # TODO - can't write a method to do that (subclassing DataFrame is hard !)
-
-    try:
-        return _pandas.concat([observations, others])
-    except Exception:
-        return _pandas.concat([observations, Observations(others)])
+        try:
+            return _pandas.concat([observations, others])
+        except Exception:
+            return _pandas.concat([observations, Observations(others)])
 
 
 #-- class Serie ---------------------------------------------------------------
@@ -262,7 +262,7 @@ class Serie(object):
         self, entite=None, grandeur=None, statut=0,
         observations=None, strict=True
     ):
-        """Constructeur.
+        """Initialisation.
 
         Arguments:
             entite (Sitehydro, Stationhydro ou Capteur)
@@ -279,16 +279,10 @@ class Serie(object):
         self._strict = strict
 
         # -- full properties --
-        self._entite = self._grandeur = self._observations = None
-        self._statut = 0
-        if entite:
-            self.entite = entite
-        if grandeur:
-            self.grandeur = grandeur
-        if statut:
-            self.statut = statut
-        if observations is not None:
-            self.observations = observations
+        self.entite = entite
+        self.grandeur = grandeur
+        self.statut = statut
+        self.observations = observations
 
     # -- property entite --
     @property
@@ -327,9 +321,18 @@ class Serie(object):
     @grandeur.setter
     def grandeur(self, grandeur):
         try:
-            grandeur = unicode(grandeur)
-            if (self._strict) and (grandeur not in _NOMENCLATURE[509]):
-                raise ValueError('grandeur incorrect')
+            if self._strict:
+
+                # None case
+                if grandeur is None:
+                    raise TypeError('grandeur is required')
+
+                # other cases
+                grandeur = unicode(grandeur)
+                if (grandeur not in _NOMENCLATURE[509]):
+                    raise ValueError('grandeur incorrect')
+
+            # all is well
             self._grandeur = grandeur
         except:
             raise
@@ -343,14 +346,17 @@ class Serie(object):
     @statut.setter
     def statut(self, statut):
         try:
+
+            # None case
+            if statut is None:
+                raise TypeError('statut is required')
+
+            # other cases
             statut = int(statut)
-            if statut in _NOMENCLATURE[510]:
-                self._statut = statut
-            else:
-                if (self._strict):
-                    raise ValueError('statut incorrect')
-                else:
-                    self._statut = 0
+            if (self._strict) and (statut not in _NOMENCLATURE[510]):
+                raise ValueError('statut incorrect')
+            self._statut = statut
+
         except:
             raise
 
@@ -363,12 +369,14 @@ class Serie(object):
     @observations.setter
     def observations(self, observations):
         try:
+
             if (self._strict):
                 # we check we have a res column...
                 # ... and that index contains datetimes
                 observations.res
                 observations.index[0].isoformat()
             self._observations = observations
+
         except:
             raise TypeError('observations incorrect')
 

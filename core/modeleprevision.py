@@ -18,8 +18,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1a"""
-__date__ = """2013-08-06"""
+__version__ = """version 0.1b"""
+__date__ = """2013-08-21"""
 
 #HISTORY
 #V0.1 - 2013-08-06
@@ -53,7 +53,7 @@ class Modeleprevision(object):
         self, code=None, libelle=None, typemodele=0, description=None,
         strict=True
     ):
-        """Constructeur.
+        """Initialisation.
 
         Arguments:
             code (string <= 10)
@@ -67,22 +67,13 @@ class Modeleprevision(object):
 
         # -- simple properties --
         self._strict = strict
-        if libelle:
-            self.libelle = unicode(libelle)
-        else:
-            self.libelle = None
-        if description:
-            self.description = unicode(description)
-        else:
-            self.description = None
+        self.libelle = unicode(libelle) if (libelle is not None) else None
+        self.description = unicode(description) if \
+            (description is not None) else None
 
         # -- full properties --
-        self._code = None
-        self._typemodele = 0
-        if code:
-            self.code = code
-        if typemodele:
-            self.typemodele = typemodele
+        self.code = code
+        self.typemodele = typemodele
 
     # -- property code --
     @property
@@ -93,9 +84,10 @@ class Modeleprevision(object):
     @code.setter
     def code(self, code):
         try:
-            code = unicode(code)
-            if (self._strict and (len(code) > 10)):
-                raise ValueError('code incorrect')
+            if code is not None:
+                code = unicode(code)
+                if (self._strict and (len(code) > 10)):
+                    raise ValueError('code incorrect')
             self._code = code
         except:
             raise
@@ -109,9 +101,10 @@ class Modeleprevision(object):
     @typemodele.setter
     def typemodele(self, typemodele):
         try:
-            typemodele = int(typemodele)
-            if (self._strict) and (typemodele not in _NOMENCLATURE[525]):
-                raise ValueError('typemodele incorrect')
+            if typemodele is not None:
+                typemodele = int(typemodele)
+                if (self._strict) and (typemodele not in _NOMENCLATURE[525]):
+                    raise ValueError('typemodele incorrect')
             self._typemodele = typemodele
         except:
             raise

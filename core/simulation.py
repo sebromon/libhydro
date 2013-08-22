@@ -47,8 +47,8 @@ from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1d"""
-__date__ = """2013-08-16"""
+__version__ = """version 0.1e"""
+__date__ = """2013-08-21"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -116,9 +116,9 @@ class Prevision(_numpy.ndarray):
         ).view(cls)
         return obj
 
-    def __array_finalize__(self, obj):
-        if obj is None:
-            return
+    # def __array_finalize__(self, obj):
+    #     if obj is None:
+    #         return
 
     def __str__(self):
         """String representation."""
@@ -157,7 +157,7 @@ class Previsions(_pandas.Series):
     """
 
     def __new__(cls, *previsions):
-        """Constructeur+
+        """Initialisation+
 
         Arguments:
             previsions (un nombre quelconque de Prevision)
@@ -233,7 +233,7 @@ class Simulation(object):
         qualite=None, public=False, commentaire=None, dtprod=None,
         previsions=None, strict=True
     ):
-        """Constructeur.
+        """Initialisation.
 
         Arguments:
             entite (Sitehydro ou Stationhydro)
@@ -256,23 +256,13 @@ class Simulation(object):
         self._strict = strict
 
         # -- full properties --
-        self._entite = self._modeleprevision = self._grandeur = None
-        self._statut = 4
-        self._qualite = self._dtprod = self._previsions = None
-        if entite:
-            self.entite = entite
-        if modeleprevision:
-            self.modeleprevision = modeleprevision
-        if grandeur:
-            self.grandeur = grandeur
-        if statut != 4:
-            self.statut = statut
-        if qualite:
-            self.qualite = qualite
-        if dtprod:
-            self.dtprod = dtprod
-        if previsions is not None:
-            self.previsions = previsions
+        self.entite = entite
+        self.modeleprevision = modeleprevision
+        self.grandeur = grandeur
+        self.statut = statut
+        self.qualite = qualite
+        self.dtprod = dtprod
+        self.previsions = previsions
 
     # -- property entite --
     @property
@@ -283,7 +273,7 @@ class Simulation(object):
     @entite.setter
     def entite(self, entite):
         try:
-            if self._strict:
+            if (self._strict) and (entite is not None):
 
                 # entite must be a site or a station
                 if not isinstance(
@@ -297,18 +287,22 @@ class Simulation(object):
                 # Q prevs on Sitehydro only, H prevs on Stationhydro
 
                 # FIXME - integrity checks
+                try:
 
-                if self.grandeur:
-                    if (self.grandeur == 'Q') and \
-                            not isinstance(entite, _sitehydro.Sitehydro):
-                        raise TypeError(
-                            'Q previsions, entite must be a Sitehydro'
-                        )
-                    if (self.grandeur == 'H') and \
-                            not isinstance(entite, _sitehydro.Stationhydro):
-                        raise TypeError(
-                            'H previsions, entite must be a Stationhydro'
-                        )
+                    if (self.grandeur is not None):
+                        if (self.grandeur == 'Q') and \
+                                not isinstance(entite, _sitehydro.Sitehydro):
+                            raise TypeError(
+                                'Q previsions, entite must be a Sitehydro'
+                            )
+                        if (self.grandeur == 'H') and \
+                                not isinstance(entite, _sitehydro.Stationhydro):
+                            raise TypeError(
+                                'H previsions, entite must be a Stationhydro'
+                            )
+
+                except AttributeError:
+                    pass
 
             # all is well
             self._entite = entite
@@ -325,16 +319,14 @@ class Simulation(object):
     @modeleprevision.setter
     def modeleprevision(self, modeleprevision):
         try:
-            if (
-                (self._strict) and (
-                    not isinstance(
-                        modeleprevision,
-                        _modeleprevision.Modeleprevision
-                    )
-                )
-            ):
-                raise TypeError('modeleprevision must be a Modeleprevision')
+            if (self._strict) and (modeleprevision is not None):
+                if not isinstance(
+                    modeleprevision,
+                    _modeleprevision.Modeleprevision
+                ):
+                    raise TypeError('modeleprevision must be a Modeleprevision')
             self._modeleprevision = modeleprevision
+
         except:
             raise
 
@@ -347,10 +339,12 @@ class Simulation(object):
     @grandeur.setter
     def grandeur(self, grandeur):
         try:
-            grandeur = unicode(grandeur)
-            if (self._strict) and (grandeur not in _NOMENCLATURE[509]):
-                raise ValueError('grandeur incorrect')
+            if (grandeur is not None):
+                grandeur = unicode(grandeur)
+                if (self._strict) and (grandeur not in _NOMENCLATURE[509]):
+                    raise ValueError('grandeur incorrect')
             self._grandeur = grandeur
+
         except:
             raise
 
@@ -363,10 +357,16 @@ class Simulation(object):
     @statut.setter
     def statut(self, statut):
         try:
+            # None case
+            if statut is None:
+                raise TypeError('statut is required')
+            # other cases
             statut = int(statut)
             if (self._strict) and (statut not in _NOMENCLATURE[516]):
                 raise ValueError('statut incorrect')
+            # all is well
             self._statut = statut
+
         except:
             raise
 
@@ -379,10 +379,12 @@ class Simulation(object):
     @qualite.setter
     def qualite(self, qualite):
         try:
-            qualite = int(qualite)
-            if (qualite < 0) or (qualite > 100):
-                raise ValueError('qualite is not in 0-100 range')
+            if qualite is not None:
+                qualite = int(qualite)
+                if (qualite < 0) or (qualite > 100):
+                    raise ValueError('qualite is not in 0-100 range')
             self._qualite = qualite
+
         except:
             raise
 
@@ -394,12 +396,19 @@ class Simulation(object):
 
     @dtprod.setter
     def dtprod(self, dtprod):
-        if not isinstance(dtprod, (_datetime.datetime, _numpy.datetime64)):
-            try:
-                dtprod = _numpy.datetime64(dtprod)
-            except Exception:
-                raise TypeError('dtprod must be a datetime.datetime')
-        self._dtprod = dtprod
+        try:
+            if dtprod is not None:
+                if not isinstance(
+                    dtprod, (_datetime.datetime, _numpy.datetime64)
+                ):
+                    try:
+                        dtprod = _numpy.datetime64(dtprod)
+                    except Exception:
+                        raise TypeError('dtprod must be a date')
+            self._dtprod = dtprod
+
+        except:
+            raise
 
     # -- property previsions --
     @property
@@ -410,13 +419,14 @@ class Simulation(object):
     @previsions.setter
     def previsions(self, previsions):
         try:
-            # we check we have a Series...
-            # ... and that index contains datetimes
-            if (self._strict):
-                if not isinstance(previsions, _pandas.Series):
-                    raise TypeError('previsions incorrect')
-                previsions.index[0][0].isoformat()
-            # seeem's ok :-)
+            if previsions is not None:
+                # we check we have a Series...
+                # ... and that index contains datetimes
+                if (self._strict):
+                    if not isinstance(previsions, _pandas.Series):
+                        raise TypeError('previsions incorrect')
+                    previsions.index[0][0].isoformat()
+            # all seeem's ok :-)
             self._previsions = previsions
         except:
             raise

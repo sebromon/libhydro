@@ -8,6 +8,7 @@ Ce package expose les classes modelisees par le Sandre dans les dictionnaires:
 """
 __all__ = [
     'nomenclature',
+    'intervenant',
     'sitehydro',
     'obshydro',
     'modeleprevision',
@@ -19,7 +20,6 @@ __all__ = [
 # courbetarage
 # evenement
 # gradienthydro
-# intervenant
 # jaugeage
 # obselaboreehydro
 # obsmeteo

@@ -2,14 +2,14 @@
 """Test program for simulation.
 
 To run all tests just type:
-    './test_ simulation.py' or 'python test_ simulation.py'
+    './test_core_simulation.py' or 'python test_core_simulation.py'
 
 To run only a class test:
-    python -m unittest test_ simulation.TestClass
+    python -m unittest test_core_simulation.TestClass
 
 To run only a specific test:
-    python -m unittest test_ simulation.TestClass
-    python -m unittest test_ simulation.TestClass.test_method
+    python -m unittest test_core_simulation.TestClass
+    python -m unittest test_core_simulation.TestClass.test_method
 
 """
 #-- imports -------------------------------------------------------------------
@@ -33,17 +33,11 @@ from libhydro.core import (simulation, modeleprevision, sitehydro)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """Version 0.1c"""
-__date__ = """2013-08-20"""
+__date__ = """2013-08-21"""
 
 #HISTORY
 #V0.1 - 2013-08-07
 #    first shot
-
-
-#-- todos ---------------------------------------------------------------------
-
-
-#-- config --------------------------------------------------------------------
 
 
 #-- class TestPrevision -------------------------------------------------------
@@ -367,6 +361,12 @@ class TestSimulation(unittest.TestCase):
     def test_error_04(self):
         """Statut error."""
         simulation.Simulation(**{'statut': 16})
+        self.assertRaises(
+            TypeError,
+            simulation.Simulation,
+            # **{'statut': 16}
+            **{'statut': None}
+        )
         self.assertRaises(
             ValueError,
             simulation.Simulation,

@@ -2,14 +2,14 @@
 """Test program for obshydro.
 
 To run all tests just type:
-    './test_obshydro.py' or 'python test_obshydro.py'
+    './test_core_obshydro.py' or 'python test_core_obshydro.py'
 
 To run only a class test:
-    python -m unittest test_obshydro.TestClass
+    python -m unittest test_core_obshydro.TestClass
 
 To run only a specific test:
-    python -m unittest test_obshydro.TestClass
-    python -m unittest test_obshydro.TestClass.test_method
+    python -m unittest test_core_obshydro.TestClass
+    python -m unittest test_core_obshydro.TestClass.test_method
 
 """
 #-- imports -------------------------------------------------------------------
@@ -34,17 +34,11 @@ from libhydro.core import (sitehydro, obshydro)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """Version 0.1d"""
-__date__ = """2013-08-20"""
+__date__ = """2013-08-21"""
 
 #HISTORY
 #V0.1 - 2013-07-15
 #    first shot
-
-
-#-- todos ---------------------------------------------------------------------
-
-
-#-- config --------------------------------------------------------------------
 
 
 #-- class TestObservation -----------------------------------------------------
@@ -194,6 +188,47 @@ class TestObservations(unittest.TestCase):
         )
 
 
+#-- class TestObservationsConcat ----------------------------------------------
+class TestObservationsConcat(unittest.TestCase):
+    """Observations.concat function tests."""
+
+    def test_base_01(self):
+        """Concat base test."""
+        obs1 = obshydro.Observations(
+            obshydro.Observation('2012-10-03 06:00', 33),
+            obshydro.Observation('2012-10-03 07:00', 37),
+            obshydro.Observation('2012-10-03 08:00', 42)
+        )
+        obs2 = obshydro.Observations(
+            obshydro.Observation('2014-10-03 06:00', 330),
+            obshydro.Observation('2014-10-03 07:00', 370),
+            obshydro.Observation('2014-10-03 08:00', 420)
+        )
+        expected = obshydro.Observations(
+            obshydro.Observation('2012-10-03 06:00', 33),
+            obshydro.Observation('2012-10-03 07:00', 37),
+            obshydro.Observation('2012-10-03 08:00', 42),
+            obshydro.Observation('2014-10-03 06:00', 330),
+            obshydro.Observation('2014-10-03 07:00', 370),
+            obshydro.Observation('2014-10-03 08:00', 420)
+        )
+        concat = obshydro.Observations.concat(obs1, obs2)
+        self.assertTrue(numpy.array_equal(concat, expected))
+
+    def test_error_01(self):
+        """Concat error test."""
+        obs1 = obshydro.Observations(
+            obshydro.Observation('2012-10-03 06:00', 33),
+            obshydro.Observation('2012-10-03 07:00', 37),
+            obshydro.Observation('2012-10-03 08:00', 42)
+        )
+        self.assertRaises(
+            TypeError,
+            obshydro.Observations.concat,
+            *(obs1, '33')
+        )
+
+
 #-- class TestSerie -----------------------------------------------------------
 class TestSerie(unittest.TestCase):
     """Serie class tests."""
@@ -231,17 +266,18 @@ class TestSerie(unittest.TestCase):
     def test_base_02(self):
         """Serie on a station with no statut."""
         s = sitehydro.Stationhydro(code='A044581001')
+        g = 'Q'
         o = obshydro.Observations(
             obshydro.Observation('2012-10-03 06:00', 33),
             obshydro.Observation('2012-10-03 08:00', 42)
         )
-        serie = obshydro.Serie(entite=s, observations=o)
+        serie = obshydro.Serie(entite=s, grandeur=g, observations=o)
         self.assertEqual(
             (
                 serie.entite, serie.grandeur, serie.statut,
                 serie.observations, serie._strict
             ),
-            (s, None, 0, o, True)
+            (s, g, 0, o, True)
         )
 
     def test_str_01(self):
@@ -258,7 +294,7 @@ class TestSerie(unittest.TestCase):
             obshydro.Observation('2012-10-03 06:00', 33),
             obshydro.Observation('2012-10-03 08:00', 42)
         )
-        serie = obshydro.Serie(entite=s, observations=o)
+        serie = obshydro.Serie(entite=s, grandeur='Q', observations=o)
         self.assertTrue(serie.__str__().rfind('Serie') > -1)
         self.assertTrue(serie.__str__().rfind('Statut') > -1)
         self.assertTrue(serie.__str__().rfind('Observations') > -1)
@@ -270,7 +306,7 @@ class TestSerie(unittest.TestCase):
             *[obshydro.Observation('20%i-01-01 00:00' % x, x)
               for x in xrange(10, 50)]
         )
-        serie = obshydro.Serie(entite=s, observations=o)
+        serie = obshydro.Serie(entite=s, grandeur='H', observations=o)
         self.assertTrue(serie.__str__().rfind('Serie') > -1)
         self.assertTrue(serie.__str__().rfind('Statut') > -1)
         self.assertTrue(serie.__str__().rfind('Observations') > -1)
@@ -281,94 +317,80 @@ class TestSerie(unittest.TestCase):
         g = 'RR'
         t = 123
         o = [10, 13, 25, 8]
-        i = False
         serie = obshydro.Serie(
-            entite=s, grandeur=g, statut=t, observations=o, strict=i
+            entite=s, grandeur=g, statut=t, observations=o, strict=False
         )
         self.assertEqual(
             (
                 serie.entite, serie.grandeur, serie.statut,
                 serie.observations, serie._strict
             ),
-            (s, g, 0, o, i)
+            (s, g, t, o, False)
+        )
+        serie = obshydro.Serie(strict=False)
+        self.assertEqual(
+            (
+                serie.entite, serie.grandeur, serie.statut,
+                serie.observations, serie._strict
+            ),
+            (None, None, 0, None, False)
         )
 
     def test_error_01(self):
         """Entite error."""
-        s = sitehydro.Stationhydro(code='A044581001')
-        obshydro.Serie(**{'entite': s})
+        s = sitehydro.Stationhydro(code='A044581001', strict=False)
+        o = obshydro.Observations(obshydro.Observation('2012-10-03 06:00', 33))
+        obshydro.Serie(**{'entite': s, 'grandeur': 'H', 'observations': o})
         self.assertRaises(
             TypeError,
             obshydro.Serie,
-            **{'entite': 'X'}
+            **{'entite': 'X', 'grandeur': 'H', 'observations': o}
         )
 
     def test_error_02(self):
         """Grandeur error."""
-        obshydro.Serie(**{'grandeur': 'H'})
+        s = sitehydro.Stationhydro(code='A044581001', strict=False)
+        o = obshydro.Observations(obshydro.Observation('2012-10-03 06:00', 33))
+        obshydro.Serie(**{'entite': s, 'grandeur': 'H', 'observations': o})
+        self.assertRaises(
+            TypeError,
+            obshydro.Serie,
+            **{'entite': s, 'grandeur': None, 'observations': o}
+        )
         self.assertRaises(
             ValueError,
             obshydro.Serie,
-            **{'grandeur': 'X'}
+            **{'entite': s, 'grandeur': 'X', 'observations': o}
         )
 
     def test_error_03(self):
         """Statut error."""
-        obshydro.Serie(**{'statut': 12})
+        s = sitehydro.Stationhydro(code='A044581001', strict=False)
+        o = obshydro.Observations(obshydro.Observation('2012-10-03 06:00', 33))
+        obshydro.Serie(
+            **{'entite': s, 'grandeur': 'H', 'statut': 12, 'observations': o}
+        )
+        self.assertRaises(
+            TypeError,
+            obshydro.Serie,
+            **{'entite': s, 'grandeur': 'H', 'statut': None, 'observations': o}
+        )
         self.assertRaises(
             ValueError,
             obshydro.Serie,
-            **{'statut': 124}
+            **{'entite': s, 'grandeur': 'H', 'statut': 124, 'observations': o}
         )
 
     def test_error_04(self):
         """Observations error."""
-        obshydro.Serie(**{'observations': 12, 'strict': False})
+        s = sitehydro.Stationhydro(code='A044581001', strict=False)
+        obshydro.Serie(
+            **{'entite': s, 'grandeur': 'H', 'observations': 12, 'strict': False}
+        )
         self.assertRaises(
             TypeError,
             obshydro.Serie,
-            **{'observations': 12, 'strict': True}
-        )
-
-
-#-- class TestConcat ----------------------------------------------------------
-class TestConcat(unittest.TestCase):
-    """Concat function tests."""
-
-    def test_base_01(self):
-        """Concat base test."""
-        obs1 = obshydro.Observations(
-            obshydro.Observation('2012-10-03 06:00', 33),
-            obshydro.Observation('2012-10-03 07:00', 37),
-            obshydro.Observation('2012-10-03 08:00', 42)
-        )
-        obs2 = obshydro.Observations(
-            obshydro.Observation('2014-10-03 06:00', 330),
-            obshydro.Observation('2014-10-03 07:00', 370),
-            obshydro.Observation('2014-10-03 08:00', 420)
-        )
-        expected = obshydro.Observations(
-            obshydro.Observation('2012-10-03 06:00', 33),
-            obshydro.Observation('2012-10-03 07:00', 37),
-            obshydro.Observation('2012-10-03 08:00', 42),
-            obshydro.Observation('2014-10-03 06:00', 330),
-            obshydro.Observation('2014-10-03 07:00', 370),
-            obshydro.Observation('2014-10-03 08:00', 420)
-        )
-        concat = obshydro.concat(obs1, obs2)
-        self.assertTrue(numpy.array_equal(concat, expected))
-
-    def test_error_01(self):
-        """Concat error test."""
-        obs1 = obshydro.Observations(
-            obshydro.Observation('2012-10-03 06:00', 33),
-            obshydro.Observation('2012-10-03 07:00', 37),
-            obshydro.Observation('2012-10-03 08:00', 42)
-        )
-        self.assertRaises(
-            TypeError,
-            obshydro.concat,
-            *(obs1, '33')
+            **{'entite': s, 'grandeur': 'H', 'observations': 12, 'strict': True}
         )
 
 

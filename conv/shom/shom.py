@@ -154,7 +154,7 @@ def serie_from_hfs(src, stationhydro=None, begin=None, end=None, strict=True):
     # if entite is None we use the HFS file name to build a station
     if stationhydro and strict:
         if not isinstance(stationhydro, _sitehydro.Stationhydro):
-            raise TypeError('a stationhydro is required')
+            raise TypeError('stationhydro is required')
     if not stationhydro:
         stationhydro = _sitehydro.Stationhydro(
             code=None,

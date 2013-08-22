@@ -1,0 +1,105 @@
+# -*- coding: utf-8 -*-
+"""Test program for xml.scenario.
+
+To run all tests just type:
+    './test_xml_scenario.py' or 'python test_xml_scenario.py'
+
+To run only a class test:
+    python -m unittest test_xml_scenario.TestClass
+
+To run only a specific test:
+    python -m unittest test_xml_scenario.TestClass
+    python -m unittest test_xml_scenario.TestClass.test_method
+
+"""
+#-- imports -------------------------------------------------------------------
+from __future__ import (
+    unicode_literals as _unicode_literals,
+    absolute_import as _absolute_import,
+    division as _division,
+    print_function as _print_function
+)
+
+import sys
+import os
+sys.path.append(os.path.join('..', '..'))
+
+import unittest
+
+from libhydro.core import intervenant
+from libhydro.conv.xml import Scenario
+
+
+#-- strings -------------------------------------------------------------------
+__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
+__version__ = """Version 0.1a"""
+__date__ = """2013-08-22"""
+
+#HISTORY
+#V0.1 - 2013-08-22
+#    first shot
+
+
+#-- todos ---------------------------------------------------------------------
+
+
+#-- config --------------------------------------------------------------------
+
+
+#-- class Testscenario --------------------------------------------------------
+class Testscenario(unittest.TestCase):
+    """Scenario class tests."""
+
+    def test_base_01(self):
+        """Base case scenario."""
+        emetteur = intervenant.Contact()
+        destinataire = intervenant.Intervenant()
+        sce = Scenario(emetteur=emetteur, destinataire=destinataire)
+        self.assertEqual(
+            (sce.code, sce.version, sce.nom,
+             sce.emetteur, sce.destinataire),
+            ('hydrometrie', '1.1', 'Echange de données hydrométriques',
+             emetteur, destinataire)
+        )
+
+    # def test_str_01(self):
+    #     """Test __str__ method with None values."""
+    #     m = scenario.scenario()
+    #     self.assertTrue(m.__str__().rfind('Modele') > -1)
+
+    def test_error_01(self):
+        """Emetteur error."""
+        emetteur = intervenant.Contact()
+        destinataire = intervenant.Intervenant()
+        Scenario(emetteur=emetteur, destinataire=destinataire)
+        self.assertRaises(
+            TypeError,
+            Scenario,
+            **{'emetteur': None, 'destinataire': destinataire}
+        )
+        self.assertRaises(
+            TypeError,
+            Scenario,
+            **{'emetteur': 'emetteur', 'destinataire': destinataire}
+        )
+
+    def test_error_02(self):
+        """Destinataire error."""
+        emetteur = intervenant.Contact()
+        destinataire = intervenant.Intervenant()
+        Scenario(emetteur=emetteur, destinataire=destinataire)
+        self.assertRaises(
+            TypeError,
+            Scenario,
+            **{'emetteur': emetteur, 'destinataire': None}
+        )
+        self.assertRaises(
+            TypeError,
+            Scenario,
+            **{'emetteur': emetteur, 'destinataire': 'destinataire'}
+        )
+
+
+#-- main ----------------------------------------------------------------------
+if __name__ == '__main__':
+    unittest.main()

@@ -2,14 +2,14 @@
 """Test program for modeleprevision.
 
 To run all tests just type:
-    './test_modeleprevision.py' or 'python test_modeleprevision.py'
+    './test_core_modeleprevision.py' or 'python test_core_modeleprevision.py'
 
 To run only a class test:
-    python -m unittest test_modeleprevision.TestClass
+    python -m unittest test_core_modeleprevision.TestClass
 
 To run only a specific test:
-    python -m unittest test_modeleprevision.TestClass
-    python -m unittest test_modeleprevision.TestClass.test_method
+    python -m unittest test_core_modeleprevision.TestClass
+    python -m unittest test_core_modeleprevision.TestClass.test_method
 
 """
 #-- imports -------------------------------------------------------------------
@@ -37,12 +37,6 @@ __date__ = """2013-08-20"""
 #HISTORY
 #V0.1 - 2013-08-06
 #    first shot
-
-
-#-- todos ---------------------------------------------------------------------
-
-
-#-- config --------------------------------------------------------------------
 
 
 #-- class TestModeleprevision -------------------------------------------------

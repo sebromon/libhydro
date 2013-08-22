@@ -15,13 +15,13 @@ from __future__ import (
 
 import datetime as _datetime
 
-from . import intervenant as _intervenant
+from ...core import (intervenant as _intervenant)
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1a"""
-__date__ = """2013-08-20"""
+__version__ = """version 0.1b"""
+__date__ = """2013-08-21"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -29,7 +29,7 @@ __date__ = """2013-08-20"""
 
 
 #-- todos ---------------------------------------------------------------------
-
+# FIXME - __str__ method
 
 # -- class Scenario -----------------------------------------------------------
 class Scenario(object):
@@ -53,6 +53,11 @@ class Scenario(object):
     # envoi
     # contexte
 
+    # class attributes
+    code = 'hydrometrie'
+    version = '1.1'
+    nom = 'Echange de données hydrométriques'
+
     def __init__(self, emetteur, destinataire):
         """Constructeur.
 
@@ -63,9 +68,6 @@ class Scenario(object):
         """
 
         # -- simple properties --
-        self.code = 'hydrometrie'
-        self.version = 1.1
-        self.nom = 'Echange de données hydrométriques'
         self.dtprod = _datetime.datetime.utcnow()
 
         # -- full properties --
@@ -81,10 +83,12 @@ class Scenario(object):
     @emetteur.setter
     def emetteur(self, emetteur):
         try:
+            # None case
             if emetteur is None:
-                raise ValueError('emetteur is required')
+                raise TypeError('emetteur is required')
+            # other cases
             if not isinstance(emetteur, _intervenant.Contact):
-                raise ValueError('emetteur incorrect')
+                raise TypeError('emetteur incorrect')
             self._emetteur = emetteur
         except:
             raise
@@ -98,10 +102,12 @@ class Scenario(object):
     @destinataire.setter
     def destinataire(self, destinataire):
         try:
+            # None case
             if destinataire is None:
-                raise ValueError('destinataire is required')
+                raise TypeError('destinataire is required')
+            # other cases
             if not isinstance(destinataire, _intervenant.Intervenant):
-                raise ValueError('destinataire incorrect')
+                raise TypeError('destinataire incorrect')
             self._destinataire = destinataire
         except:
             raise

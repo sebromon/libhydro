@@ -2,14 +2,14 @@
 """Test program for sitehydro.
 
 To run all tests just type:
-    './test_sitehydro.py' or 'python test_sitehydro.py'
+    './test_core_sitehydro.py' or 'python test_core_sitehydro.py'
 
 To run only a class test:
-    python -m unittest test_sitehydro.TestClass
+    python -m unittest test_core_sitehydro.TestClass
 
 To run only a specific test:
-    python -m unittest test_sitehydro.TestClass
-    python -m unittest test_sitehydro.TestClass.test_method
+    python -m unittest test_core_sitehydro.TestClass
+    python -m unittest test_core_sitehydro.TestClass.test_method
 
 """
 #-- imports -------------------------------------------------------------------
@@ -37,12 +37,6 @@ __date__ = """2013-08-20"""
 #HISTORY
 #V0.1 - 2013-07-15
 #    first shot
-
-
-#-- todos ---------------------------------------------------------------------
-
-
-#-- config --------------------------------------------------------------------
 
 
 #-- class TestSitehydro -------------------------------------------------------
@@ -132,9 +126,9 @@ class TestSitehydro(unittest.TestCase):
 
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test with None values."""
-        code = typesite = stations = None
+        code = stations = None
         s = sitehydro.Sitehydro(
-            typesite=typesite, code=code,  stations=stations, strict=False
+            code=code,  stations=stations, strict=False
         )
         self.assertEqual(
             (s.typesite, s.code, s.stations),
@@ -169,7 +163,7 @@ class TestSitehydro(unittest.TestCase):
         code = 'B4401122'
         sitehydro.Sitehydro(**{'code': code})
         self.assertRaises(
-            ValueError,
+            TypeError,
             sitehydro.Sitehydro,
             **{'code': None}
         )
@@ -293,6 +287,11 @@ class TestStationhydro(unittest.TestCase):
         code = 'A033465001'
         sitehydro.Stationhydro(**{'code': code, 'typestation': 'LIMNI'})
         self.assertRaises(
+            TypeError,
+            sitehydro.Stationhydro,
+            **{'code': None}
+        )
+        self.assertRaises(
             ValueError,
             sitehydro.Stationhydro,
             **{'code': code, 'typestation': 'LIMMMMNI'}
@@ -408,6 +407,11 @@ class TestCapteur(unittest.TestCase):
     def test_error_02(self):
         """Code error."""
         sitehydro.Capteur(**{'code': 'B44011220101'})
+        self.assertRaises(
+            TypeError,
+            sitehydro.Capteur,
+            **{'code': None}
+        )
         self.assertRaises(
             ValueError,
             sitehydro.Capteur,

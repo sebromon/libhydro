@@ -2,14 +2,14 @@
 """Test program for intervenant.
 
 To run all tests just type:
-    './test_intervenant.py' or 'python test_intervenant.py'
+    './test_core_intervenant.py' or 'python test_core_intervenant.py'
 
 To run only a class test:
-    python -m unittest test_intervenant.TestClass
+    python -m unittest test_core_intervenant.TestClass
 
 To run only a specific test:
-    python -m unittest test_intervenant.TestClass
-    python -m unittest test_intervenant.TestClass.test_method
+    python -m unittest test_core_intervenant.TestClass
+    python -m unittest test_core_intervenant.TestClass.test_method
 
 """
 #-- imports -------------------------------------------------------------------
@@ -31,8 +31,8 @@ from libhydro.core import intervenant
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1a"""
-__date__ = """2013-08-20"""
+__version__ = """Version 0.1b"""
+__date__ = """2013-08-21"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -69,13 +69,15 @@ class TestIntervenant(unittest.TestCase):
         contacts = [
             intervenant.Contact(code=0), intervenant.Contact(code=1)
         ]
-        i = intervenant.Intervenant(
+        it = intervenant.Intervenant(
             code=code, origine='I', nom=nom, mnemo=mnemo, contacts=contacts
         )
         self.assertEqual(
-            (i.code, i.origine, i.nom, i.mnemo, i.contacts),
+            (it.code, it.origine, it.nom, it.mnemo, it.contacts),
             (code, origine, nom, mnemo, contacts)
         )
+        for ct in it.contacts:
+            self.assertEqual(ct.intervenant, it)
 
     def test_base_04(self):
         """SANDRE auto Intervenant."""
@@ -93,17 +95,18 @@ class TestIntervenant(unittest.TestCase):
         nom = 'Service Central de la Pluie'
         mnemo = 'SCHAPI'
         contacts = [intervenant.Contact()]
-        i = intervenant.Intervenant(
+        it = intervenant.Intervenant(
             code=code, origine='A', nom=nom, mnemo=mnemo, contacts=contacts[0]
         )
         self.assertEqual(
-            (i.code, i.origine, i.nom, i.mnemo, i.contacts),
+            (it.code, it.origine, it.nom, it.mnemo, it.contacts),
             (code, origine, nom, mnemo, contacts)
         )
-        i.code = 12345678901234
-        i.origine = 'SIRET'
-        i.origine = None
-        i.contacts = None
+        for ct in it.contacts:
+            self.assertEqual(ct.intervenant, it)
+        it.code = 12345678901234
+        it.origine = 'SIRET'
+        it.contacts = None
 
     def test_str_01(self):
         """Test __str__ method with None values."""
@@ -113,7 +116,7 @@ class TestIntervenant(unittest.TestCase):
 
     def test_error_01(self):
         """Origine error."""
-        intervenant.Intervenant(origine='SANDRE')
+        it = intervenant.Intervenant(origine='SANDRE')
         self.assertRaises(
             ValueError,
             intervenant.Intervenant,
@@ -124,12 +127,17 @@ class TestIntervenant(unittest.TestCase):
             intervenant.Intervenant,
             **{'origine': 'S'}
         )
+        self.assertRaises(
+            ValueError,
+            it.__setattr__,
+            *('origine', None)
+        )
 
     def test_error_02(self):
         """SIRET error."""
         code = 12345678901234
-        i = intervenant.Intervenant(code=code, origine='SIRET')
-        intervenant.Intervenant(code=12345678901234, origine='SANDRE')
+        intervenant.Intervenant(code=code, origine='SANDRE')
+        it = intervenant.Intervenant(code=code, origine='SIRET')
         self.assertRaises(
             ValueError,
             intervenant.Intervenant,
@@ -137,7 +145,7 @@ class TestIntervenant(unittest.TestCase):
         )
         self.assertRaises(
             ValueError,
-            i.__setattr__,
+            it.__setattr__,
             *('code', 123)
         )
         self.assertRaises(
@@ -154,6 +162,27 @@ class TestIntervenant(unittest.TestCase):
             TypeError,
             intervenant.Intervenant,
             **{'contacts': '---'}
+        )
+
+    def test_error_04(self):
+        """Contacts links error."""
+        it1 = intervenant.Intervenant(code=1)
+        it2 = intervenant.Intervenant(code=2)
+        contacts = [
+            intervenant.Contact(code=10, intervenant=it1),
+            intervenant.Contact(code=20, intervenant=it2)
+        ]
+        it1.contacts = contacts[0]
+        it2.contacts = contacts[1]
+        self.assertRaises(
+            ValueError,
+            it1.__setattr__,
+            *('contacts', contacts[1])
+        )
+        self.assertRaises(
+            ValueError,
+            it2.__setattr__,
+            *('contacts', contacts[0])
         )
 
 

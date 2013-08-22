@@ -20,8 +20,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.2c"""
-__date__ = """2013-08-19"""
+__version__ = """version 0.2d"""
+__date__ = """2013-08-21"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -30,7 +30,6 @@ __date__ = """2013-08-19"""
 
 #-- todos ---------------------------------------------------------------------
 # FIXME - generalize typeentite in _Entite.typentite
-
 # TODO - add navigability for Capteur => Station and Station => Site
 
 
@@ -61,10 +60,7 @@ class _Entitehydro(object):
 
         # -- simple properties --
         self._strict = strict
-        if libelle:
-            self.libelle = unicode(libelle)
-        else:
-            self.libelle = None
+        self.libelle = unicode(libelle) if (libelle is not None) else None
 
         # -- full properties --
         self.code = code
@@ -79,13 +75,11 @@ class _Entitehydro(object):
     def code(self, code):
         try:
             if code is None:
-                # None code
+                # None case
                 if self._strict:
-                    raise ValueError('code is required')
-                else:
-                    self._code = None
+                    raise TypeError('code is required')
             else:
-                # not None code
+                # other cases
                 code = unicode(code)
                 if self._strict and (self.__class__ in CODE_HYDRO_LENGTH):
                     #code must be like 'A0334450(xx)(yy)'
@@ -95,7 +89,9 @@ class _Entitehydro(object):
                         (not code[1:].isdigit())
                     ):
                         raise ValueError('code incorrect')
-                self._code = code
+            # all is well
+            self._code = code
+
         except:
             raise
 
@@ -155,10 +151,10 @@ class Sitehydro(_Entitehydro):
     #tronconsvivilance
 
     def __init__(
-        self, code, typesite='REEL', libelle=None, stations=None,
+        self, code, typesite='REEL', libelle=None, stations=[],
         strict=True
     ):
-        """Constructeur.
+        """Initialisation.
 
         Arguments:
             code (string(8)) = code hydro
@@ -178,12 +174,8 @@ class Sitehydro(_Entitehydro):
         # -- simple properties --
 
         # -- full properties --
-        self._typesite = 'REEL'
-        self._stations = []
-        if typesite:
-            self.typesite = typesite
-        if stations:
-            self.stations = stations
+        self.typesite = typesite
+        self.stations = stations
 
     # -- property typesite --
     @property
@@ -192,12 +184,18 @@ class Sitehydro(_Entitehydro):
         return self._typesite
 
     @typesite.setter
-    def typesite(self, typesite='REEL'):
+    def typesite(self, typesite):
         try:
+            # None case
+            if typesite is None:
+                raise TypeError('typesite is required')
+            # other cases
             typesite = unicode(typesite)
             if (self._strict) and (typesite not in _NOMENCLATURE[530]):
                 raise ValueError('typesite incorrect')
+            # all is well
             self._typesite = typesite
+
         except:
             raise
 
@@ -210,8 +208,10 @@ class Sitehydro(_Entitehydro):
     @stations.setter
     def stations(self, stations):
         self._stations = []
+        # None case
         if stations is None:
             return
+        # others cases
         if isinstance(stations, Stationhydro):
             stations = [stations]
         for station in stations:
@@ -293,10 +293,10 @@ class Stationhydro(_Entitehydro):
     #plageutilisation
 
     def __init__(
-        self, code, typestation='LIMNI', libelle=None, capteurs=None,
+        self, code, typestation='LIMNI', libelle=None, capteurs=[],
         strict=True
     ):
-        """Constructeur.
+        """Initialisation.
 
         Arguments:
             code (string(10)) = code hydro
@@ -316,12 +316,8 @@ class Stationhydro(_Entitehydro):
         # -- simple properties --
 
         # -- full properties --
-        self._typestation = 'LIMNI'
-        self._capteurs = []
-        if typestation:
-            self.typestation = typestation
-        if capteurs:
-            self.capteurs = capteurs
+        self.typestation = typestation
+        self.capteurs = capteurs
 
     # -- property typestation --
     @property
@@ -330,12 +326,18 @@ class Stationhydro(_Entitehydro):
         return self._typestation
 
     @typestation.setter
-    def typestation(self, typestation='LIMNI'):
+    def typestation(self, typestation):
         try:
+            # None case
+            if typestation is None:
+                raise TypeError('typestation is required')
+            # other cases
             typestation = unicode(typestation)
             if (self._strict) and (typestation not in _NOMENCLATURE[531]):
                 raise ValueError('typestation incorrect')
+            # all is well
             self._typestation = typestation
+
         except:
             raise
 
@@ -348,8 +350,10 @@ class Stationhydro(_Entitehydro):
     @capteurs.setter
     def capteurs(self, capteurs):
         self._capteurs = []
+        # None caqe
         if capteurs is None:
             return
+        # other cases
         if isinstance(capteurs, Capteur):
             capteurs = [capteurs]
         for capteur in capteurs:
@@ -411,7 +415,7 @@ class Capteur(_Entitehydro):
     #observateur
 
     def __init__(self, code, typemesure='H', libelle=None, strict=True):
-        """Constructeur.
+        """Initialisation.
 
         Arguments:
             code (string(12)) = code hydro
@@ -430,9 +434,7 @@ class Capteur(_Entitehydro):
         # -- simple properties --
 
         # -- full properties --
-        self._typemesure = 'H'
-        if typemesure:
-            self.typemesure = typemesure
+        self.typemesure = typemesure
 
     # -- property typemesure --
     @property
@@ -441,12 +443,18 @@ class Capteur(_Entitehydro):
         return self._typemesure
 
     @typemesure.setter
-    def typemesure(self, typemesure='H'):
+    def typemesure(self, typemesure):
         try:
+            # None case
+            if typemesure is None:
+                raise TypeError('typemesure is required')
+            # other cases
             typemesure = unicode(typemesure)
             if (self._strict) and (typemesure not in _NOMENCLATURE[520]):
                 raise ValueError('typemesure incorrect')
+            # all is well
             self._typemesure = typemesure
+
         except:
             raise
 
