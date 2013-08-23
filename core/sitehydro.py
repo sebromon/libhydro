@@ -21,7 +21,7 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """version 0.2d"""
-__date__ = """2013-08-21"""
+__date__ = """2013-08-23"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -186,13 +186,16 @@ class Sitehydro(_Entitehydro):
     @typesite.setter
     def typesite(self, typesite):
         try:
+
             # None case
             if typesite is None:
                 raise TypeError('typesite is required')
+
             # other cases
             typesite = unicode(typesite)
             if (self._strict) and (typesite not in _NOMENCLATURE[530]):
                 raise ValueError('typesite incorrect')
+
             # all is well
             self._typesite = typesite
 
@@ -328,13 +331,16 @@ class Stationhydro(_Entitehydro):
     @typestation.setter
     def typestation(self, typestation):
         try:
+
             # None case
             if typestation is None:
                 raise TypeError('typestation is required')
+
             # other cases
             typestation = unicode(typestation)
             if (self._strict) and (typestation not in _NOMENCLATURE[531]):
                 raise ValueError('typestation incorrect')
+
             # all is well
             self._typestation = typestation
 
@@ -445,13 +451,16 @@ class Capteur(_Entitehydro):
     @typemesure.setter
     def typemesure(self, typemesure):
         try:
+
             # None case
             if typemesure is None:
                 raise TypeError('typemesure is required')
+
             # other cases
             typemesure = unicode(typemesure)
             if (self._strict) and (typemesure not in _NOMENCLATURE[520]):
                 raise ValueError('typemesure incorrect')
+
             # all is well
             self._typemesure = typemesure
 

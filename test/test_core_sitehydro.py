@@ -32,7 +32,7 @@ from libhydro.core import sitehydro
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """Version 0.1f"""
-__date__ = """2013-08-20"""
+__date__ = """2013-08-23"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -151,7 +151,12 @@ class TestSitehydro(unittest.TestCase):
     def test_error_01(self):
         """Typesite error."""
         code = 'H0001010'
-        sitehydro.Sitehydro(**{'code': code, 'typesite': 'REEL'})
+        s = sitehydro.Sitehydro(**{'code': code, 'typesite': 'REEL'})
+        self.assertRaises(
+            TypeError,
+            s.__setattr__,
+            *('typesite', None)
+        )
         self.assertRaises(
             ValueError,
             sitehydro.Sitehydro,
@@ -285,7 +290,12 @@ class TestStationhydro(unittest.TestCase):
     def test_error_01(self):
         """Typestation error."""
         code = 'A033465001'
-        sitehydro.Stationhydro(**{'code': code, 'typestation': 'LIMNI'})
+        s = sitehydro.Stationhydro(**{'code': code, 'typestation': 'LIMNI'})
+        self.assertRaises(
+            TypeError,
+            s.__setattr__,
+            *('typestation', None)
+        )
         self.assertRaises(
             TypeError,
             sitehydro.Stationhydro,
@@ -397,7 +407,12 @@ class TestCapteur(unittest.TestCase):
 
     def test_error_01(self):
         """Typemesure error."""
-        sitehydro.Capteur(**{'code': 'A14410010201', 'typemesure': 'H'})
+        c = sitehydro.Capteur(**{'code': 'A14410010201', 'typemesure': 'H'})
+        self.assertRaises(
+            TypeError,
+            c.__setattr__,
+            *('typemesure', None)
+        )
         self.assertRaises(
             ValueError,
             sitehydro.Capteur,

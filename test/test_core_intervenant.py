@@ -32,7 +32,7 @@ from libhydro.core import intervenant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """Version 0.1b"""
-__date__ = """2013-08-21"""
+__date__ = """2013-08-23"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -115,6 +115,15 @@ class TestIntervenant(unittest.TestCase):
         self.assertTrue(i.__str__().rfind('contact') > -1)
 
     def test_error_01(self):
+        """Code error."""
+        it = intervenant.Intervenant(origine='SANDRE')
+        self.assertRaises(
+            TypeError,
+            it.__setattr__,
+            *('code', None)
+        )
+
+    def test_error_02(self):
         """Origine error."""
         it = intervenant.Intervenant(origine='SANDRE')
         self.assertRaises(
@@ -133,7 +142,7 @@ class TestIntervenant(unittest.TestCase):
             *('origine', None)
         )
 
-    def test_error_02(self):
+    def test_error_03(self):
         """SIRET error."""
         code = 12345678901234
         intervenant.Intervenant(code=code, origine='SANDRE')
@@ -154,7 +163,7 @@ class TestIntervenant(unittest.TestCase):
             **{'code': 123, 'origine': 'SIRET'}
         )
 
-    def test_error_03(self):
+    def test_error_04(self):
         """Contacts error."""
         contacts = [intervenant.Contact()]
         intervenant.Intervenant(contacts=contacts)
@@ -164,7 +173,7 @@ class TestIntervenant(unittest.TestCase):
             **{'contacts': '---'}
         )
 
-    def test_error_04(self):
+    def test_error_05(self):
         """Contacts links error."""
         it1 = intervenant.Intervenant(code=1)
         it2 = intervenant.Intervenant(code=2)
@@ -221,7 +230,12 @@ class TestContact(unittest.TestCase):
 
     def test_error_01(self):
         """Code error."""
-        intervenant.Contact(code=99)
+        it = intervenant.Contact(code=99)
+        self.assertRaises(
+            TypeError,
+            it.__setattr__,
+            *('code', None)
+        )
         self.assertRaises(
             ValueError,
             intervenant.Contact,

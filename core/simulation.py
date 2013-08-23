@@ -48,7 +48,7 @@ from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """version 0.1e"""
-__date__ = """2013-08-21"""
+__date__ = """2013-08-23"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -436,10 +436,12 @@ class Simulation(object):
         """String representation."""
         # compute class name: cls = (article, classe)
         try:
-            cls = unicode(self.entite.__class__.__name__)
-            cls = ('{} '.format(_sitehydro.ARTICLE[cls]), cls.lower())
+            entite = '{} {}'.format(
+                _sitehydro.ARTICLE[self.entite.__class__],
+                self.entite.__class__.__name__.lower()
+            )
         except Exception:
-            cls = ("l'", 'entite')
+            entite = "l'entite"
 
         # compute code and libelle
         code, libelle = '<sans code>', '<sans libelle>'
@@ -461,21 +463,21 @@ class Simulation(object):
             )
 
         # action !
-        return  'Simulation {0} de {1} sur {2}{3} {4}::{5}\n'\
-                'Date de production: {6} - Qualite {7}\n'\
-                'Commentaire: {8}\n'\
+        return  'Simulation {0} de {1} sur {2} {3}::{4}\n'\
+                'Date de production: {5} - Qualite {6}\n'\
+                'Commentaire: {7}\n'\
+                '{8}\n'\
                 '{9}\n'\
                 '{10}\n'\
-                '{11}\n'\
                 'Previsions:\n {11}'.format(
                     '<sans statut>' if (self.statut is None)
                     else _NOMENCLATURE[516][self.statut].lower(),
                     self.grandeur or '<sans grandeur>',
-                    cls[0],
-                    cls[1],
+                    entite,
                     code,
                     libelle,
-                    '<inconnue>' if not self.dtprod else self.dtprod.__str__(),
+                    '<inconnue>' if not self.dtprod
+                    else self.dtprod.item().isoformat(),
                     '<inconnue>' if not self.qualite else '%i%%' % self.qualite,
                     self.commentaire or '<sans>',
                     '-' * 72,

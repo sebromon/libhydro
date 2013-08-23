@@ -14,14 +14,15 @@ from __future__ import (
 )
 
 import datetime as _datetime
+import numpy as _numpy
 
 from ...core import (intervenant as _intervenant)
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1b"""
-__date__ = """2013-08-21"""
+__version__ = """version 0.1c"""
+__date__ = """2013-08-23"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -58,21 +59,20 @@ class Scenario(object):
     version = '1.1'
     nom = 'Echange de données hydrométriques'
 
-    def __init__(self, emetteur, destinataire):
+    def __init__(self, emetteur, destinataire, dtprod=None):
         """Constructeur.
 
         Arguments:
             emetteur (intervenant.Contact)
             destinataire (intervenant.Intervenant)
+            dtprod (datetime ou isoformat, defaut utcnow())
 
         """
-
-        # -- simple properties --
-        self.dtprod = _datetime.datetime.utcnow()
 
         # -- full properties --
         self.emetteur = emetteur
         self.destinataire = destinataire
+        self.dtprod = dtprod
 
     # -- property emetteur --
     @property
@@ -109,5 +109,32 @@ class Scenario(object):
             if not isinstance(destinataire, _intervenant.Intervenant):
                 raise TypeError('destinataire incorrect')
             self._destinataire = destinataire
+        except:
+            raise
+
+    # -- property dtprod --
+    @property
+    def dtprod(self):
+        """Date de production du message."""
+        return self._dtprod
+
+    @dtprod.setter
+    def dtprod(self, dtprod):
+        try:
+            # None case
+            if dtprod is None:
+                dtprod = _datetime.datetime.utcnow()
+
+            # other cases
+            if isinstance(dtprod, (str, unicode)):
+                dtprod = _numpy.datetime64(dtprod)
+            if isinstance(dtprod, _numpy.datetime64):
+                dtprod = dtprod.item()
+            if not isinstance(dtprod, _datetime.datetime):
+                raise TypeError('dtprod must be a datetime')
+
+            # all is well
+            self._dtprod = dtprod
+
         except:
             raise

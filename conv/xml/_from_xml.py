@@ -5,10 +5,10 @@ Ce module contient des fonctions de lecture de fichiers au format
 Xml Hydrometrie (version 1.1 exclusivement).
 
 Fonctions disponibles:
-    (TODO)
+    (TODO functions listing)
 
 Exemples d'utilisation:
-    (TODO)
+    (TODO examples)
 
 """
 #-- imports -------------------------------------------------------------------
@@ -19,19 +19,24 @@ from __future__ import (
     print_function as _print_function
 )
 
-import numpy as _numpy
+# import numpy as _numpy
 # from lxml import etree as _etree
 
-from libhydro.core import sitehydro as _sitehydro
-from libhydro.core import modeleprevision as _modeleprevision
-from libhydro.core import obshydro as _obshydro
-from libhydro.core import simulation as _simulation
+from ._scenario import Scenario
+
+from libhydro.core import (
+    sitehydro as _sitehydro,
+    modeleprevision as _modeleprevision,
+    obshydro as _obshydro,
+    simulation as _simulation,
+    intervenant as _intervenant
+)
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1b"""
-__date__ = """2013-08-19"""
+__version__ = """version 0.1c"""
+__date__ = """2013-08-23"""
 
 #HISTORY
 #V0.1 - 2013-08-18
@@ -44,6 +49,14 @@ __date__ = """2013-08-19"""
 #        but xpath is more readable and do not care of xml order
 
 # TODO - XSD validation
+
+
+# -- config -------------------------------------------------------------------
+PREV_PROBABILITY = {
+    'ResMoyPrev': 50,
+    'ResMinPrev': 0,
+    'ResMaxPrev': 100
+}
 
 
 # -- public functions ---------------------------------------------------------
@@ -61,6 +74,22 @@ def get_sitehydro(src, code=None):
 
 
 # -- atomic functions ---------------------------------------------------------
+def _get_scenario_from_element(element):
+    """Return a xml.Scenario from a <Scenario> element."""
+    return Scenario(
+        emetteur=_intervenant.Contact(
+            code=_get_value(element.find('Emetteur'), 'CdContact'),
+            intervenant=_intervenant.Intervenant(
+                _get_value(element.find('Emetteur'), 'CdIntervenant')
+            )
+        ),
+        destinataire=_intervenant.Intervenant(
+            code=_get_value(element.find('Destinataire'), 'CdIntervenant'),
+        ),
+        dtprod=_get_value('DateHeureCreationfichier')
+    )
+
+
 def _sitehydro_from_element(element):
     """Return a sitehydro.Sitehydro from a <SiteHydro> element."""
     return _sitehydro.Sitehydro(
@@ -125,7 +154,7 @@ def _observations_from_element(element):
     """Return a obshydro.Observations from a <ObssHydro> element."""
     return _obshydro.Observations(
         *[_obshydro.Observation(
-            dte=_get_value(o, 'DtObsHydro'),
+            dte=_get_value(o, 'DtObsHydro', _UTC_date),
             res=_get_value(o, 'ResObsHydro'),
             mth=_get_value(o, 'MethObsHydro', int),
             qal=_get_value(o, 'QualifObsHydro', int),
@@ -157,22 +186,57 @@ def _simulation_from_element(element):
         qualite=_get_value(element, 'IndicequaliteSimul', int),
         public=_get_value(element, 'PubliSimul', bool),
         commentaire=_get_value(element, 'ComSimul'),
-        dtprod=_get_value(element, 'DtProdSimul', _numpy.datetime64),
+        dtprod=_get_value(element, 'DtProdSimul', _UTC_date),
         previsions=_previsions_from_element(element.find('Prevs'))
     )
 
 
 def _previsions_from_element(element):
     """Return a simulation.Previsions from a <Prevs> element."""
-    # TODO
-    # _simulation.Previsions())
-    return None
+    previsions = []
+
+    for prev in element:
+        dte = _get_value(prev, 'DtPrev', _UTC_date)
+
+        # -------------------
+        # compute Res[Min|Moy|Max]Prev
+        # -------------------
+        # xpath syntax: p.xpath('ResMoyPrev|ResMinPrev|ResMaxPrev')
+        for resprev in prev.xpath('|'.join(PREV_PROBABILITY)):
+            previsions.append(
+                _simulation.Prevision(
+                    dte=dte,
+                    res=resprev.text,
+                    prb=PREV_PROBABILITY[resprev.tag]
+                )
+            )
+
+        # -------------------
+        # compute ProbsPrev
+        # -------------------
+        for probprev in prev.findall('.//ProbPrev'):
+            previsions.append(
+                _simulation.Prevision(
+                    dte=dte,
+                    res=_get_value(probprev, 'PProbPrev', int),
+                    prb=_get_value(probprev, 'ResProbPrev', float)
+                )
+            )
+
+    return _simulation.Previsions(*previsions)
 
 
-# -- utilities functions ------------------------------------------------------
+# -- utility functions --------------------------------------------------------
+def _UTC_date(dte):
+    """Add +00 to the string dte if no time zone."""
+    if dte.find('+') == -1:
+        return '%s+00' % dte
+    else:
+        return dte
+
+
 def _get_value(element, tag, cast=unicode):
     """Return cast(element/tag.text) or None."""
-    # FIXME - a method should be better to avoid the copy of element
     e = element.find(tag)
     if e is not None:
         return cast(e.text)

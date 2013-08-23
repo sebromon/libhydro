@@ -22,7 +22,7 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """version 0.1b"""
-__date__ = """2013-08-22"""
+__date__ = """2013-08-23"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -95,17 +95,21 @@ class Intervenant(object):
     def code(self, code):
         try:
 
-            if code is not None:
-                code = int(code)
-                if self._origine is None:
-                    if len(str(code)) == 14:
-                        self._origine = 'SIRET'
-                    else:
-                        self._origine = 'SANDRE'
-                elif self._origine == 'SIRET':
-                    if len(str(code)) != 14:
-                        raise ValueError('SIRET code must be 14 bytes long')
-                    # else:  # self.origine == 'SANDRE'
+            # None case
+            if code is None:
+                raise TypeError('code is required')
+
+            # other cases
+            code = int(code)
+            if self._origine is None:
+                if len(str(code)) == 14:
+                    self._origine = 'SIRET'
+                else:
+                    self._origine = 'SANDRE'
+            elif self._origine == 'SIRET':
+                if len(str(code)) != 14:
+                    raise ValueError('SIRET code must be 14 bytes long')
+                # else:  # self.origine == 'SANDRE'
 
             # all is well
             self._code = code

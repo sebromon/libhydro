@@ -26,6 +26,9 @@ sys.path.append(os.path.join('..', '..'))
 
 import unittest
 
+import datetime
+import numpy
+
 from libhydro.core import intervenant
 from libhydro.conv.xml import Scenario
 
@@ -33,7 +36,7 @@ from libhydro.conv.xml import Scenario
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """Version 0.1a"""
-__date__ = """2013-08-22"""
+__date__ = """2013-08-23"""
 
 #HISTORY
 #V0.1 - 2013-08-22
@@ -61,6 +64,33 @@ class Testscenario(unittest.TestCase):
             ('hydrometrie', '1.1', 'Echange de données hydrométriques',
              emetteur, destinataire)
         )
+
+    def test_base_02(self):
+        """Dtprod tests."""
+        emetteur = intervenant.Contact()
+        destinataire = intervenant.Intervenant()
+        # default dtprod is utcnow()
+        sce = Scenario(emetteur=emetteur, destinataire=destinataire)
+        self.assertTrue(isinstance(sce.dtprod, datetime.datetime))
+        # stringt dtprod
+        dtprod = '2012-12-12T05:33+00'
+        sce = Scenario(
+            emetteur=emetteur, destinataire=destinataire,
+            dtprod=dtprod
+        )
+        self.assertEqual(sce.dtprod, datetime.datetime(2012, 12, 12, 5, 33))
+        # datetime dtprod
+        sce = Scenario(
+            emetteur=emetteur, destinataire=destinataire,
+            dtprod=datetime.datetime(2012, 12, 12, 5, 33)
+        )
+        self.assertEqual(sce.dtprod, datetime.datetime(2012, 12, 12, 5, 33))
+        # datetime64 dtprod
+        sce = Scenario(
+            emetteur=emetteur, destinataire=destinataire,
+            dtprod=numpy.datetime64(dtprod)
+        )
+        self.assertEqual(sce.dtprod, datetime.datetime(2012, 12, 12, 5, 33))
 
     # def test_str_01(self):
     #     """Test __str__ method with None values."""
@@ -99,6 +129,21 @@ class Testscenario(unittest.TestCase):
             **{'emetteur': emetteur, 'destinataire': 'destinataire'}
         )
 
+    def test_error_03(self):
+        """Dtprod error."""
+        emetteur = intervenant.Contact()
+        destinataire = intervenant.Intervenant()
+        Scenario(emetteur=emetteur, destinataire=destinataire, dtprod=None)
+        self.assertRaises(
+            TypeError,
+            Scenario,
+            **{'emetteur': emetteur, 'destinataire': destinataire, 'dtprod': {}}
+        )
+        self.assertRaises(
+            ValueError,
+            Scenario,
+            **{'emetteur': emetteur, 'destinataire': destinataire, 'dtprod': 'ff'}
+        )
 
 #-- main ----------------------------------------------------------------------
 if __name__ == '__main__':

@@ -13,7 +13,7 @@
       <CdContact schemeAgencyID="SANDRE">41</CdContact>
     </Emetteur>
     <Destinataire>
-      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdIntervenant schemeAgencyID="SANDRE">14</CdIntervenant>
     </Destinataire>
   </Scenario>
   <Donnees>
@@ -31,35 +31,28 @@
         <Prevs>
           <Prev>
             <DtPrev>2010-02-26T14:00:00</DtPrev>
-            <ResMoyPrev>33250.000</ResMoyPrev>
+            <ResMoyPrev>30</ResMoyPrev>
+            <ResMinPrev>10</ResMinPrev>
+            <ResMaxPrev>50</ResMaxPrev>
+            <ProbsPrev>
+              <ProbPrev>
+                <PProbPrev>20</PProbPrev>
+                <ResProbPrev>25</ResProbPrev>
+              </ProbPrev>
+              <ProbPrev>
+                <PProbPrev>40</PProbPrev>
+                <ResProbPrev>75</ResProbPrev>
+              </ProbPrev>
+              <ProbPrev>
+                <PProbPrev>49</PProbPrev>
+                <ResProbPrev>90</ResProbPrev>
+              </ProbPrev>
+            </ProbsPrev>
           </Prev>
           <Prev>
             <DtPrev>2010-02-26T15:00:00</DtPrev>
-            <ResMoyPrev>23590.000</ResMoyPrev>
-          </Prev>
-          <Prev>
-            <DtPrev>2010-02-26T16:00:00</DtPrev>
-            <ResMoyPrev>22930.000</ResMoyPrev>
-          </Prev>
-          <Prev>
-            <DtPrev>2010-02-26T17:00:00</DtPrev>
-            <ResMoyPrev>40570.000</ResMoyPrev>
-          </Prev>
-          <Prev>
-            <DtPrev>2010-02-26T18:00:00</DtPrev>
-            <ResMoyPrev>13930.000</ResMoyPrev>
-          </Prev>
-          <Prev>
-            <DtPrev>2010-02-26T19:00:00</DtPrev>
-            <ResMoyPrev>22270.000</ResMoyPrev>
-          </Prev>
-          <Prev>
-            <DtPrev>2010-02-26T20:00:00</DtPrev>
-            <ResMoyPrev>25270.000</ResMoyPrev>
-          </Prev>
-          <Prev>
-            <DtPrev>2010-02-26T21:00:00</DtPrev>
-            <ResMoyPrev>32440.000</ResMoyPrev>
+            <ResMoyPrev>23590</ResMoyPrev>
+            <ResMaxPrev>23590</ResMaxPrev>
           </Prev>
         </Prevs>
       </Simul>
