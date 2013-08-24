@@ -33,7 +33,7 @@ from libhydro.core import (simulation, modeleprevision, sitehydro)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """Version 0.1c"""
-__date__ = """2013-08-21"""
+__date__ = """2013-08-24"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -251,12 +251,16 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(sim.dtprod, datetime.datetime(2012, 5, 18, 16, 36))
 
     def test_str_01(self):
-        """Test __str__ method with None values."""
+        """Test __str__ method with minimu values."""
+        # None values
         sim = simulation.Simulation()
         self.assertTrue(sim.__str__().rfind('Simulation') > -1)
         self.assertTrue(sim.__str__().rfind('Date de production') > -1)
         self.assertTrue(sim.__str__().rfind('Commentaire') > -1)
         self.assertTrue(sim.__str__().rfind('Previsions') > -1)
+        # a junk entite
+        sim = simulation.Simulation(entite='station 33', strict=False)
+        self.assertTrue(sim.__str__().rfind('station 33') > -1)
 
     def test_str_02(self):
         """Test __str__ method with basic values."""

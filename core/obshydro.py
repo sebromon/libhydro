@@ -51,7 +51,7 @@ from . import sitehydro as _sitehydro
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """version 0.1g"""
-__date__ = """2013-08-21"""
+__date__ = """2013-08-24"""
 
 #HISTORY
 #V0.1 - 2013-07-18
@@ -383,20 +383,17 @@ class Serie(object):
     # -- other methods --
     def __str__(self):
         """String representation."""
-        # compute class name: cls = (article, classe)
-        try:
-            cls = unicode(self.entite.__class__.__name__)
-            cls = ('{} '.format(_sitehydro.ARTICLE[cls]), cls.lower())
-        except Exception:
-            cls = ("l'", 'entite')
-
-        # compute code and libelle
-        code, libelle = '<sans code>', '<sans libelle>'
-        if self.entite is not None:
-            if self.entite.code is not None:
-                code = self.entite.code
-            if self.entite.libelle is not None:
-                libelle = self.entite.libelle
+        # compute entite name
+        if self.entite is None:
+            entite = '<une entite inconnue>'
+        else:
+            try:
+                entite = '{} {}'.format(
+                    _sitehydro.ARTICLE[self.entite.__class__],
+                    self.entite.__str__()
+                )
+            except Exception:
+                entite = self.entite.__str__()
 
         # prepare observations
         if self.observations is None:
@@ -410,15 +407,12 @@ class Serie(object):
             )
 
         # action !
-        return 'Serie {0} sur {1}{2} {3}::{4}\n'\
-               'Statut {5}::{6}\n'\
-               '{7}\n'\
-               'Observations:\n{8}'.format(
+        return 'Serie {0} sur {1}\n'\
+               'Statut {2}::{3}\n'\
+               '{4}\n'\
+               'Observations:\n{5}'.format(
                    self.grandeur or '<grandeur inconnue>',
-                   cls[0],
-                   cls[1],
-                   code,
-                   libelle,
+                   entite,
                    self.statut,
                    _NOMENCLATURE[510][self.statut].lower(),
                    '-' * 72,

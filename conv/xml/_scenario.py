@@ -21,16 +21,13 @@ from ...core import (intervenant as _intervenant)
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1c"""
-__date__ = """2013-08-23"""
+__version__ = """version 0.1d"""
+__date__ = """2013-08-24"""
 
 #HISTORY
 #V0.1 - 2013-08-20
 #    first shot
 
-
-#-- todos ---------------------------------------------------------------------
-# FIXME - __str__ method
 
 # -- class Scenario -----------------------------------------------------------
 class Scenario(object):
@@ -138,3 +135,12 @@ class Scenario(object):
 
         except:
             raise
+
+    # -- other methods --
+    def __str__(self):
+        """String representation."""
+        return "Message du {0}\nEmis par le {1} pour l'{2}".format(
+            self.dtprod,
+            self.emetteur,
+            self.destinataire
+        ).encode('utf-8')

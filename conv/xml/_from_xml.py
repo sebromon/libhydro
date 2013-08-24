@@ -4,13 +4,13 @@
 Ce module contient des fonctions de lecture de fichiers au format
 Xml Hydrometrie (version 1.1 exclusivement).
 
-Fonctions disponibles:
-    (TODO functions listing)
+Toutes les heures sont considerees UTC si le fuseau horaire n'est pas precise.
 
-Exemples d'utilisation:
-    (TODO examples)
+Fonctions disponibles:
+    # parse()
 
 """
+# TODO - Exemples d'utilisation: (examples)
 #-- imports -------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
@@ -19,8 +19,7 @@ from __future__ import (
     print_function as _print_function
 )
 
-# import numpy as _numpy
-# from lxml import etree as _etree
+from lxml import etree as _etree
 
 from ._scenario import Scenario
 
@@ -35,8 +34,8 @@ from libhydro.core import (
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1c"""
-__date__ = """2013-08-23"""
+__version__ = """version 0.1d"""
+__date__ = """2013-08-24"""
 
 #HISTORY
 #V0.1 - 2013-08-18
@@ -44,6 +43,8 @@ __date__ = """2013-08-23"""
 
 
 #-- todos ---------------------------------------------------------------------
+# FIXME - how should be a clean API ?
+
 # TODO - if xpath is too slow to acess elements, use indexing
 #        code=element[0].text,
 #        but xpath is more readable and do not care of xml order
@@ -60,182 +61,280 @@ PREV_PROBABILITY = {
 
 
 # -- public functions ---------------------------------------------------------
-def get_sitehydro(src, code=None):
-    """Fonction get_sitehydro."""
+def parse(src):
+    """Parse le fichier src, instancie et retourne les objets qu'il contient.
 
-    # # FIXME - probleme avec les namespace
+    Arguments:
+        src (nom de fichier, url, objet fichier...) = source de donnee. Les
+            type de src acceptes sont ceux de lxml.etree.parse
 
-    # parser = _etree.XMLParser(remove_blank_text=True)
-    # tree = _etree.parse('test/data/xml/1.1/siteshydro.xml', parser=parser)
-    # siteshydro = []
-    # for sitehydro in tree.findall('*//SiteHydro'):
-    #     siteshydro.append(
-    pass
+    Retourne un dictionnaire avec les cles:
+            # scenario: xml.Scenario
+            # siteshydro: liste de sitehydro.Siteshydro ou None
+            # series: liste de obshydro.Serie ou None
+            # simulation: liste de simulation.Simulation ou None
+
+    """
+
+    # read the file
+    parser = _etree.XMLParser(
+        remove_blank_text=True, remove_comments=True, ns_clean=True
+    )
+    tree = _etree.parse(src, parser=parser)
+
+    # deal with namespaces
+    # TODO - we could certainly do better with namespaces
+    if tree.getroot().nsmap != {}:
+        raise ValueError("can't parse xml file with namespaces")
+
+    return {
+        'scenario': _scenario_from_element(tree.find('Scenario')),
+        # 'intervenants':
+        'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro')),
+        # 'sitesmeteo'
+        # 'modelesprevision': 'TODOS',
+        # 'evenements'
+        # 'courbestarage'
+        # 'jaugeages'
+        # 'courbescorrection'
+        'series': _series_from_element(tree.find('Donnees/Series')),
+        # 'obssmeteo'
+        # 'obsselab'
+        # 'gradshydro'
+        # 'qualifsannee'
+        'simulations': _simulations_from_element(tree.find('Donnees/Simuls'))
+        # 'alarmes'
+    }
+
+
+# -- global functions ---------------------------------------------------------
+
+# TODO - these 3 functions can be factorised
+
+def _siteshydro_from_element(element):
+    """Return a list of sitehydro.Sitehydro from a <SitesHydro> element."""
+    if element is not None:
+        siteshydro = []
+        for sitehydro in element.findall('./SiteHydro'):
+            siteshydro.append(_sitehydro_from_element(sitehydro))
+        return siteshydro
+
+
+def _series_from_element(element):
+    """Return a list of obshydro.Serie from a <Series> element."""
+    if element is not None:
+        series = []
+        for serie in element.findall('./Serie'):
+            series.append(_serie_from_element(serie))
+        return series
+
+
+def _simulations_from_element(element):
+    """Return a list of simulation.Simulation from a <Simuls> element."""
+    if element is not None:
+        simuls = []
+        for simul in element.findall('./Simul'):
+            simuls.append(_simulation_from_element(simul))
+        return simuls
 
 
 # -- atomic functions ---------------------------------------------------------
-def _get_scenario_from_element(element):
+def _scenario_from_element(element):
     """Return a xml.Scenario from a <Scenario> element."""
-    return Scenario(
-        emetteur=_intervenant.Contact(
-            code=_get_value(element.find('Emetteur'), 'CdContact'),
-            intervenant=_intervenant.Intervenant(
-                _get_value(element.find('Emetteur'), 'CdIntervenant')
-            )
-        ),
-        destinataire=_intervenant.Intervenant(
-            code=_get_value(element.find('Destinataire'), 'CdIntervenant'),
-        ),
-        dtprod=_get_value('DateHeureCreationfichier')
-    )
+    if element is not None:
+        return Scenario(
+            emetteur=_intervenant.Contact(
+                code=_value(element.find('Emetteur'), 'CdContact'),
+                intervenant=_intervenant.Intervenant(
+                    _value(element.find('Emetteur'), 'CdIntervenant')
+                )
+            ),
+            destinataire=_intervenant.Intervenant(
+                code=_value(element.find('Destinataire'), 'CdIntervenant'),
+            ),
+            dtprod=_value(element, 'DateHeureCreationFichier', _UTC)
+        )
 
 
 def _sitehydro_from_element(element):
     """Return a sitehydro.Sitehydro from a <SiteHydro> element."""
-    return _sitehydro.Sitehydro(
-        code=_get_value(element, 'CdSiteHydro'),
-        typesite=_get_value(element, 'TypSiteHydro'),
-        libelle=_get_value(element, 'LbSiteHydro'),
-        stations=[
+    if element is not None:
+        # prepare args
+        args = {}
+        args['code'] = _value(element, 'CdSiteHydro')
+        args['libelle'] = _value(element, 'LbSiteHydro')
+        args['stations'] = [
             _stationhydro_from_element(e)
             for e in element.findall('StationsHydro/StationHydro')
         ]
-    )
+        typesite = _value(element, 'TypSiteHydro')
+        if typesite is not None:
+            args['typesite'] = typesite
+        # build Site
+        return _sitehydro.Sitehydro(**args)
 
 
 def _stationhydro_from_element(element):
     """Return a sitehydro.Stationhydro from a <Stationhydro> element."""
-    return _sitehydro.Stationhydro(
-        code=_get_value(element, 'CdStationHydro'),
-        typestation=_get_value(element, 'TypStationHydro'),
-        libelle=_get_value(element, 'LbStationHydro'),
-        capteurs=[
+    if element is not None:
+        # prepare args
+        args = {}
+        args['code'] = _value(element, 'CdStationHydro')
+        args['libelle'] = _value(element, 'LbStationHydro')
+        args['capteurs'] = [
             _capteur_from_element(e)
             for e in element.findall('Capteurs/Capteur')
         ]
-    )
+        typestation = _value(element, 'TypStationHydro')
+        if typestation is not None:
+            args['typestation'] = typestation
+        # build Station
+        return _sitehydro.Stationhydro(**args)
 
 
 def _capteur_from_element(element):
     """Return a sitehydro.Capteur from a <Capteur> element."""
-    return _sitehydro.Capteur(
-        code=_get_value(element, 'CdCapteur'),
-        typemesure=_get_value(element, 'TypMesureCapteur'),
-        libelle=_get_value(element, 'LbCapteur')
-    )
+    if element is not None:
+        # prepare args
+        args = {}
+        args['code'] = _value(element, 'CdCapteur')
+        args['libelle'] = _value(element, 'LbCapteur')
+        typemesure = _value(element, 'TypMesureCapteur')
+        if typemesure is not None:
+            args['typemesure'] = typemesure
+        # build Capteur
+        return _sitehydro.Capteur(**args)
 
 
 def _serie_from_element(element):
     """Return a obshydro.Serie from a <Serie> element."""
-    # entite can be a Sitehydro, a Stationhydro or a Capteur
-    entite = None
-    if element.find('CdSiteHydro') is not None:
-        entite = _sitehydro.Sitehydro(
-            code=_get_value(element, 'CdSiteHydro')
+    if element is not None:
+
+        # entite can be a Sitehydro, a Stationhydro or a Capteur
+        entite = None
+        if element.find('CdSiteHydro') is not None:
+            entite = _sitehydro.Sitehydro(
+                code=_value(element, 'CdSiteHydro')
+            )
+        elif element.find('CdStationHydro') is not None:
+            entite = _sitehydro.Stationhydro(
+                code=_value(element, 'CdStationHydro')
+            )
+        elif element.find('CdCapteur') is not None:
+            entite = _sitehydro.Capteur(
+                code=_value(element, 'CdCapteur')
+            )
+
+        # make the Serie
+        return _obshydro.Serie(
+            entite=entite,
+            grandeur=_value(element, 'GrdSerie'),
+            statut=_value(element, 'StatutSerie'),
+            observations=_observations_from_element(element.find('ObssHydro'))
         )
-    elif element.find('CdStationHydro') is not None:
-        entite = _sitehydro.Stationhydro(
-            code=_get_value(element, 'CdStationHydro')
-        )
-    elif element.find('CdCapteur') is not None:
-        entite = _sitehydro.Capteur(
-            code=_get_value(element, 'CdCapteur')
-        )
-    # make the Serie
-    return _obshydro.Serie(
-        entite=entite,
-        grandeur=_get_value('GrdSerie'),
-        statut=_get_value('StatutSerie'),
-        observations=_obshydro.Observations(element.find('ObssHydro'))
-    )
 
 
 def _observations_from_element(element):
     """Return a obshydro.Observations from a <ObssHydro> element."""
-    return _obshydro.Observations(
-        *[_obshydro.Observation(
-            dte=_get_value(o, 'DtObsHydro', _UTC_date),
-            res=_get_value(o, 'ResObsHydro'),
-            mth=_get_value(o, 'MethObsHydro', int),
-            qal=_get_value(o, 'QualifObsHydro', int),
-            cnt=_get_value(o, 'ContObsHydro', bool)
-        ) for o in element]
-    )
+    if element is not None:
+
+        # prepare a list of Observation
+        observations = []
+        for o in element:
+            args = {}
+            args['dte'] = _value(o, 'DtObsHydro', _UTC)
+            args['res'] = _value(o, 'ResObsHydro')
+            mth = _value(o, 'MethObsHydro', int)
+            if mth is not None:
+                args['mth'] = mth
+            qal = _value(o, 'QualifObsHydro', int)
+            if qal is not None:
+                args['qal'] = qal
+            # we can't use bool injection here because bool('False') is True
+            cnt = _value(o, 'ContObsHydro')
+            if cnt is not None:
+                args['cnt'] = True if (cnt == 'True') else False
+            observations.append(_obshydro.Observation(**args))
+
+        # build Observations
+        return _obshydro.Observations(*observations)
 
 
 def _simulation_from_element(element):
     """Return a simulation.Simulation from a <Simul> element."""
-    # entite can be a Sitehydro or a Stationhydro
-    entite = None
-    if element.find('CdSiteHydro') is not None:
-        entite = _sitehydro.Sitehydro(
-            code=_get_value(element, 'CdSiteHydro')
+    if element is not None:
+        # entite can be a Sitehydro or a Stationhydro
+        entite = None
+        if element.find('CdSiteHydro') is not None:
+            entite = _sitehydro.Sitehydro(
+                code=_value(element, 'CdSiteHydro')
+            )
+        elif element.find('CdStationHydro') is not None:
+            entite = _sitehydro.Stationhydro(
+                code=_value(element, 'CdStationHydro')
+            )
+        # make the Simulation
+        return _simulation.Simulation(
+            entite=entite,
+            modeleprevision=_modeleprevision.Modeleprevision(
+                code=_value(element, 'CdModelePrevision')
+            ),
+            grandeur=_value(element, 'GrdSimul'),
+            statut=_value(element, 'StatutSimul', int),
+            qualite=int(_value(element, 'IndiceQualiteSimul', float)),  # int(float())
+            public=_value(element, 'PubliSimul', bool),
+            commentaire=_value(element, 'ComSimul'),
+            dtprod=_value(element, 'DtProdSimul', _UTC),
+            previsions=_previsions_from_element(element.find('Prevs'))
         )
-    elif element.find('CdStationHydro') is not None:
-        entite = _sitehydro.Stationhydro(
-            code=_get_value(element, 'CdStationHydro')
-        )
-    # make the Simulation
-    return _simulation.Simulation(
-        entite=entite,
-        modeleprevision=_modeleprevision.Modeleprevision(
-            code=_get_value(element, 'CdModelePrevision')
-        ),
-        grandeur=_get_value(element, 'GrdSimul'),
-        statut=_get_value(element, 'StatutSimul', int),
-        qualite=_get_value(element, 'IndicequaliteSimul', int),
-        public=_get_value(element, 'PubliSimul', bool),
-        commentaire=_get_value(element, 'ComSimul'),
-        dtprod=_get_value(element, 'DtProdSimul', _UTC_date),
-        previsions=_previsions_from_element(element.find('Prevs'))
-    )
 
 
 def _previsions_from_element(element):
     """Return a simulation.Previsions from a <Prevs> element."""
-    previsions = []
+    if element is not None:
 
-    for prev in element:
-        dte = _get_value(prev, 'DtPrev', _UTC_date)
+        previsions = []
+        for prev in element:
+            dte = _value(prev, 'DtPrev', _UTC)
 
-        # -------------------
-        # compute Res[Min|Moy|Max]Prev
-        # -------------------
-        # xpath syntax: p.xpath('ResMoyPrev|ResMinPrev|ResMaxPrev')
-        for resprev in prev.xpath('|'.join(PREV_PROBABILITY)):
-            previsions.append(
-                _simulation.Prevision(
-                    dte=dte,
-                    res=resprev.text,
-                    prb=PREV_PROBABILITY[resprev.tag]
+            # -------------------
+            # compute Res[Min|Moy|Max]Prev
+            # -------------------
+            # xpath syntax: p.xpath('ResMoyPrev|ResMinPrev|ResMaxPrev')
+            for resprev in prev.xpath('|'.join(PREV_PROBABILITY)):
+                previsions.append(
+                    _simulation.Prevision(
+                        dte=dte,
+                        res=resprev.text,
+                        prb=PREV_PROBABILITY[resprev.tag]
+                    )
                 )
-            )
 
-        # -------------------
-        # compute ProbsPrev
-        # -------------------
-        for probprev in prev.findall('.//ProbPrev'):
-            previsions.append(
-                _simulation.Prevision(
-                    dte=dte,
-                    res=_get_value(probprev, 'PProbPrev', int),
-                    prb=_get_value(probprev, 'ResProbPrev', float)
+            # -------------------
+            # compute ProbsPrev
+            # -------------------
+            for probprev in prev.findall('.//ProbPrev'):
+                previsions.append(
+                    _simulation.Prevision(
+                        dte=dte,
+                        res=_value(probprev, 'PProbPrev', int),
+                        prb=_value(probprev, 'ResProbPrev', float)
+                    )
                 )
-            )
 
-    return _simulation.Previsions(*previsions)
+        return _simulation.Previsions(*previsions)
 
 
 # -- utility functions --------------------------------------------------------
-def _UTC_date(dte):
+def _UTC(dte):
     """Add +00 to the string dte if no time zone."""
-    if dte.find('+') == -1:
+    if (dte is not None) and (dte.find('+') == -1):
         return '%s+00' % dte
     else:
         return dte
 
 
-def _get_value(element, tag, cast=unicode):
+def _value(element, tag, cast=unicode):
     """Return cast(element/tag.text) or None."""
     e = element.find(tag)
     if e is not None:

@@ -20,12 +20,12 @@ Exemples d'utilisation:
 # import *
 __all__ = [
     'Scenario',
-    'get_sitehydro',
+    'parse',
     'to_xml'
 ]
 
 # for the user, this package is like a module, sub-modules names are
 # underscored to hide them
 from _scenario import Scenario
-from _from_xml import get_sitehydro
+from _from_xml import parse
 from _to_xml import to_xml

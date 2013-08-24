@@ -54,6 +54,7 @@ destinataire = {
     'destinataire': 'CdIntervenant'
 }
 
+# check strict = TRUE -******************************
 
 #-- functions ------------------------------------------------------------------
 def to_xml(scenario, *args):

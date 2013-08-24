@@ -35,18 +35,12 @@ from libhydro.conv.xml import Scenario
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1a"""
-__date__ = """2013-08-23"""
+__version__ = """Version 0.1b"""
+__date__ = """2013-08-24"""
 
 #HISTORY
 #V0.1 - 2013-08-22
 #    first shot
-
-
-#-- todos ---------------------------------------------------------------------
-
-
-#-- config --------------------------------------------------------------------
 
 
 #-- class Testscenario --------------------------------------------------------
@@ -92,10 +86,12 @@ class Testscenario(unittest.TestCase):
         )
         self.assertEqual(sce.dtprod, datetime.datetime(2012, 12, 12, 5, 33))
 
-    # def test_str_01(self):
-    #     """Test __str__ method with None values."""
-    #     m = scenario.scenario()
-    #     self.assertTrue(m.__str__().rfind('Modele') > -1)
+    def test_str_01(self):
+        """Test __str__ method."""
+        emetteur = intervenant.Contact()
+        destinataire = intervenant.Intervenant()
+        sce = Scenario(emetteur=emetteur, destinataire=destinataire)
+        self.assertTrue(sce.__str__().rfind('Message') > -1)
 
     def test_error_01(self):
         """Emetteur error."""

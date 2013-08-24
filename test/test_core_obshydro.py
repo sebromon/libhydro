@@ -34,7 +34,7 @@ from libhydro.core import (sitehydro, obshydro)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """Version 0.1d"""
-__date__ = """2013-08-21"""
+__date__ = """2013-08-24"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -281,11 +281,15 @@ class TestSerie(unittest.TestCase):
         )
 
     def test_str_01(self):
-        """Test __str__ method with None values."""
+        """Test __str__ method with minimum values."""
+        # None values
         serie = obshydro.Serie(strict=False)
         self.assertTrue(serie.__str__().rfind('Serie') > -1)
         self.assertTrue(serie.__str__().rfind('Statut') > -1)
         self.assertTrue(serie.__str__().rfind('Observations') > -1)
+        # a junk entite
+        serie = obshydro.Serie(entite='station 33', strict=False)
+        self.assertTrue(serie.__str__().rfind('station 33') > -1)
 
     def test_str_02(self):
         """Test __str__ method with a small Observations."""

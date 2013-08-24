@@ -48,7 +48,7 @@ from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """version 0.1e"""
-__date__ = """2013-08-23"""
+__date__ = """2013-08-24"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -434,22 +434,17 @@ class Simulation(object):
     # -- other methods --
     def __str__(self):
         """String representation."""
-        # compute class name: cls = (article, classe)
-        try:
-            entite = '{} {}'.format(
-                _sitehydro.ARTICLE[self.entite.__class__],
-                self.entite.__class__.__name__.lower()
-            )
-        except Exception:
-            entite = "l'entite"
-
-        # compute code and libelle
-        code, libelle = '<sans code>', '<sans libelle>'
-        if self.entite is not None:
-            if self.entite.code is not None:
-                code = self.entite.code
-            if self.entite.libelle is not None:
-                libelle = self.entite.libelle
+        # compute entite name
+        if self.entite is None:
+            entite = '<une entite inconnue>'
+        else:
+            try:
+                entite = '{} {}'.format(
+                    _sitehydro.ARTICLE[self.entite.__class__],
+                    self.entite.__str__()
+                )
+            except Exception:
+                entite = self.entite.__str__()
 
         # prepare previsions
         if self.previsions is None:
@@ -463,19 +458,17 @@ class Simulation(object):
             )
 
         # action !
-        return  'Simulation {0} de {1} sur {2} {3}::{4}\n'\
-                'Date de production: {5} - Qualite {6}\n'\
-                'Commentaire: {7}\n'\
+        return  'Simulation {0} de {1} sur {2}\n'\
+                'Date de production: {3} - Qualite {4}\n'\
+                'Commentaire: {5}\n'\
+                '{6}\n'\
+                '{7}\n'\
                 '{8}\n'\
-                '{9}\n'\
-                '{10}\n'\
-                'Previsions:\n {11}'.format(
+                'Previsions:\n {9}'.format(
                     '<sans statut>' if (self.statut is None)
                     else _NOMENCLATURE[516][self.statut].lower(),
                     self.grandeur or '<sans grandeur>',
                     entite,
-                    code,
-                    libelle,
                     '<inconnue>' if not self.dtprod
                     else self.dtprod.item().isoformat(),
                     '<inconnue>' if not self.qualite else '%i%%' % self.qualite,
