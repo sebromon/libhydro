@@ -2,33 +2,38 @@
 """Module simulation.
 
 Ce module contient les classes:
-    # Prevision
-    # Previsions
     # Simulation
+    # Previsions
+    # Prevision
 
-On peux aussi utiliser directement les classes de la librairie Pandas, les
-Series ou les DataFrame.
-
-Exemple pour instancier une Series:
-    datas = pandas.Series(
-        data = [100, 110, 120],
-        index = [
-            datetime.datetime(2012, 5, 1),
-            datetime.datetime(2012, 5, 2),
-            datetime.datetime(2012, 5, 3)
-        ]
-        dtype = None,
-        name='previsions de debit'
-)
-
-Exemple pour instancier un DataFrame:
-    hauteurs = pandas.DataFrame({
-        'H2354310': Series_de_hauteurs_1,
-        'H4238907': Series_de_hauteurs_2,
-        ...
-    })
+La Simulation est le conteneur de reference pour les previsions hydrometriques.
+Les previsions y sont contenues dans l'attribut du meme nom, sous la forme
+d'une pandas.Series a double index, un timestamp et une probabilite.
 
 """
+
+# On peux aussi utiliser directement les classes de la librairie Pandas, les
+# Series ou les DataFrame.
+#
+# Exemple pour instancier une Series:
+#     datas = pandas.Series(
+#         data = [100, 110, 120],
+#         index = [
+#             datetime.datetime(2012, 5, 1),
+#             datetime.datetime(2012, 5, 2),
+#             datetime.datetime(2012, 5, 3)
+#         ]
+#         dtype = None,
+#         name='previsions de debit'
+# )
+#
+# Exemple pour instancier un DataFrame:
+#     hauteurs = pandas.DataFrame({
+#         'H2354310': Series_de_hauteurs_1,
+#         'H4238907': Series_de_hauteurs_2,
+#         ...
+#     })
+
 #-- imports -------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
@@ -151,7 +156,7 @@ class Previsions(_pandas.Series):
     Se reporter a la documentation de la classe Prevision pour l'utilisation du
     parametre prb.
 
-    Pour filtrer la Serie de resultats de meme probabilite, par exemple 50%:
+    Pour filtrer la serie de resultats de meme probabilite, par exemple 50%:
         previsions.swaplevel('dte', 'prb')[50]
 
     """

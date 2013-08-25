@@ -21,11 +21,11 @@ Exemples d'utilisation:
 __all__ = [
     'Scenario',
     'parse',
-    'to_xml'
+    'to_xml_file'
 ]
 
 # for the user, this package is like a module, sub-modules names are
 # underscored to hide them
 from _scenario import Scenario
 from _from_xml import parse
-from _to_xml import to_xml
+from _to_xml import to_xml_file

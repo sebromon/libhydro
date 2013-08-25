@@ -2,37 +2,42 @@
 """Module obshydro.
 
 Ce module contient les classes:
-    # Observation
-    # Observations
     # Serie
+    # Observations
+    # Observation
 
 et quelques fonctions utiles:
     # Observations.concat() pour concatener des observations
 
-
-On peux aussi utiliser directement les classes de la librairie Pandas, les
-Series ou les DataFrame.
-
-Exemple pour instancier une Series:
-    datas = pandas.Series(
-        data = [100, 110, 120],
-        index = [
-            datetime.datetime(2012, 5, 1),
-            datetime.datetime(2012, 5, 2),
-            datetime.datetime(2012, 5, 3)
-        ]
-        dtype = None,
-        name='observations de debit'
-)
-
-Exemple pour instancier un DataFrame:
-    hauteurs = pandas.DataFrame({
-        'H2354310': Series_de_hauteurs_1,
-        'H4238907': Series_de_hauteurs_2,
-        ...
-    })
+La Serie est le conteneur de reference pour les observations hydrometriques.
+Les observations y sont contenues dans l'attribut du meme nom, sous la forme
+d'un pandas.DataFrame dont l'index est une serie de timestamp.
 
 """
+
+# On peux aussi utiliser directement les classes de la librairie Pandas, les
+# Series ou les DataFrame.
+#
+# Exemple pour instancier une Series:
+#     datas = pandas.Series(
+#         data = [100, 110, 120],
+#         index = [
+#             datetime.datetime(2012, 5, 1),
+#             datetime.datetime(2012, 5, 2),
+#             datetime.datetime(2012, 5, 3)
+#         ]
+#         dtype = None,
+#         name='observations de debit'
+# )
+#
+# Exemple pour instancier un DataFrame, avec plusieurs series (colonnes) de
+# donnees:
+#     hauteurs = pandas.DataFrame({
+#         'H2354310': Series_de_hauteurs_1,
+#         'H4238907': Series_de_hauteurs_2,
+#         ...
+#     })
+
 #-- imports -------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,

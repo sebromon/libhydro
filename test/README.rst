@@ -8,6 +8,9 @@ Run all test with unittest::
         -s, --start-directory directory   Directory to start discovery (. default)
         -p, --pattern pattern             Pattern to match test files (test*.py default)
 
+Run all test with unittest with warnings about Python3 incompatibilities::
+    clear; python -3 -m unittest discover -p 'test*.py'
+
 Run all test with unittest and coverage::
     clear; coverage run -m unittest discover -p 'test*.py'; coverage report -m
 

@@ -33,8 +33,8 @@ import libhydro.conv.xml as xml
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1a"""
-__date__ = """2013-08-24"""
+__version__ = """Version 0.1b"""
+__date__ = """2013-08-25"""
 
 #HISTORY
 #V0.1 - 2013-08-24
@@ -70,7 +70,9 @@ class TestFromXmlSitesHyros(unittest.TestCase):
         self.assertEqual(scenario.code, 'hydrometrie')
         self.assertEqual(scenario.version, '1.1')
         self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
-        self.assertEqual(scenario.dtprod, datetime.datetime(2010, 2, 26, 12, 53, 10))
+        self.assertEqual(
+            scenario.dtprod, datetime.datetime(2010, 2, 26, 12, 53, 10)
+        )
         self.assertEqual(scenario.emetteur.code, 1069)
         self.assertEqual(scenario.emetteur.intervenant.code, 25)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
@@ -170,9 +172,13 @@ class TestFromXmlObssHydro(unittest.TestCase):
         self.assertEqual(serie.entite.code, 'V7144010')
         self.assertEqual(serie.grandeur, 'Q')
         self.assertEqual(serie.statut, 4)
-        # self.assertEqual(serie.dtprod, datetime.datetime(2010, 2, 26, 14, 55))
-        self.assertEqual(serie.observations.iloc[0].tolist(), [20992, 0, 16, True])
-        self.assertEqual(serie.observations.loc['2010-02-26 11:15'].tolist(), [21176, 0, 16, True])
+        self.assertEqual(
+            serie.observations.iloc[0].tolist(), [20992, 0, 16, True]
+        )
+        self.assertEqual(
+            serie.observations.loc['2010-02-26 11:15'].tolist(),
+            [21176, 0, 16, True]
+        )
 
     def test_serie_1(self):
         """Serie 1 test."""
@@ -180,9 +186,13 @@ class TestFromXmlObssHydro(unittest.TestCase):
         self.assertEqual(serie.entite.code, 'V714401001')
         self.assertEqual(serie.grandeur, 'Q')
         self.assertEqual(serie.statut, 4)
-        # self.assertEqual(serie.dtprod, datetime.datetime(2010, 2, 26, 14, 55))
-        self.assertEqual(serie.observations.iloc[0].tolist(), [20, 12, 12, False])
-        self.assertEqual(serie.observations.loc['2010-02-26 13:15'].tolist(), [21, 12, 8, False])
+        self.assertEqual(
+            serie.observations.iloc[0].tolist(), [20, 12, 12, False]
+        )
+        self.assertEqual(
+            serie.observations.loc['2010-02-26 13:15'].tolist(),
+            [21, 12, 8, False]
+        )
 
     def test_serie_2(self):
         """Serie 2 test."""
@@ -190,10 +200,18 @@ class TestFromXmlObssHydro(unittest.TestCase):
         self.assertEqual(serie.entite.code, 'V71440100103')
         self.assertEqual(serie.grandeur, 'H')
         self.assertEqual(serie.statut, 4)
-        # self.assertEqual(serie.dtprod, datetime.datetime(2010, 2, 26, 14, 55))
-        self.assertEqual(serie.observations.loc['2010-02-26 13:10'].tolist(), [680, 4, 20, True])
-        self.assertEqual(serie.observations.loc['2010-02-26 13:15'].tolist(), [684, 0, 20, True])
-        self.assertEqual(serie.observations.loc['2010-02-26 14:55'].tolist(), [670, 12, 20, True])
+        self.assertEqual(
+            serie.observations.loc['2010-02-26 13:10'].tolist(),
+            [680, 4, 20, True]
+        )
+        self.assertEqual(
+            serie.observations.loc['2010-02-26 13:15'].tolist(),
+            [684, 0, 20, True]
+        )
+        self.assertEqual(
+            serie.observations.loc['2010-02-26 14:55'].tolist(),
+            [670, 12, 20, True]
+        )
 
 
 #-- class TestFromXmlObssMeteo -----------------------------------------------
@@ -239,18 +257,84 @@ class TestFromXmlSimulations(unittest.TestCase):
     def test_simulation_0(self):
         """Simulation 0 test."""
         simulation = self.data['simulations'][0]
+        # check simulation
         self.assertEqual(simulation.entite.code, 'Y1612020')
         self.assertEqual(simulation.modeleprevision.code, '13_08')
         self.assertEqual(simulation.grandeur, 'Q')
         self.assertEqual(simulation.statut, 4)
         self.assertEqual(simulation.qualite, 36)
         self.assertEqual(simulation.public, False)
-        self.assertEqual(simulation.commentaire, 'Biais=-14.91 Précision=36.00')
-        self.assertEqual(simulation.dtprod, datetime.datetime(2010, 2, 26, 14, 45))
-        print(simulation.previsions)  # FIXME
+        self.assertEqual(
+            simulation.commentaire, 'Biais=-14.91 Précision=36.00'
+        )
+        self.assertEqual(
+            simulation.dtprod, datetime.datetime(2010, 2, 26, 14, 45)
+        )
+        # check previsions => res
+        self.assertEqual(
+            simulation.previsions.tolist(), [30, 10, 50, 25, 75, 90, 23, 25]
+        )
+        self.assertEqual(simulation.previsions.iloc[3], 25)
+        self.assertEqual(
+            simulation.previsions.loc['2010-02-26 15:00'].tolist(), [23, 25]
+        )
+        self.assertEqual(
+            simulation.previsions.swaplevel(0, 1)[50].tolist(),
+            [30, 23]
+        )
+        self.assertEqual(
+            simulation.previsions.swaplevel(0, 1)[40].tolist(),
+            [75]
+        )
+        # check previsions => index
+        self.assertEqual(len(simulation.previsions.index), 8)
+        self.assertEqual(
+            [x[0] for x in simulation.previsions.swaplevel(0, 1).index],
+            [50, 0, 100, 20, 40, 49, 50, 100]
+        )
 
+    def test_simulation_1(self):
+        """Simulation 1 test."""
+        simulation = self.data['simulations'][1]
+        # check simulation
+        self.assertEqual(simulation.entite.code, 'Y161202001')
+        self.assertEqual(simulation.modeleprevision.code, 'ScMerSHOM')
+        self.assertEqual(simulation.grandeur, 'H')
+        self.assertEqual(simulation.statut, 4)
+        self.assertEqual(simulation.qualite, 21)
+        self.assertEqual(simulation.public, True)
+        self.assertEqual(
+            simulation.dtprod, datetime.datetime(2010, 2, 26, 14, 45)
+        )
+        # check previsions => res
+        self.assertEqual(len(simulation.previsions), 8)
+        self.assertEqual(simulation.previsions.tolist()[0], 371.774)
+        self.assertEqual(simulation.previsions.tolist()[3], 422.280)
+        self.assertEqual(simulation.previsions.tolist()[7], 358.71)
+        # check previsions => index
+        self.assertEqual(len(simulation.previsions.index), 8)
+        self.assertEqual(len(simulation.previsions.swaplevel(0, 1)[50]), 8)
 
-    # FIXME - sim 1, 2 and 3
+    def test_simulation_2(self):
+        """Simulation 2 test."""
+        simulation = self.data['simulations'][2]
+        # check simulation
+        self.assertEqual(simulation.entite.code, 'Y1612020')
+        self.assertEqual(simulation.modeleprevision.code, '13_09')
+        self.assertEqual(simulation.grandeur, 'Q')
+        self.assertEqual(simulation.statut, 16)
+        self.assertEqual(simulation.qualite, 29)
+        self.assertEqual(simulation.public, False)
+        self.assertEqual(
+            simulation.dtprod, datetime.datetime(2010, 2, 26, 9, 45)
+        )
+        # check previsions => res
+        self.assertEqual(len(simulation.previsions), 4)
+        self.assertEqual(simulation.previsions.tolist(), [22, 33, 44, 55])
+        # check previsions => index
+        self.assertEqual(len(simulation.previsions.index), 4)
+        self.assertEqual(len(simulation.previsions.swaplevel(0, 1)[0]), 2)
+        self.assertEqual(len(simulation.previsions.swaplevel(0, 1)[100]), 2)
 
 
 #-- main ----------------------------------------------------------------------

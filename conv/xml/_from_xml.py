@@ -317,8 +317,8 @@ def _previsions_from_element(element):
                 previsions.append(
                     _simulation.Prevision(
                         dte=dte,
-                        res=_value(probprev, 'PProbPrev', int),
-                        prb=_value(probprev, 'ResProbPrev', float)
+                        res=_value(probprev, 'ResProbPrev', float),
+                        prb=_value(probprev, 'PProbPrev', int)
                     )
                 )
 

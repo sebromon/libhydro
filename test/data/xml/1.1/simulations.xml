@@ -52,8 +52,8 @@
           </Prev>
           <Prev>
             <DtPrev>2010-02-26T15:00:00</DtPrev>
-            <ResMoyPrev>23590</ResMoyPrev>
-            <ResMaxPrev>23590</ResMaxPrev>
+            <ResMoyPrev>23</ResMoyPrev>
+            <ResMaxPrev>25</ResMaxPrev>
           </Prev>
         </Prevs>
       </Simul>
@@ -63,6 +63,7 @@
         <DtProdSimul>2010-02-26T14:45:00</DtProdSimul>
         <IndiceQualiteSimul>21.000</IndiceQualiteSimul>
         <StatutSimul>4</StatutSimul>
+        <PubliSimul>True</PubliSimul>
         <CdStationHydro>Y161202001</CdStationHydro>
         <CdModelePrevision>ScMerSHOM</CdModelePrevision>
         <CdContact schemeAgencyID="SANDRE">41</CdContact>
@@ -107,7 +108,7 @@
         <GrdSimul>Q</GrdSimul>
         <DtProdSimul>2010-02-26T14:45:00+05</DtProdSimul>
         <IndiceQualiteSimul>29.000</IndiceQualiteSimul>
-        <StatutSimul>4</StatutSimul>
+        <StatutSimul>16</StatutSimul>
         <CdSiteHydro>Y1612020</CdSiteHydro>
         <CdModelePrevision>13_09</CdModelePrevision>
         <CdContact schemeAgencyID="SANDRE">41</CdContact>
@@ -115,65 +116,19 @@
         <Prevs>
           <Prev>
             <DtPrev>2010-02-26T14:00:00+05</DtPrev>
-            <ResMoyPrev>36900.000</ResMoyPrev>
+            <ResMinPrev>22</ResMinPrev>
           </Prev>
           <Prev>
             <DtPrev>2010-02-26T15:00:00+05</DtPrev>
-            <ResMoyPrev>27200.000</ResMoyPrev>
+            <ResMaxPrev>33</ResMaxPrev>
           </Prev>
           <Prev>
             <DtPrev>2010-02-26T16:00:00+05</DtPrev>
-            <ResMoyPrev>26500.000</ResMoyPrev>
+            <ResMinPrev>44</ResMinPrev>
           </Prev>
           <Prev>
             <DtPrev>2010-02-26T17:00:00+05</DtPrev>
-            <ResMoyPrev>44300.000</ResMoyPrev>
-          </Prev>
-        </Prevs>
-      </Simul>
-      <!-- simulation 3 -->
-      <Simul>
-        <GrdSimul>H</GrdSimul>
-        <DtProdSimul>2010-02-26T14:45:00</DtProdSimul>
-        <IndiceQualiteSimul>16.000</IndiceQualiteSimul>
-        <StatutSimul>4</StatutSimul>
-        <ComSimul>Biais=-0.04 Précision=16.00</ComSimul>
-        <CdStationHydro>Y161202001</CdStationHydro>
-        <CdModelePrevision>13_09</CdModelePrevision>
-        <CdContact schemeAgencyID="SANDRE">41</CdContact>
-        <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
-        <Prevs>
-          <Prev>
-            <DtPrev>2010-02-26T14:00:00+00</DtPrev>
-            <ResMoyPrev>407.600</ResMoyPrev>
-          </Prev>
-          <Prev>
-            <DtPrev>2010-02-26T15:00:00+00</DtPrev>
-            <ResMoyPrev>291.209</ResMoyPrev>
-          </Prev>
-          <Prev>
-            <DtPrev>2010-02-26T16:00:00+00</DtPrev>
-            <ResMoyPrev>287.363</ResMoyPrev>
-          </Prev>
-          <Prev>
-            <DtPrev>2010-02-26T17:00:00+00</DtPrev>
-            <ResMoyPrev>437.200</ResMoyPrev>
-          </Prev>
-          <Prev>
-            <DtPrev>2010-02-26T18:00:00+00</DtPrev>
-            <ResMoyPrev>237.912</ResMoyPrev>
-          </Prev>
-          <Prev>
-            <DtPrev>2010-02-26T19:00:00+00</DtPrev>
-            <ResMoyPrev>283.516</ResMoyPrev>
-          </Prev>
-          <Prev>
-            <DtPrev>2010-02-26T20:00:00+00</DtPrev>
-            <ResMoyPrev>300.000</ResMoyPrev>
-          </Prev>
-          <Prev>
-            <DtPrev>2010-02-26T21:00:00+00</DtPrev>
-            <ResMoyPrev>402.600</ResMoyPrev>
+            <ResMaxPrev>55</ResMaxPrev>
           </Prev>
         </Prevs>
       </Simul>
