@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
-"""Module xml.to_xml.
+"""Module xml._to_xml.
 
-Ce module contient des convertisseurs vers le format
+Ce module contient les fonctions de generation des fichiers au format
 Xml Hydrometrie (version 1.1 exclusivement).
 
-Fonctions disponibles:
-    (TODO)
+Toutes les heures sont considerees UTC si le fuseau horaire n'est pas precise.
 
-Exemples d'utilisation:
-    (TODO)
+Les fonctions de ce module sont a usage prive, il est recommande d'utiliser la
+classe xml.Message comme interface aux fichiers Xml Hydrometrie.
 
 """
 #-- imports -------------------------------------------------------------------
@@ -36,50 +35,75 @@ __date__ = """2013-08-25"""
 # FIXME - check strict = TRUE when requested
 
 
-#-- public functions ----------------------------------------------------------
-def to_xml_file(dst, scenario, *args):
-    """Fonction to_xm_file.
+# -- testsfunction ------------------------------------------------------------
+def _to_xml(scenario=None, siteshydro=None, series=None, simulations=None):
+    """Genere un message Xml a partir des donnees passes en argument.
+
+    Cette fonction est destinee au tests unitaires. Les utilisateurs sont
+    invites a utiliser la classe xml.Message comme interface de lecture des
+    fichiers Xml Hydrometrie.
 
     Arguments:
-        dst ** TODO **
-        scenario (xml.Scenario) = requested
-        sitesydro (sitehydro.Sitehydro collection)
-        obsshydro ** TODO **
-        simulations ** TODO **
+        scenario (xml.Scenario) = 1 element
+        sitesydro (sitehydro.Sitehydro collection) = iterable or None
+        series (obshydro.Serie collection) = iterable or None
+        simulations (simulation.Simulation collection) = iterable or None
 
     """
+    # make a deep copy of locals() which is a dict {arg_name: arg_value, ...}
+    args = locals()
 
+    # order matters in Xml, we must have the keys list !
+    keys = ('scenario', 'siteshydro', 'series', 'simulations')
+
+    #init the tree and add elements
     tree = _etree.Element('hydrometrie')
-
-    # add scenario
-
-    # add args
+    for k in keys:
+        if args[k] is not None:
+            tree.append(
+                eval('_{}_to_element(args[k])'.format(k))
+            )
 
     # DEBUG -
-    print(
-        _etree.tostring(
-            tree, encoding='utf-8', xml_declaration=1,  pretty_print=1
-        )
-    )
+    # print(
+    #     _etree.tostring(
+    #         tree, encoding='utf-8', xml_declaration=1,  pretty_print=1
+    #     )
+    # )
 
     # return
     return tree
 
 
 # -- global functions ---------------------------------------------------------
+
+# TODO - these 3 functions can be factorised
+
 def _siteshydro_to_element(siteshydro):
-    # TODO
-    pass
+    """Return a <SitesHydro> element from a list of sitehydro.Sitehydro."""
+    if siteshydro is not None:
+        element = _etree.Element('SitesHydro')
+        for sitehydro in siteshydro:
+            element.append(_sitehydro_to_element(sitehydro))
+        return element
 
 
 def _series_to_element(series):
-    # TODO
-    pass
+    """Return a <Series> element from a list of obshydro.Serie."""
+    if series is not None:
+        element = _etree.Element('Series')
+        for serie in series:
+            element.append(_serie_to_element(serie))
+        return element
 
 
 def _simulations_to_element(simulations):
-    # TODO
-    pass
+    """Return a <Simuls> element from a list of simulation.Simulation."""
+    if simulations is not None:
+        element = _etree.Element('Simuls')
+        for simulation in simulations:
+            element.append(_serie_to_element(simulation))
+        return element
 
 
 # -- atomic functions ---------------------------------------------------------
@@ -88,15 +112,15 @@ def _scenario_to_element(scenario):
 
     if scenario is not None:
 
-        # scenario elements
-        SCENARIO = [
+        # template for scenario simple elements
+        story = [
             ('CodeScenario', scenario.code, None),
             ('VersionScenario', scenario.version, None),
             ('NomScenario', scenario.nom, None),
             ('DateHeureCreationFichier', scenario.dtprod.isoformat(), None)
         ]
-        # scenario sub-element Emetteur
-        SCENARIO.append(
+        # template for scenario sub-element <Emetteur>
+        story.append(
             ('Emetteur', (
                 ('CdIntervenant',
                  unicode(scenario.emetteur.intervenant.code),
@@ -106,8 +130,8 @@ def _scenario_to_element(scenario):
                  {"schemaAgencyID": "SANDRE"})
             ))
         )
-        # scenario sub-element Destinataire
-        SCENARIO.append(
+        # template for scenario sub-element <Destinataire>
+        story.append(
             ('Destinataire', (
                 ('CdIntervenant',
                  unicode(scenario.destinataire.code),
@@ -116,22 +140,73 @@ def _scenario_to_element(scenario):
         )
 
         # action !
-        return _factory(root=_etree.Element('Scenario'), story=SCENARIO)
+        return _factory(root=_etree.Element('Scenario'), story=story)
 
 
 def _sitehydro_to_element(sitehydro):
-    # TODO
-    pass
+    """Return a <SiteHydro> element from a sitehydro.Sitehydro."""
+
+    if sitehydro is not None:
+
+        # template for sitehydro simple elements
+        story = [
+            ('CdSiteHydro', sitehydro.code, None),
+            ('LbSiteHydro', sitehydro.libelle, None),
+            ('TypSiteHydro', sitehydro.typesite, None)
+        ]
+
+        # make element <SiteHydro>
+        element = _factory(root=_etree.Element('SiteHydro'), story=story)
+
+        # add the stations
+        if sitehydro.stations is not None:
+            child = _etree.SubElement(element, 'StationsHydro')
+            for station in sitehydro.stations:
+                child.append(_stationhydro_to_element(station))
+
+        # return
+        return element
 
 
 def _stationhydro_to_element(stationhydro):
-    # TODO
-    pass
+    """Return a <StationHydro> element from a sitehydro.Stationhydro."""
+
+    if stationhydro is not None:
+
+        # template for stationhydro simple elements
+        story = [
+            ('CdStationHydro', stationhydro.code, None),
+            ('LbStationHydro', stationhydro.libelle, None),
+            ('TypStationHydro', stationhydro.typestation, None)
+        ]
+
+        # make element <StationHydro>
+        element = _factory(root=_etree.Element('StationHydro'), story=story)
+
+        # add the capteurs
+        if stationhydro.capteurs is not None:
+            child = _etree.SubElement(element, 'Capteurs')
+            for capteur in stationhydro.capteurs:
+                child.append(_capteur_to_element(capteur))
+
+        # return
+        return element
 
 
 def _capteur_to_element(capteur):
-    # TODO
-    pass
+    """Return a <Capteur> element from a sitehydro.Capteur."""
+
+    if capteur is not None:
+
+        # capteur simple elements
+        story = [
+            ('CdCapteur', capteur.code, None),
+            ('LbCapteur', capteur.libelle, None),
+            ('TypMesureCapteur', capteur.typemesure, None)
+        ]
+
+        # action !
+        return _factory(root=_etree.Element('Capteur'), story=story)
 
 
 def _serie_to_element(serie):
@@ -159,14 +234,14 @@ def _factory(root, story):
         """Add to <root> element tags or sub-elements described in story.
 
         Syntax:
-            # for an element => (tag, attribute, {tag_attributes}) - len is 3
+            # for an element => (tag_name, text, {tag_attributes}) - len is 3
             # for a sub-element => (sub_element_tag, (story)) - len is 2
 
         """
         # parse story
         for rule in story:
             # DEBUG - print(rule)
-            # sub-element
+            # recursif cal for sub-element
             if len(rule) == 2:
                 child = _etree.SubElement(root, rule[0])
                 root.append(

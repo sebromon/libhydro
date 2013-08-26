@@ -25,16 +25,14 @@ import os
 sys.path.append(os.path.join('..', '..'))
 
 import unittest
-
 import datetime
 
-import libhydro.conv.xml as xml
-# from libhydro.core import intervenant
+import libhydro.conv.xml._from_xml as from_xml
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """Version 0.1b"""
-__date__ = """2013-08-25"""
+__date__ = """2013-08-26"""
 
 #HISTORY
 #V0.1 - 2013-08-24
@@ -42,12 +40,12 @@ __date__ = """2013-08-25"""
 
 
 #-- class TestFromXmlSiteshydro ----------------------------------------------
-class TestFromXmlSitesHyros(unittest.TestCase):
+class TestFromXmlSitesHydros(unittest.TestCase):
     """FromXmlSitesHydro class tests."""
 
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
-        self.data = xml.parse('data/xml/1.1/siteshydro.xml')
+        self.data = from_xml._parse('data/xml/1.1/siteshydro.xml')
 
     # def tearDown(self):
     #     """Hook method for deconstructing the test fixture after testing it."""
@@ -121,7 +119,7 @@ class TestFromXmlSitesHyros(unittest.TestCase):
         """Xml file with namespace error test."""
         self.assertRaises(
             ValueError,
-            xml.parse,
+            from_xml._parse,
             # *(['data/xml/1.1/siteshydro.xml'])
             *(['data/xml/1.1/siteshydro_with_namespace.xml'])
         )
@@ -130,13 +128,14 @@ class TestFromXmlSitesHyros(unittest.TestCase):
 #-- class TestFromXmlSitesMeteo ----------------------------------------------
 #TODO
 
+
 #-- class TestFromXmlObssHydro -----------------------------------------------
 class TestFromXmlObssHydro(unittest.TestCase):
     """FromXmlObssHydro class tests."""
 
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
-        self.data = xml.parse('data/xml/1.1/obsshydro.xml')
+        self.data = from_xml._parse('data/xml/1.1/obsshydro.xml')
 
     # def tearDown(self):
     #     """Hook method for deconstructing the test fixture after testing it."""
@@ -224,7 +223,7 @@ class TestFromXmlSimulations(unittest.TestCase):
 
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
-        self.data = xml.parse('data/xml/1.1/simulations.xml')
+        self.data = from_xml._parse('data/xml/1.1/simulations.xml')
 
     # def tearDown(self):
     #     """Hook method for deconstructing the test fixture after testing it."""

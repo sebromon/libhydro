@@ -8,7 +8,7 @@ syntax: glob
 .hgrc
 .coverage
 # specific files
-activate
+reminder*
 
 # -----------------------------------------------------------------------------
 #syntax: regexp

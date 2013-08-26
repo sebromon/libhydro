@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-"""Test program for xml.scenario.
+"""Test program for xml.xml.
 
 To run all tests just type:
-    './test_xml_scenario.py' or 'python test_xml_scenario.py'
+    './test_xml_xml.py' or 'python test_xml_xml.py'
 
 To run only a class test:
-    python -m unittest test_xml_scenario.TestClass
+    python -m unittest test_xml_xml.TestClass
 
 To run only a specific test:
-    python -m unittest test_xml_scenario.TestClass
-    python -m unittest test_xml_scenario.TestClass.test_method
+    python -m unittest test_xml_xml.TestClass
+    python -m unittest test_xml_xml.TestClass.test_method
 
 """
 #-- imports -------------------------------------------------------------------
@@ -30,21 +30,21 @@ import datetime
 import numpy
 
 from libhydro.core import intervenant
-from libhydro.conv.xml import Scenario
+from libhydro.conv.xml import (Scenario, Message)
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """Version 0.1b"""
-__date__ = """2013-08-24"""
+__date__ = """2013-08-26"""
 
 #HISTORY
 #V0.1 - 2013-08-22
 #    first shot
 
 
-#-- class Testscenario --------------------------------------------------------
-class Testscenario(unittest.TestCase):
+#-- class TestScenario --------------------------------------------------------
+class TestScenario(unittest.TestCase):
     """Scenario class tests."""
 
     def test_base_01(self):
@@ -140,6 +140,17 @@ class Testscenario(unittest.TestCase):
             Scenario,
             **{'emetteur': emetteur, 'destinataire': destinataire, 'dtprod': 'ff'}
         )
+
+
+#-- class TestMessage --------------------------------------------------------
+# class TestMessage(unittest.TestCase):
+#     """Message class tests."""
+#
+#     def test_base_01(self):
+#         """Base case message."""
+#         msg = Message()
+#         raise NotImplementedError(msg)
+
 
 #-- main ----------------------------------------------------------------------
 if __name__ == '__main__':

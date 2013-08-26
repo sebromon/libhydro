@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Module xml.scenario.
+"""Module xml.classes.
 
-Ce module contient la classe:
+Ce module contient les classes:
+    # Message
     # Scenario
 
 """
@@ -16,13 +17,13 @@ from __future__ import (
 import datetime as _datetime
 import numpy as _numpy
 
-from ...core import (intervenant as _intervenant)
+from libhydro.core import (intervenant as _intervenant)
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """version 0.1d"""
-__date__ = """2013-08-24"""
+__date__ = """2013-08-26"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -144,3 +145,90 @@ class Scenario(object):
             self.emetteur,
             self.destinataire
         ).encode('utf-8')
+
+
+# -- class Message ------------------------------------------------------------
+class Message(object):
+
+    def __init__(self):
+        # TODO
+        pass
+
+        # 'scenario': _scenario_from_element(tree.find('Scenario')),
+        # # 'intervenants':
+        # 'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro')),
+        # # 'sitesmeteo'
+        # # 'modelesprevision': 'TODOS',
+        # # 'evenements'
+        # # 'courbestarage'
+        # # 'jaugeages'
+        # # 'courbescorrection'
+        # 'series': _series_from_element(tree.find('Donnees/Series')),
+        # # 'obssmeteo'
+        # # 'obsselab'
+        # # 'gradshydro'
+        # # 'qualifsannee'
+        # 'simulations': _simulations_from_element(tree.find('Donnees/Simuls'))
+        # # 'alarmes'
+
+    @classmethod
+    def from_file(src):
+        # TODO
+        pass
+
+#     """Parse le fichier src, instancie et retourne les objets qu'il contient.
+#
+#     Arguments:
+#         src (nom de fichier, url, objet fichier...) = source de donnee. Les
+#             type de src acceptes sont ceux de lxml.etree.parse
+#
+#     Retourne un dictionnaire avec les cles:
+#             # scenario: xml.Scenario
+#             # siteshydro: liste de sitehydro.Siteshydro ou None
+#             # series: liste de obshydro.Serie ou None
+#             # simulation: liste de simulation.Simulation ou None
+#
+#     """
+#
+#     # read the file
+#     parser = _etree.XMLParser(
+#         remove_blank_text=True, remove_comments=True, ns_clean=True
+#     )
+#     tree = _etree.parse(src, parser=parser)
+#
+#     # deal with namespaces
+#     # TODO - we could certainly do better with namespaces
+#     if tree.getroot().nsmap != {}:
+#         raise ValueError("can't parse xml file with namespaces")
+#
+#     return {
+#         'scenario': _scenario_from_element(tree.find('Scenario')),
+#         # 'intervenants':
+#         'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro')),
+#         # 'sitesmeteo'
+#         # 'modelesprevision': 'TODOS',
+#         # 'evenements'
+#         # 'courbestarage'
+#         # 'jaugeages'
+#         # 'courbescorrection'
+#         'series': _series_from_element(tree.find('Donnees/Series')),
+#         # 'obssmeteo'
+#         # 'obsselab'
+#         # 'gradshydro'
+#         # 'qualifsannee'
+#         'simulations': _simulations_from_element(tree.find('Donnees/Simuls'))
+#         # 'alarmes'
+#     }
+
+    def add(self, *args):
+        """Add some elements."""
+        # TODO
+        pass
+
+    def write(self, dst):
+        # TODO
+        pass
+
+    def __str__(self):
+        # TODO
+        pass

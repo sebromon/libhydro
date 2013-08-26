@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
 """Module libhydro.conv.xml.
 
-Ce module contient des convertisseurs de et vers les fichiers au format
-Xml Hydrometrie (version 1.1 exclusivement).
+Le module xml contient des convertisseurs de et vers les fichiers au format
+Xml Hydrometrie (version 1.1 exclusivement), disponibles au travers la classe
+Message.
 
-Fonctions de lecture:
-    (TODO)
-
-Fonctions d'ecriture:
-    (TODO)
-
-Il contient egalement la classe:
+Il contient les classes:
+    # Message
     # Scenario
 
 Exemples d'utilisation:
@@ -19,13 +15,10 @@ Exemples d'utilisation:
 """
 # import *
 __all__ = [
-    'Scenario',
-    'parse',
-    'to_xml_file'
+    'Message',
+    'Scenario'
 ]
 
 # for the user, this package is like a module, sub-modules names are
 # underscored to hide them
-from _scenario import Scenario
-from _from_xml import parse
-from _to_xml import to_xml_file
+from xml import (Scenario, Message)

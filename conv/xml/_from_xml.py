@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-"""Module xml.from_xml.
+"""Module xml._from_xml.
 
-Ce module contient des fonctions de lecture de fichiers au format
+Ce module contient les fonctions de lecture des fichiers au format
 Xml Hydrometrie (version 1.1 exclusivement).
 
 Toutes les heures sont considerees UTC si le fuseau horaire n'est pas precise.
 
-Fonctions disponibles:
-    # parse()
+Les fonctions de ce module sont a usage prive, il est recommande d'utiliser la
+classe xml.Message comme interface aux fichiers Xml Hydrometrie.
 
 """
-# TODO - Exemples d'utilisation: (examples)
 #-- imports -------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
@@ -21,7 +20,7 @@ from __future__ import (
 
 from lxml import etree as _etree
 
-from ._scenario import Scenario
+from .xml import Scenario
 
 from libhydro.core import (
     sitehydro as _sitehydro,
@@ -34,8 +33,8 @@ from libhydro.core import (
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1d"""
-__date__ = """2013-08-24"""
+__version__ = """version 0.1e"""
+__date__ = """2013-08-26"""
 
 #HISTORY
 #V0.1 - 2013-08-18
@@ -43,8 +42,6 @@ __date__ = """2013-08-24"""
 
 
 #-- todos ---------------------------------------------------------------------
-# FIXME - how should be a clean API ?
-
 # TODO - if xpath is too slow to acess elements, use indexing
 #        code=element[0].text,
 #        but xpath is more readable and do not care of xml order
@@ -60,9 +57,13 @@ PREV_PROBABILITY = {
 }
 
 
-# -- public functions ---------------------------------------------------------
-def parse(src):
+# -- tests function -----------------------------------------------------------
+def _parse(src):
     """Parse le fichier src, instancie et retourne les objets qu'il contient.
+
+    Cette fonction est destinee au tests unitaires. Les utilisateurs sont
+    invites a utiliser la classe xml.Message comme interface de lecture des
+    fichiers Xml Hydrometrie.
 
     Arguments:
         src (nom de fichier, url, objet fichier...) = source de donnee. Les
