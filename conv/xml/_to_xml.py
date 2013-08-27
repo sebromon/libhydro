@@ -23,8 +23,8 @@ from lxml import etree as _etree
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1b"""
-__date__ = """2013-08-25"""
+__version__ = """version 0.1c"""
+__date__ = """2013-08-27"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -210,13 +210,64 @@ def _capteur_to_element(capteur):
 
 
 def _serie_to_element(serie):
-    # TODO
-    pass
+    """Return a <Serie> element from a obshydro.Serie."""
+
+    if serie is not None:
+
+        # template for serie simple elements
+        story = [
+            (
+                # Entite can be a Sitehydro, a Stationhydro or a Capteur
+                'Cd%s' % (
+                    serie.entite.__class__.__name__.replace('hydro', 'Hydro')
+                ),
+                serie.entite.code,
+                None
+            ),
+            ('GrdSerie', serie.grandeur, None),
+            ('StatutSerie', unicode(serie.statut), None),
+        ]
+
+        # make element <Serie>
+        element = _factory(root=_etree.Element('Serie'), story=story)
+
+        # add the observations
+        if serie.observations is not None:
+            element.append(_observations_to_element(serie.observations))
+
+        # return
+        return element
 
 
 def _observations_to_element(observations):
-    # TODO
-    pass
+    """Return a <ObssHydro> element from a obshydro.Observations."""
+
+    if observations is not None:
+
+        # make element <ObssHydro>
+        element = _etree.Element('ObssHydro')
+
+        # add the observations - iterrows gives tuples (index, (items))
+        for observation in observations.iterrows():
+            obs = _etree.SubElement(element, 'ObsHydro')
+            # dte and res are mandatory...
+            child = _etree.SubElement(obs, 'DtObsHydro')
+            child.text = observation[0].isoformat()
+            child = _etree.SubElement(obs, 'ResObsHydro')
+            child.text = unicode(observation[1]['res'])
+            # while mth, qal and cnt aren't
+            if 'mth' in observation[1].index:
+                child = _etree.SubElement(obs, 'MethObsHydro')
+                child.text = unicode(observation[1]['mth'])
+            if 'qal' in observation[1].index:
+                child = _etree.SubElement(obs, 'QualifObsHydro')
+                child.text = unicode(observation[1]['qal'])
+            if 'cnt' in observation[1].index:
+                child = _etree.SubElement(obs, 'ContObsHydro')
+                child.text = unicode(observation[1]['cnt'])
+
+        # return
+        return element
 
 
 def _simulation_to_element(simulation):

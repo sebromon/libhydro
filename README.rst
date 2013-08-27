@@ -18,8 +18,9 @@ Mercurial website:
 
     Repository structure
         # bin - exec files
+        # conv - convertisseurs de et vers differents formats
+        # core - bibliotheque centrale (les classes)
         # doc - documentation
-        # lib - the main library
         # test - test dir
 
 -------------------------------------------------------------------------------
@@ -29,6 +30,8 @@ Requirements:
     Python 2.7 ** TODO **
     Numpy ** TODO **
     Panda ** TODO **
+
+    lxml pour conv.xml
 
 Installation:
     ** TODO ** setup.py + requirments.txt + manifest
