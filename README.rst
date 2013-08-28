@@ -23,6 +23,14 @@ Mercurial website:
         # doc - documentation
         # test - test dir
 
+Branches:
+    default is the developpement branch
+    stable is the releases branch
+    (http://stevelosh.com/blog/2010/05/mercurial-workflows-stable-default)
+
+Revisions:
+    (cf. http://semver.org/)
+
 -------------------------------------------------------------------------------
 INSTALL
 -------------------------------------------------------------------------------
