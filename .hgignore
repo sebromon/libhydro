@@ -5,7 +5,7 @@ syntax: glob
 *~
 *.swp
 *.pyc
-.hgrc
+*hgrc
 .coverage
 # specific files
 reminder*
