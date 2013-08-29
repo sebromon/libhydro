@@ -19,6 +19,7 @@ from __future__ import (
 )
 
 from lxml import etree as _etree
+import datetime as _datetime
 
 
 #-- strings -------------------------------------------------------------------
@@ -33,6 +34,14 @@ __date__ = """2013-08-27"""
 
 #-- todos ---------------------------------------------------------------------
 # FIXME - check strict = TRUE when requested
+
+
+# -- config -------------------------------------------------------------------
+PREV_PROBABILITY = {
+    50: 'ResMoyPrev',
+    0: 'ResMinPrev',
+    100: 'ResMaxPrev'
+}
 
 
 # -- testsfunction ------------------------------------------------------------
@@ -276,8 +285,48 @@ def _simulation_to_element(simulation):
 
 
 def _previsions_to_element(previsions):
-    # TODO
-    pass
+    """Return a <Prevs> element from a simulation.Previsions."""
+
+    if previsions is not None:
+
+        # make element <Prevs>
+        element = _etree.Element('Prevs')
+
+        # put the index in order (dte, prb) if needed
+        if not isinstance(previsions.index[0][0], _datetime.datetime):
+            previsions = previsions.swaplevel(0, 1)
+
+        # add the previsions - iteritems gives tuples ((dte, prb), res)
+
+        #######################################################################
+        # FIXME - we must iter by date and we can have multi element for one date
+
+        for prevision in previsions.iteritems():
+            prev = _etree.SubElement(element, 'Prev')
+            # dte is mandatory...
+            prev.append(
+                _make_element(
+                    tag_name='DtPrev',
+                    text=prevision[0][0].isoformat()
+                )
+            )
+
+            # if prob in (0, 50, 100) it's a direct tag...
+            if prevision[0][1] in (0, 50, 100):  # FIXME - do not work !!!
+                prev.append(
+                    _make_element(
+                        tag_name=PREV_PROBABILITY[prevision[0][1]],
+                        text=prevision[1]
+                    )
+                )
+            # else it's a prob child
+            else:
+                pass
+
+        #######################################################################
+
+        # return
+        return element
 
 
 # -- utility functions --------------------------------------------------------
@@ -321,5 +370,5 @@ def _make_element(tag_name, text, tag_attrib=None):
     # DEBUG - print(locals())
     if text is not None:
         element = _etree.Element(_tag=tag_name, attrib=tag_attrib)
-        element.text = text
+        element.text = unicode(text)
         return element

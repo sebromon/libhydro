@@ -156,8 +156,12 @@ class Previsions(_pandas.Series):
     Se reporter a la documentation de la classe Prevision pour l'utilisation du
     parametre prb.
 
+** FIXME **
+
     Pour filtrer la serie de resultats de meme probabilite, par exemple 50%:
         previsions.swaplevel('dte', 'prb')[50]
+
+**FIXME ** be VERY careful, when no label is found, return the 50th element **
 
     """
 
