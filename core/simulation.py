@@ -19,9 +19,9 @@ d'une pandas.Series a double index, un timestamp et une probabilite.
 #     datas = pandas.Series(
 #         data = [100, 110, 120],
 #         index = [
-#             datetime.datetime(2012, 5, 1),
-#             datetime.datetime(2012, 5, 2),
-#             datetime.datetime(2012, 5, 3)
+#             numpy.datetime64('2012-05 01:00', 's'),
+#             numpy.datetime64('2012-05 02:00', 's'),
+#             numpy.datetime64('2012-05 03:00', 's')
 #         ]
 #         dtype = None,
 #         name='previsions de debit'
@@ -44,7 +44,6 @@ from __future__ import (
 
 import numpy as _numpy
 import pandas as _pandas
-import datetime as _datetime
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
@@ -52,8 +51,8 @@ from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1e"""
-__date__ = """2013-08-24"""
+__version__ = """version 0.1f"""
+__date__ = """2013-08-30"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -69,6 +68,8 @@ __date__ = """2013-08-24"""
 # }
 # def _admit_simulation(self, grandeur):
 #      return ADMIT_SIMULATION[self.__class][grandeur]
+
+# TODO - add a sort argument/method ?
 
 
 #-- class Prevision -----------------------------------------------------------
@@ -108,7 +109,7 @@ class Prevision(_numpy.ndarray):
 
     def __new__(cls, dte, res, prb=50):
         if not isinstance(dte, _numpy.datetime64):
-            dte = _numpy.datetime64(dte)
+            dte = _numpy.datetime64(dte, 's')
         try:
             prb = int(prb)
             if (prb < 0) or (prb > 100):
@@ -225,7 +226,7 @@ class Simulation(object):
         qualite (0 < int < 100) = indice de qualite
         public (bool, defaut False) = si True publication libre
         commentaire (texte)
-        dtprod (datetime) = date de production
+        dtprod (datetime.datetime) = date de production
         previsions (Previsions)
 
     """
@@ -407,13 +408,14 @@ class Simulation(object):
     def dtprod(self, dtprod):
         try:
             if dtprod is not None:
-                if not isinstance(
-                    dtprod, (_datetime.datetime, _numpy.datetime64)
-                ):
+                if not isinstance(dtprod, _numpy.datetime64):
                     try:
-                        dtprod = _numpy.datetime64(dtprod)
+                        dtprod = _numpy.datetime64(dtprod, 's')
                     except Exception:
-                        raise TypeError('dtprod must be a date')
+                        try:
+                            dtprod = _numpy.datetime64(dtprod.isoformat(), 's')
+                        except Exception:
+                            raise TypeError('dtprod must be a date')
             self._dtprod = dtprod
 
         except:
@@ -432,7 +434,11 @@ class Simulation(object):
                 # we check we have a Series...
                 # ... and that index contains datetimes
                 if (self._strict):
-                    if not isinstance(previsions, _pandas.Series):
+                    if (
+                        (not isinstance(previsions, _pandas.Series)) or
+                        (previsions.index.names != ['dte', 'prb'])
+                    ):
+
                         raise TypeError('previsions incorrect')
                     previsions.index[0][0].isoformat()
             # all seeem's ok :-)

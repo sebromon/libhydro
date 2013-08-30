@@ -22,9 +22,9 @@ d'un pandas.DataFrame dont l'index est une serie de timestamp.
 #     datas = pandas.Series(
 #         data = [100, 110, 120],
 #         index = [
-#             datetime.datetime(2012, 5, 1),
-#             datetime.datetime(2012, 5, 2),
-#             datetime.datetime(2012, 5, 3)
+#             numpy.datetime64('2012-05-01 10:00', 's'),
+#             numpy.datetime64('2012-05-01 11:00', 's'),
+#             numpy.datetime64('2012-05-01 12:00', 's')
 #         ]
 #         dtype = None,
 #         name='observations de debit'
@@ -82,6 +82,8 @@ __date__ = """2013-08-24"""
 #         return False
 #     return True
 
+# TODO - add a sort argument/method ?
+
 
 #-- class Observation ---------------------------------------------------------
 class Observation(_numpy.ndarray):
@@ -126,7 +128,7 @@ class Observation(_numpy.ndarray):
 
     def __new__(cls, dte, res, mth=0, qal=16, cnt=True):
         if not isinstance(dte, _numpy.datetime64):
-            dte = _numpy.datetime64(dte)
+            dte = _numpy.datetime64(dte, 's')
         if (mth != 0) and (mth not in _NOMENCLATURE[507]):
             raise ValueError('methode incorrecte')
         if (qal != 16) and (qal not in _NOMENCLATURE[515]):
@@ -379,7 +381,7 @@ class Serie(object):
                 # we check we have a res column...
                 # ... and that index contains datetimes
                 observations.res
-                observations.index[0].isoformat()
+                observations.index[0].isoformat()  # FIXME - should fail with datetime64 object. Use .item().isoformat()
             self._observations = observations
 
         except:

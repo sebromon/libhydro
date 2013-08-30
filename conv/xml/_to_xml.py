@@ -19,13 +19,13 @@ from __future__ import (
 )
 
 from lxml import etree as _etree
-import datetime as _datetime
+import numpy as _numpy
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1c"""
-__date__ = """2013-08-27"""
+__version__ = """version 0.1d"""
+__date__ = """2013-08-30"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -69,7 +69,13 @@ def _to_xml(scenario=None, siteshydro=None, series=None, simulations=None):
     tree = _etree.Element('hydrometrie')
     for k in keys:
         if args[k] is not None:
-            tree.append(
+            if k == keys[0]:  # scenatio
+                sub = tree
+            elif k == keys[1]:  # siteshydro
+                sub = _etree.SubElement(tree, 'RefHyd')
+            else:  # series or simulations
+                sub = _etree.SubElement(tree, 'Donnees')
+            sub.append(
                 eval('_{}_to_element(args[k])'.format(k))
             )
 
@@ -111,7 +117,7 @@ def _simulations_to_element(simulations):
     if simulations is not None:
         element = _etree.Element('Simuls')
         for simulation in simulations:
-            element.append(_serie_to_element(simulation))
+            element.append(_simulation_to_element(simulation))
         return element
 
 
@@ -168,7 +174,7 @@ def _sitehydro_to_element(sitehydro):
         element = _factory(root=_etree.Element('SiteHydro'), story=story)
 
         # add the stations
-        if sitehydro.stations is not None:
+        if len(sitehydro.stations) > 0:
             child = _etree.SubElement(element, 'StationsHydro')
             for station in sitehydro.stations:
                 child.append(_stationhydro_to_element(station))
@@ -193,7 +199,7 @@ def _stationhydro_to_element(stationhydro):
         element = _factory(root=_etree.Element('StationHydro'), story=story)
 
         # add the capteurs
-        if stationhydro.capteurs is not None:
+        if len(stationhydro.capteurs) > 0:
             child = _etree.SubElement(element, 'Capteurs')
             for capteur in stationhydro.capteurs:
                 child.append(_capteur_to_element(capteur))
@@ -280,50 +286,104 @@ def _observations_to_element(observations):
 
 
 def _simulation_to_element(simulation):
-    # TODO
-    pass
+    """Return a <Simul> element from a simulation.Simulation."""
+
+    if simulation is not None:
+
+        # template for simulation simple elements
+        story = [
+            ('GrdSimul', simulation.grandeur, None),
+            (
+                # dtprod is a numpy.datetime64 without any isoformat method
+                'DtProdSimul',
+                simulation.dtprod.item().isoformat(),
+                None
+            ),
+            ('IndiceQualiteSimul', unicode(simulation.qualite), None),
+            ('StatutSimul', unicode(simulation.statut), None),
+            ('PubliSimul', unicode(simulation.public), None),
+            ('ComSimul', simulation.commentaire, None),
+            (
+                # entite can be a Sitehydro or a Stationhydro
+                'Cd%s' % (
+                    simulation.entite.__class__.__name__.replace('hydro', 'Hydro')
+                ),
+                simulation.entite.code,
+                None
+            ),
+            ('CdModelePrevision', simulation.modeleprevision.code, None),
+        ]
+
+        # make element <Simul>
+        element = _factory(root=_etree.Element('Simul'), story=story)
+
+        # add the previsions
+        if simulation.previsions is not None:
+            element.append(_previsions_to_element(simulation.previsions))
+
+        # return
+        return element
 
 
 def _previsions_to_element(previsions):
     """Return a <Prevs> element from a simulation.Previsions."""
+
+    # this one is very VERY painful #:~/
 
     if previsions is not None:
 
         # make element <Prevs>
         element = _etree.Element('Prevs')
 
-        # put the index in order (dte, prb) if needed
-        if not isinstance(previsions.index[0][0], _datetime.datetime):
-            previsions = previsions.swaplevel(0, 1)
-
-        # add the previsions - iteritems gives tuples ((dte, prb), res)
-
-        #######################################################################
-        # FIXME - we must iter by date and we can have multi element for one date
-
-        for prevision in previsions.iteritems():
-            prev = _etree.SubElement(element, 'Prev')
+        # iter by date and add the previsions
+        for dte in previsions.index.levels[0].values:
+            prev_elem = _etree.SubElement(element, 'Prev')
             # dte is mandatory...
-            prev.append(
+            prev_elem.append(
                 _make_element(
                     tag_name='DtPrev',
-                    text=prevision[0][0].isoformat()
+                    # dte is a numpy.datetime64 with perhaps nanoseconds
+                    # it is better to cast it before getting the isoformat
+                    text=_numpy.datetime64(dte, 's').item().isoformat()
                 )
             )
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            # for one date we can have multiple values
+            # we put all of them in a dict {prb: res, ...}
+            # so that we can pop them on by one
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            prevs = previsions[dte].to_dict()
 
-            # if prob in (0, 50, 100) it's a direct tag...
-            if prevision[0][1] in (0, 50, 100):  # FIXME - do not work !!!
-                prev.append(
-                    _make_element(
-                        tag_name=PREV_PROBABILITY[prevision[0][1]],
-                        text=prevision[1]
+            # we begin to deal with the direct tags...
+            for prob in (0, 50, 100):
+                if prob in prevs:
+                    prev_elem.append(
+                        _make_element(
+                            tag_name=PREV_PROBABILITY[prob],
+                            text=prevs.pop(prob)
+                        )
                     )
-                )
-            # else it's a prob child
-            else:
-                pass
-
-        #######################################################################
+            # ... and then with the remaining <ProbPrev> elements
+            if len(prevs) > 0:
+                probsprev_elem = _etree.SubElement(prev_elem, 'ProbsPrev')
+                # we sort the result by prob ascending order
+                probs = prevs.keys()
+                probs.sort()
+                # add elems
+                for prob in probs:
+                    probprev_elem = _etree.SubElement(probsprev_elem, 'ProbPrev')
+                    probprev_elem.append(
+                        _make_element(
+                            tag_name='PProbPrev',
+                            text=prob
+                        )
+                    )
+                    probprev_elem.append(
+                        _make_element(
+                            tag_name='ResProbPrev',
+                            text=prevs.pop(prob)
+                        )
+                    )
 
         # return
         return element
@@ -366,7 +426,7 @@ def _factory(root, story):
 
 
 def _make_element(tag_name, text, tag_attrib=None):
-    """Return etree.Element <tag_name {attrib}>cast(text)</tag_name>."""
+    """Return etree.Element <tag_name {attrib}>unicode(text)</tag_name>."""
     # DEBUG - print(locals())
     if text is not None:
         element = _etree.Element(_tag=tag_name, attrib=tag_attrib)
