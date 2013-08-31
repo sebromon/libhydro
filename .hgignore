@@ -8,6 +8,7 @@ syntax: glob
 .coverage
 # specific files
 reminder*
+doc/pydoc/2*
 
 # -----------------------------------------------------------------------------
 #syntax: regexp

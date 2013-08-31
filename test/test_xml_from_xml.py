@@ -27,7 +27,8 @@ sys.path.append(os.path.join('..', '..'))
 import unittest
 import datetime
 
-import libhydro.conv.xml._from_xml as from_xml
+from libhydro.conv.xml import (_from_xml as from_xml)
+
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""

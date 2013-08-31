@@ -56,7 +56,7 @@ from . import sitehydro as _sitehydro
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """version 0.1g"""
-__date__ = """2013-08-24"""
+__date__ = """2013-08-31"""
 
 #HISTORY
 #V0.1 - 2013-07-18
@@ -397,21 +397,23 @@ class Serie(object):
             try:
                 entite = '{} {}'.format(
                     _sitehydro.ARTICLE[self.entite.__class__],
-                    self.entite.__str__()
+                    self.entite.__str__().decode('utf-8')
                 )
             except Exception:
-                entite = self.entite.__str__()
+                entite = self.entite.__str__().decode('utf-8')
 
         # prepare observations
         if self.observations is None:
             obs = '<sans observations>'
         elif len(self.observations) <= 30:
             obs = self.observations.to_string()
+            obs += '\n%s values' % len(self.observations)
         else:
             obs = '{0}\n...\n{1}'.format(
                 self.observations[:15].to_string(),
                 '\n'.join(self.observations[-15:].to_string().split('\n')[2:])
             )
+            obs += '\n%s' % self.observations.__str__()
 
         # action !
         return 'Serie {0} sur {1}\n'\

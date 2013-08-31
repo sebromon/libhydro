@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# -----------------------------------------------------------------------------
+# script = make_doc
+# purpose = build html pydoc for the entire library
+# author = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
+# version = """version 0.1a"""
+# date = """2013-08-31"""
+#
+#HISTORY
+#V0.1 - 2013-08-31
+#    first shot
+# -----------------------------------------------------------------------------
+
+export PYTHONPATH=$PYTHONPATH:'/home/philippe/devel/'
+
+# -----------------------------------------------------------------------------
+# -- prepare destination --
+# -----------------------------------------------------------------------------
+d=$(date '+%Y%m%d_%H%M')
+[ -d "${d}" ] && { rm -rf ${d}; }
+mkdir ${d}
+
+# -----------------------------------------------------------------------------
+# make doc
+# -----------------------------------------------------------------------------
+# move to libhydro root directory
+cd ../..
+
+# -- core --
+python -m pydoc -w libhydro.core
+# core/alarm
+# core/courbecorrection
+# core/courbetarage
+# core/evenement
+# core/gradienthydro
+python -m pydoc -w libhydro.core.intervenant
+#core/jaugeage
+python -m pydoc -w libhydro.core.modeleprevision
+python -m pydoc -w libhydro.core.nomenclature
+python -m pydoc -w libhydro.core.obselaboreehydro
+python -m pydoc -w libhydro.core.obshydro
+# core/obsmeteo
+# core/qualifannee
+python -m pydoc -w libhydro.core.simulation
+python -m pydoc -w libhydro.core.sitehydro
+# core/sitemeteo
+
+# -- conv --
+python -m pydoc -w libhydro.conv
+python -m pydoc -w libhydro.conv.shom
+python -m pydoc -w libhydro.conv.xml
+
+# -----------------------------------------------------------------------------
+# -- store the html files --
+# -----------------------------------------------------------------------------
+mv *.html doc/pydoc/${d}

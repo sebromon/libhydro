@@ -52,7 +52,7 @@ from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """version 0.1f"""
-__date__ = """2013-08-30"""
+__date__ = """2013-08-31"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -456,21 +456,16 @@ class Simulation(object):
             try:
                 entite = '{} {}'.format(
                     _sitehydro.ARTICLE[self.entite.__class__],
-                    self.entite.__str__()
+                    self.entite.__str__().decode('utf-8')
                 )
             except Exception:
-                entite = self.entite.__str__()
+                entite = self.entite.__str__().decode('utf-8')
 
         # prepare previsions
         if self.previsions is None:
             prev = '<sans previsions>'
-        elif len(self.previsions) <= 30:
-            prev = self.previsions.__str__()
         else:
-            prev = '{0}\n...\n{1}'.format(
-                '\n'.join(self.previsions[:15].__str__().split('\n')[:-1]),
-                '\n'.join(self.previsions[-15:].__str__().split('\n')[1:])
-            )
+            prev = self.previsions.__str__()
 
         # action !
         return  'Simulation {0} de {1} sur {2}\n'\

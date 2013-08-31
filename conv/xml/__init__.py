@@ -13,12 +13,7 @@ Exemples d'utilisation:
     (TODO)
 
 """
-# import *
-__all__ = [
-    'Message',
-    'Scenario'
-]
-
+__all__ = ['Message', 'Scenario']
 # for the user, this package is like a module, sub-modules names are
 # underscored to hide them
 from xml import (Scenario, Message)
