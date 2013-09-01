@@ -9,7 +9,6 @@ Libhydro contient un ensemble de modules python permettant de manipuler
 les objets modélisés dans les dictionnaires Hydrométrie publiés par le SANDRE:
 
   * [Référentiel hydrométrique](http://www.sandre.eaufrance.fr/Referentiel-hydrometrique,90)
-
   * [Processus d'accquisition des données hydrométriques](http://www.sandre.eaufrance.fr/Processus-d-acquisition-des,91)
 
 La libraire contient aussi plusieurs convertisseurs pour différents formats
@@ -26,7 +25,8 @@ Installation
     * pandas 0.11.0
     * lxml 3.2.3 pour le convertisseur xml
 
-2. Cloner ce dépot:
+2. Cloner ce dépot
+
     hg clone http://arc.schapi:8001 (répertoire local)
 
 3. Ajouter dans le PYTHONPATH le chemin vers le (répertoire local)
