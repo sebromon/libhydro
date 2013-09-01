@@ -25,9 +25,10 @@ Installation
     * pandas 0.11.0
     * lxml 3.2.3 pour le convertisseur xml
 
+
 2. Cloner ce dépot
 
-    hg clone http://arc.schapi:8001 (répertoire local)
+      hg clone http://arc.schapi:8001 (répertoire local)
 
 3. Ajouter dans le PYTHONPATH le chemin vers le (répertoire local)
 
