@@ -3,12 +3,12 @@ INSTALLATION D'UN ENVIRONNEMENT DE DEVELOPPEMENT EN PYTHON POUR LIBHYDRO
 
 Ces outils sont à installer dans l'environnement virtuel.
 
-IPython
+Installer IPython et Qt Console (facultatif)
 -------------------------------------------------------------------------------
-### ipython ###
+### IPython ###
     pip install ipython, ipdb
 
-### ipython qtconsole ###
+### IPython Qt Console ###
 * difficile à installer uniquement dans l'environnement virtuel, le faire
   dans l'environnement de base avant et utiliser
   --system-site-packages à la création du virtualenv
@@ -18,6 +18,6 @@ Launch iPython QtConsole with dark colors and inbeded matplotlib graphs:
 
     ipython qtconsole --colors=linux --pylab=inline
 
-Outils de test
+Installer les outils de test (facultatif)
 -------------------------------------------------------------------------------
     pip install coverage, nose

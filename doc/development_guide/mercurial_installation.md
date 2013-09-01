@@ -20,10 +20,11 @@ Référence: [http://www.selenic.com/mercurial/hgrc.5.html](http://www.selenic.c
 
 ### Linux ###
 ~/.hgrc pour un fichier de config générale
+
 (repo)/.hg/hgrc pour un fichier de config spécifique au dépot (prioritaire)
 
 ### Windows ###
-  %USERPROFILE%\mercurial.ini file
+    %USERPROFILE%\mercurial.ini file
 
 ### Exemple de fichier hgrc ###
 
@@ -50,9 +51,9 @@ Organisation du dépot Libhydro
 * test - tests
 
 ### Branches ###
-  default is the developpement branch
-  stable is the releases branch
-  (http://stevelosh.com/blog/2010/05/mercurial-workflows-stable-default)
+Default is the developpement branch
+Stable is the releases branch
+Référence: [http://stevelosh.com/blog/2010/05/mercurial-workflows-stable-default](http://stevelosh.com/blog/2010/05/mercurial-workflows-stable-defaul)
 
 ### Revisions ###
-  (cf. http://semver.org/)
+Référence: [http://semver.org/](http://semver.org/)
