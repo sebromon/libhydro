@@ -51,8 +51,10 @@ Organisation du dépot Libhydro
 * test - tests
 
 ### Branches ###
-Default is the developpement branch
-Stable is the releases branch
+Default is the developpement branch.
+
+Stable is the releases branch.
+
 Référence: [http://stevelosh.com/blog/2010/05/mercurial-workflows-stable-default](http://stevelosh.com/blog/2010/05/mercurial-workflows-stable-defaul)
 
 ### Revisions ###
