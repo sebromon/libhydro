@@ -157,12 +157,25 @@ class Previsions(_pandas.Series):
     Se reporter a la documentation de la classe Prevision pour l'utilisation du
     parametre prb.
 
-** FIXME **
+    Pour filtrer la serie de resultats de meme probabilite, par exemple 50%,
+    entre 2 dates:
+        previsions[:,50]['2013-01':'2013-01-23 01:00']
+    ou à une date précise:
+        previsions['2013-01-23 01:00'][50]
 
-    Pour filtrer la serie de resultats de meme probabilite, par exemple 50%:
-        previsions.swaplevel('dte', 'prb')[50]
+    On peux slicer une série mais il faut que l'index soit ordonné par la
+    colonne utilisée:
+        # trier par la date
+        ordered_prev = previsions.sortlevel(0)
+        # slicer
+        ordered_prev['2013-01-23 00:00':'2013-01-23- 10:00']
+        # sinon...
+        ordered_prev = previsions.sortlevel(1)
+        ordered_prev['2013-01-23 00:00':'2013-01-23- 10:00']
+        >> KeyError: 'MultiIndex lexsort depth 0, key was length 1'
 
-**FIXME ** be VERY careful, when no label is found, return the 50th element **
+    Pour agréger 2 séries de prévisions:
+        previsions.append(other_previsions)
 
     """
 
