@@ -26,31 +26,33 @@ Référence: [http://www.selenic.com/mercurial/hgrc.5.html](http://www.selenic.c
   %USERPROFILE%\mercurial.ini file
 
 ### Exemple de fichier hgrc ###
-  [ui]
-  username = Firstname Lastname <firstname.lastname@example.net>
+
+    [ui]
+    username = Firstname Lastname <firstname.lastname@example.net>
 
 ** TODO ** installer un outil de merge
 
 Cloner le dépôt de référence
 -------------------------------------------------------------------------------
 ### Dépôt de test ###
-  hg clone http://arc.schapi:8000/ (dest)
+    hg clone http://arc.schapi:8000/ (dest)
 
 ### Libhydro ###
-  hg clone http://arc.schapi:8001/ (dest)
+    hg clone http://arc.schapi:8001/ (dest)
 
 Organisation du dépot Libhydro
 -------------------------------------------------------------------------------
-# bin - programmes
-# conv (package) - convertisseurs de et vers differents formats
-# core (package) - bibliotheque principale
-# doc - documentation
-# test - tests
+### Tree ###
+* bin - programmes
+* conv (package) - convertisseurs de et vers differents formats
+* core (package) - bibliotheque principale
+* doc - documentation
+* test - tests
 
-Branches:
+### Branches ###
   default is the developpement branch
   stable is the releases branch
   (http://stevelosh.com/blog/2010/05/mercurial-workflows-stable-default)
 
-Revisions:
+### Revisions ###
   (cf. http://semver.org/)
