@@ -1,18 +1,18 @@
                               LIBHYDRO
+===============================================================================
 
+PRESENTATION
 -------------------------------------------------------------------------------
-README
--------------------------------------------------------------------------------
-Python package libhydro and somes codecs.
+Librairie python (2.7) libhydro et convertisseurs.
 
-Full documentation soon !
+Documentation: ** TODO direct links **
 
+AUTEURS ET CONTACT
 -------------------------------------------------------------------------------
-AUTHORS AND CONTACT
--------------------------------------------------------------------------------
-Authors: Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>
+### Authors ###
+  Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>
 
-Mercurial website:
+### Dépot Mercurial ###
 
     http://arc.schapi:8001
 
@@ -31,15 +31,13 @@ Branches:
 Revisions:
     (cf. http://semver.org/)
 
+INSTALLATION
 -------------------------------------------------------------------------------
-INSTALL
--------------------------------------------------------------------------------
-Requirements:
-    Python 2.7 ** TODO **
-    Numpy ** TODO **
-    Panda ** TODO **
-
+### Pré-requis ###
+    Python 2.7
+    Numpy
+    Panda
     lxml pour conv.xml
 
-Installation:
-    ** TODO ** setup.py + requirments.txt + manifest
+### Procédure d'installation ###
+    ** TODO **

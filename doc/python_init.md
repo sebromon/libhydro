@@ -1,22 +1,18 @@
-===============================================================================
 INSTALLATION D'UN ENVIRONNEMENT DE DEVELOPPEMENT EN PYTHON POUR LIBHYDRO
 ===============================================================================
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1. Python 2.7.3
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Installation sous Windows
+Python 2.7.3
 -------------------------------------------------------------------------------
+### Installation sous Windows ###
 ** TODO **
 
-Installation sous Linux
--------------------------------------------------------------------------------
+### Installation sous Linux ###
 yum install python.
 Si yum ne propose pas la bonne version, trouver un rpm ou se compiler sa propre version de python.
 
-Compilation de Python sous Linux (CentOs 6.2)
--------------------------------------------------------------------------------
-[ http://toomuchdata.com/2012/06/25/how-to-install-python-2-7-3-on-centos-6-2/ ]
+### Compilation de Python sous Linux (CentOs 6.2) ###
+Référence: [http://toomuchdata.com/2012/06/25/how-to-install-python-2-7-3-on-centos-6-2/]
+
 La version python 2.4.3 de l'os, nécessaire pour pas mal de programmes, est:
     /usr/bin/python
 
@@ -38,17 +34,14 @@ wget http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tar.bz2
 Python 2.7.3: "./configure", "make", "su -c 'make (alt)install'" -> /usr/local/bin/python
 Make altinstall if you care overwriting a previous python installation
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-2.  Setuptools (pip) et virtualenv
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Installer les setuptools sous Linux
+Setuptools (pip) et virtualenv
 -------------------------------------------------------------------------------
+### Installer les setuptools sous Linux ###
 Installer de préférence pip qui remplace en mieux easy_install:
     yum install python-pip.noarch  # Pip installs packages
 
-Installer et configurer virtualenv
--------------------------------------------------------------------------------
-`<http://sametmax.com/les-environnement-virtuels-python-virtualenv-et-virtualenvwrapper/>`_
+### Installer et configurer virtualenv ###
+http://sametmax.com/les-environnement-virtuels-python-virtualenv-et-virtualenvwrapper/
 
 pip install virtualenv
 
@@ -64,9 +57,7 @@ Pour utiliser l'environnement virtuel:
     # soit modifier le python PATH
     # utiliser virtualenvwrapper
 
-------------------------------------------------------------------------------
-3. Installer les dépendances dans l'environnement virtuel
-------------------------------------------------------------------------------
+### Installer les dépendances dans l'environnement virtuel ###
 
 Numpy
     install Numpy first ! (c module, could be tricky)
