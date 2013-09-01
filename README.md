@@ -1,43 +1,32 @@
-                              LIBHYDRO
+Libhydro
 ===============================================================================
 
-PRESENTATION
+[TOC]
+
+Présentation
 -------------------------------------------------------------------------------
-Librairie python (2.7) libhydro et convertisseurs.
+Libhydro contient un ensemble de modules python permettant de manipuler
+les objets modélisés dans les dictionnaires Hydrométrie publiés par le SANDRE:
+    * [Référentiel hydrométrique](http://www.sandre.eaufrance.fr/Referentiel-hydrometrique,90)
+    * [Processus d'accquisition des données hydrométriques](http://www.sandre.eaufrance.fr/Processus-d-acquisition-des,91)
 
-Documentation: ** TODO direct links **
+La libraire contient aussi plusieurs convertisseurs pour différents formats
+de données hydrométriques.
 
-AUTEURS ET CONTACT
+Un tutoriel et la documentation utilisateur sont disponibles dans le
+dossier doc.
+
+Installation
 -------------------------------------------------------------------------------
-### Authors ###
-  Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>
+1. Installer les pré-requis
+    * python 2.7
+    * numpy 1.7.1
+    * pandas 0.11.0
+    * lxml 3.2.3 pour le convertisseur xml
+1. Cloner ce dépot
+    hg clone http://arc.schapi:8001 (répertoire local)
+1. Ajouter dans le PYTHONPATH le chemin ver le (répertoire local)
 
-### Dépot Mercurial ###
-
-    http://arc.schapi:8001
-
-    Repository structure
-        # bin - exec files
-        # conv - convertisseurs de et vers differents formats
-        # core - bibliotheque centrale (les classes)
-        # doc - documentation
-        # test - test dir
-
-Branches:
-    default is the developpement branch
-    stable is the releases branch
-    (http://stevelosh.com/blog/2010/05/mercurial-workflows-stable-default)
-
-Revisions:
-    (cf. http://semver.org/)
-
-INSTALLATION
+Contacts
 -------------------------------------------------------------------------------
-### Pré-requis ###
-    Python 2.7
-    Numpy
-    Panda
-    lxml pour conv.xml
-
-### Procédure d'installation ###
-    ** TODO **
+Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>
