@@ -20,11 +20,10 @@ répertoire doc du dépot.
 Installation
 -------------------------------------------------------------------------------
 1. Installer les pré-requis
-
-  * python 2.7
-  * numpy 1.7.1
-  * pandas 0.11.0
-  * lxml 3.2.3 pour le convertisseur xml
+    * python 2.7
+    * numpy 1.7.1
+    * pandas 0.11.0
+    * lxml 3.2.3 pour le convertisseur xml
 
 2. Cloner ce dépot
 
