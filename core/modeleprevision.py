@@ -13,13 +13,15 @@ from __future__ import (
     print_function as _print_function
 )
 
+import sys as _sys
+
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1b"""
-__date__ = """2013-08-21"""
+__version__ = """version 0.1c"""
+__date__ = """2013-09-03"""
 
 #HISTORY
 #V0.1 - 2013-08-06
@@ -110,11 +112,18 @@ class Modeleprevision(object):
             raise
 
     # -- other methods --
-    def __str__(self):
-        """String representation."""
+    def __unicode__(self):
+        """Unicode representation."""
         return 'Modele de type {0} {1}::{2}\nDescription: {3}'.format(
             self.typemodele or '<inconnu>',
             self.code or '<sans code>',
             self.libelle or '<sans libelle>',
             self.description or '<sans description>'
-        ).encode('utf-8')
+        )
+
+    def __str__(self):
+        """String representation."""
+        if _sys.version_info[0] >= 3:  # Python 3
+            return self.__unicode__()
+        else:  # Python 2
+            return self.__unicode__().encode('utf8')

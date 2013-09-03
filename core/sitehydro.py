@@ -15,13 +15,15 @@ from __future__ import (
     print_function as _print_function
 )
 
+import sys as _sys
+
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.2d"""
-__date__ = """2013-08-23"""
+__version__ = """version 0.2e"""
+__date__ = """2013-09-03"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -235,15 +237,22 @@ class Sitehydro(_Entitehydro):
             self._stations.append(station)
 
     # -- other methods --
-    def __str__(self):
-        """String representation."""
+    def __unicode__(self):
+        """Unicode representation."""
         return 'Site {0} {1}::{2} [{3} station{4}]'.format(
             self.typesite or '<sans type>',
             self.code or '<sans code>',
             self.libelle or '<sans libelle>',
             len(self.stations),
             '' if (len(self.stations) < 2) else 's'
-        ).encode('utf-8')
+        )
+
+    def __str__(self):
+        """String representation."""
+        if _sys.version_info[0] >= 3:  # Python 3
+            return self.__unicode__()
+        else:  # Python 2
+            return self.__unicode__().encode('utf8')
 
 
 #-- class Stationhydro --------------------------------------------------------
@@ -380,8 +389,8 @@ class Stationhydro(_Entitehydro):
             self._capteurs.append(capteur)
 
     # -- other methods --
-    def __str__(self):
-        """String representation."""
+    def __unicode__(self):
+        """Unicode representation."""
         return 'Station {0} {1}::{2} [{3} capteur{4}]'.format(
             self.typestation or '<sans type>',
             self.code or '<sans code>',
@@ -389,7 +398,14 @@ class Stationhydro(_Entitehydro):
             len(self.capteurs),
             '' if (len(self.capteurs) < 2) else 's'
 
-        ).encode('utf-8')
+        )
+
+    def __str__(self):
+        """String representation."""
+        if _sys.version_info[0] >= 3:  # Python 3
+            return self.__unicode__()
+        else:  # Python 2
+            return self.__unicode__().encode('utf8')
 
 
 #-- class Capteur -------------------------------------------------------------
@@ -468,13 +484,20 @@ class Capteur(_Entitehydro):
             raise
 
     # -- other methods --
-    def __str__(self):
-        """String representation."""
+    def __unicode__(self):
+        """Unicode representation."""
         return 'Capteur {0} {1}::{2}'.format(
             self.typemesure or '<sans type de mesure>',
             self.code or '<sans code>',
             self.libelle or '<sans libelle>'
-        ).encode('utf-8')
+        )
+
+    def __str__(self):
+        """String representation."""
+        if _sys.version_info[0] >= 3:  # Python 3
+            return self.__unicode__()
+        else:  # Python 2
+            return self.__unicode__().encode('utf8')
 
 
 # -- config -------------------------------------------------------------------

@@ -46,7 +46,9 @@ class TestFromXmlSitesHydros(unittest.TestCase):
 
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
-        self.data = from_xml._parse('data/xml/1.1/siteshydro.xml')
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '1.1', 'siteshydro.xml')
+        )
 
     # def tearDown(self):
     #     """Hook method for deconstructing the test fixture after testing it."""
@@ -121,8 +123,10 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertRaises(
             ValueError,
             from_xml._parse,
-            # *(['data/xml/1.1/siteshydro.xml'])
-            *(['data/xml/1.1/siteshydro_with_namespace.xml'])
+            # *([os.path.join('data', 'xml', '1.1', 'siteshydro.xml')])
+            *([os.path.join(
+                'data', 'xml', '1.1', 'siteshydro_with_namespace.xml'
+            )])
         )
 
 
@@ -136,7 +140,9 @@ class TestFromXmlObssHydro(unittest.TestCase):
 
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
-        self.data = from_xml._parse('data/xml/1.1/obsshydro.xml')
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '1.1', 'obsshydro.xml')
+        )
 
     # def tearDown(self):
     #     """Hook method for deconstructing the test fixture after testing it."""
@@ -224,7 +230,9 @@ class TestFromXmlSimulations(unittest.TestCase):
 
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
-        self.data = from_xml._parse('data/xml/1.1/simulations.xml')
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '1.1', 'simulations.xml')
+        )
 
     # def tearDown(self):
     #     """Hook method for deconstructing the test fixture after testing it."""

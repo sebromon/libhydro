@@ -46,6 +46,8 @@ from __future__ import (
     print_function as _print_function
 )
 
+import sys as _sys
+
 import numpy as _numpy
 import pandas as _pandas
 
@@ -55,8 +57,8 @@ from . import sitehydro as _sitehydro
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1g"""
-__date__ = """2013-08-31"""
+__version__ = """version 0.1h"""
+__date__ = """2013-09-03"""
 
 #HISTORY
 #V0.1 - 2013-07-18
@@ -143,15 +145,22 @@ class Observation(_numpy.ndarray):
     #     if obj is None:
     #         return
 
-    def __str__(self):
-        """String representation."""
+    def __unicode__(self):
+        """Unicode representation."""
         return '{0} le {4} a {5} UTC (valeur obtenue par {1}, {2} et {3})'.format(
             self['res'].item(),
             _NOMENCLATURE[507][self['mth'].item()],
             _NOMENCLATURE[515][self['qal'].item()],
             'continue' if self['cnt'].item() else 'discontinue',
             *self['dte'].item().isoformat().split('T')
-        ).encode('utf-8')
+        )
+
+    def __str__(self):
+        """String representation."""
+        if _sys.version_info[0] >= 3:  # Python 3
+            return self.__unicode__()
+        else:  # Python 2
+            return self.__unicode__().encode('utf8')
 
 
 #-- class Observations --------------------------------------------------------
@@ -388,8 +397,8 @@ class Serie(object):
             raise TypeError('observations incorrect')
 
     # -- other methods --
-    def __str__(self):
-        """String representation."""
+    def __unicode__(self):
+        """Unicode representation."""
         # compute entite name
         if self.entite is None:
             entite = '<une entite inconnue>'
@@ -397,10 +406,10 @@ class Serie(object):
             try:
                 entite = '{} {}'.format(
                     _sitehydro.ARTICLE[self.entite.__class__],
-                    self.entite.__str__().decode('utf-8')
+                    self.entite.__unicode__()
                 )
             except Exception:
-                entite = self.entite.__str__().decode('utf-8')
+                entite = self.entite
 
         # prepare observations
         if self.observations is None:
@@ -413,7 +422,7 @@ class Serie(object):
                 self.observations[:15].to_string(),
                 '\n'.join(self.observations[-15:].to_string().split('\n')[2:])
             )
-            obs += '\n%s' % self.observations.__str__()
+            obs += '\n%s' % self.observations.__unicode__()
 
         # action !
         return 'Serie {0} sur {1}\n'\
@@ -426,4 +435,11 @@ class Serie(object):
                    _NOMENCLATURE[510][self.statut].lower(),
                    '-' * 72,
                    obs
-               ).encode('utf-8')
+               )
+
+    def __str__(self):
+        """String representation."""
+        if _sys.version_info[0] >= 3:  # Python 3
+            return self.__unicode__()
+        else:  # Python 2
+            return self.__unicode__().encode('utf8')

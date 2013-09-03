@@ -1,16 +1,41 @@
 INSTALLATION DETAILLE D'UN ENVIRONNEMENT VIRTUEL PYTHON POUR LIBHYDRO
 ===============================================================================
 
-Installation de Python 2.7.3
+Installation sous Windows
 -------------------------------------------------------------------------------
-### Installation sous Windows ###
-** TODO **
+### Installer Python ###
+    utiliser python2.7.5.msi
 
-### Installation sous Linux ###
+### Régler les variables d'environnment ###
+  [http://docs.python.org/2/using/windows.html]
+    "path = ... C:\Program Files\Python27;C:\Program Files\Python27\scripts"
+    "PYTHONPATH = ..."
+    "proxy = http://direct1.proxy.i2:8080"
+
+### Pour ces dépendances en C/C++ utiliser les binaires de http://www.lfd.uci.edu/~gohlke/pythonlibs/ ###
+    numpy
+    python-dateutil
+    pandas
+    lxml
+
+### Installer les setup-tools et pip (optionnel) ###
+  [ref: http://www.pip-installer.org/en/latest/installing.html]
+    get ez_setup.py
+    python ez_setup.py
+    get get-pip.py
+    python get-pip.py (need the proxy !)
+    pip install --upgrade setuptools
+
+### Installer IPython (optionnel) ###
+    pip install ipython
+
+Installation sous Linux
+-------------------------------------------------------------------------------
+### Installer Python avec un gestionnaire de paquets ###
 yum install python.
 Si yum ne propose pas la bonne version, trouver un rpm ou se compiler sa propre version de python.
 
-### Compilation de Python sous Linux (CentOs 6.2) ###
+### Compiler Python sous Linux (CentOs 6.2) ###
 Référence: [http://toomuchdata.com/2012/06/25/how-to-install-python-2-7-3-on-centos-6-2/]
 
 La version python 2.4.3 de l'os, nécessaire pour pas mal de programmes, est:
@@ -34,12 +59,12 @@ wget http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tar.bz2
 Python 2.7.3: "./configure", "make", "su -c 'make (alt)install'" -> /usr/local/bin/python
 Make altinstall if you care overwriting a previous python installation
 
-Installation des setuptools (pip) et de virtualenv
--------------------------------------------------------------------------------
-### Installer les setuptools sous Linux ###
+### Installer les setuptools ###
 Installer de préférence pip qui remplace en mieux easy_install:
     yum install python-pip.noarch  # Pip installs packages
 
+Installer et configurer Virtualenv (Linux)
+-------------------------------------------------------------------------------
 ### Installer et configurer virtualenv ###
 http://sametmax.com/les-environnement-virtuels-python-virtualenv-et-virtualenvwrapper/
 
@@ -57,7 +82,7 @@ Pour utiliser l'environnement virtuel:
     # soit modifier le python PATH
     # utiliser virtualenvwrapper
 
-Installer les dépendances dans l'environnement virtuel
+Installer les dépendances dans l'environnement virtuel (Linux)
 -------------------------------------------------------------------------------
 Numpy
     install Numpy first ! (c module, could be tricky)

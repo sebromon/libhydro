@@ -251,7 +251,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(sim.dtprod, datetime.datetime(2012, 5, 18, 16, 36))
 
     def test_str_01(self):
-        """Test __str__ method with minimu values."""
+        """Test __str__ method with minimum values."""
         # None values
         sim = simulation.Simulation()
         self.assertTrue(sim.__str__().rfind('Simulation') > -1)

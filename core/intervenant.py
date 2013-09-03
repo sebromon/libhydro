@@ -15,14 +15,15 @@ from __future__ import (
     print_function as _print_function
 )
 
+import sys as _sys
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1b"""
-__date__ = """2013-08-23"""
+__version__ = """version 0.1c"""
+__date__ = """2013-09-03"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -188,15 +189,22 @@ class Intervenant(object):
             self._contacts.append(contact)
 
     # -- other methods --
-    def __str__(self):
-        """String representation."""
+    def __unicode__(self):
+        """Unicode representation."""
         return 'Intervenant {0} {1}::{2} [{3} contact{4}]'.format(
             self.origine or '<sans origine>',
             self.code or '<sans code>',
             self.mnemo or '<sans mnemo>',
             len(self.contacts),
             '' if (len(self.contacts) < 2) else 's'
-        ).encode('utf-8')
+        )
+
+    def __str__(self):
+        """String representation."""
+        if _sys.version_info[0] >= 3:  # Python 3
+            return self.__unicode__()
+        else:  # Python 2
+            return self.__unicode__().encode('utf8')
 
 
 #-- class Contact --------------------------------------------------------------
@@ -311,15 +319,22 @@ class Contact(object):
         self._intervenant = intervenant
 
     # -- other methods --
-    def __str__(self):
-        """String representation."""
+    def __unicode__(self):
+        """Unicode representation."""
         return 'Contact {0}::{1} {2} {3}'.format(
             self.code or '<sans code>',
             _NOMENCLATURE[538][self.civilite] if self.civilite
             else '<sans civilite>',
             self.nom or '<sans nom>',
             self.prenom or '<sans prenom>'
-        ).encode('utf-8')
+        )
+
+    def __str__(self):
+        """String representation."""
+        if _sys.version_info[0] >= 3:  # Python 3
+            return self.__unicode__()
+        else:  # Python 2
+            return self.__unicode__().encode('utf8')
 
 
 # -- Class Adresse ------------------------------------------------------------

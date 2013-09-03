@@ -186,7 +186,9 @@ class TestToXmlSitesHydros(unittest.TestCase):
             """</hydrometrie>"""
 
         # read xml
-        self.data = from_xml._parse('data/xml/1.1/siteshydro.xml')
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '1.1', 'siteshydro.xml')
+        )
         self.xml = etree.tostring(
             to_xml._to_xml(
                 scenario=self.data['scenario'],
@@ -209,7 +211,7 @@ class TestToXmlObssHydro(unittest.TestCase):
 
     # def setUp(self):
     #     """Hook method for setting up the test fixture before exercising it."""
-    #     self.data = from_xml._parse('data/xml/1.1/obsshydro.xml')
+    #     pass
 
     # def tearDown(self):
     #     """Hook method for deconstructing the test fixture after testing it."""
@@ -309,7 +311,9 @@ class TestToXmlObssHydro(unittest.TestCase):
             """</hydrometrie>"""
 
         # read xml
-        self.data = from_xml._parse('data/xml/1.1/obsshydro.xml')
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '1.1', 'obsshydro.xml')
+        )
         self.xml = etree.tostring(
             to_xml._to_xml(
                 scenario=self.data['scenario'],
@@ -332,7 +336,7 @@ class TestToXmlSimulations(unittest.TestCase):
 
     # def setUp(self):
     #     """Hook method for setting up the test fixture before exercising it."""
-    #     self.data = from_xml._parse('data/xml/1.1/simulations.xml')
+    #     pass
 
     # def tearDown(self):
     #     """Hook method for deconstructing the test fixture after testing it."""
@@ -469,7 +473,9 @@ class TestToXmlSimulations(unittest.TestCase):
             """</hydrometrie>"""
 
         # read xml
-        self.data = from_xml._parse('data/xml/1.1/simulations.xml')
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '1.1', 'simulations.xml')
+        )
         self.xml = etree.tostring(
             to_xml._to_xml(
                 scenario=self.data['scenario'],

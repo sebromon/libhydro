@@ -44,7 +44,7 @@ __date__ = """2013-08-17"""
 
 
 #-- config --------------------------------------------------------------------
-SRC = 'data/shom/LOCMARIAQUER.hfs'
+SRC = os.path.join('data', 'shom', 'LOCMARIAQUER.hfs')
 
 
 #-- class TestSimulationFromHFS -----------------------------------------------

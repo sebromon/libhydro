@@ -42,6 +42,8 @@ from __future__ import (
     print_function as _print_function
 )
 
+import sys as _sys
+
 import numpy as _numpy
 import pandas as _pandas
 
@@ -51,8 +53,8 @@ from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1f"""
-__date__ = """2013-08-31"""
+__version__ = """version 0.1g"""
+__date__ = """2013-09-03"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -126,13 +128,20 @@ class Prevision(_numpy.ndarray):
     #     if obj is None:
     #         return
 
-    def __str__(self):
-        """String representation."""
+    def __unicode__(self):
+        """Unicode representation."""
         return '{0} avec une probabilite de {1}% pour le {2} a {3} UTC'.format(
             self['res'].item(),
             self['prb'].item(),
             *self['dte'].item().isoformat().split('T')
-        ).encode('utf-8')
+        )
+
+    def __str__(self):
+        """String representation."""
+        if _sys.version_info[0] >= 3:  # Python 3
+            return self.__unicode__()
+        else:  # Python 2
+            return self.__unicode__().encode('utf8')
 
 
 #-- class Previsions ----------------------------------------------------------
@@ -460,8 +469,8 @@ class Simulation(object):
             raise
 
     # -- other methods --
-    def __str__(self):
-        """String representation."""
+    def __unicode__(self):
+        """Unicode representation."""
         # compute entite name
         if self.entite is None:
             entite = '<une entite inconnue>'
@@ -469,16 +478,16 @@ class Simulation(object):
             try:
                 entite = '{} {}'.format(
                     _sitehydro.ARTICLE[self.entite.__class__],
-                    self.entite.__str__().decode('utf-8')
+                    self.entite.__unicode__()
                 )
             except Exception:
-                entite = self.entite.__str__().decode('utf-8')
+                entite = self.entite
 
         # prepare previsions
         if self.previsions is None:
             prev = '<sans previsions>'
         else:
-            prev = self.previsions.__str__()
+            prev = self.previsions.__unicode__()
 
         # action !
         return  'Simulation {0} de {1} sur {2}\n'\
@@ -500,4 +509,11 @@ class Simulation(object):
                     self.modeleprevision or '<modele inconnu>',
                     '-' * 72,
                     prev
-                ).encode('utf-8')
+                )
+
+    def __str__(self):
+        """String representation."""
+        if _sys.version_info[0] >= 3:  # Python 3
+            return self.__unicode__()
+        else:  # Python 2
+            return self.__unicode__().encode('utf8')
