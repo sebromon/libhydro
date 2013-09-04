@@ -160,7 +160,7 @@ class Observation(_numpy.ndarray):
         if _sys.version_info[0] >= 3:  # Python 3
             return self.__unicode__()
         else:  # Python 2
-            return self.__unicode__().encode('utf8')
+            return self.__unicode__().encode(_sys.stdout.encoding)
 
 
 #-- class Observations --------------------------------------------------------
@@ -442,4 +442,4 @@ class Serie(object):
         if _sys.version_info[0] >= 3:  # Python 3
             return self.__unicode__()
         else:  # Python 2
-            return self.__unicode__().encode('utf8')
+            return self.__unicode__().encode(_sys.stdout.encoding)

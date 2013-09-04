@@ -252,7 +252,7 @@ class Sitehydro(_Entitehydro):
         if _sys.version_info[0] >= 3:  # Python 3
             return self.__unicode__()
         else:  # Python 2
-            return self.__unicode__().encode('utf8')
+            return self.__unicode__().encode(_sys.stdout.encoding)
 
 
 #-- class Stationhydro --------------------------------------------------------
@@ -405,7 +405,7 @@ class Stationhydro(_Entitehydro):
         if _sys.version_info[0] >= 3:  # Python 3
             return self.__unicode__()
         else:  # Python 2
-            return self.__unicode__().encode('utf8')
+            return self.__unicode__().encode(_sys.stdout.encoding)
 
 
 #-- class Capteur -------------------------------------------------------------
@@ -497,7 +497,7 @@ class Capteur(_Entitehydro):
         if _sys.version_info[0] >= 3:  # Python 3
             return self.__unicode__()
         else:  # Python 2
-            return self.__unicode__().encode('utf8')
+            return self.__unicode__().encode(_sys.stdout.encoding)
 
 
 # -- config -------------------------------------------------------------------
