@@ -32,7 +32,7 @@ from libhydro.core import (simulation, modeleprevision, sitehydro)
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1c"""
+__version__ = """0.1c"""
 __date__ = """2013-08-24"""
 
 #HISTORY

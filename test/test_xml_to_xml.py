@@ -35,7 +35,7 @@ from libhydro.conv.xml import (
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1a"""
+__version__ = """0.1a"""
 __date__ = """2013-08-30"""
 
 #HISTORY
@@ -490,7 +490,7 @@ class TestToXmlSimulations(unittest.TestCase):
 
 # -- functions ----------------------------------------------------------------
 def assert_unicode_equal(xml, expected):
-    """Can raise personnal AssertionError."""
+    """Raise personnal AssertionError on failure."""
     for (i, c) in enumerate(expected):
         try:
             assert(xml[i] == c)

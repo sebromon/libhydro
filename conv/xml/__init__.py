@@ -16,4 +16,5 @@ Exemples d'utilisation:
 __all__ = ['Message', 'Scenario']
 # for the user, this package is like a module, sub-modules names are
 # underscored to hide them
-from xml import (Scenario, Message)
+from _from_xml import Scenario
+from xml import Message

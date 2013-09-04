@@ -31,7 +31,7 @@ from libhydro.core import sitehydro
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1f"""
+__version__ = """0.1f"""
 __date__ = """2013-08-23"""
 
 #HISTORY
@@ -123,6 +123,13 @@ class TestSitehydro(unittest.TestCase):
         """Test __str__ method with None values."""
         s = sitehydro.Sitehydro(code=0, strict=False)
         self.assertTrue(s.__str__().rfind('Site') > -1)
+
+    def test_str_02(self):
+        """Test __str__ with unicode."""
+        s = sitehydro.Sitehydro(code='A0445533')
+        s.libelle = 'ℓα gαяσηηє à тσυℓσυѕє'
+        s.__unicode__()
+        s.__str__()
 
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test with None values."""

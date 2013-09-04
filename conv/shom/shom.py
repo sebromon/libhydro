@@ -47,7 +47,7 @@ from ...core import (
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1d"""
+__version__ = """0.1d"""
 __date__ = """2013-08-17"""
 
 #HISTORY

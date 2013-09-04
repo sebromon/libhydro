@@ -57,7 +57,7 @@ from . import sitehydro as _sitehydro
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1h"""
+__version__ = """0.1h"""
 __date__ = """2013-09-03"""
 
 #HISTORY

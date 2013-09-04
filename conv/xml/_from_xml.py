@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 """Module xml._from_xml.
 
-Ce module contient les fonctions de lecture des fichiers au format
+Ce module expose la classe:
+    # Scenario
+
+Il contient les fonctions de lecture des fichiers au format
 Xml Hydrometrie (version 1.1 exclusivement).
 
 Toutes les heures sont considerees UTC si le fuseau horaire n'est pas precise.
@@ -18,9 +21,12 @@ from __future__ import (
     print_function as _print_function
 )
 
-from lxml import etree as _etree
+import sys as _sys
 
-from .xml import Scenario
+import datetime as _datetime
+import numpy as _numpy
+
+from lxml import etree as _etree
 
 from libhydro.core import (
     sitehydro as _sitehydro,
@@ -33,8 +39,8 @@ from libhydro.core import (
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1e"""
-__date__ = """2013-08-26"""
+__version__ = """0.1f"""
+__date__ = """2013-09-04"""
 
 #HISTORY
 #V0.1 - 2013-08-18
@@ -57,6 +63,130 @@ PREV_PROBABILITY = {
 }
 
 
+# -- class Scenario -----------------------------------------------------------
+class Scenario(object):
+    """Classe Scenario.
+
+    Classe pour manipuler les scenarios des messages SANDRE.
+
+    Proprietes:
+        code = hydrometrie
+        version = 1.1
+        nom = 'Echange de donnees hydrometriques'
+        dtprod (datetime.datetime)
+        emetteur (intervenant.Contact)
+        destinataire (intervenant.Intervenant)
+
+    """
+
+    # TODO - Scenario other properties
+
+    # reference
+    # envoi
+    # contexte
+
+    # class attributes
+    code = 'hydrometrie'
+    version = '1.1'
+    nom = 'Echange de données hydrométriques'
+
+    def __init__(self, emetteur, destinataire, dtprod=None):
+        """Constructeur.
+
+        Arguments:
+            emetteur (intervenant.Contact)
+            destinataire (intervenant.Intervenant)
+            dtprod (datetime ou isoformat, defaut utcnow())
+
+        """
+
+        # -- full properties --
+        self.emetteur = emetteur
+        self.destinataire = destinataire
+        self.dtprod = dtprod
+
+    # -- property emetteur --
+    @property
+    def emetteur(self):
+        """Emetteur du message."""
+        return self._emetteur
+
+    @emetteur.setter
+    def emetteur(self, emetteur):
+        try:
+            # None case
+            if emetteur is None:
+                raise TypeError('emetteur is required')
+            # other cases
+            if not isinstance(emetteur, _intervenant.Contact):
+                raise TypeError('emetteur incorrect')
+            self._emetteur = emetteur
+        except:
+            raise
+
+    # -- property destinataire --
+    @property
+    def destinataire(self):
+        """Destinataire du message."""
+        return self._destinataire
+
+    @destinataire.setter
+    def destinataire(self, destinataire):
+        try:
+            # None case
+            if destinataire is None:
+                raise TypeError('destinataire is required')
+            # other cases
+            if not isinstance(destinataire, _intervenant.Intervenant):
+                raise TypeError('destinataire incorrect')
+            self._destinataire = destinataire
+        except:
+            raise
+
+    # -- property dtprod --
+    @property
+    def dtprod(self):
+        """Date de production du message."""
+        return self._dtprod
+
+    @dtprod.setter
+    def dtprod(self, dtprod):
+        try:
+            # None case
+            if dtprod is None:
+                dtprod = _datetime.datetime.utcnow()
+
+            # other cases
+            if isinstance(dtprod, (str, unicode)):
+                dtprod = _numpy.datetime64(dtprod)
+            if isinstance(dtprod, _numpy.datetime64):
+                dtprod = dtprod.item()
+            if not isinstance(dtprod, _datetime.datetime):
+                raise TypeError('dtprod must be a datetime')
+
+            # all is well
+            self._dtprod = dtprod
+
+        except:
+            raise
+
+    # -- other methods --
+    def __unicode__(self):
+        """Unicode representation."""
+        return "Message du {0}\nEmis par le {1} pour l'{2}".format(
+            self.dtprod,
+            self.emetteur,
+            self.destinataire
+        )
+
+    def __str__(self):
+        """String representation."""
+        if _sys.version_info[0] >= 3:  # Python 3
+            return self.__unicode__()
+        else:  # Python 2
+            return self.__unicode__().encode('utf8')
+
+
 # -- tests function -----------------------------------------------------------
 def _parse(src):
     """Parse le fichier src, instancie et retourne les objets qu'il contient.
@@ -73,10 +203,9 @@ def _parse(src):
             # scenario: xml.Scenario
             # siteshydro: liste de sitehydro.Siteshydro ou None
             # series: liste de obshydro.Serie ou None
-            # simulation: liste de simulation.Simulation ou None
+            # simulations: liste de simulation.Simulation ou None
 
     """
-
     # read the file
     parser = _etree.XMLParser(
         remove_blank_text=True, remove_comments=True, ns_clean=True

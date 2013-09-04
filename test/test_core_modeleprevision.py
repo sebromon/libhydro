@@ -31,7 +31,7 @@ from libhydro.core import modeleprevision
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1b"""
+__version__ = """0.1b"""
 __date__ = """2013-08-20"""
 
 #HISTORY

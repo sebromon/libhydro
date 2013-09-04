@@ -32,7 +32,7 @@ from libhydro.conv.xml import (_from_xml as from_xml)
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1b"""
+__version__ = """0.1b"""
 __date__ = """2013-08-26"""
 
 #HISTORY

@@ -20,7 +20,7 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1c"""
+__version__ = """0.1c"""
 __date__ = """2013-09-03"""
 
 #HISTORY

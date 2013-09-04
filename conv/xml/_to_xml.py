@@ -24,8 +24,8 @@ import numpy as _numpy
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1d"""
-__date__ = """2013-08-30"""
+__version__ = """0.1e"""
+__date__ = """2013-09-04"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -37,6 +37,9 @@ __date__ = """2013-08-30"""
 
 
 # -- config -------------------------------------------------------------------
+# order matters in Xml, we must have the keys list !
+ORDERED_ACCEPTED_KEYS = ('scenario', 'siteshydro', 'series', 'simulations')
+
 PREV_PROBABILITY = {
     50: 'ResMoyPrev',
     0: 'ResMinPrev',
@@ -48,9 +51,8 @@ PREV_PROBABILITY = {
 def _to_xml(scenario=None, siteshydro=None, series=None, simulations=None):
     """Genere un message Xml a partir des donnees passes en argument.
 
-    Cette fonction est destinee au tests unitaires. Les utilisateurs sont
-    invites a utiliser la classe xml.Message comme interface de lecture des
-    fichiers Xml Hydrometrie.
+    Cette fonction est privee et les utilisateurs sont invites a utiliser la
+    classe xml.Message comme interface d'ecriture des fichiers Xml Hydrometrie.
 
     Arguments:
         scenario (xml.Scenario) = 1 element
@@ -62,22 +64,32 @@ def _to_xml(scenario=None, siteshydro=None, series=None, simulations=None):
     # make a deep copy of locals() which is a dict {arg_name: arg_value, ...}
     args = locals()
 
-    # order matters in Xml, we must have the keys list !
-    keys = ('scenario', 'siteshydro', 'series', 'simulations')
-
-    #init the tree and add elements
+    # init the tree
     tree = _etree.Element('hydrometrie')
-    for k in keys:
-        if args[k] is not None:
-            if k == keys[0]:  # scenatio
-                sub = tree
-            elif k == keys[1]:  # siteshydro
-                sub = _etree.SubElement(tree, 'RefHyd')
-            else:  # series or simulations
-                sub = _etree.SubElement(tree, 'Donnees')
-            sub.append(
-                eval('_{}_to_element(args[k])'.format(k))
-            )
+
+    # TODO - we should factorise those 3 lines
+
+    # add the scenario
+    if args['scenario'] is not None:
+        tree.append(_scenario_to_element(args['scenario']))
+
+    # add the siteshydro
+    if args['siteshydro'] is not None:
+        sub = _etree.SubElement(tree, 'RefHyd')
+        for k in ORDERED_ACCEPTED_KEYS[1:2]:
+            if args[k] is not None:
+                sub.append(
+                    eval('_{}_to_element(args[k])'.format(k))
+                )
+
+    # add series and simulations
+    if (args['series'] is not None) or (args['simulations'] is not None):
+        sub = _etree.SubElement(tree, 'Donnees')
+        for k in ORDERED_ACCEPTED_KEYS[2:4]:
+            if args[k] is not None:
+                sub.append(
+                    eval('_{}_to_element(args[k])'.format(k))
+                )
 
     # DEBUG -
     # print(

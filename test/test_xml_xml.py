@@ -35,8 +35,8 @@ from libhydro.conv.xml import (Scenario, Message)
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """Version 0.1b"""
-__date__ = """2013-08-26"""
+__version__ = """0.1c"""
+__date__ = """2013-09-04"""
 
 #HISTORY
 #V0.1 - 2013-08-22
@@ -143,13 +143,105 @@ class TestScenario(unittest.TestCase):
 
 
 #-- class TestMessage --------------------------------------------------------
-# class TestMessage(unittest.TestCase):
-#     """Message class tests."""
-#
-#     def test_base_01(self):
-#         """Base case message."""
-#         msg = Message()
-#         raise NotImplementedError(msg)
+class TestMessage(unittest.TestCase):
+    """Message class tests."""
+
+    SKIP_WRITE = (
+        (not os.path.isdir(os.path.join(os.path.sep, 'tmp'))),
+        'no destination for xml file writing test'
+    )
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.fsit = os.path.join('data', 'xml', '1.1', 'siteshydro.xml')
+        self.fobs = os.path.join('data', 'xml', '1.1', 'obsshydro.xml')
+        self.fsim = os.path.join('data', 'xml', '1.1', 'simulations.xml')
+        self.ftmp = os.path.join(os.path.sep, 'tmp', 'libhydro_test_file.xml')
+
+    # def tearDown(self):
+    #     """Hook method for deconstructing the test fixture after testing it."""
+    #     pass
+
+    def test_base_01(self):
+        """Simple message."""
+        emetteur = intervenant.Contact()
+        destinataire = intervenant.Intervenant()
+        scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
+        msg = Message(scenario=scenario, strict=False)
+        self.assertEqual(msg.scenario, scenario)
+
+    @unittest.skipIf(*SKIP_WRITE)
+    def test_base_02(self):
+        """Message from file siteshydro."""
+        msg = Message.from_file(self.fsit)
+        msg.show()
+        msg.write(self.ftmp, force=True)
+        msg.siteshydro = msg.siteshydro[0]
+
+    @unittest.skipIf(*SKIP_WRITE)
+    def test_base_03(self):
+        """Message from file obsshydro."""
+        msg = Message.from_file(self.fobs)
+        msg.write(self.ftmp, force=True)
+        msg.series = msg.series[0]
+
+    @unittest.skipIf(*SKIP_WRITE)
+    def test_base_04(self):
+        """Message from file simulations."""
+        msg = Message.from_file(self.fsim)
+        msg.write(self.ftmp, force=True)
+        msg.simulations = msg.simulations[0]
+
+    def test_error_01(self):
+        """Scenario error."""
+        # emetteur = intervenant.Contact()
+        # destinataire = intervenant.Intervenant()
+        # scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
+        # msg = Message(scenario=scenario, strict=False)
+        self.assertRaises(
+            TypeError,
+            Message,
+            # **{'scenario': scenario, 'strict': False}
+            **{'scenario': None, 'strict': False}
+        )
+        self.assertRaises(
+            TypeError,
+            Message,
+            **{'scenario': 'scenario'}
+        )
+
+    def test_error_02(self):
+        """Siteshydro error."""
+        emetteur = intervenant.Contact()
+        destinataire = intervenant.Intervenant()
+        scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
+        self.assertRaises(
+            TypeError,
+            Message,
+            **{'scenario': scenario, 'siteshydro': 'siteshydro'}
+        )
+
+    def test_error_03(self):
+        """Series error."""
+        emetteur = intervenant.Contact()
+        destinataire = intervenant.Intervenant()
+        scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
+        self.assertRaises(
+            TypeError,
+            Message,
+            **{'scenario': scenario, 'series': 'series'}
+        )
+
+    def test_error_04(self):
+        """Simulations error."""
+        emetteur = intervenant.Contact()
+        destinataire = intervenant.Intervenant()
+        scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
+        self.assertRaises(
+            TypeError,
+            Message,
+            **{'scenario': scenario, 'simulations': 'simulations'}
+        )
 
 
 #-- main ----------------------------------------------------------------------

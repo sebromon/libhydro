@@ -24,7 +24,7 @@ from __future__ import (
 
 #-- strings -------------------------------------------------------------------
 __author__ = """philippe.gouin@developpement-durable.gouv.fr"""
-__version__ = """version 0.1d"""
+__version__ = """0.1d"""
 __date__ = """2013-08-09"""
 
 #HISTORY

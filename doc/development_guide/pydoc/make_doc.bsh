@@ -4,8 +4,8 @@
 # script = make_doc
 # purpose = build html pydoc for the entire library
 # author = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-# version = """version 0.1a"""
-# date = """2013-08-31"""
+# version = """version 0.1b"""
+# date = """2013-09-04"""
 #
 #HISTORY
 #V0.1 - 2013-08-31
@@ -20,12 +20,14 @@ export PYTHONPATH=$PYTHONPATH:'/home/philippe/devel/'
 d=$(date '+%Y%m%d_%H%M')
 [ -d "${d}" ] && { rm -rf ${d}; }
 mkdir ${d}
+cd ${d}
 
 # -----------------------------------------------------------------------------
-# make doc
+# make the doc
 # -----------------------------------------------------------------------------
-# move to libhydro root directory
-cd ../..
+# -- index --
+python -m pydoc -w libhydro
+mv libhydro.html index.html
 
 # -- core --
 python -m pydoc -w libhydro.core
@@ -38,7 +40,7 @@ python -m pydoc -w libhydro.core.intervenant
 #core/jaugeage
 python -m pydoc -w libhydro.core.modeleprevision
 python -m pydoc -w libhydro.core.nomenclature
-python -m pydoc -w libhydro.core.obselaboreehydro
+# python -m pydoc -w libhydro.core.obselaboreehydro
 python -m pydoc -w libhydro.core.obshydro
 # core/obsmeteo
 # core/qualifannee
@@ -50,8 +52,3 @@ python -m pydoc -w libhydro.core.sitehydro
 python -m pydoc -w libhydro.conv
 python -m pydoc -w libhydro.conv.shom
 python -m pydoc -w libhydro.conv.xml
-
-# -----------------------------------------------------------------------------
-# -- store the html files --
-# -----------------------------------------------------------------------------
-mv *.html doc/pydoc/${d}

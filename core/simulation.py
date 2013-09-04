@@ -53,7 +53,7 @@ from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """version 0.1g"""
+__version__ = """0.1g"""
 __date__ = """2013-09-03"""
 
 #HISTORY
@@ -169,11 +169,11 @@ class Previsions(_pandas.Series):
     Pour filtrer la serie de resultats de meme probabilite, par exemple 50%,
     entre 2 dates:
         previsions[:,50]['2013-01':'2013-01-23 01:00']
-    ou à une date précise:
+    ou a une date precise:
         previsions['2013-01-23 01:00'][50]
 
-    On peux slicer une série mais il faut que l'index soit ordonné par la
-    colonne utilisée:
+    On peux slicer une serie mais il faut que l'index soit ordonne par la
+    colonne utilisee:
         # trier par la date
         ordered_prev = previsions.sortlevel(0)
         # slicer
@@ -183,7 +183,7 @@ class Previsions(_pandas.Series):
         ordered_prev['2013-01-23 00:00':'2013-01-23- 10:00']
         >> KeyError: 'MultiIndex lexsort depth 0, key was length 1'
 
-    Pour agréger 2 séries de prévisions:
+    Pour agreger 2 series de previsions:
         previsions.append(other_previsions)
 
     """
