@@ -124,6 +124,10 @@ class TestSitehydro(unittest.TestCase):
         s = sitehydro.Sitehydro(code=0, strict=False)
         self.assertTrue(s.__str__().rfind('Site') > -1)
 
+    @unittest.skipIf(
+        (sys.stdout.encoding == 'cp850'),
+        "windows console can't deal with these characters"
+    )
     def test_str_02(self):
         """Test __str__ with unicode."""
         s = sitehydro.Sitehydro(code='A0445533')
