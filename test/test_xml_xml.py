@@ -23,6 +23,8 @@ from __future__ import (
 import sys
 import os
 sys.path.append(os.path.join('..', '..'))
+import tempfile
+import shutil
 
 import unittest
 
@@ -35,12 +37,16 @@ from libhydro.conv.xml import (Scenario, Message)
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2013-09-04"""
+__version__ = """0.1d"""
+__date__ = """2013-09-05"""
 
 #HISTORY
 #V0.1 - 2013-08-22
 #    first shot
+
+
+# -- config -------------------------------------------------------------------
+FILES_PATH = os.path.join('data', 'xml', '1.1')
 
 
 #-- class TestScenario --------------------------------------------------------
@@ -146,21 +152,17 @@ class TestScenario(unittest.TestCase):
 class TestMessage(unittest.TestCase):
     """Message class tests."""
 
-    SKIP_WRITE = (
-        (not os.path.isdir(os.path.join(os.path.sep, 'tmp'))),
-        'no destination for xml file writing test'
-    )
-
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
-        self.fsit = os.path.join('data', 'xml', '1.1', 'siteshydro.xml')
-        self.fobs = os.path.join('data', 'xml', '1.1', 'obsshydro.xml')
-        self.fsim = os.path.join('data', 'xml', '1.1', 'simulations.xml')
-        self.ftmp = os.path.join(os.path.sep, 'tmp', 'libhydro_test_file.xml')
+        self.file_sit = os.path.join(FILES_PATH, 'siteshydro.xml')
+        self.file_obs = os.path.join(FILES_PATH, 'obsshydro.xml')
+        self.file_sim = os.path.join(FILES_PATH, 'simulations.xml')
+        self.tmp_dir = tempfile.mkdtemp(prefix='test_xml_')
+        self.tmp_file = tempfile.mktemp(dir=self.tmp_dir)
 
-    # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
+    def tearDown(self):
+        """Hook method for deconstructing the test fixture after testing it."""
+        shutil.rmtree(self.tmp_dir)
 
     def test_base_01(self):
         """Simple message."""
@@ -170,27 +172,46 @@ class TestMessage(unittest.TestCase):
         msg = Message(scenario=scenario, strict=False)
         self.assertEqual(msg.scenario, scenario)
 
-    @unittest.skipIf(*SKIP_WRITE)
     def test_base_02(self):
         """Message from file siteshydro."""
-        msg = Message.from_file(self.fsit)
+        msg = Message.from_file(self.file_sit)
         msg.show()
-        msg.write(self.ftmp, force=True)
+        msg.write(self.tmp_file, force=True)
         msg.siteshydro = msg.siteshydro[0]
 
-    @unittest.skipIf(*SKIP_WRITE)
     def test_base_03(self):
         """Message from file obsshydro."""
-        msg = Message.from_file(self.fobs)
-        msg.write(self.ftmp, force=True)
+        msg = Message.from_file(self.file_obs)
+        msg.write(self.tmp_file, force=True)
         msg.series = msg.series[0]
 
-    @unittest.skipIf(*SKIP_WRITE)
     def test_base_04(self):
         """Message from file simulations."""
-        msg = Message.from_file(self.fsim)
-        msg.write(self.ftmp, force=True)
+        msg = Message.from_file(self.file_sim)
+        msg.write(self.tmp_file, force=True)
         msg.simulations = msg.simulations[0]
+
+    def test_base_05(self):
+        """Message from file with namespaces."""
+        self.assertRaises(
+            ValueError,
+            Message.from_file,
+            *((os.path.join(FILES_PATH, 'siteshydro_with_namespace.xml')), )
+        )
+
+    def test_str_01(self):
+        """Test __str__ method with basic values."""
+        emetteur = intervenant.Contact()
+        destinataire = intervenant.Intervenant()
+        scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
+        msg = Message(scenario=scenario, strict=False)
+        self.assertTrue(msg.__str__().rfind('Message') > -1)
+
+    def test_str_02(self):
+        """Test __str__ method without scenario."""
+        msg = Message(scenario='', strict=False)
+        self.assertTrue(msg.__str__().rfind('Message') > -1)
+        self.assertTrue(msg.__str__().rfind('sans scenario') > -1)
 
     def test_error_01(self):
         """Scenario error."""
@@ -241,6 +262,39 @@ class TestMessage(unittest.TestCase):
             TypeError,
             Message,
             **{'scenario': scenario, 'simulations': 'simulations'}
+        )
+
+    def test_add_01(self):
+        """Add elements to message."""
+        msg = Message.from_file(self.file_sit)
+        msg2 = Message.from_file(self.file_obs)
+        msg3 = Message.from_file(self.file_sim)
+        msg.add(series=msg2.series, simulations=msg3.simulations)
+        self.assertEqual(msg.series, msg2.series)
+        self.assertEqual(msg.simulations, msg3.simulations)
+
+    def test_add_error_01(self):
+        """Add error."""
+        msg = Message.from_file(self.file_sit)
+        self.assertRaises(
+            TypeError,
+            msg.add,
+            **{'blurp': ''}
+        )
+        self.assertRaises(
+            ValueError,
+            msg.add,
+            **{'series': 'eee'}
+        )
+
+    def test_write_error_01(self):
+        """Write existing file."""
+        msg = Message.from_file(self.file_sit)
+        msg.write(self.tmp_file, force=True)
+        self.assertRaises(
+            IOError,
+            msg.write,
+            *((self.tmp_file), )
         )
 
 

@@ -123,7 +123,7 @@ class Modeleprevision(object):
 
     def __str__(self):
         """String representation."""
-        if _sys.version_info[0] >= 3:  # Python 3
+        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
             return self.__unicode__().encode(_sys.stdout.encoding)

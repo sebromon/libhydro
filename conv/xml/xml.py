@@ -30,7 +30,7 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1e"""
-__date__ = """2013-09-04"""
+__date__ = """2013-09-05"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -325,7 +325,7 @@ class Message(object):
         try:
             scenario = self.scenario.__unicode__()
         except Exception:
-            scenario = '<sans scenario>'
+            scenario = 'Message <sans scenario>'
         return '{}\nContenu: {} siteshydro - {} series - {} simulations'.format(
             scenario,
             len(self.siteshydro),
@@ -335,7 +335,7 @@ class Message(object):
 
     def __str__(self):
         """String representation."""
-        if _sys.version_info[0] >= 3:  # Python 3
+        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
             return self.__unicode__().encode(_sys.stdout.encoding)
