@@ -10,4 +10,4 @@ Il contient les modules:
 """
 __all__ = ['shom', 'xml']
 from shom import shom as shom
-from xml import xml as xml
+import xml
