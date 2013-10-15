@@ -174,7 +174,7 @@ class Observations(_pandas.DataFrame):
 
     Les donnees sont contenues dans 4 colonnes du DataFrame (voir Observation).
 
-    Un objet Obervations peux etre instancie de multiples facons a l'aide des
+    Un objet Observations peux etre instancie de multiples facons a l'aide des
     fonctions proposees par Pandas, sous reserve de respecter le nom des
     colonnes et leur typage:
         DataFrame.from_records: constructor from tuples, also record arrays
@@ -405,7 +405,7 @@ class Serie(object):
         else:
             try:
                 entite = '{} {}'.format(
-                    _sitehydro.ARTICLE[self.entite.__class__],
+                    _sitehydro._ARTICLE[self.entite.__class__],
                     self.entite.__unicode__()
                 )
             except Exception:

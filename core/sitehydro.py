@@ -83,10 +83,10 @@ class _Entitehydro(object):
             else:
                 # other cases
                 code = unicode(code)
-                if self._strict and (self.__class__ in CODE_HYDRO_LENGTH):
+                if self._strict and (self.__class__ in _CODE_HYDRO_LENGTH):
                     #code must be like 'A0334450(xx)(yy)'
                     if (
-                        (len(code) != CODE_HYDRO_LENGTH[self.__class__]) or
+                        (len(code) != _CODE_HYDRO_LENGTH[self.__class__]) or
                         (not code[0].isupper()) or
                         (not code[1:].isdigit())
                     ):
@@ -227,7 +227,7 @@ class Sitehydro(_Entitehydro):
                         'stations must be a Station or an iterable of Station'
                     )
                 if station.typestation not in \
-                        SITE_ACCEPTED_STATION[self.typesite]:
+                        _SITE_ACCEPTED_STATION[self.typesite]:
                     raise ValueError(
                         '{0} station forbidden for {1} site'.format(
                             station.typestation, self.typesite
@@ -379,7 +379,7 @@ class Stationhydro(_Entitehydro):
                         'capteurs must be a Capteur or an iterable of Capteur'
                     )
                 if capteur.typemesure not in \
-                        STATION_ACCEPTED_CAPTEUR[self.typestation]:
+                        _STATION_ACCEPTED_CAPTEUR[self.typestation]:
                     raise ValueError(
                         '{0} capteur forbidden for {1} station'.format(
                             capteur.typemesure, self.typestation
@@ -501,8 +501,8 @@ class Capteur(_Entitehydro):
 
 
 # -- config -------------------------------------------------------------------
-# -- HYDRO ENTITY ARTICLE --
-ARTICLE = {
+# -- HYDRO ENTITY _ARTICLE --
+_ARTICLE = {
     # classe name: article
     Sitehydro: 'le',
     Stationhydro: 'la',
@@ -510,7 +510,7 @@ ARTICLE = {
 }
 
 # -- HYDRO CODE LENGTH --
-CODE_HYDRO_LENGTH = {
+_CODE_HYDRO_LENGTH = {
     # class name: hydro code length
     Sitehydro: 8,
     Stationhydro: 10,
@@ -519,7 +519,7 @@ CODE_HYDRO_LENGTH = {
 
 # -- HYDRO ENTITY DEPEDENCY RULES --
 # rules for checking which Stationhydro a Sitehydro does accept
-SITE_ACCEPTED_STATION = {
+_SITE_ACCEPTED_STATION = {
     # type site : [type station, ...]
     'REEL': ('LIMNI', 'DEB', 'HC', 'LIMNIMERE', 'LIMNIFILLE'),
     'SOURCE':  ('LIMNI', 'DEB', 'HC', 'LIMNIMERE', 'LIMNIFILLE'),
@@ -531,7 +531,7 @@ SITE_ACCEPTED_STATION = {
     'RECONSTITUE': tuple()
 }
 # rules for checking which Capteur a Stationhydro does accept
-STATION_ACCEPTED_CAPTEUR = {
+_STATION_ACCEPTED_CAPTEUR = {
     'LIMNI': ('H',),
     'DEB': ('H', 'Q'),
     'HC': tuple(),

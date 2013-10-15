@@ -177,8 +177,8 @@ class Previsions(_pandas.Series):
         # trier par la date
         ordered_prev = previsions.sortlevel(0)
         # slicer
-        ordered_prev['2013-01-23 00:00':'2013-01-23- 10:00']
-        # sinon...
+        ordered_prev['2013-01-23 00:00':'2013-01-23 10:00']
+        # si l'index n'est pas correctement trie on leve une exception...
         ordered_prev = previsions.sortlevel(1)
         ordered_prev['2013-01-23 00:00':'2013-01-23- 10:00']
         >> KeyError: 'MultiIndex lexsort depth 0, key was length 1'
@@ -477,7 +477,7 @@ class Simulation(object):
         else:
             try:
                 entite = '{} {}'.format(
-                    _sitehydro.ARTICLE[self.entite.__class__],
+                    _sitehydro._ARTICLE[self.entite.__class__],
                     self.entite.__unicode__()
                 )
             except Exception:

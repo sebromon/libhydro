@@ -6,7 +6,7 @@ de marees du SHOM:
     simulation_from_hfs()
     simulation_to_hfs()  -- not implemented --
 
-On peux aussi manipuler ces donnees comme des observations simplifiee a l'aide
+On peux aussi manipuler ces donnees comme des observations simplifiees a l'aide
 des fonctions suivantes:
     serie_from_hfs()
     serie_to_hfs()  -- not implemented --
