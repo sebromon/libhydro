@@ -24,8 +24,8 @@ from __future__ import (
 
 #-- strings -------------------------------------------------------------------
 __author__ = """philippe.gouin@developpement-durable.gouv.fr"""
-__version__ = """0.1d"""
-__date__ = """2013-08-09"""
+__version__ = """0.1e"""
+__date__ = """2013-10-31"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -41,6 +41,73 @@ __date__ = """2013-08-09"""
 NOMENCLATURE = {
 
     #Syntaxe: "reference : {code: mnemonique, ...}"
+
+    # Projection des coordonnees
+    22: {
+        0: 'Projection inconnue',
+        1: 'Lambert I Nord',
+        2: 'Lambert II Centre',
+        3: 'Lambert III Sud',
+        4: 'Lambert IV Corse',
+        5: 'Lambert II Etendu',
+        6: 'Lambert I Carto',
+        7: 'Lambert II Carto',
+        8: 'Lambert III Carto',
+        9: 'Lambert IV Carto',
+        10: 'ED50 UTM30',
+        11: 'ED50 UTM31',
+        12: 'ED50 UTM32',
+        13: 'WGS72 UTM30',
+        14: 'WGS72 UTM31',
+        15: 'WGS72 UTM31',
+        16: 'WGS84 UTM30',
+        17: 'WGS84 UTM31',
+        18: 'WGS84 UTM32',
+        19: 'Reunion Gauss Laborde',
+        20: 'Martinique Fort Desaix',
+        21: 'Guadeloupe Saint-Anne',
+        22: 'Guyane CSG67UTM21',
+        23: 'Guyane CSG67UTM22',
+        24: 'Mayotte Combani',
+        25: 'Saint Pierre et Miquelon',
+        26: 'RGF93 / Lambert 93',
+        27: 'NTFG',
+        28: 'NTFP',
+        29: 'ED50G',
+        30: 'WGS72G',
+        31: 'WGS84G',
+        32: 'Reunion geo. 1947',
+        33: 'Guadeloupe St Anne geo',
+        34: 'Guyane CSG67 geo.',
+        35: 'Mayotte Combani geo.',
+        36: 'St Pierre et Miquelon geo',
+        37: 'ETRS89',
+        38: 'RGR92 / UTM 40',
+        39: 'RRAF 91 / UTM 20',
+        40: 'RGFG95 / UTM 22',
+        41: 'RGM04 / UTM 38',
+        42: 'RGSPM06 / UTM 21',
+        43: 'RGF93 / CC42 (CC Zone 1)',
+        44: 'RGF93 / CC42 (CC Zone 2)',
+        45: 'RGF93 / CC42 (CC Zone 3)',
+        46: 'RGF93 / CC42 (CC Zone 4)',
+        47: 'RGF93 / CC42 (CC Zone 5)',
+        48: 'RGF93 / CC42 (CC Zone 6)',
+        49: 'RGF93 / CC42 (CC Zone 7)',
+        50: 'RGF93 / CC42 (CC Zone 8)',
+        51: 'RGF93 / CC42 (CC Zone 9)',
+        52: 'RGF93 geographiques (2D)',
+        53: 'RRAF 1991 cartesiennes',
+        54: 'RGFG95 geographiques (2D)',
+        55: 'RGR92 geographiques (3D)',
+        56: 'RGM04 cartesiennes',
+        57: 'RGSPM06 cartesiennes',
+        58: 'ETRS89 / LAEA',
+        59: 'ETRS89 / LCC',
+        60: 'ETRS89 / UTM Nord 30',
+        61: 'ETRS89 / UTM Nord 31',
+        62: 'ETRS89 / UTM Nord 32'
+    },
 
     # Methode d'obtention du resultat de l'observation hydro
     507: {0: 'Mesure', 4: 'Reconstitution', 12: 'Interpolation'},
@@ -98,7 +165,7 @@ NOMENCLATURE = {
         'LIMNIFILLE': 'Limnimetre station fille'
     },
 
-    # Civilité du contact
+    # Civilite du contact
     538: {
         1: 'Monsieur', 2: 'Madame', 3: 'Mademoiselle'
     }

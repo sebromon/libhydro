@@ -27,12 +27,14 @@ sys.path.append(os.path.join('..', '..'))
 import unittest
 
 from libhydro.core import sitehydro
+from libhydro.core import composant
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1f"""
-__date__ = """2013-08-23"""
+__author__ = """Philippe Gouin \
+             <philippe.gouin@developpement-durable.gouv.fr>"""
+__version__ = """0.1g"""
+__date__ = """2013-11-07"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -41,39 +43,50 @@ __date__ = """2013-08-23"""
 
 #-- class TestSitehydro -------------------------------------------------------
 class TestSitehydro(unittest.TestCase):
+
     """Sitehydro class tests."""
 
     # def setUp(self):
-    #     """Hook method for setting up the test fixture before exercising it."""
-    #     pass
+    # """Hook method for setting up the test fixture before exercising it."""
+    # pass
 
     # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
+    # """Hook method for deconstructing the test fixture after testing it."""
+    # pass
 
     def test_base_01(self):
         """Empty site."""
         code = 'R5330101'
         s = sitehydro.Sitehydro(code=code)
         self.assertEqual(
-            (s.code, s.typesite, s.libelle, s.stations),
-            (code, 'REEL', None, [])
+            (s.code, s.typesite, s.libelle, s.codeh2, s.stations, s.communes),
+            (code, 'REEL', None, None, [], [])
         )
 
     def test_base_02(self):
         """Site with 1 station."""
         code = 'A3334550'
+        codeh2 = 'A3334550'
         typesite = 'MAREGRAPHE'
         libelle = 'La Saône [apres la crue] a Montelimar [he oui]'
+        coord = (482000, 1897556.5, 26)
         stations = sitehydro.Stationhydro(
             code='%s01' % code, typestation='LIMNI'
         )
+        communes = 32150
         s = sitehydro.Sitehydro(
-            code=code, typesite=typesite, libelle=libelle, stations=stations
+            code=code, codeh2=codeh2, typesite=typesite, libelle=libelle,
+            coord=coord, stations=stations, communes=communes
         )
         self.assertEqual(
-            (s.code, s.typesite, s.libelle, s.stations),
-            (code, typesite, libelle, [stations])
+            (
+                s.code, s.codeh2, s.typesite, s.libelle, s.coord,
+                s.stations, s.communes
+            ),
+            (
+                code, codeh2, typesite, libelle, composant.Coord(*coord),
+                [stations], [communes]
+            )
         )
 
     def test_base_03(self):
@@ -81,6 +94,7 @@ class TestSitehydro(unittest.TestCase):
         code = 'A3334550'
         typesite = 'REEL'
         libelle = 'La Saône [apres la crue] a Montelimar [hé oui]'
+        coord = {'x': 482000, 'y': 1897556.5, 'proj': 26}
         stations = (
             sitehydro.Stationhydro(
                 code='%s01' % code, typestation='DEB'
@@ -92,12 +106,20 @@ class TestSitehydro(unittest.TestCase):
                 code='%s03' % code, typestation='LIMNIFILLE'
             )
         )
+        communes = [32150, 31100]
         s = sitehydro.Sitehydro(
-            code=code, typesite=typesite, libelle=libelle, stations=stations
+            code=code, typesite=typesite, libelle=libelle,
+            coord=coord, stations=stations, communes=communes
         )
         self.assertEqual(
-            (s.code, s.typesite, s.libelle, s.stations),
-            (code, typesite, libelle, [s for s in stations])
+            (
+                s.code, s.typesite, s.libelle, s.coord,
+                s.stations, s.communes
+            ),
+            (
+                code, typesite, libelle, composant.Coord(**coord),
+                [st for st in stations], communes
+            )
         )
 
     def test_base_04(self):
@@ -105,11 +127,13 @@ class TestSitehydro(unittest.TestCase):
         code = 'A3334550'
         typesite = 'REEL'
         libelle = 'La Saône [apres la crue] a Montelimar [hé oui]'
+        coord = composant.Coord(**{'x': 482000, 'y': 1897556.5, 'proj': 26})
         stations = [
             sitehydro.Stationhydro(code='%s01' % code, typestation='DEB')
         ]
         s = sitehydro.Sitehydro(
-            code=code, typesite=typesite, libelle=libelle, stations=stations
+            code=code, typesite=typesite, libelle=libelle,
+            coord=coord, stations=stations
         )
         self.assertEqual(s.stations, stations)
         s.stations = None
@@ -118,6 +142,7 @@ class TestSitehydro(unittest.TestCase):
         self.assertEqual(s.stations, stations)
         s.stations = stations
         self.assertEqual(s.stations, stations)
+        self.assertEqual(s.coord, coord)
 
     def test_str_01(self):
         """Test __str__ method with None values."""
@@ -195,7 +220,17 @@ class TestSitehydro(unittest.TestCase):
         )
 
     def test_error_03(self):
-        """Stations error."""
+        """Code hydro2 error."""
+        code = 'B4401122'
+        sitehydro.Sitehydro(**{'code': code, 'codeh2': code})
+        self.assertRaises(
+            ValueError,
+            sitehydro.Sitehydro,
+            **{'code': code, 'codeh2': '{}01'.format(code)}
+        )
+
+    def test_error_04(self):
+        """Station error."""
         code = 'B4401122'
         stations = (
             sitehydro.Stationhydro(code='%s01' % code),
@@ -226,23 +261,24 @@ class TestSitehydro(unittest.TestCase):
 
 #-- class TestStationhydro ----------------------------------------------------
 class TestStationhydro(unittest.TestCase):
+
     """Stationhydro class tests."""
 
     # def setUp(self):
-    #     """Hook method for setting up the test fixture before exercising it."""
-    #     pass
+    # """Hook method for setting up the test fixture before exercising it."""
+    # pass
 
     # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
+    # """Hook method for deconstructing the test fixture after testing it."""
+    # pass
 
     def test_base_01(self):
         """Base case with empty station."""
         code = 'O033401101'
         s = sitehydro.Stationhydro(code=code)
         self.assertEqual(
-            (s.code, s.typestation, s.libelle),
-            (code, 'LIMNI', None)
+            (s.code, s.typestation, s.libelle, s.commune),
+            (code, 'LIMNI', None, None)
         )
 
     def test_base_02(self):
@@ -251,13 +287,14 @@ class TestStationhydro(unittest.TestCase):
         typestation = 'LIMNI'
         libelle = 'La Seine a Paris - rive droite'
         capteurs = [sitehydro.Capteur(code='V83310100101')]
+        commune = '03150'
         s = sitehydro.Stationhydro(
-            code=code, typestation=typestation,
-            libelle=libelle, capteurs=capteurs
+            code=code, typestation=typestation, libelle=libelle,
+            capteurs=capteurs, commune=commune
         )
         self.assertEqual(
-            (s.code, s.typestation, s.libelle, s.capteurs),
-            (code, typestation, libelle, capteurs)
+            (s.code, s.typestation, s.libelle, s.capteurs, s.commune),
+            (code, typestation, libelle, capteurs, commune)
         )
 
     def test_base_03(self):
@@ -266,13 +303,14 @@ class TestStationhydro(unittest.TestCase):
         typestation = 'LIMNI'
         libelle = 'La Seine a Paris - rive droite'
         capteurs = [sitehydro.Capteur(code='V83310100101')]
+        commune = '2B201'
         s = sitehydro.Stationhydro(
-            code=code, typestation=typestation,
-            libelle=libelle, capteurs=capteurs
+            code=code, typestation=typestation, libelle=libelle,
+            capteurs=capteurs, commune=commune
         )
         self.assertEqual(
-            (s.code, s.typestation, s.libelle),
-            (code, typestation, libelle)
+            (s.code, s.typestation, s.libelle, s.commune),
+            (code, typestation, libelle, commune)
         )
         s.capteurs = None
         self.assertEqual(s.capteurs, [])
@@ -334,7 +372,7 @@ class TestStationhydro(unittest.TestCase):
         )
 
     def test_error_03(self):
-        """Capteurs error."""
+        """Capteur error."""
         code = 'B440112201'
         capteurs = (
             sitehydro.Capteur(code='%s01' % code, typemesure='Q'),
@@ -367,15 +405,16 @@ class TestStationhydro(unittest.TestCase):
 
 #-- class TestCapteur ----------------------------------------------------
 class TestCapteur(unittest.TestCase):
+
     """Capteur class tests."""
 
     # def setUp(self):
-    #     """Hook method for setting up the test fixture before exercising it."""
-    #     pass
+    # """Hook method for setting up the test fixture before exercising it."""
+    # pass
 
     # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
+    # """Hook method for deconstructing the test fixture after testing it."""
+    # pass
 
     def test_base_01(self):
         """Base case with empty capteur."""

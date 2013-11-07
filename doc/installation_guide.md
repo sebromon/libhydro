@@ -103,6 +103,9 @@ Lxml:
     sudo yum install libxslt-devel.x86_64 libxml2-devel.x86_64
     pip install lxml  # 3.2.3
 
+Suds (version suds-jurko):
+   pip install suds-jurko
+
 Check with pip freeze:
     pip freeze:
         numpy==1.7.1
