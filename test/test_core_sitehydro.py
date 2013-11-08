@@ -68,7 +68,7 @@ class TestSitehydro(unittest.TestCase):
         code = 'A3334550'
         codeh2 = 'A3334550'
         typesite = 'MAREGRAPHE'
-        libelle = 'La Saône [apres la crue] a Montelimar [he oui]'
+        libelle = 'La Saône [apres la crue] a Montelimar'
         coord = (482000, 1897556.5, 26)
         stations = sitehydro.Stationhydro(
             code='%s01' % code, typestation='LIMNI'
@@ -78,6 +78,7 @@ class TestSitehydro(unittest.TestCase):
             code=code, codeh2=codeh2, typesite=typesite, libelle=libelle,
             coord=coord, stations=stations, communes=communes
         )
+
         self.assertEqual(
             (
                 s.code, s.codeh2, s.typesite, s.libelle, s.coord,
@@ -85,7 +86,7 @@ class TestSitehydro(unittest.TestCase):
             ),
             (
                 code, codeh2, typesite, libelle, composant.Coord(*coord),
-                [stations], [communes]
+                [stations], [unicode(communes)]
             )
         )
 
@@ -118,7 +119,8 @@ class TestSitehydro(unittest.TestCase):
             ),
             (
                 code, typesite, libelle, composant.Coord(**coord),
-                [st for st in stations], communes
+                [st for st in stations],
+                [unicode(commune) for commune in communes]
             )
         )
 
@@ -143,6 +145,11 @@ class TestSitehydro(unittest.TestCase):
         s.stations = stations
         self.assertEqual(s.stations, stations)
         self.assertEqual(s.coord, coord)
+        self.assertEqual(s.communes, [])
+        s.communes = 32150
+        s.communes = '2B810'
+        s.communes = ['2A001', 33810, 44056, '2B033']
+        s.communes = None
 
     def test_str_01(self):
         """Test __str__ method with None values."""
@@ -256,6 +263,17 @@ class TestSitehydro(unittest.TestCase):
             ValueError,
             sitehydro.Sitehydro,
             **{'code': code, 'typesite': 'VIRTUEL', 'stations': stations}
+        )
+
+    def test_error_05(self):
+        """Coord error."""
+        code = 'B4401122'
+        coord = (33022, 5846, 26)
+        sitehydro.Sitehydro(**{'code': code, 'coord': coord})
+        self.assertRaises(
+            TypeError,
+            sitehydro.Sitehydro,
+            **{'code': code, 'coord': coord[0]}
         )
 
 

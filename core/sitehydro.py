@@ -356,7 +356,7 @@ class Sitehydro(_Site_or_station):
             self._communes = []
 
         else:
-            # one code commune
+            # a single code commune
             if _composant.is_code_commune(communes, raises=False):
                 self._communes = [unicode(communes)]
 
@@ -365,7 +365,7 @@ class Sitehydro(_Site_or_station):
                 self._communes = []
                 for commune in communes:
                     if _composant.is_code_commune(commune):
-                        self._communes.append(unicode(communes))
+                        self._communes.append(unicode(commune))
 
     # -- other methods --
     def __unicode__(self):
