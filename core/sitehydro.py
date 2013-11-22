@@ -26,7 +26,7 @@ import libhydro.core.composant as _composant
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.2f"""
-__date__ = """2013-11-07"""
+__date__ = """2013-11-22"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -34,7 +34,7 @@ __date__ = """2013-11-07"""
 
 
 #-- todos ---------------------------------------------------------------------
-# FIXME - generalize typeentite in _Entite.typentite
+# FIXME - generalize typeentite in _Entite.typentite ?
 # TODO - add navigability for Capteur => Station and Station => Site
 
 
@@ -211,7 +211,7 @@ class Sitehydro(_Site_or_station):
 
     """
 
-    # TODO - Sitehydro other properties
+    # Sitehydro other properties
 
     #libelleusuel
     #libellecomplement
@@ -249,7 +249,7 @@ class Sitehydro(_Site_or_station):
 
     def __init__(
         self, code, codeh2=None, typesite='REEL', libelle=None,
-        coord=None, stations=[], communes=[], strict=True
+        coord=None, stations=None, communes=None, strict=True
     ):
         """Initialisation.
 
@@ -322,9 +322,10 @@ class Sitehydro(_Site_or_station):
         # None case
         if stations is None:
             return
-        # others cases
+        # one station, we make a list with it
         if isinstance(stations, Stationhydro):
             stations = [stations]
+        # an iterable of stations
         for station in stations:
             # some checks
             if self._strict:
@@ -332,7 +333,7 @@ class Sitehydro(_Site_or_station):
                     raise TypeError(
                         'stations must be a Station or an iterable of Station'
                     )
-                if station.typestation not in \
+                elif station.typestation not in \
                         _SITE_ACCEPTED_STATION[self.typesite]:
                     raise ValueError(
                         '{0} station forbidden for {1} site'.format(
@@ -351,21 +352,17 @@ class Sitehydro(_Site_or_station):
     @communes.setter
     def communes(self, communes):
         """Set code commune."""
+        self._communes = []
         # None case
         if communes is None:
-            self._communes = []
-
-        else:
-            # a single code commune
-            if _composant.is_code_commune(communes, raises=False):
-                self._communes = [unicode(communes)]
-
-            else:
-                # a list of codes
-                self._communes = []
-                for commune in communes:
-                    if _composant.is_code_commune(commune):
-                        self._communes.append(unicode(commune))
+            return
+        # one commune, we make a list with it
+        if _composant.is_code_commune(communes, raises=False):
+            communes = [communes]
+        # an iterable of communes
+        for commune in communes:
+            if _composant.is_code_commune(commune):
+                self._communes.append(unicode(commune))
 
     # -- other methods --
     def __unicode__(self):
@@ -401,10 +398,12 @@ class Stationhydro(_Site_or_station):
         coord (Coord)
         capteurs (une liste de Capteur)
         commune (char(5)) = code INSEE commune
+        ddcs (liste de char(10)) = liste de reseaux de mesure SANDRE
+            (dispositifs de collecte)
 
     """
 
-    # TODO - Stationhydro other properties
+    # Stationhydro other properties
 
     #capteurs
 
@@ -437,7 +436,7 @@ class Stationhydro(_Site_or_station):
 
     def __init__(
         self, code, codeh2=None, typestation='LIMNI', libelle=None,
-        coord=None, capteurs=[], commune=None, strict=True
+        coord=None, capteurs=None, commune=None, ddcs=None, strict=True
     ):
         """Initialisation.
 
@@ -450,6 +449,8 @@ class Stationhydro(_Site_or_station):
                 {'x': x, 'y': y, 'proj': proj}
             capteurs (un Capteur ou un iterable de Capteur)
             commune (char(5)) = code INSEE commune
+            ddcs (un code char(10) ou un iterable de char(10)) = reseaux de
+                mesure SANDRE
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite du type et du code
 
@@ -470,6 +471,8 @@ class Stationhydro(_Site_or_station):
         self.capteurs = capteurs
         self._commune = None
         self.commune = commune
+        self._ddcs = []
+        self.ddcs = ddcs
 
     # -- property typestation --
     @property
@@ -507,12 +510,13 @@ class Stationhydro(_Site_or_station):
     def capteurs(self, capteurs):
         """Set capteurs."""
         self._capteurs = []
-        # None caqe
+        # None case
         if capteurs is None:
             return
-        # other cases
+        # one capteur, we make a list with it
         if isinstance(capteurs, Capteur):
             capteurs = [capteurs]
+        # an iterable of capteurs
         for capteur in capteurs:
             # some checks
             if self._strict:
@@ -520,14 +524,14 @@ class Stationhydro(_Site_or_station):
                     raise TypeError(
                         'capteurs must be a Capteur or an iterable of Capteur'
                     )
-                if capteur.typemesure not in \
+                elif capteur.typemesure not in \
                         _STATION_ACCEPTED_CAPTEUR[self.typestation]:
                     raise ValueError(
                         '{0} capteur forbidden for {1} station'.format(
                             capteur.typemesure, self.typestation
                         )
                     )
-            # add station
+            # add capteur
             self._capteurs.append(capteur)
 
     # -- property commune --
@@ -543,6 +547,30 @@ class Stationhydro(_Site_or_station):
             commune = unicode(commune)
             _composant.is_code_commune(commune)
         self._commune = commune
+
+    # -- property ddcs --
+    @property
+    def ddcs(self):
+        """Return ddcs."""
+        return self._ddcs
+
+    @ddcs.setter
+    def ddcs(self, ddcs):
+        """Set ddcs."""
+        self._ddcs = []
+        # None case
+        if ddcs is None:
+            return
+        # one ddc, we make a list with it
+        if not hasattr(ddcs, '__iter__'):
+            ddcs = [ddcs]
+        # an iterable of ddcs
+        for ddc in ddcs:
+            ddc = unicode(ddc)
+            # if len(ddc) != 10:
+            if len(ddc) > 10:
+                raise ValueError('ddc code must be 10 chars long')
+            self._ddcs.append(ddc)
 
     # -- other methods --
     def __unicode__(self):
@@ -578,7 +606,7 @@ class Capteur(_Entitehydro):
 
     """
 
-    # TODO - Capteur other properties
+    # Capteur other properties
 
     #mnemonique
     #typecapteur

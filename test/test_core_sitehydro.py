@@ -34,7 +34,7 @@ from libhydro.core import composant
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1g"""
-__date__ = """2013-11-07"""
+__date__ = """2013-11-22"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -295,8 +295,8 @@ class TestStationhydro(unittest.TestCase):
         code = 'O033401101'
         s = sitehydro.Stationhydro(code=code)
         self.assertEqual(
-            (s.code, s.typestation, s.libelle, s.commune),
-            (code, 'LIMNI', None, None)
+            (s.code, s.typestation, s.libelle, s.commune, s.ddcs),
+            (code, 'LIMNI', None, None, [])
         )
 
     def test_base_02(self):
@@ -306,13 +306,14 @@ class TestStationhydro(unittest.TestCase):
         libelle = 'La Seine a Paris - rive droite'
         capteurs = [sitehydro.Capteur(code='V83310100101')]
         commune = '03150'
+        ddcs = 33  # a numeric rezo
         s = sitehydro.Stationhydro(
             code=code, typestation=typestation, libelle=libelle,
-            capteurs=capteurs, commune=commune
+            capteurs=capteurs, commune=commune, ddcs=ddcs
         )
         self.assertEqual(
-            (s.code, s.typestation, s.libelle, s.capteurs, s.commune),
-            (code, typestation, libelle, capteurs, commune)
+            (s.code, s.typestation, s.libelle, s.capteurs, s.commune, s.ddcs),
+            (code, typestation, libelle, capteurs, commune, [unicode(ddcs)])
         )
 
     def test_base_03(self):
@@ -322,13 +323,14 @@ class TestStationhydro(unittest.TestCase):
         libelle = 'La Seine a Paris - rive droite'
         capteurs = [sitehydro.Capteur(code='V83310100101')]
         commune = '2B201'
+        ddcs = ['33', 'the rezo']
         s = sitehydro.Stationhydro(
             code=code, typestation=typestation, libelle=libelle,
-            capteurs=capteurs, commune=commune
+            capteurs=capteurs, commune=commune, ddcs=ddcs
         )
         self.assertEqual(
-            (s.code, s.typestation, s.libelle, s.commune),
-            (code, typestation, libelle, commune)
+            (s.code, s.typestation, s.libelle, s.commune, s.ddcs),
+            (code, typestation, libelle, commune, ddcs)
         )
         s.capteurs = None
         self.assertEqual(s.capteurs, [])
@@ -418,6 +420,17 @@ class TestStationhydro(unittest.TestCase):
             ValueError,
             sitehydro.Stationhydro,
             **{'code': code, 'typestation': 'HC', 'capteurs': capteurs}
+        )
+
+    def test_error_05(self):
+        """Disceau error."""
+        code = 'B440112201'
+        ddcs = 'code rezo'
+        sitehydro.Stationhydro(**{'code': code, 'ddcs': ddcs})
+        self.assertRaises(
+            ValueError,
+            sitehydro.Stationhydro,
+            **{'code': code, 'ddcs': ddcs * 2}
         )
 
 

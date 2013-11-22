@@ -21,9 +21,10 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2013-09-03"""
+__author__ = """Philippe Gouin""" \
+             """<philippe.gouin@developpement-durable.gouv.fr>"""
+__version__ = """0.1d"""
+__date__ = """2013-11-22"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -36,6 +37,7 @@ __date__ = """2013-09-03"""
 
 #-- Class Intervenant ---------------------------------------------------------
 class Intervenant(object):
+
     """Classe Intervenant.
 
     Classe pour manipuler les intervenants Sandre.
@@ -60,7 +62,7 @@ class Intervenant(object):
     # dtmaj
 
     def __init__(
-        self, code=0, origine=None, nom=None, mnemo=None, contacts=[]
+        self, code=0, origine=None, nom=None, mnemo=None, contacts=None
     ):
         """Initialisation.
 
@@ -80,27 +82,29 @@ class Intervenant(object):
         self.mnemo = unicode(mnemo) if (mnemo is not None) else None
 
         # -- full properties --
-        self._origine = None  # required
+        self._code = 0
+        self._origine = None  # don't move it !
         self.code = code
         if origine is not None:  # required
             self.origine = origine
+        self._contacts = None
         self.contacts = contacts
 
     # -- property code --
     @property
     def code(self):
-        """Code intervenant."""
+        """Return code intervenant."""
         return self._code
 
     @code.setter
     def code(self, code):
+        """Set code intervenant."""
+        # None case
+        if code is None:
+            raise TypeError('code is required')
+
+        # other cases
         try:
-
-            # None case
-            if code is None:
-                raise TypeError('code is required')
-
-            # other cases
             code = int(code)
             if self._origine is None:
                 if len(str(code)) == 14:
@@ -110,7 +114,7 @@ class Intervenant(object):
             elif self._origine == 'SIRET':
                 if len(str(code)) != 14:
                     raise ValueError('SIRET code must be 14 bytes long')
-                # else:  # self.origine == 'SANDRE'
+            # else:  # self.origine == 'SANDRE'
 
             # all is well
             self._code = code
@@ -121,18 +125,18 @@ class Intervenant(object):
     # -- property origine --
     @property
     def origine(self):
-        """Origine du code intervenant."""
+        """Return origine."""
         return self._origine
 
     @origine.setter
     def origine(self, origine):
+        """Set origine."""
+        # None case
+        if origine is None:
+            raise ValueError('origine must be SIRET or SANDRE')
+
+        # other cases
         try:
-
-            # None case
-            if origine is None:
-                raise ValueError('origine must be SIRET or SANDRE')
-
-            # other cases
             origine = unicode(origine.upper())
             # check origine
             if origine == 'I':
@@ -141,13 +145,11 @@ class Intervenant(object):
                 origine = 'SANDRE'
             if origine not in ('SIRET', 'SANDRE'):
                 raise ValueError('origine must be SIRET or SANDRE')
-
             # check with code
             if (origine == 'SIRET')                \
                     and (self.code is not None)    \
                     and (len(str(self.code)) != 14):
                 raise ValueError('SIRET code must be 14 bytes long')
-
             # all is well
             self._origine = origine
 
@@ -157,11 +159,12 @@ class Intervenant(object):
     # -- property contacts --
     @property
     def contacts(self):
-        """contacts."""
+        """Return contacts."""
         return self._contacts
 
     @contacts.setter
     def contacts(self, contacts):
+        """Set contacts."""
         self._contacts = []
         if contacts is None:
             return
@@ -190,7 +193,7 @@ class Intervenant(object):
 
     # -- other methods --
     def __unicode__(self):
-        """Unicode representation."""
+        """Return unicode representation."""
         return 'Intervenant {0} {1}::{2} [{3} contact{4}]'.format(
             self.origine or '<sans origine>',
             self.code or '<sans code>',
@@ -200,15 +203,16 @@ class Intervenant(object):
         )
 
     def __str__(self):
-        """String representation."""
+        """Return string representation."""
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
             return self.__unicode__().encode(_sys.stdout.encoding)
 
 
-#-- class Contact --------------------------------------------------------------
+#-- class Contact -------------------------------------------------------------
 class Contact(object):
+
     """Classe Contact.
 
     Classe pour manipuler des contacts.
@@ -257,18 +261,22 @@ class Contact(object):
         self.prenom = unicode(prenom) if (prenom is not None) else None
 
         # -- full properties --
+        self._code = 0
         self.code = code
+        self._civilite = None
         self.civilite = civilite
+        self._intervenant = None
         self.intervenant = intervenant
 
     # -- property code --
     @property
     def code(self):
-        """Code du contact."""
+        """Return Code contact."""
         return self._code
 
     @code.setter
     def code(self, code):
+        """Set code contact."""
         try:
 
             # None case
@@ -278,7 +286,7 @@ class Contact(object):
             # other cases
             code = int(code)
             if not (0 <= code <= 9999):
-                    raise ValueError('code must be in range 0-9999')
+                raise ValueError('code must be in range 0-9999')
 
             # all is well
             self._code = code
@@ -289,11 +297,12 @@ class Contact(object):
     # -- property civilite --
     @property
     def civilite(self):
-        """Civilite du contact."""
+        """Return civilite."""
         return self._civilite
 
     @civilite.setter
     def civilite(self, civilite):
+        """Set civilite."""
         try:
 
             if civilite is not None:
@@ -308,11 +317,12 @@ class Contact(object):
     # -- property intervenant --
     @property
     def intervenant(self):
-        """Intervenant de rattachement du contact."""
+        """Return intervenant de rattachement du contact."""
         return self._intervenant
 
     @intervenant.setter
     def intervenant(self, intervenant):
+        """Set intervenant de rattachement du contact."""
         if intervenant is not None:
             if not isinstance(intervenant, Intervenant):
                 raise TypeError('intervenant must be an Intervenant')
@@ -320,7 +330,7 @@ class Contact(object):
 
     # -- other methods --
     def __unicode__(self):
-        """Unicode representation."""
+        """Return unicode representation."""
         return 'Contact {0}::{1} {2} {3}'.format(
             self.code or '<sans code>',
             _NOMENCLATURE[538][self.civilite] if self.civilite
@@ -330,7 +340,7 @@ class Contact(object):
         )
 
     def __str__(self):
-        """String representation."""
+        """Return string representation."""
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
@@ -339,6 +349,7 @@ class Contact(object):
 
 # -- Class Adresse ------------------------------------------------------------
 class Adresse(object):
+
     """Classe Adresse."""
 
     def __init__(self):
