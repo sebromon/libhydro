@@ -27,6 +27,9 @@
         <LbSiteHydro>Le Touch à Toulouse [Saint-Martin-du-Touch]</LbSiteHydro>
         <LbUsuelSiteHydro>St-Martin-du-Touch</LbUsuelSiteHydro>
         <TypSiteHydro>SOURCE</TypSiteHydro>
+        <CdCommune>11354</CdCommune>
+        <CdCommune>11355</CdCommune>
+        <CdCommune>2B021</CdCommune>
         <StationsHydro>
           <StationHydro>
             <CdStationHydro>O198431001</CdStationHydro>
@@ -135,8 +138,7 @@
             <CdTronconVigilance>AG5</CdTronconVigilance>
           </TronconVigilanceSiteHydro>
         </TronconsVigilanceSiteHydro>
-        <CdCommune>11354</CdCommune>
-        <CdSiteHydroAncienRef>01235401</CdSiteHydroAncienRef>
+        <CdSiteHydroAncienRef>O1235401</CdSiteHydroAncienRef>
         <StationsHydro>
           <StationHydro>
             <CdStationHydro>O171251001</CdStationHydro>
@@ -236,7 +238,7 @@
                     <ActivePlageUtilCapteur>true</ActivePlageUtilCapteur>
                   </PlageUtilCapteur>
                 </PlagesUtilCapteur>
-                <CdCapteurAncienRef>toto</CdCapteurAncienRef>
+                <CdCapteurAncienRef>O1712510</CdCapteurAncienRef>
               </Capteur>
             </Capteurs>
             <RefsAlti>
@@ -257,7 +259,8 @@
                 </AltiRefAlti>
               </RefAlti>
             </RefsAlti>
-            <CdStationHydroAncienRef>TATA</CdStationHydroAncienRef>
+            <CdStationHydroAncienRef>O1712510</CdStationHydroAncienRef>
+            <CdCommune>11354</CdCommune>
           </StationHydro>
         </StationsHydro>
         <LamesDEau>

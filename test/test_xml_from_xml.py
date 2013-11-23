@@ -31,9 +31,10 @@ from libhydro.conv.xml import (_from_xml as from_xml)
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1b"""
-__date__ = """2013-08-26"""
+__author__ = """Philippe Gouin""" \
+             """<philippe.gouin@developpement-durable.gouv.fr>"""
+__version__ = """0.1c"""
+__date__ = """2013-11-23"""
 
 #HISTORY
 #V0.1 - 2013-08-24
@@ -42,6 +43,7 @@ __date__ = """2013-08-26"""
 
 #-- class TestFromXmlSiteshydro ----------------------------------------------
 class TestFromXmlSitesHydros(unittest.TestCase):
+
     """FromXmlSitesHydro class tests."""
 
     def setUp(self):
@@ -50,12 +52,8 @@ class TestFromXmlSitesHydros(unittest.TestCase):
             os.path.join('data', 'xml', '1.1', 'siteshydro.xml')
         )
 
-    # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
-
     def test_base(self):
-        """Keys test."""
+        """Check Keys test."""
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'siteshydro', 'series', 'simulations'))
@@ -96,27 +94,49 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         )
         self.assertEqual(sitehydro.typesite, 'SOURCE')
         self.assertEqual(sitehydro.code, 'O1984310')
+        self.assertEqual(sitehydro.communes, ['11354', '11355', '2B021'])
         self.assertEqual(len(sitehydro.stations), 3)
         # check stations
-        for  i in range(1, 3):
+        for i in range(1, 3):
             self.assertEqual(sitehydro.stations[i - 1].code, 'O19843100%i' % i)
-            self.assertEqual(sitehydro.stations[i - 1].libelle, 'station %i' % i)
+            self.assertEqual(
+                sitehydro.stations[i - 1].libelle, 'station %i' % i
+            )
             self.assertEqual(sitehydro.stations[i - 1].typestation, 'LIMNI')
 
     def test_sitehydro_2(self):
         """Sitehydro 2 test."""
+        # check site
         sitehydro = self.data['siteshydro'][2]
         self.assertEqual(sitehydro.code, 'O2000040')
         self.assertEqual(sitehydro.typesite, 'REEL')
+        # check station
+        station = sitehydro.stations[0]
+        self.assertEqual(station.coord.x, 15)
+        self.assertEqual(station.coord.y, 16)
+        self.assertEqual(station.coord.proj, 26)
 
     def test_sitehydro_3(self):
         """Sitehydro 3 test."""
-        capteurs = self.data['siteshydro'][3].stations[0].capteurs
+        # check site
+        site = self.data['siteshydro'][3]
+        self.assertEqual(site.coord.x, 618766)
+        self.assertEqual(site.coord.y, 1781803)
+        self.assertEqual(site.coord.proj, 26)
+        self.assertEqual(site.codeh2, 'O1235401')
+        # check station
+        station = site.stations[0]
+        self.assertEqual(station.ddcs, ['10', '1000000001'])
+        self.assertEqual(station.commune, '11354')
+        self.assertEqual(station.codeh2, 'O1712510')
+        # checkcapteurs
+        capteurs = station.capteurs
         self.assertEqual(len(capteurs), 2)
         self.assertEqual(capteurs[0].code, 'O17125100102')
         self.assertEqual(capteurs[0].typemesure, 'H')
         self.assertEqual(capteurs[1].code, 'O17125100101')
         self.assertEqual(capteurs[1].typemesure, 'H')
+        self.assertEqual(capteurs[1].codeh2, 'O1712510')
 
     def test_error_1(self):
         """Xml file with namespace error test."""
@@ -136,6 +156,7 @@ class TestFromXmlSitesHydros(unittest.TestCase):
 
 #-- class TestFromXmlObssHydro -----------------------------------------------
 class TestFromXmlObssHydro(unittest.TestCase):
+
     """FromXmlObssHydro class tests."""
 
     def setUp(self):
@@ -144,12 +165,8 @@ class TestFromXmlObssHydro(unittest.TestCase):
             os.path.join('data', 'xml', '1.1', 'obsshydro.xml')
         )
 
-    # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
-
     def test_base(self):
-        """Keys test."""
+        """Check keys test."""
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'siteshydro', 'series', 'simulations'))
@@ -226,6 +243,7 @@ class TestFromXmlObssHydro(unittest.TestCase):
 
 #-- class TestFromXmlSimulations ---------------------------------------------
 class TestFromXmlSimulations(unittest.TestCase):
+
     """FromXmlSimulations class tests."""
 
     def setUp(self):
@@ -234,12 +252,8 @@ class TestFromXmlSimulations(unittest.TestCase):
             os.path.join('data', 'xml', '1.1', 'simulations.xml')
         )
 
-    # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
-
     def test_base(self):
-        """Keys test."""
+        """Check keys test."""
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'siteshydro', 'series', 'simulations'))
@@ -255,7 +269,9 @@ class TestFromXmlSimulations(unittest.TestCase):
         self.assertEqual(scenario.code, 'hydrometrie')
         self.assertEqual(scenario.version, '1.1')
         self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
-        self.assertEqual(scenario.dtprod, datetime.datetime(2010, 2, 26, 9, 30))
+        self.assertEqual(
+            scenario.dtprod, datetime.datetime(2010, 2, 26, 9, 30)
+        )
         self.assertEqual(scenario.emetteur.code, 41)
         self.assertEqual(scenario.emetteur.intervenant.code, 1537)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')

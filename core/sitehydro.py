@@ -71,9 +71,8 @@ class _Entitehydro(object):
         self.libelle = unicode(libelle) if (libelle is not None) else None
 
         # -- full properties --
-        self._code = None
+        self._code = self._codeh2 = None
         self.code = code
-        self._codeh2 = None
         self.codeh2 = codeh2
 
     # -- property code --
@@ -278,9 +277,8 @@ class Sitehydro(_Site_or_station):
         # -- full properties --
         self._typesite = None
         self.typesite = typesite
-        self._stations = []
+        self._stations = self._communes = []
         self.stations = stations
-        self._communes = []
         self.communes = communes
 
     # -- property typesite --

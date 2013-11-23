@@ -38,9 +38,10 @@ from libhydro.core import (
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1f"""
-__date__ = """2013-09-04"""
+__author__ = """Philippe Gouin""" \
+             """<philippe.gouin@developpement-durable.gouv.fr>"""
+__version__ = """0.1g"""
+__date__ = """2013-11-23"""
 
 #HISTORY
 #V0.1 - 2013-08-18
@@ -65,6 +66,7 @@ PREV_PROBABILITY = {
 
 # -- class Scenario -----------------------------------------------------------
 class Scenario(object):
+
     """Classe Scenario.
 
     Classe pour manipuler les scenarios des messages SANDRE.
@@ -79,7 +81,7 @@ class Scenario(object):
 
     """
 
-    # TODO - Scenario other properties
+    # Scenario other properties
 
     # reference
     # envoi
@@ -101,6 +103,7 @@ class Scenario(object):
         """
 
         # -- full properties --
+        self._emetteur = self._destinataire = self._dtprod = None
         self.emetteur = emetteur
         self.destinataire = destinataire
         self.dtprod = dtprod
@@ -108,11 +111,12 @@ class Scenario(object):
     # -- property emetteur --
     @property
     def emetteur(self):
-        """Emetteur du message."""
+        """Return message emetteur."""
         return self._emetteur
 
     @emetteur.setter
     def emetteur(self, emetteur):
+        """Set message emetteur."""
         try:
             # None case
             if emetteur is None:
@@ -127,11 +131,12 @@ class Scenario(object):
     # -- property destinataire --
     @property
     def destinataire(self):
-        """Destinataire du message."""
+        """Return message destinataire."""
         return self._destinataire
 
     @destinataire.setter
     def destinataire(self, destinataire):
+        """Set message destinataire."""
         try:
             # None case
             if destinataire is None:
@@ -146,11 +151,12 @@ class Scenario(object):
     # -- property dtprod --
     @property
     def dtprod(self):
-        """Date de production du message."""
+        """Return message generation date."""
         return self._dtprod
 
     @dtprod.setter
     def dtprod(self, dtprod):
+        """Set message generation date."""
         try:
             # None case
             if dtprod is None:
@@ -172,7 +178,7 @@ class Scenario(object):
 
     # -- other methods --
     def __unicode__(self):
-        """Unicode representation."""
+        """Return unicode representation."""
         return "Message du {0}\nEmis par le {1} pour l'{2}".format(
             self.dtprod,
             self.emetteur,
@@ -180,7 +186,7 @@ class Scenario(object):
         )
 
     def __str__(self):
-        """String representation."""
+        """Return string representation."""
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
@@ -222,7 +228,7 @@ def _parse(src):
         # 'intervenants':
         'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro')),
         # 'sitesmeteo'
-        # 'modelesprevision': 'TODOS',
+        # 'modelesprevision': '',
         # 'evenements'
         # 'courbestarage'
         # 'jaugeages'
@@ -292,14 +298,22 @@ def _sitehydro_from_element(element):
         # prepare args
         args = {}
         args['code'] = _value(element, 'CdSiteHydro')
+        args['codeh2'] = _value(element, 'CdSiteHydroAncienRef')
+        typesite = _value(element, 'TypSiteHydro')
+        if typesite is not None:
+            args['typesite'] = typesite
         args['libelle'] = _value(element, 'LbSiteHydro')
+        args['coord'] = _coord_from_element(
+            element.find('CoordSiteHydro'), 'SiteHydro'
+        )
         args['stations'] = [
             _stationhydro_from_element(e)
             for e in element.findall('StationsHydro/StationHydro')
         ]
-        typesite = _value(element, 'TypSiteHydro')
-        if typesite is not None:
-            args['typesite'] = typesite
+        args['communes'] = [
+            unicode(e.text) for e in element.findall('CdCommune')
+        ]
+
         # build Site
         return _sitehydro.Sitehydro(**args)
 
@@ -310,16 +324,40 @@ def _stationhydro_from_element(element):
         # prepare args
         args = {}
         args['code'] = _value(element, 'CdStationHydro')
+        args['codeh2'] = _value(element, 'CdStationHydroAncienRef')
+        typestation = _value(element, 'TypStationHydro')
+        if typestation is not None:
+            args['typestation'] = typestation
         args['libelle'] = _value(element, 'LbStationHydro')
+        args['coord'] = _coord_from_element(
+            element.find('CoordStationHydro'), 'StationHydro'
+        )
         args['capteurs'] = [
             _capteur_from_element(e)
             for e in element.findall('Capteurs/Capteur')
         ]
-        typestation = _value(element, 'TypStationHydro')
-        if typestation is not None:
-            args['typestation'] = typestation
+        args['commune'] = _value(element, 'CdCommune')
+        args['ddcs'] = [
+            unicode(e.text)
+            for e in element.findall('ReseauxMesureStationHydro/CodeSandreRdd')
+        ]
         # build Station
         return _sitehydro.Stationhydro(**args)
+
+
+def _coord_from_element(element, entite):
+    """Return a dict {'x': x, 'y': y, 'proj': proj}.
+
+    Arg entite is the xml element suffix, a string in
+    (SiteHydro, StationHydro).
+
+    """
+    if element is not None:
+        coord = {}
+        coord['x'] = _value(element, 'CoordX%s' % entite, float)
+        coord['y'] = _value(element, 'CoordY%s' % entite, float)
+        coord['proj'] = _value(element, 'ProjCoord%s' % entite, int)
+        return coord
 
 
 def _capteur_from_element(element):
@@ -328,6 +366,7 @@ def _capteur_from_element(element):
         # prepare args
         args = {}
         args['code'] = _value(element, 'CdCapteur')
+        args['codeh2'] = _value(element, 'CdCapteurAncienRef')
         args['libelle'] = _value(element, 'LbCapteur')
         typemesure = _value(element, 'TypMesureCapteur')
         if typemesure is not None:
@@ -411,7 +450,8 @@ def _simulation_from_element(element):
             ),
             grandeur=_value(element, 'GrdSimul'),
             statut=_value(element, 'StatutSimul', int),
-            qualite=int(_value(element, 'IndiceQualiteSimul', float)),  # int(float())
+            # qualite = int(float())
+            qualite=int(_value(element, 'IndiceQualiteSimul', float)),
             public=_value(element, 'PubliSimul', bool),
             commentaire=_value(element, 'ComSimul'),
             dtprod=_value(element, 'DtProdSimul', _UTC),
@@ -457,7 +497,7 @@ def _previsions_from_element(element):
 
 # -- utility functions --------------------------------------------------------
 def _UTC(dte):
-    """Add +00 to the string dte if no time zone."""
+    """Return string date with suffix +00 if no time zone specified."""
     if (dte is not None) and (dte.find('+') == -1):
         return '%s+00' % dte
     else:

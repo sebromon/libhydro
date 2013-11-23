@@ -51,7 +51,7 @@ class Intervenant(object):
 
     """
 
-    # TODO - Intervenant other properties
+    # Intervenant other properties
 
     # statut
     # auteur
@@ -226,7 +226,7 @@ class Contact(object):
 
     """
 
-    # TODO - Contact other properties
+    # Contact other properties
 
     # profil
     # telephone

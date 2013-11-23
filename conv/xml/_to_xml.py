@@ -18,14 +18,17 @@ from __future__ import (
     print_function as _print_function
 )
 
+from collections import OrderedDict as _OrderedDict
+
 from lxml import etree as _etree
 import numpy as _numpy
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
+__author__ = """Philippe Gouin""" \
+             """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1e"""
-__date__ = """2013-09-04"""
+__date__ = """2013-11-23"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -139,32 +142,37 @@ def _scenario_to_element(scenario):
 
     if scenario is not None:
 
-        # template for scenario simple elements
-        story = [
-            ('CodeScenario', scenario.code, None),
-            ('VersionScenario', scenario.version, None),
-            ('NomScenario', scenario.nom, None),
-            ('DateHeureCreationFichier', scenario.dtprod.isoformat(), None)
-        ]
+        # template for scenario simple element
+        story = _OrderedDict((
+            ('CodeScenario', {'value': scenario.code}),
+            ('VersionScenario', {'value': scenario.version}),
+            ('NomScenario', {'value': scenario.nom}),
+            ('DateHeureCreationFichier',
+                {'value': scenario.dtprod.isoformat()})
+        ))
         # template for scenario sub-element <Emetteur>
-        story.append(
-            ('Emetteur', (
-                ('CdIntervenant',
-                 unicode(scenario.emetteur.intervenant.code),
-                 {"schemaAgencyID": scenario.emetteur.intervenant.origine}),
-                ('CdContact',
-                 unicode(scenario.emetteur.code),
-                 {"schemaAgencyID": "SANDRE"})
+        story['Emetteur'] = {
+            'sub': _OrderedDict((
+                ('CdIntervenant', {
+                    'value': unicode(scenario.emetteur.intervenant.code),
+                    'attr': {"schemaAgencyID":
+                             scenario.emetteur.intervenant.origine}
+                }),
+                ('CdContact', {
+                    'value': unicode(scenario.emetteur.code),
+                    'attr': {"schemaAgencyID": "SANDRE"}
+                })
             ))
-        )
+        }
         # template for scenario sub-element <Destinataire>
-        story.append(
-            ('Destinataire', (
-                ('CdIntervenant',
-                 unicode(scenario.destinataire.code),
-                 {"schemaAgencyID": "SANDRE"}),
-            ))
-        )
+        story['Destinataire'] = {
+            'sub': {
+                'CdIntervenant': {
+                    'value': unicode(scenario.destinataire.code),
+                    'attr': {"schemaAgencyID": "SANDRE"}
+                }
+            }
+        }
 
         # action !
         return _factory(root=_etree.Element('Scenario'), story=story)
@@ -176,18 +184,38 @@ def _sitehydro_to_element(sitehydro):
     if sitehydro is not None:
 
         # template for sitehydro simple elements
-        story = [
-            ('CdSiteHydro', sitehydro.code, None),
-            ('LbSiteHydro', sitehydro.libelle, None),
-            ('TypSiteHydro', sitehydro.typesite, None)
-        ]
+        story = _OrderedDict((
+            ('CdSiteHydro', {'value': sitehydro.code}),
+            ('LbSiteHydro', {'value': sitehydro.libelle}),
+            ('TypSiteHydro', {'value': sitehydro.typesite}),
+            ('CoordSiteHydro', {
+                'value': None,
+                'force': True if sitehydro.coord is not None else False
+            }),
+            ('StationsHydro', {
+                'value': None,
+                'force': True if (len(sitehydro.stations) > 0) else False
+            }),
+            ('CdCommune', {'value': sitehydro.communes}),
+            ('CdSiteHydroAncienRef', {'value': sitehydro.codeh2})
+        ))
+
+        # update the coord if necessary
+        if sitehydro.coord is not None:
+            story['CoordSiteHydro'] = {
+                'sub': _OrderedDict((
+                    ('CoordXSiteHydro', {'value': sitehydro.coord.x}),
+                    ('CoordYSiteHydro', {'value': sitehydro.coord.y}),
+                    ('ProjCoordSiteHydro', {'value': sitehydro.coord.proj})
+                ))
+            }
 
         # make element <SiteHydro>
         element = _factory(root=_etree.Element('SiteHydro'), story=story)
 
-        # add the stations
+        # add the stations if necessary
         if len(sitehydro.stations) > 0:
-            child = _etree.SubElement(element, 'StationsHydro')
+            child = element.find('StationsHydro')
             for station in sitehydro.stations:
                 child.append(_stationhydro_to_element(station))
 
@@ -200,19 +228,52 @@ def _stationhydro_to_element(stationhydro):
 
     if stationhydro is not None:
 
-        # template for stationhydro simple elements
-        story = [
-            ('CdStationHydro', stationhydro.code, None),
-            ('LbStationHydro', stationhydro.libelle, None),
-            ('TypStationHydro', stationhydro.typestation, None)
-        ]
+        # template for stationhydro simple element
+        story = _OrderedDict((
+            ('CdStationHydro', {'value': stationhydro.code}),
+            ('LbStationHydro', {'value': stationhydro.libelle}),
+            ('TypStationHydro', {'value': stationhydro.typestation}),
+            ('CoordStationHydro', {
+                'value': None,
+                'force': True if stationhydro.coord is not None else False
+            }),
+            ('ReseauxMesureStationHydro', {
+                'value': None,
+                'force': True if (len(stationhydro.ddcs) > 0) else False
+            }),
+            ('Capteurs', {
+                'value': None,
+                'force': True if (len(stationhydro.capteurs) > 0) else False
+            }),
+            ('CdStationHydroAncienRef', {'value': stationhydro.codeh2}),
+            ('CdCommune', {'value': stationhydro.commune})
+        ))
+
+        # update the coord if necessary
+        if stationhydro.coord is not None:
+            story['CoordStationHydro'] = {
+                'sub': _OrderedDict((
+                    ('CoordXStationHydro', {'value': stationhydro.coord.x}),
+                    ('CoordYStationHydro', {'value': stationhydro.coord.y}),
+                    ('ProjCoordStationHydro', {'value':
+                                               stationhydro.coord.proj})
+                ))
+            }
+
+        # update ddcs if necessary
+        if len(stationhydro.ddcs) > 0:
+            story['ReseauxMesureStationHydro'] = {
+                'sub': {
+                    'CodeSandreRdd': {'value': stationhydro.ddcs}
+                }
+            }
 
         # make element <StationHydro>
         element = _factory(root=_etree.Element('StationHydro'), story=story)
 
-        # add the capteurs
+        # add the capteurs if necessary
         if len(stationhydro.capteurs) > 0:
-            child = _etree.SubElement(element, 'Capteurs')
+            child = element.find('Capteurs')
             for capteur in stationhydro.capteurs:
                 child.append(_capteur_to_element(capteur))
 
@@ -220,17 +281,38 @@ def _stationhydro_to_element(stationhydro):
         return element
 
 
+# def _coord_to_element(coord, suffix):
+# """Return a <Coord(suffix)> element from a composant.coord and a suffix."""
+#
+#     if coord, suffix != None, None:
+#
+#         # template for coord simple elements
+#         story = [
+#             ('CoordX%s' % suffix, coord.x, None, False),
+#             ('CoordY%s' % suffix, coord.y, None, False),
+#             ('ProjCoord%s' % suffix, coord.proj, None, False)
+#         ]
+#
+#         # make element <StationHydro>
+#         element = _factory(
+#             root=_etree.Element('Coord%s' % suffix), story=story
+#         )
+#
+#         # return
+#         return element
+
 def _capteur_to_element(capteur):
     """Return a <Capteur> element from a sitehydro.Capteur."""
 
     if capteur is not None:
 
-        # capteur simple elements
-        story = [
-            ('CdCapteur', capteur.code, None),
-            ('LbCapteur', capteur.libelle, None),
-            ('TypMesureCapteur', capteur.typemesure, None)
-        ]
+        # template for capteur simple element
+        story = _OrderedDict((
+            ('CdCapteur', {'value': capteur.code}),
+            ('LbCapteur', {'value': capteur.libelle}),
+            ('TypMesureCapteur', {'value': capteur.typemesure}),
+            ('CdCapteurAncienRef', {'value': capteur.codeh2})
+        ))
 
         # action !
         return _factory(root=_etree.Element('Capteur'), story=story)
@@ -242,18 +324,17 @@ def _serie_to_element(serie):
     if serie is not None:
 
         # template for serie simple elements
-        story = [
+        story = _OrderedDict((
+            # entite can be a Sitehydro, a Stationhydro or a Capteur
             (
-                # Entite can be a Sitehydro, a Stationhydro or a Capteur
                 'Cd%s' % (
                     serie.entite.__class__.__name__.replace('hydro', 'Hydro')
                 ),
-                serie.entite.code,
-                None
+                {'value': serie.entite.code},
             ),
-            ('GrdSerie', serie.grandeur, None),
-            ('StatutSerie', unicode(serie.statut), None),
-        ]
+            ('GrdSerie', {'value': serie.grandeur}),
+            ('StatutSerie', {'value': unicode(serie.statut)})
+        ))
 
         # make element <Serie>
         element = _factory(root=_etree.Element('Serie'), story=story)
@@ -302,29 +383,29 @@ def _simulation_to_element(simulation):
 
     if simulation is not None:
 
-        # template for simulation simple elements
-        story = [
-            ('GrdSimul', simulation.grandeur, None),
+        # template for simulation simple element
+        story = _OrderedDict((
+            ('GrdSimul', {'value': simulation.grandeur}),
             (
                 # dtprod is a numpy.datetime64 without any isoformat method
                 'DtProdSimul',
-                simulation.dtprod.item().isoformat(),
-                None
+                {'value': simulation.dtprod.item().isoformat()},
             ),
-            ('IndiceQualiteSimul', unicode(simulation.qualite), None),
-            ('StatutSimul', unicode(simulation.statut), None),
-            ('PubliSimul', unicode(simulation.public), None),
-            ('ComSimul', simulation.commentaire, None),
+            ('IndiceQualiteSimul', {'value': unicode(simulation.qualite)}),
+            ('StatutSimul', {'value': unicode(simulation.statut)}),
+            ('PubliSimul', {'value': unicode(simulation.public)}),
+            ('ComSimul', {'value': simulation.commentaire}),
+            # entite can be a Sitehydro or a Stationhydro
             (
-                # entite can be a Sitehydro or a Stationhydro
                 'Cd%s' % (
-                    simulation.entite.__class__.__name__.replace('hydro', 'Hydro')
+                    simulation.entite.__class__.__name__.replace(
+                        'hydro', 'Hydro'
+                    )
                 ),
-                simulation.entite.code,
-                None
+                {'value': simulation.entite.code},
             ),
-            ('CdModelePrevision', simulation.modeleprevision.code, None),
-        ]
+            ('CdModelePrevision', {'value': simulation.modeleprevision.code}),
+        ))
 
         # make element <Simul>
         element = _factory(root=_etree.Element('Simul'), story=story)
@@ -383,7 +464,9 @@ def _previsions_to_element(previsions):
                 probs.sort()
                 # add elems
                 for prob in probs:
-                    probprev_elem = _etree.SubElement(probsprev_elem, 'ProbPrev')
+                    probprev_elem = _etree.SubElement(
+                        probsprev_elem, 'ProbPrev'
+                    )
                     probprev_elem.append(
                         _make_element(
                             tag_name='PProbPrev',
@@ -403,44 +486,80 @@ def _previsions_to_element(previsions):
 
 # -- utility functions --------------------------------------------------------
 def _factory(root, story):
-        """Add to <root> element tags or sub-elements described in story.
+    """Return the <root> element including elements described in story.
 
-        Syntax:
-            # for an element => (tag_name, text, {tag_attributes}) - len is 3
-            # for a sub-element => (sub_element_tag, (story)) - len is 2
+    Story is a dictionnary which keys are the xml tags to create and values
+    one of the possible 2 forms:
 
-        """
-        # parse story
-        for rule in story:
-            # DEBUG - print(rule)
-            # recursif cal for sub-element
-            if len(rule) == 2:
-                child = _etree.SubElement(root, rule[0])
+        1./ Rule to create a sub-element (recursif)
+        -------------------------------------------
+        This rule is processed like:
+            {'sub': a sub-story dictionnary}
+
+        2./ Rule to create a single element or a serie of the same element
+        ------------------------------------------------------------------
+        This rule is processed like:
+            {
+                'value': the text value or an iterable of text values,
+                'attr': {the tag attributes} (default None)
+                'force': bool (default False)
+            }
+
+        If value is a list or a tuple, an xml tag is created for each
+        item of values.
+
+        When force is True, a None value create the element tag, otherwise
+        rule is left.
+
+    WARNING: as order matters for Xml Hydrometrie files, one must use
+             collections.OrderedDict to store the story.
+
+    """
+    # parse story
+    for tag, rule in story.iteritems():
+
+        # DEBUG - print(rule)
+
+        # recursif call for sub-element
+        if 'sub' in rule:
+            child = _etree.SubElement(root, tag)
+            root.append(
+                _factory(root=child, story=rule.get('sub'))
+            )
+
+        # single element or multi elements
+        if 'value' in rule:
+
+            # init
+            value = rule.get('value')
+            attr = rule.get('attr', None)
+            force = rule.get('force', False)
+
+            # empty tag
+            if (value is None) and (not force):
+                continue
+
+            # for a simple tag, we make a list
+            if not isinstance(value, (list, tuple)):
+                value = [value]
+
+            # finally we create a tag for each item in the list
+            for text in value:
                 root.append(
-                    _factory(root=child, story=rule[1])
+                    _make_element(
+                        tag_name=tag,
+                        text=text,
+                        tag_attrib=attr)
                 )
-            #element
-            elif len(rule) == 3:
-                tag, text, attrib = rule
-                if text is not None:
-                    root.append(
-                        _make_element(
-                            tag_name=tag,
-                            text=text,
-                            tag_attrib=attrib)
-                    )
-            # error
-            else:
-                raise TypeError('bad rule {{%s}}' % rule)
 
-        # return
-        return root
+    # return
+    return root
 
 
 def _make_element(tag_name, text, tag_attrib=None):
     """Return etree.Element <tag_name {attrib}>unicode(text)</tag_name>."""
     # DEBUG - print(locals())
+    element = _etree.Element(_tag=tag_name, attrib=tag_attrib)
     if text is not None:
-        element = _etree.Element(_tag=tag_name, attrib=tag_attrib)
         element.text = unicode(text)
-        return element
+    return element

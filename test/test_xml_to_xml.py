@@ -34,9 +34,10 @@ from libhydro.conv.xml import (
 )
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1a"""
-__date__ = """2013-08-30"""
+__author__ = """Philippe Gouin""" \
+             """<philippe.gouin@developpement-durable.gouv.fr>"""
+__version__ = """0.1b"""
+__date__ = """2013-11-23"""
 
 #HISTORY
 #V0.1 - 2013-08-30
@@ -49,56 +50,101 @@ COMPARE = 17
 
 #-- class TestFunctions -------------------------------------------------------
 class TestFunctions(unittest.TestCase):
+
     """Functions class tests."""
 
-    # def setUp(self):
-    #     """Hook method for setting up the test fixture before exercising it."""
-    #     pass
-
-    # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
-
-    # def test_factory(self):
-    #     """Factory base test."""
-    #     pass
-
-    def test_factory_error(self):
-        """Factory error test."""
+    def test_factory_single_element_01(self):
+        """Factory single element base test."""
         root = etree.Element('Root')
-        story = [
-            ('SubRoot', 'toto', None)
-        ]
-        to_xml._factory(root=root, story=story)
-        story_error = [
-            ('SubRoot',)
-        ]
-        self.assertRaises(
-            TypeError,
-            to_xml._factory,
-            **{'root': root, 'story': story_error}
-        )
+        story = {
+            'SubRoot': {'value': 'toto'}
+        }
+        element = to_xml._factory(root=root, story=story)
+        firstpass = True
+        for child in element.find(story.keys()[0]):
+            self.assertTrue(firstpass)
+            firstpass = False
+            self.assertEqual(child.tag, story.keys()[0])
+            self.assertEqual(child.text, story.values()[0]['value'])
+            self.asserEqual(child.attrib, None)
 
-    # def test_make_element(self):
-    #     """Make element base test."""
-    #     pass
+    def test_factory_single_element_02(self):
+        """Factory single element with attributes test."""
+        root = etree.Element('Root')
+        story = {
+            'SubRoot': {'value': 'toto', 'attr': {'a': '1', 'b': '2'}}
+        }
+        element = to_xml._factory(root=root, story=story)
+        firstpass = True
+        for child in element.find(story.keys()[0]):
+            self.assertTrue(firstpass)
+            firstpass = False
+            self.assertEqual(child.tag, story.keys()[0])
+            self.assertEqual(child.text, story.values()[0]['value'])
+            self.assertEqual(child.attrib, story.values()[0]['attr'])
 
-    # def test_make_element_error(self):
-    #     """Make element error test."""
-    #     pass
+    def test_factory_single_element_03(self):
+        """Factory single element with force test."""
+        root = etree.Element('Root')
+        # force is False, element should not be appended
+        story = {
+            'SubRoot': {'value': None}
+        }
+        element = to_xml._factory(root=root, story=story)
+        self.assertIsNone(element.find(story.keys()[0]))
+        # force is True, element should be appended
+        story = {
+            'SubRoot': {'value': None, 'force': True}
+        }
+        element = to_xml._factory(root=root, story=story)
+        firstpass = True
+        for child in element.find(story.keys()[0]):
+            self.assertTrue(firstpass)
+            firstpass = False
+            self.assertEqual(child.tag, story.keys()[0])
+            self.assertEqual(child.text, None)
+
+    def test_factory_multi_element(self):
+        """Factory multi element test."""
+        root = etree.Element('Root')
+        story = {
+            'SubRoot': {'value': ('toto', 'tata', 'titi')}
+        }
+        element = to_xml._factory(root=root, story=story)
+        passes = 0
+        for child in element.findall(story.keys()[0]):
+            passes += 1
+            self.assertEqual(child.tag, story.keys()[0])
+            self.assertTrue(child.text in story.values()[0]['value'])
+        self.assertEqual(passes, 3)
+
+    def test_factory_sub_story(self):
+        """Factory sub story test."""
+        root = etree.Element('Root')
+        story = {
+            'SubRoot': {'value': 'toto'}
+        }
+        element = to_xml._factory(root=root, story=story)
+        firstpass = True
+        for child in element:
+            self.assertTrue(firstpass)
+            firstpass = False
+            self.assertEqual(child.tag, story.keys()[0])
+            self.assertEqual(child.text, story.values()[0]['value'])
+
+    def test_make_element(self):
+        """Make element base test."""
+        args = ('TagName', 'text', {'attr1': '1', 'attr2': '2'})
+        element = to_xml._make_element(*args)
+        self.assertEqual(element.tag, args[0])
+        self.assertEqual(element.text, args[1])
+        self.assertEqual(element.attrib, args[2])
 
 
 #-- class TestToXmlSiteshydro -------------------------------------------------
 class TestToXmlSitesHydros(unittest.TestCase):
+
     """ToXmlSitesHydro class tests."""
-
-    # def setUp(self):
-    #     """Hook method for setting up the test fixture before exercising it."""
-    #     pass
-
-    # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
 
     def test_base(self):
         """Base test."""
@@ -108,7 +154,8 @@ class TestToXmlSitesHydros(unittest.TestCase):
             """<CodeScenario>hydrometrie</CodeScenario>"""\
             """<VersionScenario>1.1</VersionScenario>"""\
             """<NomScenario>Echange de données hydrométriques</NomScenario>"""\
-            """<DateHeureCreationFichier>2010-02-26T12:53:10</DateHeureCreationFichier>"""\
+            """<DateHeureCreationFichier>2010-02-26T12:53:10"""\
+            """</DateHeureCreationFichier>"""\
             """<Emetteur>"""\
             """<CdIntervenant schemaAgencyID="SANDRE">25</CdIntervenant>"""\
             """<CdContact schemaAgencyID="SANDRE">1069</CdContact>"""\
@@ -125,8 +172,12 @@ class TestToXmlSitesHydros(unittest.TestCase):
             """</SiteHydro>"""\
             """<SiteHydro>"""\
             """<CdSiteHydro>O1984310</CdSiteHydro>"""\
-            """<LbSiteHydro>Le Touch à Toulouse [Saint-Martin-du-Touch]</LbSiteHydro>"""\
+            """<LbSiteHydro>Le Touch à Toulouse [Saint-Martin-du-Touch]"""\
+            """</LbSiteHydro>"""\
             """<TypSiteHydro>SOURCE</TypSiteHydro>"""\
+            """<CdCommune>11354</CdCommune>"""\
+            """<CdCommune>11355</CdCommune>"""\
+            """<CdCommune>2B021</CdCommune>"""\
             """<StationsHydro>"""\
             """<StationHydro>"""\
             """<CdStationHydro>O198431001</CdStationHydro>"""\
@@ -161,10 +212,12 @@ class TestToXmlSitesHydros(unittest.TestCase):
             """<CdSiteHydro>O1712510</CdSiteHydro>"""\
             """<LbSiteHydro>L'Ariège à Auterive</LbSiteHydro>"""\
             """<TypSiteHydro>REEL</TypSiteHydro>"""\
+            """<CdSiteHydroAncienRef>O1235401</CdSiteHydroAncienRef>"""\
             """<StationsHydro>"""\
             """<StationHydro>"""\
             """<CdStationHydro>O171251001</CdStationHydro>"""\
-            """<LbStationHydro>L'Ariège à Auterive - station de secours</LbStationHydro>"""\
+            """<LbStationHydro>L'Ariège à Auterive - station de secours"""\
+            """</LbStationHydro>"""\
             """<TypStationHydro>LIMNI</TypStationHydro>"""\
             """<Capteurs>"""\
             """<Capteur>"""\
@@ -176,8 +229,11 @@ class TestToXmlSitesHydros(unittest.TestCase):
             """<CdCapteur>O17125100101</CdCapteur>"""\
             """<LbCapteur>Ultrasons principal</LbCapteur>"""\
             """<TypMesureCapteur>H</TypMesureCapteur>"""\
+            """<CdCapteurAncienRef>O1712510</CdCapteurAncienRef>"""\
             """</Capteur>"""\
             """</Capteurs>"""\
+            """<CdStationHydroAncienRef>O1712510</CdStationHydroAncienRef>"""\
+            """<CdCommune>11354</CdCommune>"""\
             """</StationHydro>"""\
             """</StationsHydro>"""\
             """</SiteHydro>"""\
@@ -186,19 +242,19 @@ class TestToXmlSitesHydros(unittest.TestCase):
             """</hydrometrie>"""
 
         # read xml
-        self.data = from_xml._parse(
+        data = from_xml._parse(
             os.path.join('data', 'xml', '1.1', 'siteshydro.xml')
         )
-        self.xml = etree.tostring(
+        xml = etree.tostring(
             to_xml._to_xml(
-                scenario=self.data['scenario'],
-                siteshydro=self.data['siteshydro']
+                scenario=data['scenario'],
+                siteshydro=data['siteshydro']
             ),
             encoding='utf-8'
         ).decode('utf-8')
 
         # test
-        assert_unicode_equal(self.xml, expected)
+        assert_unicode_equal(xml, expected)
 
 
 #-- class TestToXmlSitesMeteo -------------------------------------------------
@@ -207,15 +263,8 @@ class TestToXmlSitesHydros(unittest.TestCase):
 
 #-- class TestToXmlObssHydro --------------------------------------------------
 class TestToXmlObssHydro(unittest.TestCase):
+
     """ToXmlObssHydro class tests."""
-
-    # def setUp(self):
-    #     """Hook method for setting up the test fixture before exercising it."""
-    #     pass
-
-    # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
 
     def test_base(self):
         """Base test."""
@@ -311,19 +360,19 @@ class TestToXmlObssHydro(unittest.TestCase):
             """</hydrometrie>"""
 
         # read xml
-        self.data = from_xml._parse(
+        data = from_xml._parse(
             os.path.join('data', 'xml', '1.1', 'obsshydro.xml')
         )
-        self.xml = etree.tostring(
+        xml = etree.tostring(
             to_xml._to_xml(
-                scenario=self.data['scenario'],
-                series=self.data['series']
+                scenario=data['scenario'],
+                series=data['series']
             ),
             encoding='utf-8'
         ).decode('utf-8')
 
         # test
-        assert_unicode_equal(self.xml, expected)
+        assert_unicode_equal(xml, expected)
 
 
 #-- class TestToXmlObssMeteo --------------------------------------------------
@@ -332,15 +381,8 @@ class TestToXmlObssHydro(unittest.TestCase):
 
 #-- class TestToXmlSimulations ------------------------------------------------
 class TestToXmlSimulations(unittest.TestCase):
+
     """ToXmlSimulations class tests."""
-
-    # def setUp(self):
-    #     """Hook method for setting up the test fixture before exercising it."""
-    #     pass
-
-    # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
 
     def test_base(self):
         """Base test."""
@@ -473,19 +515,19 @@ class TestToXmlSimulations(unittest.TestCase):
             """</hydrometrie>"""
 
         # read xml
-        self.data = from_xml._parse(
+        data = from_xml._parse(
             os.path.join('data', 'xml', '1.1', 'simulations.xml')
         )
-        self.xml = etree.tostring(
+        xml = etree.tostring(
             to_xml._to_xml(
-                scenario=self.data['scenario'],
-                simulations=self.data['simulations']
+                scenario=data['scenario'],
+                simulations=data['simulations']
             ),
             encoding='utf-8'
         ).decode('utf-8')
 
         # test
-        assert_unicode_equal(self.xml, expected)
+        assert_unicode_equal(xml, expected)
 
 
 # -- functions ----------------------------------------------------------------
