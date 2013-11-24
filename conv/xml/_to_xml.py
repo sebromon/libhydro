@@ -28,7 +28,7 @@ import numpy as _numpy
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1e"""
-__date__ = """2013-11-23"""
+__date__ = """2013-11-24"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -192,12 +192,12 @@ def _sitehydro_to_element(sitehydro):
                 'value': None,
                 'force': True if sitehydro.coord is not None else False
             }),
+            ('CdCommune', {'value': sitehydro.communes}),
+            ('CdSiteHydroAncienRef', {'value': sitehydro.codeh2}),
             ('StationsHydro', {
                 'value': None,
                 'force': True if (len(sitehydro.stations) > 0) else False
-            }),
-            ('CdCommune', {'value': sitehydro.communes}),
-            ('CdSiteHydroAncienRef', {'value': sitehydro.codeh2})
+            })
         ))
 
         # update the coord if necessary
@@ -280,26 +280,6 @@ def _stationhydro_to_element(stationhydro):
         # return
         return element
 
-
-# def _coord_to_element(coord, suffix):
-# """Return a <Coord(suffix)> element from a composant.coord and a suffix."""
-#
-#     if coord, suffix != None, None:
-#
-#         # template for coord simple elements
-#         story = [
-#             ('CoordX%s' % suffix, coord.x, None, False),
-#             ('CoordY%s' % suffix, coord.y, None, False),
-#             ('ProjCoord%s' % suffix, coord.proj, None, False)
-#         ]
-#
-#         # make element <StationHydro>
-#         element = _factory(
-#             root=_etree.Element('Coord%s' % suffix), story=story
-#         )
-#
-#         # return
-#         return element
 
 def _capteur_to_element(capteur):
     """Return a <Capteur> element from a sitehydro.Capteur."""

@@ -37,7 +37,7 @@ from libhydro.conv.xml import (
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1b"""
-__date__ = """2013-11-23"""
+__date__ = """2013-11-24"""
 
 #HISTORY
 #V0.1 - 2013-08-30
@@ -45,7 +45,13 @@ __date__ = """2013-11-23"""
 
 
 # -- config -------------------------------------------------------------------
-COMPARE = 17
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# assert_unicode_equal function parameter
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# number of chars printed on screen to compare the 2 xml strings
+# half of the value is before the error (left), the other is after (right)
+# change this value if on screen comparison is to short or too long
+COMPARE = 35
 
 
 #-- class TestFunctions -------------------------------------------------------
@@ -146,105 +152,22 @@ class TestToXmlSitesHydros(unittest.TestCase):
 
     """ToXmlSitesHydro class tests."""
 
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        # build expected string
+        self.expected = xml_to_unicode(
+            os.path.join('data', 'xml', '1.1', 'siteshydro_expected.xml')
+        )
+        # we have our own assertEqual function, more verbose
+        self.assertEqual = assert_unicode_equal
+
     def test_base(self):
         """Base test."""
-
-        expected = """<hydrometrie>"""\
-            """<Scenario>"""\
-            """<CodeScenario>hydrometrie</CodeScenario>"""\
-            """<VersionScenario>1.1</VersionScenario>"""\
-            """<NomScenario>Echange de données hydrométriques</NomScenario>"""\
-            """<DateHeureCreationFichier>2010-02-26T12:53:10"""\
-            """</DateHeureCreationFichier>"""\
-            """<Emetteur>"""\
-            """<CdIntervenant schemaAgencyID="SANDRE">25</CdIntervenant>"""\
-            """<CdContact schemaAgencyID="SANDRE">1069</CdContact>"""\
-            """</Emetteur>"""\
-            """<Destinataire>"""\
-            """<CdIntervenant schemaAgencyID="SANDRE">1537</CdIntervenant>"""\
-            """</Destinataire>"""\
-            """</Scenario>"""\
-            """<RefHyd>"""\
-            """<SitesHydro>"""\
-            """<SiteHydro>"""\
-            """<CdSiteHydro>A1984310</CdSiteHydro>"""\
-            """<TypSiteHydro>REEL</TypSiteHydro>"""\
-            """</SiteHydro>"""\
-            """<SiteHydro>"""\
-            """<CdSiteHydro>O1984310</CdSiteHydro>"""\
-            """<LbSiteHydro>Le Touch à Toulouse [Saint-Martin-du-Touch]"""\
-            """</LbSiteHydro>"""\
-            """<TypSiteHydro>SOURCE</TypSiteHydro>"""\
-            """<CdCommune>11354</CdCommune>"""\
-            """<CdCommune>11355</CdCommune>"""\
-            """<CdCommune>2B021</CdCommune>"""\
-            """<StationsHydro>"""\
-            """<StationHydro>"""\
-            """<CdStationHydro>O198431001</CdStationHydro>"""\
-            """<LbStationHydro>station 1</LbStationHydro>"""\
-            """<TypStationHydro>LIMNI</TypStationHydro>"""\
-            """</StationHydro>"""\
-            """<StationHydro>"""\
-            """<CdStationHydro>O198431002</CdStationHydro>"""\
-            """<LbStationHydro>station 2</LbStationHydro>"""\
-            """<TypStationHydro>LIMNI</TypStationHydro>"""\
-            """</StationHydro>"""\
-            """<StationHydro>"""\
-            """<CdStationHydro>O198431003</CdStationHydro>"""\
-            """<LbStationHydro>station 3</LbStationHydro>"""\
-            """<TypStationHydro>LIMNI</TypStationHydro>"""\
-            """</StationHydro>"""\
-            """</StationsHydro>"""\
-            """</SiteHydro>"""\
-            """<SiteHydro>"""\
-            """<CdSiteHydro>O2000040</CdSiteHydro>"""\
-            """<LbSiteHydro>La Garonne à Toulouse</LbSiteHydro>"""\
-            """<TypSiteHydro>REEL</TypSiteHydro>"""\
-            """<StationsHydro>"""\
-            """<StationHydro>"""\
-            """<CdStationHydro>O200004001</CdStationHydro>"""\
-            """<LbStationHydro>La Garonne à Toulouse</LbStationHydro>"""\
-            """<TypStationHydro>LIMNI</TypStationHydro>"""\
-            """</StationHydro>"""\
-            """</StationsHydro>"""\
-            """</SiteHydro>"""\
-            """<SiteHydro>"""\
-            """<CdSiteHydro>O1712510</CdSiteHydro>"""\
-            """<LbSiteHydro>L'Ariège à Auterive</LbSiteHydro>"""\
-            """<TypSiteHydro>REEL</TypSiteHydro>"""\
-            """<CdSiteHydroAncienRef>O1235401</CdSiteHydroAncienRef>"""\
-            """<StationsHydro>"""\
-            """<StationHydro>"""\
-            """<CdStationHydro>O171251001</CdStationHydro>"""\
-            """<LbStationHydro>L'Ariège à Auterive - station de secours"""\
-            """</LbStationHydro>"""\
-            """<TypStationHydro>LIMNI</TypStationHydro>"""\
-            """<Capteurs>"""\
-            """<Capteur>"""\
-            """<CdCapteur>O17125100102</CdCapteur>"""\
-            """<LbCapteur>Radar</LbCapteur>"""\
-            """<TypMesureCapteur>H</TypMesureCapteur>"""\
-            """</Capteur>"""\
-            """<Capteur>"""\
-            """<CdCapteur>O17125100101</CdCapteur>"""\
-            """<LbCapteur>Ultrasons principal</LbCapteur>"""\
-            """<TypMesureCapteur>H</TypMesureCapteur>"""\
-            """<CdCapteurAncienRef>O1712510</CdCapteurAncienRef>"""\
-            """</Capteur>"""\
-            """</Capteurs>"""\
-            """<CdStationHydroAncienRef>O1712510</CdStationHydroAncienRef>"""\
-            """<CdCommune>11354</CdCommune>"""\
-            """</StationHydro>"""\
-            """</StationsHydro>"""\
-            """</SiteHydro>"""\
-            """</SitesHydro>"""\
-            """</RefHyd>"""\
-            """</hydrometrie>"""
-
-        # read xml
+        # build objects from xml
         data = from_xml._parse(
             os.path.join('data', 'xml', '1.1', 'siteshydro.xml')
         )
+        # build xml string from objects
         xml = etree.tostring(
             to_xml._to_xml(
                 scenario=data['scenario'],
@@ -252,9 +175,8 @@ class TestToXmlSitesHydros(unittest.TestCase):
             ),
             encoding='utf-8'
         ).decode('utf-8')
-
         # test
-        assert_unicode_equal(xml, expected)
+        self.assertEqual(xml, self.expected)
 
 
 #-- class TestToXmlSitesMeteo -------------------------------------------------
@@ -266,103 +188,22 @@ class TestToXmlObssHydro(unittest.TestCase):
 
     """ToXmlObssHydro class tests."""
 
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        # build expected string
+        self.expected = xml_to_unicode(
+            os.path.join('data', 'xml', '1.1', 'obsshydro_expected.xml')
+        )
+        # we have our own assertEqual function, more verbose
+        self.assertEqual = assert_unicode_equal
+
     def test_base(self):
         """Base test."""
-
-        expected = """<hydrometrie>"""\
-            """<Scenario>"""\
-            """<CodeScenario>hydrometrie</CodeScenario>"""\
-            """<VersionScenario>1.1</VersionScenario>"""\
-            """<NomScenario>Echange de données hydrométriques</NomScenario>"""\
-            """<DateHeureCreationFichier>2010-02-26T07:05:00</DateHeureCreationFichier>"""\
-            """<Emetteur>"""\
-            """<CdIntervenant schemaAgencyID="SANDRE">1520</CdIntervenant>"""\
-            """<CdContact schemaAgencyID="SANDRE">26</CdContact>"""\
-            """</Emetteur>"""\
-            """<Destinataire>"""\
-            """<CdIntervenant schemaAgencyID="SANDRE">1537</CdIntervenant>"""\
-            """</Destinataire>"""\
-            """</Scenario>"""\
-            """<Donnees>"""\
-            """<Series>"""\
-            """<Serie>"""\
-            """<CdSiteHydro>V7144010</CdSiteHydro>"""\
-            """<GrdSerie>Q</GrdSerie>"""\
-            """<StatutSerie>4</StatutSerie>"""\
-            """<ObssHydro>"""\
-            """<ObsHydro>"""\
-            """<DtObsHydro>2010-02-26T11:10:00</DtObsHydro>"""\
-            """<ResObsHydro>20992.0</ResObsHydro>"""\
-            """<MethObsHydro>0</MethObsHydro>"""\
-            """<QualifObsHydro>16</QualifObsHydro>"""\
-            """<ContObsHydro>True</ContObsHydro>"""\
-            """</ObsHydro>"""\
-            """<ObsHydro>"""\
-            """<DtObsHydro>2010-02-26T11:15:00</DtObsHydro>"""\
-            """<ResObsHydro>21176.0</ResObsHydro>"""\
-            """<MethObsHydro>0</MethObsHydro>"""\
-            """<QualifObsHydro>16</QualifObsHydro>"""\
-            """<ContObsHydro>True</ContObsHydro>"""\
-            """</ObsHydro>"""\
-            """</ObssHydro>"""\
-            """</Serie>"""\
-            """<Serie>"""\
-            """<CdStationHydro>V714401001</CdStationHydro>"""\
-            """<GrdSerie>Q</GrdSerie>"""\
-            """<StatutSerie>4</StatutSerie>"""\
-            """<ObssHydro>"""\
-            """<ObsHydro>"""\
-            """<DtObsHydro>2010-02-26T13:10:00</DtObsHydro>"""\
-            """<ResObsHydro>20.0</ResObsHydro>"""\
-            """<MethObsHydro>12</MethObsHydro>"""\
-            """<QualifObsHydro>12</QualifObsHydro>"""\
-            """<ContObsHydro>False</ContObsHydro>"""\
-            """</ObsHydro>"""\
-            """<ObsHydro>"""\
-            """<DtObsHydro>2010-02-26T13:15:00</DtObsHydro>"""\
-            """<ResObsHydro>21.0</ResObsHydro>"""\
-            """<MethObsHydro>12</MethObsHydro>"""\
-            """<QualifObsHydro>8</QualifObsHydro>"""\
-            """<ContObsHydro>False</ContObsHydro>"""\
-            """</ObsHydro>"""\
-            """</ObssHydro>"""\
-            """</Serie>"""\
-            """<Serie>"""\
-            """<CdCapteur>V71440100103</CdCapteur>"""\
-            """<GrdSerie>H</GrdSerie>"""\
-            """<StatutSerie>4</StatutSerie>"""\
-            """<ObssHydro>"""\
-            """<ObsHydro>"""\
-            """<DtObsHydro>2010-02-26T13:10:00</DtObsHydro>"""\
-            """<ResObsHydro>680.0</ResObsHydro>"""\
-            """<MethObsHydro>4</MethObsHydro>"""\
-            """<QualifObsHydro>20</QualifObsHydro>"""\
-            """<ContObsHydro>True</ContObsHydro>"""\
-            """</ObsHydro>"""\
-            """<ObsHydro>"""\
-            """<DtObsHydro>2010-02-26T13:15:00</DtObsHydro>"""\
-            """<ResObsHydro>684.0</ResObsHydro>"""\
-            """<MethObsHydro>0</MethObsHydro>"""\
-            """<QualifObsHydro>20</QualifObsHydro>"""\
-            """<ContObsHydro>True</ContObsHydro>"""\
-            """</ObsHydro>"""\
-            """<ObsHydro>"""\
-            """<DtObsHydro>2010-02-26T14:55:00</DtObsHydro>"""\
-            """<ResObsHydro>670.0</ResObsHydro>"""\
-            """<MethObsHydro>12</MethObsHydro>"""\
-            """<QualifObsHydro>20</QualifObsHydro>"""\
-            """<ContObsHydro>True</ContObsHydro>"""\
-            """</ObsHydro>"""\
-            """</ObssHydro>"""\
-            """</Serie>"""\
-            """</Series>"""\
-            """</Donnees>"""\
-            """</hydrometrie>"""
-
-        # read xml
+        # build objects from xml
         data = from_xml._parse(
             os.path.join('data', 'xml', '1.1', 'obsshydro.xml')
         )
+        # build xml string from objects
         xml = etree.tostring(
             to_xml._to_xml(
                 scenario=data['scenario'],
@@ -370,9 +211,8 @@ class TestToXmlObssHydro(unittest.TestCase):
             ),
             encoding='utf-8'
         ).decode('utf-8')
-
         # test
-        assert_unicode_equal(xml, expected)
+        self.assertEqual(xml, self.expected)
 
 
 #-- class TestToXmlObssMeteo --------------------------------------------------
@@ -384,140 +224,22 @@ class TestToXmlSimulations(unittest.TestCase):
 
     """ToXmlSimulations class tests."""
 
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        # build expected string
+        self.expected = xml_to_unicode(
+            os.path.join('data', 'xml', '1.1', 'simulations_expected.xml')
+        )
+        # we have our own assertEqual function, more verbose
+        self.assertEqual = assert_unicode_equal
+
     def test_base(self):
         """Base test."""
-
-        expected = """<hydrometrie>"""\
-            """<Scenario>"""\
-            """<CodeScenario>hydrometrie</CodeScenario>"""\
-            """<VersionScenario>1.1</VersionScenario>"""\
-            """<NomScenario>Echange de données hydrométriques</NomScenario>"""\
-            """<DateHeureCreationFichier>2010-02-26T09:30:00</DateHeureCreationFichier>"""\
-            """<Emetteur>"""\
-            """<CdIntervenant schemaAgencyID="SANDRE">1537</CdIntervenant>"""\
-            """<CdContact schemaAgencyID="SANDRE">41</CdContact>"""\
-            """</Emetteur>"""\
-            """<Destinataire>"""\
-            """<CdIntervenant schemaAgencyID="SANDRE">14</CdIntervenant>"""\
-            """</Destinataire>"""\
-            """</Scenario>"""\
-            """<Donnees>"""\
-            """<Simuls>"""\
-            """<Simul>"""\
-            """<GrdSimul>Q</GrdSimul>"""\
-            """<DtProdSimul>2010-02-26T14:45:00</DtProdSimul>"""\
-            """<IndiceQualiteSimul>36</IndiceQualiteSimul>"""\
-            """<StatutSimul>4</StatutSimul>"""\
-            """<PubliSimul>False</PubliSimul>"""\
-            """<ComSimul>Biais=-14.91 Précision=36.00</ComSimul>"""\
-            """<CdSiteHydro>Y1612020</CdSiteHydro>"""\
-            """<CdModelePrevision>13_08</CdModelePrevision>"""\
-            """<Prevs>"""\
-            """<Prev>"""\
-            """<DtPrev>2010-02-26T14:00:00</DtPrev>"""\
-            """<ResMinPrev>10.0</ResMinPrev>"""\
-            """<ResMoyPrev>30.0</ResMoyPrev>"""\
-            """<ResMaxPrev>50.0</ResMaxPrev>"""\
-            """<ProbsPrev>"""\
-            """<ProbPrev>"""\
-            """<PProbPrev>20</PProbPrev>"""\
-            """<ResProbPrev>25.0</ResProbPrev>"""\
-            """</ProbPrev>"""\
-            """<ProbPrev>"""\
-            """<PProbPrev>40</PProbPrev>"""\
-            """<ResProbPrev>75.0</ResProbPrev>"""\
-            """</ProbPrev>"""\
-            """<ProbPrev>"""\
-            """<PProbPrev>49</PProbPrev>"""\
-            """<ResProbPrev>90.0</ResProbPrev>"""\
-            """</ProbPrev>"""\
-            """</ProbsPrev>"""\
-            """</Prev>"""\
-            """<Prev>"""\
-            """<DtPrev>2010-02-26T15:00:00</DtPrev>"""\
-            """<ResMoyPrev>23.0</ResMoyPrev>"""\
-            """<ResMaxPrev>25.0</ResMaxPrev>"""\
-            """</Prev>"""\
-            """</Prevs>"""\
-            """</Simul>"""\
-            """<Simul>"""\
-            """<GrdSimul>H</GrdSimul>"""\
-            """<DtProdSimul>2010-02-26T14:45:00</DtProdSimul>"""\
-            """<IndiceQualiteSimul>21</IndiceQualiteSimul>"""\
-            """<StatutSimul>4</StatutSimul>"""\
-            """<PubliSimul>True</PubliSimul>"""\
-            """<CdStationHydro>Y161202001</CdStationHydro>"""\
-            """<CdModelePrevision>ScMerSHOM</CdModelePrevision>"""\
-            """<Prevs>"""\
-            """<Prev>"""\
-            """<DtPrev>2010-02-26T14:00:00</DtPrev>"""\
-            """<ResMoyPrev>371.774</ResMoyPrev>"""\
-            """</Prev>"""\
-            """<Prev>"""\
-            """<DtPrev>2010-02-26T15:00:00</DtPrev>"""\
-            """<ResMoyPrev>271.374</ResMoyPrev>"""\
-            """</Prev>"""\
-            """<Prev>"""\
-            """<DtPrev>2010-02-26T16:00:00</DtPrev>"""\
-            """<ResMoyPrev>267.747</ResMoyPrev>"""\
-            """</Prev>"""\
-            """<Prev>"""\
-            """<DtPrev>2010-02-26T17:00:00</DtPrev>"""\
-            """<ResMoyPrev>422.28</ResMoyPrev>"""\
-            """</Prev>"""\
-            """<Prev>"""\
-            """<DtPrev>2010-02-26T18:00:00</DtPrev>"""\
-            """<ResMoyPrev>218.297</ResMoyPrev>"""\
-            """</Prev>"""\
-            """<Prev>"""\
-            """<DtPrev>2010-02-26T19:00:00</DtPrev>"""\
-            """<ResMoyPrev>264.121</ResMoyPrev>"""\
-            """</Prev>"""\
-            """<Prev>"""\
-            """<DtPrev>2010-02-26T20:00:00</DtPrev>"""\
-            """<ResMoyPrev>280.604</ResMoyPrev>"""\
-            """</Prev>"""\
-            """<Prev>"""\
-            """<DtPrev>2010-02-26T21:00:00</DtPrev>"""\
-            """<ResMoyPrev>358.71</ResMoyPrev>"""\
-            """</Prev>"""\
-            """</Prevs>"""\
-            """</Simul>"""\
-            """<Simul>"""\
-            """<GrdSimul>Q</GrdSimul>"""\
-            """<DtProdSimul>2010-02-26T09:45:00</DtProdSimul>"""\
-            """<IndiceQualiteSimul>29</IndiceQualiteSimul>"""\
-            """<StatutSimul>16</StatutSimul>"""\
-            """<PubliSimul>False</PubliSimul>"""\
-            """<CdSiteHydro>Y1612020</CdSiteHydro>"""\
-            """<CdModelePrevision>13_09</CdModelePrevision>"""\
-            """<Prevs>"""\
-            """<Prev>"""\
-            """<DtPrev>2010-02-26T09:00:00</DtPrev>"""\
-            """<ResMinPrev>22.0</ResMinPrev>"""\
-            """</Prev>"""\
-            """<Prev>"""\
-            """<DtPrev>2010-02-26T10:00:00</DtPrev>"""\
-            """<ResMaxPrev>33.0</ResMaxPrev>"""\
-            """</Prev>"""\
-            """<Prev>"""\
-            """<DtPrev>2010-02-26T11:00:00</DtPrev>"""\
-            """<ResMinPrev>44.0</ResMinPrev>"""\
-            """</Prev>"""\
-            """<Prev>"""\
-            """<DtPrev>2010-02-26T12:00:00</DtPrev>"""\
-            """<ResMaxPrev>55.0</ResMaxPrev>"""\
-            """</Prev>"""\
-            """</Prevs>"""\
-            """</Simul>"""\
-            """</Simuls>"""\
-            """</Donnees>"""\
-            """</hydrometrie>"""
-
-        # read xml
+        # build object from xml
         data = from_xml._parse(
             os.path.join('data', 'xml', '1.1', 'simulations.xml')
         )
+        # build xml string from objects
         xml = etree.tostring(
             to_xml._to_xml(
                 scenario=data['scenario'],
@@ -525,12 +247,28 @@ class TestToXmlSimulations(unittest.TestCase):
             ),
             encoding='utf-8'
         ).decode('utf-8')
-
         # test
-        assert_unicode_equal(xml, expected)
+        self.assertEqual(xml, self.expected)
 
 
 # -- functions ----------------------------------------------------------------
+def xml_to_unicode(fname):
+    """Return unicode."""
+    with open(fname, 'r') as f:
+
+        # remove XML declaration line and  get the file encoding
+        f.readline()
+        encoding = 'utf-8'
+
+        # make the string and return
+        lines = [
+            l.decode(encoding).strip()
+            for l in f.readlines()
+            if not l.decode(encoding).lstrip().startswith('<!--')
+        ]
+        return ''.join(lines)
+
+
 def assert_unicode_equal(xml, expected):
     """Raise personnal AssertionError on failure."""
     for (i, c) in enumerate(expected):
