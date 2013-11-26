@@ -73,7 +73,7 @@ class Coord(object):
                 self.__setattr__(crd, float(locals()[crd]))
             except Exception:
                 raise TypeError('{} must be a number'.format(crd))
-        self._strict = strict
+        self._strict = bool(strict)
 
         # -- full properties --
         self._proj = None

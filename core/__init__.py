@@ -6,6 +6,7 @@ Ce package expose les classes modelisees par le Sandre dans les dictionnaires:
     # processus d'acquisition des donnees hydrometriques (V1.1)
 
 Il contient les modules:
+    # evenement
     # intervenant
     # modeleprevision
     # nomenclature
@@ -13,15 +14,15 @@ Il contient les modules:
     # simulation
     # sitehydro
 
-
 """
 __all__ = [
+    'evenement',
     'intervenant',
     'modeleprevision',
     'nomenclature',
     'obshydro',
-    'simulation'
-    'sitehydro',
+    'simulation',
+    'sitehydro'
 ]
 
 # alarm

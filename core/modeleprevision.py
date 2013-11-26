@@ -68,7 +68,7 @@ class Modeleprevision(object):
         """
 
         # -- simple properties --
-        self._strict = strict
+        self._strict = bool(strict)
         self.libelle = unicode(libelle) if (libelle is not None) else None
         self.description = unicode(description) if \
             (description is not None) else None

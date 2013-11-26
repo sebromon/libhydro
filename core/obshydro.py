@@ -56,9 +56,10 @@ from . import sitehydro as _sitehydro
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
+__author__ = """Philippe Gouin""" \
+             """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1h"""
-__date__ = """2013-09-03"""
+__date__ = """2013-11-26"""
 
 #HISTORY
 #V0.1 - 2013-07-18
@@ -89,6 +90,7 @@ __date__ = """2013-09-03"""
 
 #-- class Observation ---------------------------------------------------------
 class Observation(_numpy.ndarray):
+
     """Classe observation.
 
     Classe pour manipuler une observation elementaire.
@@ -146,17 +148,18 @@ class Observation(_numpy.ndarray):
     #         return
 
     def __unicode__(self):
-        """Unicode representation."""
-        return '{0} le {4} a {5} UTC (valeur obtenue par {1}, {2} et {3})'.format(
-            self['res'].item(),
-            _NOMENCLATURE[507][self['mth'].item()],
-            _NOMENCLATURE[515][self['qal'].item()],
-            'continue' if self['cnt'].item() else 'discontinue',
-            *self['dte'].item().isoformat().split('T')
-        )
+        """Return unicode representation."""
+        return '''{0} le {4} a {5} UTC ''' \
+               '''(valeur obtenue par {1}, {2} et {3})'''.format(
+                   self['res'].item(),
+                   _NOMENCLATURE[507][self['mth'].item()],
+                   _NOMENCLATURE[515][self['qal'].item()],
+                   'continue' if self['cnt'].item() else 'discontinue',
+                   *self['dte'].item().isoformat().split('T')
+               )
 
     def __str__(self):
-        """String representation."""
+        """Return string representation."""
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
@@ -165,6 +168,7 @@ class Observation(_numpy.ndarray):
 
 #-- class Observations --------------------------------------------------------
 class Observations(_pandas.DataFrame):
+
     """Classe Observations.
 
     Classe pour manipuler une collection d'observations hydrometriques, sous la
@@ -188,8 +192,9 @@ class Observations(_pandas.DataFrame):
         obs = observations.res
 
     """
+
     def __new__(cls, *observations):
-        """Initialisation.
+        """Constructeur.
 
         Arguments:
             observations (un nombre quelconque d'Observation)
@@ -233,11 +238,11 @@ class Observations(_pandas.DataFrame):
             observations (Observations)
             others (Observation ou Observations) = observation(s) a ajouter
 
-        Pour agreger 2 Observations, on peux aussi utiliser la methode append des
-        DataFrame ou bien directement la fonction concat de pandas.
+        Pour agreger 2 Observations, on peux aussi utiliser la methode append
+        des DataFrame ou bien directement la fonction concat de pandas.
 
-        Attention, les DataFrame ne sont JAMAIS modifies, ces fonctions retournent
-        un nouveau DataFrame.
+        Attention, les DataFrame ne sont JAMAIS modifies, ces fonctions
+        retournent un nouveau DataFrame.
 
         """
 
@@ -246,12 +251,14 @@ class Observations(_pandas.DataFrame):
 
         try:
             return _pandas.concat([observations, others])
+
         except Exception:
             return _pandas.concat([observations, Observations(others)])
 
 
 #-- class Serie ---------------------------------------------------------------
 class Serie(object):
+
     """Classe Serie.
 
     Classe pour manipuler des series d'observations hydrometriques.
@@ -292,9 +299,11 @@ class Serie(object):
         """
 
         # -- simple properties --
-        self._strict = strict
+        self._strict = bool(strict)
 
         # -- full properties --
+        self._entite = self._grandeur = self._observations = None
+        self._statut = 0
         self.entite = entite
         self.grandeur = grandeur
         self.statut = statut
@@ -303,11 +312,12 @@ class Serie(object):
     # -- property entite --
     @property
     def entite(self):
-        """Entite hydro."""
+        """Return entite hydro."""
         return self._entite
 
     @entite.setter
     def entite(self, entite):
+        """Set entite hydro."""
         # entite must be a site, a station or a capteur
         try:
             if (
@@ -331,11 +341,12 @@ class Serie(object):
     # -- property grandeur --
     @property
     def grandeur(self):
-        """Grandeur."""
+        """Return grandeur."""
         return self._grandeur
 
     @grandeur.setter
     def grandeur(self, grandeur):
+        """Set grandeur."""
         try:
             if self._strict:
 
@@ -350,17 +361,19 @@ class Serie(object):
 
             # all is well
             self._grandeur = grandeur
+
         except:
             raise
 
     # -- property statut --
     @property
     def statut(self):
-        """Statut."""
+        """Return statut."""
         return self._statut
 
     @statut.setter
     def statut(self, statut):
+        """Set statut."""
         try:
 
             # None case
@@ -379,18 +392,21 @@ class Serie(object):
     # -- property observations --
     @property
     def observations(self):
-        """Observations."""
+        """Return observations."""
         return self._observations
 
     @observations.setter
     def observations(self, observations):
+        """Set observations."""
         try:
 
             if (self._strict):
                 # we check we have a res column...
                 # ... and that index contains datetimes
                 observations.res
-                observations.index[0].isoformat()  # FIXME - should fail with datetime64 object. Use .item().isoformat()
+                # FIXME - should fail with datetime64 object.
+                #         Use .item().isoformat()
+                observations.index[0].isoformat()
             self._observations = observations
 
         except:
@@ -398,7 +414,7 @@ class Serie(object):
 
     # -- other methods --
     def __unicode__(self):
-        """Unicode representation."""
+        """Return unicode representation."""
         # compute entite name
         if self.entite is None:
             entite = '<une entite inconnue>'
@@ -438,7 +454,7 @@ class Serie(object):
                )
 
     def __str__(self):
-        """String representation."""
+        """Return string representation."""
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2

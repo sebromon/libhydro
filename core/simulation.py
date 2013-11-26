@@ -285,7 +285,7 @@ class Simulation(object):
         # -- simple properties --
         self.public = bool(public)
         self.commentaire = unicode(commentaire) if commentaire else None
-        self._strict = strict
+        self._strict = bool(strict)
 
         # -- full properties --
         self.entite = entite

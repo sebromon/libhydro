@@ -16,7 +16,6 @@ from __future__ import (
 )
 
 import sys as _sys
-# import composant
 
 from libhydro.core.nomenclature import NOMENCLATURE as _NOMENCLATURE
 import libhydro.core.composant as _composant
@@ -67,7 +66,7 @@ class _Entitehydro(object):
         """
 
         # -- simple properties --
-        self._strict = strict
+        self._strict = bool(strict)
         self.libelle = unicode(libelle) if (libelle is not None) else None
 
         # -- full properties --
@@ -83,7 +82,7 @@ class _Entitehydro(object):
 
     @code.setter
     def code(self, code):
-        """Set proj."""
+        """Set code hydro."""
         try:
             if code is None:
                 # None case

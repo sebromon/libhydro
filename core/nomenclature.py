@@ -24,8 +24,8 @@ from __future__ import (
 
 #-- strings -------------------------------------------------------------------
 __author__ = """philippe.gouin@developpement-durable.gouv.fr"""
-__version__ = """0.1e"""
-__date__ = """2013-10-31"""
+__version__ = """0.1f"""
+__date__ = """2013-11-26"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -163,6 +163,16 @@ NOMENCLATURE = {
         'LIMNI': 'Limnimetre', 'DEB': 'Debitmetre', 'HC': 'Hauteur calculee',
         'LIMNIMERE': 'Limnimetre station mere',
         'LIMNIFILLE': 'Limnimetre station fille'
+    },
+
+    # Type de publication de l'evenement
+    534: {
+        1: 'Fiches site et station',
+        10: 'Vigicrues et tableau des dernieres valeurs',
+        20: 'Vigicrues uniquement',
+        25: 'Archive',
+        30: 'Tableau des dernieres valeurs',
+        100: 'Privé'
     },
 
     # Civilite du contact

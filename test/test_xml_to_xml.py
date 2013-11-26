@@ -44,6 +44,10 @@ __date__ = """2013-11-24"""
 #    first shot
 
 
+#-- todos ---------------------------------------------------------------------
+# FIXME - factorise TestToXmlSitesHydros, ToXmlObssHydro, ToXmlSimulations
+
+
 # -- config -------------------------------------------------------------------
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # assert_unicode_equal function parameter
