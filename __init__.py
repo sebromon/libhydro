@@ -7,4 +7,4 @@ Le meta-package libhydro est constitue des packages:
     # conv qui propose des convertisseurs de et vers differents formats
 
 """
-__all__ = ['core', 'conv']
+# __all__ = ['core', 'conv']

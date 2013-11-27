@@ -27,8 +27,8 @@ import numpy as _numpy
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1e"""
-__date__ = """2013-11-24"""
+__version__ = """0.1f"""
+__date__ = """2013-11-27"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -52,7 +52,7 @@ PREV_PROBABILITY = {
 
 # -- testsfunction ------------------------------------------------------------
 def _to_xml(scenario=None, siteshydro=None, series=None, simulations=None):
-    """Genere un message Xml a partir des donnees passes en argument.
+    """Return a etree.Element a partir des donnees passes en argument.
 
     Cette fonction est privee et les utilisateurs sont invites a utiliser la
     classe xml.Message comme interface d'ecriture des fichiers Xml Hydrometrie.
@@ -155,12 +155,12 @@ def _scenario_to_element(scenario):
             'sub': _OrderedDict((
                 ('CdIntervenant', {
                     'value': unicode(scenario.emetteur.intervenant.code),
-                    'attr': {"schemaAgencyID":
+                    'attr': {"schemeAgencyID":
                              scenario.emetteur.intervenant.origine}
                 }),
                 ('CdContact', {
                     'value': unicode(scenario.emetteur.code),
-                    'attr': {"schemaAgencyID": "SANDRE"}
+                    'attr': {"schemeAgencyID": "SANDRE"}
                 })
             ))
         }
@@ -169,7 +169,8 @@ def _scenario_to_element(scenario):
             'sub': {
                 'CdIntervenant': {
                     'value': unicode(scenario.destinataire.code),
-                    'attr': {"schemaAgencyID": "SANDRE"}
+                    'attr': {"schemeAgencyID":
+                             scenario.emetteur.intervenant.origine}
                 }
             }
         }
@@ -255,8 +256,8 @@ def _stationhydro_to_element(stationhydro):
                 'sub': _OrderedDict((
                     ('CoordXStationHydro', {'value': stationhydro.coord.x}),
                     ('CoordYStationHydro', {'value': stationhydro.coord.y}),
-                    ('ProjCoordStationHydro', {'value':
-                                               stationhydro.coord.proj})
+                    ('ProjCoordStationHydro',
+                        {'value': stationhydro.coord.proj})
                 ))
             }
 
@@ -304,17 +305,16 @@ def _serie_to_element(serie):
     if serie is not None:
 
         # template for serie simple elements
-        story = _OrderedDict((
-            # entite can be a Sitehydro, a Stationhydro or a Capteur
-            (
-                'Cd%s' % (
-                    serie.entite.__class__.__name__.replace('hydro', 'Hydro')
-                ),
-                {'value': serie.entite.code},
-            ),
-            ('GrdSerie', {'value': serie.grandeur}),
-            ('StatutSerie', {'value': unicode(serie.statut)})
-        ))
+        story = _OrderedDict()
+        # entite can be a Sitehydro, a Stationhydro or a Capteur
+        story['Cd%s' % serie.entite.__class__.__name__.replace(
+            'hydro', 'Hydro')] = {'value': serie.entite.code}
+        # suite
+        story['GrdSerie'] = {'value': serie.grandeur}
+        story['DtDebSerie'] = {'value': serie.dtdeb.item().isoformat()}
+        story['DtFinSerie'] = {'value': serie.dtfin.item().isoformat()}
+        story['StatutSerie'] = {'value': unicode(serie.statut)}
+        story['DtProdSerie'] = {'value': serie.dtprod.item().isoformat()}
 
         # make element <Serie>
         element = _factory(root=_etree.Element('Serie'), story=story)
@@ -352,7 +352,7 @@ def _observations_to_element(observations):
                 child.text = unicode(observation[1]['qal'])
             if 'cnt' in observation[1].index:
                 child = _etree.SubElement(obs, 'ContObsHydro')
-                child.text = unicode(observation[1]['cnt'])
+                child.text = unicode(observation[1]['cnt']).lower()
 
         # return
         return element
@@ -366,26 +366,22 @@ def _simulation_to_element(simulation):
         # template for simulation simple element
         story = _OrderedDict((
             ('GrdSimul', {'value': simulation.grandeur}),
-            (
-                # dtprod is a numpy.datetime64 without any isoformat method
-                'DtProdSimul',
-                {'value': simulation.dtprod.item().isoformat()},
-            ),
+            # dtprod is a numpy.datetime64 without any isoformat method
+            ('DtProdSimul', {'value': simulation.dtprod.item().isoformat()}),
             ('IndiceQualiteSimul', {'value': unicode(simulation.qualite)}),
             ('StatutSimul', {'value': unicode(simulation.statut)}),
-            ('PubliSimul', {'value': unicode(simulation.public)}),
-            ('ComSimul', {'value': simulation.commentaire}),
-            # entite can be a Sitehydro or a Stationhydro
-            (
-                'Cd%s' % (
-                    simulation.entite.__class__.__name__.replace(
-                        'hydro', 'Hydro'
-                    )
-                ),
-                {'value': simulation.entite.code},
-            ),
-            ('CdModelePrevision', {'value': simulation.modeleprevision.code}),
+            ('PubliSimul', {'value': unicode(simulation.public).lower()}),
+            ('ComSimul', {'value': simulation.commentaire})
         ))
+        # entite can be a Sitehydro or a Stationhydro
+        story['Cd%s' % simulation.entite.__class__.__name__.replace(
+            'hydro', 'Hydro')] = {'value': simulation.entite.code}
+        # suite
+        story['CdModelePrevision'] = {'value': simulation.modeleprevision.code}
+        story['CdIntervenant'] = {
+            'value': unicode(simulation.intervenant.code),
+            'attr': {"schemeAgencyID": simulation.intervenant.origine}
+        }
 
         # make element <Simul>
         element = _factory(root=_etree.Element('Simul'), story=story)
@@ -428,7 +424,8 @@ def _previsions_to_element(previsions):
             prevs = previsions[dte].to_dict()
 
             # we begin to deal with the direct tags...
-            for prob in (0, 50, 100):
+            # order matters: moy, min and max !!
+            for prob in (50, 0, 100):
                 if prob in prevs:
                     prev_elem.append(
                         _make_element(

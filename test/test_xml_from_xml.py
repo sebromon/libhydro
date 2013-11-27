@@ -296,7 +296,8 @@ class TestFromXmlSimulations(unittest.TestCase):
         )
         # check previsions => res
         self.assertEqual(
-            simulation.previsions.tolist(), [30, 10, 50, 25, 75, 90, 23, 25]
+            set(simulation.previsions.tolist()),
+            set([30, 10, 50, 25, 75, 90, 23, 25])
         )
         self.assertEqual(simulation.previsions.iloc[3], 25)
         self.assertEqual(
@@ -313,8 +314,8 @@ class TestFromXmlSimulations(unittest.TestCase):
         # check previsions => index
         self.assertEqual(len(simulation.previsions.index), 8)
         self.assertEqual(
-            [x[0] for x in simulation.previsions.swaplevel(0, 1).index],
-            [50, 0, 100, 20, 40, 49, 50, 100]
+            set([x[0] for x in simulation.previsions.swaplevel(0, 1).index]),
+            set([50, 0, 100, 20, 40, 49, 50, 100])
         )
 
     def test_simulation_1(self):

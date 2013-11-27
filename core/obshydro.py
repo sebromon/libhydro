@@ -58,8 +58,8 @@ from . import sitehydro as _sitehydro
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1h"""
-__date__ = """2013-11-26"""
+__version__ = """0.1i"""
+__date__ = """2013-11-27"""
 
 #HISTORY
 #V0.1 - 2013-07-18
@@ -267,11 +267,15 @@ class Serie(object):
         entite (Sitehydro, Stationhydro ou Capteur)
         grandeur (char in NOMENCLATURE[509]) = H ou Q
         statut (int in NOMENCALTURE[510]) = donnee brute, corrigee...
+        dtdeb (datetime.datetime)
+        dtfin (datetime.datetime)
+        dtprod (datetime.datetime)
         observations (Observations)
 
     """
 
     # TODO - Serie others attributes
+    # FIXME - factorize all dt properties
 
     # datedebut
     # datefin
@@ -283,7 +287,7 @@ class Serie(object):
 
     def __init__(
         self, entite=None, grandeur=None, statut=0,
-        observations=None, strict=True
+        dtdeb=None, dtfin=None, dtprod=None, observations=None, strict=True
     ):
         """Initialisation.
 
@@ -292,6 +296,9 @@ class Serie(object):
             grandeur (char in NOMENCLATURE[509]) = H ou Q
             statut (int in NOMENCLATURE[510], defaut 0) = donnee brute,
                 corrigee...
+            dtdeb (numpy.datetime64)
+            dtfin (numpy.datetime64)
+            dtprod (numpy.datetime64)
             observations (Observations)
             strict (bool, defaut True) = en mode permissif il n'y a pas de
                 controles de validite des parametres
@@ -303,11 +310,15 @@ class Serie(object):
 
         # -- full properties --
         self._entite = self._grandeur = self._observations = None
+        self._dtdeb = self._dtfin = self._dtprod = None
         self._statut = 0
         self.entite = entite
         self.grandeur = grandeur
         self.statut = statut
         self.observations = observations
+        self.dtdeb = dtdeb
+        self.dtfin = dtfin
+        self.dtprod = dtprod
 
     # -- property entite --
     @property
@@ -411,6 +422,78 @@ class Serie(object):
 
         except:
             raise TypeError('observations incorrect')
+
+    # -- property dtdeb --
+    @property
+    def dtdeb(self):
+        """Return date debut."""
+        return self._dtdeb
+
+    @dtdeb.setter
+    def dtdeb(self, dtdeb):
+        """Set date debut."""
+        try:
+            if dtdeb is not None:
+                if not isinstance(dtdeb, _numpy.datetime64):
+                    try:
+                        dtdeb = _numpy.datetime64(dtdeb, 's')
+                    except Exception:
+                        try:
+                            dtdeb = _numpy.datetime64(dtdeb.isoformat(), 's')
+                        except Exception:
+                            raise TypeError('dtdeb must be a date')
+            self._dtdeb = dtdeb
+
+        except:
+            raise
+
+    # -- property dtfin --
+    @property
+    def dtfin(self):
+        """Return date fin."""
+        return self._dtfin
+
+    @dtfin.setter
+    def dtfin(self, dtfin):
+        """Set datefin."""
+        try:
+            if dtfin is not None:
+                if not isinstance(dtfin, _numpy.datetime64):
+                    try:
+                        dtfin = _numpy.datetime64(dtfin, 's')
+                    except Exception:
+                        try:
+                            dtfin = _numpy.datetime64(dtfin.isoformat(), 's')
+                        except Exception:
+                            raise TypeError('dtfin must be a date')
+            self._dtfin = dtfin
+
+        except:
+            raise
+
+    # -- property dtprod --
+    @property
+    def dtprod(self):
+        """Return date production."""
+        return self._dtprod
+
+    @dtprod.setter
+    def dtprod(self, dtprod):
+        """Set date production."""
+        try:
+            if dtprod is not None:
+                if not isinstance(dtprod, _numpy.datetime64):
+                    try:
+                        dtprod = _numpy.datetime64(dtprod, 's')
+                    except Exception:
+                        try:
+                            dtprod = _numpy.datetime64(dtprod.isoformat(), 's')
+                        except Exception:
+                            raise TypeError('dtprod must be a date')
+            self._dtprod = dtprod
+
+        except:
+            raise
 
     # -- other methods --
     def __unicode__(self):

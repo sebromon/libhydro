@@ -52,9 +52,10 @@ from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1g"""
-__date__ = """2013-09-03"""
+__author__ = """Philippe Gouin""" \
+             """<philippe.gouin@developpement-durable.gouv.fr>"""
+__version__ = """0.1h"""
+__date__ = """2013-11-27"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -76,6 +77,7 @@ __date__ = """2013-09-03"""
 
 #-- class Prevision -----------------------------------------------------------
 class Prevision(_numpy.ndarray):
+
     """Classe prevision.
 
     Classe pour manipuler une prevision elementaire.
@@ -129,7 +131,7 @@ class Prevision(_numpy.ndarray):
     #         return
 
     def __unicode__(self):
-        """Unicode representation."""
+        """Return unicode representation."""
         return '{0} avec une probabilite de {1}% pour le {2} a {3} UTC'.format(
             self['res'].item(),
             self['prb'].item(),
@@ -137,7 +139,7 @@ class Prevision(_numpy.ndarray):
         )
 
     def __str__(self):
-        """String representation."""
+        """Return string representation."""
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
@@ -146,11 +148,12 @@ class Prevision(_numpy.ndarray):
 
 #-- class Previsions ----------------------------------------------------------
 class Previsions(_pandas.Series):
+
     """Classe Previsions.
 
     Classe pour manipuler un jeux de previsions, sous la forme d'une Series
-    pandas avec un double index, le premier etant la date du resultat, le second
-    sa probabilite.
+    pandas avec un double index, le premier etant la date du resultat, le
+    second sa probabilite.
 
     Illustration d'une Series pandas de previsions pour 3 dates et avec 2 jeux
     de probabilite:
@@ -189,7 +192,7 @@ class Previsions(_pandas.Series):
     """
 
     def __new__(cls, *previsions):
-        """Initialisation+
+        """Constructeur.
 
         Arguments:
             previsions (un nombre quelconque de Prevision)
@@ -236,6 +239,7 @@ class Previsions(_pandas.Series):
 
 #-- class Simulation ----------------------------------------------------------
 class Simulation(object):
+
     """Classe simulation.
 
     classe pour manipuler les simulations hydrauliques ou hydrologiques.
@@ -250,20 +254,20 @@ class Simulation(object):
         commentaire (texte)
         dtprod (datetime.datetime) = date de production
         previsions (Previsions)
+        intervenant (Intervenant)
 
     """
 
     # TODO - Simulation others attributes
 
     # sysalti
-    # responsable
     # refalti
     # courbetarage
 
     def __init__(
         self, entite=None, modeleprevision=None, grandeur=None, statut=4,
         qualite=None, public=False, commentaire=None, dtprod=None,
-        previsions=None, strict=True
+        previsions=None, intervenant=None, strict=True
     ):
         """Initialisation.
 
@@ -277,6 +281,7 @@ class Simulation(object):
             commentaire (texte)
             dtprod (string ou datetime.datetime) = date de production
             previsions (Previsions)
+            intervenant (Intervenant)
             strict (bool, defaut True) = en mode permissif il n'y a pas de
                 controles de validite des parametres
 
@@ -285,9 +290,12 @@ class Simulation(object):
         # -- simple properties --
         self.public = bool(public)
         self.commentaire = unicode(commentaire) if commentaire else None
+        self.intervenant = intervenant
         self._strict = bool(strict)
 
         # -- full properties --
+        self._entite = self._modeleprevision = self._grandeur = self._statut \
+            = self._qualite = self._dtprod = self._previsions = None
         self.entite = entite
         self.modeleprevision = modeleprevision
         self.grandeur = grandeur
@@ -299,11 +307,12 @@ class Simulation(object):
     # -- property entite --
     @property
     def entite(self):
-        """Entite hydro."""
+        """Return entite hydro."""
         return self._entite
 
     @entite.setter
     def entite(self, entite):
+        """Set entite hydro."""
         try:
             if (self._strict) and (entite is not None):
 
@@ -328,7 +337,9 @@ class Simulation(object):
                                 'Q previsions, entite must be a Sitehydro'
                             )
                         if (self.grandeur == 'H') and \
-                                not isinstance(entite, _sitehydro.Stationhydro):
+                                not isinstance(
+                                    entite, _sitehydro.Stationhydro
+                                ):
                             raise TypeError(
                                 'H previsions, entite must be a Stationhydro'
                             )
@@ -345,18 +356,21 @@ class Simulation(object):
     # -- property modeleprevision --
     @property
     def modeleprevision(self):
-        """Modele de prevision."""
+        """Return modele de prevision."""
         return self._modeleprevision
 
     @modeleprevision.setter
     def modeleprevision(self, modeleprevision):
+        """Set modele de prevision."""
         try:
             if (self._strict) and (modeleprevision is not None):
                 if not isinstance(
                     modeleprevision,
                     _modeleprevision.Modeleprevision
                 ):
-                    raise TypeError('modeleprevision must be a Modeleprevision')
+                    raise TypeError(
+                        'modeleprevision must be a Modeleprevision'
+                    )
             self._modeleprevision = modeleprevision
 
         except:
@@ -365,11 +379,12 @@ class Simulation(object):
     # -- property grandeur --
     @property
     def grandeur(self):
-        """Grandeur."""
+        """Return grandeur."""
         return self._grandeur
 
     @grandeur.setter
     def grandeur(self, grandeur):
+        """Set grandeur."""
         try:
             if (grandeur is not None):
                 grandeur = unicode(grandeur)
@@ -383,11 +398,12 @@ class Simulation(object):
     # -- property statut --
     @property
     def statut(self):
-        """Statut."""
+        """Return statut."""
         return self._statut
 
     @statut.setter
     def statut(self, statut):
+        """Set statut."""
         try:
             # None case
             if statut is None:
@@ -405,11 +421,12 @@ class Simulation(object):
     # -- property qualite --
     @property
     def qualite(self):
-        """Indice de qualite."""
+        """Return indice de qualite."""
         return self._qualite
 
     @qualite.setter
     def qualite(self, qualite):
+        """Set indice de qualite."""
         try:
             if qualite is not None:
                 qualite = int(qualite)
@@ -423,11 +440,12 @@ class Simulation(object):
     # -- property dtprod --
     @property
     def dtprod(self):
-        """Date de production."""
+        """Return date production."""
         return self._dtprod
 
     @dtprod.setter
     def dtprod(self, dtprod):
+        """Set date production."""
         try:
             if dtprod is not None:
                 if not isinstance(dtprod, _numpy.datetime64):
@@ -446,11 +464,12 @@ class Simulation(object):
     # -- property previsions --
     @property
     def previsions(self):
-        """Previsions."""
+        """Return previsions."""
         return self._previsions
 
     @previsions.setter
     def previsions(self, previsions):
+        """Set previsions."""
         try:
             if previsions is not None:
                 # we check we have a Series...
@@ -470,7 +489,7 @@ class Simulation(object):
 
     # -- other methods --
     def __unicode__(self):
-        """Unicode representation."""
+        """Return unicode representation."""
         # compute entite name
         if self.entite is None:
             entite = '<une entite inconnue>'
@@ -490,29 +509,29 @@ class Simulation(object):
             prev = self.previsions.__unicode__()
 
         # action !
-        return  'Simulation {0} de {1} sur {2}\n'\
-                'Date de production: {3} - Qualite {4}\n'\
-                'Commentaire: {5}\n'\
-                '{6}\n'\
-                '{7}\n'\
-                '{8}\n'\
-                'Previsions:\n {9}'.format(
-                    '<sans statut>' if (self.statut is None)
-                    else _NOMENCLATURE[516][self.statut].lower(),
-                    self.grandeur or '<sans grandeur>',
-                    entite,
-                    '<inconnue>' if not self.dtprod
-                    else self.dtprod.item().isoformat(),
-                    '<inconnue>' if not self.qualite else '%i%%' % self.qualite,
-                    self.commentaire or '<sans>',
-                    '-' * 72,
-                    self.modeleprevision or '<modele inconnu>',
-                    '-' * 72,
-                    prev
-                )
+        return '''Simulation {0} de {1} sur {2}\n''' \
+               '''Date de production: {3} - Qualite {4}\n''' \
+               '''Commentaire: {5}\n''' \
+               '''{6}\n''' \
+               '''{7}\n''' \
+               '''{8}\n''' \
+               '''Previsions:\n {9}'''.format(
+                   '<sans statut>' if (self.statut is None)
+                   else _NOMENCLATURE[516][self.statut].lower(),
+                   self.grandeur or '<sans grandeur>',
+                   entite,
+                   '<inconnue>' if not self.dtprod
+                   else self.dtprod.item().isoformat(),
+                   '<inconnue>' if not self.qualite else '%i%%' % self.qualite,
+                   self.commentaire or '<sans>',
+                   '-' * 72,
+                   self.modeleprevision or '<modele inconnu>',
+                   '-' * 72,
+                   prev
+               )
 
     def __str__(self):
-        """String representation."""
+        """Return string representation."""
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2

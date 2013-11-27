@@ -32,8 +32,8 @@
         <Prevs>
           <Prev>
             <DtPrev>2010-02-26T14:00:00</DtPrev>
-            <ResMoyPrev>30</ResMoyPrev>
             <ResMinPrev>10</ResMinPrev>
+            <ResMoyPrev>30</ResMoyPrev>
             <ResMaxPrev>50</ResMaxPrev>
             <ProbsPrev>
               <ProbPrev>

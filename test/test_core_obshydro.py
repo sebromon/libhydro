@@ -32,9 +32,10 @@ from libhydro.core import (sitehydro, obshydro)
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1d"""
-__date__ = """2013-08-24"""
+__author__ = """Philippe Gouin""" \
+             """<philippe.gouin@developpement-durable.gouv.fr>"""
+__version__ = """0.1e"""
+__date__ = """2013-11-27"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -43,15 +44,8 @@ __date__ = """2013-08-24"""
 
 #-- class TestObservation -----------------------------------------------------
 class TestObservation(unittest.TestCase):
+
     """Observation class tests."""
-
-    # def setUp(self):
-    #     """Hook method for setting up the test fixture before exercising it."""
-    #     pass
-
-    # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
 
     def test_base_01(self):
         """Base case test."""
@@ -75,6 +69,7 @@ class TestObservation(unittest.TestCase):
             datetime.datetime(2000, 1, 1, 10), 10, mth=4, qal=8
         )
         obshydro.Observation(datetime.datetime(2000, 1, 1), '20', cnt=True)
+        self.assertTrue(True)  # avoid pylint warning !
 
     def test_str_01(self):
         """Test __str__ method."""
@@ -97,7 +92,7 @@ class TestObservation(unittest.TestCase):
         )
 
     def test_error_02(self):
-        """Res error."""
+        """Test Res error."""
         obshydro.Observation(**{'dte': '2000-10-05 10:00', 'res': 10})
         self.assertRaises(
             ValueError,
@@ -130,15 +125,8 @@ class TestObservation(unittest.TestCase):
 
 #-- class TestObservations ----------------------------------------------------
 class TestObservations(unittest.TestCase):
+
     """Observations class tests."""
-
-    # def setUp(self):
-    #     """Hook method for setting up the test fixture before exercising it."""
-    #     pass
-
-    # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
 
     def test_base_01(self):
         """Simple test."""
@@ -157,9 +145,12 @@ class TestObservations(unittest.TestCase):
         """Base case test."""
         # Datetime, res and others attributes
         obs = obshydro.Observations(
-            obshydro.Observation('2012-10-03 06:00', 33, mth=4, qal=0, cnt=True),
-            obshydro.Observation('2012-10-03 07:00', 37, mth=0, qal=12, cnt=False),
-            obshydro.Observation('2012-10-03 08:00', 42, mth=12, qal=20, cnt=True)
+            obshydro.Observation(
+                '2012-10-03 06:00', 33, mth=4, qal=0, cnt=True),
+            obshydro.Observation(
+                '2012-10-03 07:00', 37, mth=0, qal=12, cnt=False),
+            obshydro.Observation(
+                '2012-10-03 08:00', 42, mth=12, qal=20, cnt=True)
         )
         self.assertEqual(
             obs['mth'].tolist(),
@@ -177,7 +168,9 @@ class TestObservations(unittest.TestCase):
     def test_error_01(self):
         """List of observation error."""
         # check that init works when call regurlaly...
-        o = obshydro.Observation('2012-10-03 06:00', 33, mth=4, qal=0, cnt=True)
+        o = obshydro.Observation(
+            '2012-10-03 06:00', 33, mth=4, qal=0, cnt=True
+        )
         obshydro.Observations(*[o, o])
         # ...and fails otherwise
         self.assertRaises(
@@ -190,6 +183,7 @@ class TestObservations(unittest.TestCase):
 
 #-- class TestObservationsConcat ----------------------------------------------
 class TestObservationsConcat(unittest.TestCase):
+
     """Observations.concat function tests."""
 
     def test_base_01(self):
@@ -231,19 +225,14 @@ class TestObservationsConcat(unittest.TestCase):
 
 #-- class TestSerie -----------------------------------------------------------
 class TestSerie(unittest.TestCase):
+
     """Serie class tests."""
-
-    # def setUp(self):
-    #     """Hook method for setting up the test fixture before exercising it."""
-    #     pass
-
-    # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
 
     def test_base_01(self):
         """Serie on a site."""
-        s = sitehydro.Sitehydro(code='A0445810', libelle='Le Rhône à Marseille')
+        s = sitehydro.Sitehydro(
+            code='A0445810', libelle='Le Rhône à Marseille'
+        )
         g = 'Q'
         t = 16
         o = obshydro.Observations(
@@ -251,9 +240,13 @@ class TestSerie(unittest.TestCase):
             obshydro.Observation('2012-10-03 07:00', 37),
             obshydro.Observation('2012-10-03 08:00', 42)
         )
+        dtdeb = '2012-10-03 05:00+00'
+        dtfin = '2012-10-03 09:00+00'
+        dtprod = '2012-10-03 10:00+00'
         i = True
         serie = obshydro.Serie(
-            entite=s, grandeur=g, statut=t, observations=o, strict=i
+            entite=s, grandeur=g, statut=t, observations=o, strict=i,
+            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod
         )
         self.assertEqual(
             (
@@ -261,6 +254,14 @@ class TestSerie(unittest.TestCase):
                 serie.observations, serie._strict
             ),
             (s, g, t, o, i)
+        )
+        self.assertEqual(
+            (serie.dtdeb, serie.dtfin, serie.dtprod),
+            (
+                datetime.datetime(2012, 10, 3, 5),
+                datetime.datetime(2012, 10, 3, 9),
+                datetime.datetime(2012, 10, 3, 10)
+            )
         )
 
     def test_base_02(self):
@@ -271,13 +272,27 @@ class TestSerie(unittest.TestCase):
             obshydro.Observation('2012-10-03 06:00', 33),
             obshydro.Observation('2012-10-03 08:00', 42)
         )
-        serie = obshydro.Serie(entite=s, grandeur=g, observations=o)
+        dtdeb = datetime.datetime(2012, 10, 3, 5)
+        dtfin = datetime.datetime(2012, 10, 3, 9)
+        dtprod = datetime.datetime(2012, 10, 3, 10)
+        serie = obshydro.Serie(
+            entite=s, grandeur=g, observations=o,
+            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod
+        )
         self.assertEqual(
             (
                 serie.entite, serie.grandeur, serie.statut,
                 serie.observations, serie._strict
             ),
             (s, g, 0, o, True)
+        )
+        self.assertEqual(
+            (serie.dtdeb, serie.dtfin, serie.dtprod),
+            (
+                datetime.datetime(2012, 10, 3, 5),
+                datetime.datetime(2012, 10, 3, 9),
+                datetime.datetime(2012, 10, 3, 10)
+            )
         )
 
     def test_str_01(self):
@@ -386,15 +401,21 @@ class TestSerie(unittest.TestCase):
         )
 
     def test_error_04(self):
-        """Observations error."""
+        """Test Observations error."""
         s = sitehydro.Stationhydro(code='A044581001', strict=False)
         obshydro.Serie(
-            **{'entite': s, 'grandeur': 'H', 'observations': 12, 'strict': False}
+            **{
+                'entite': s, 'grandeur': 'H', 'observations': 12,
+                'strict': False
+            }
         )
         self.assertRaises(
             TypeError,
             obshydro.Serie,
-            **{'entite': s, 'grandeur': 'H', 'observations': 12, 'strict': True}
+            **{
+                'entite': s, 'grandeur': 'H', 'observations': 12,
+                'strict': True
+            }
         )
 
 

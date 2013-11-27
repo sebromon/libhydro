@@ -195,7 +195,7 @@ class Scenario(object):
 
 # -- tests function -----------------------------------------------------------
 def _parse(src):
-    """Parse le fichier src, instancie et retourne les objets qu'il contient.
+    """Return objects from xml source file.
 
     Cette fonction est destinee au tests unitaires. Les utilisateurs sont
     invites a utiliser la classe xml.Message comme interface de lecture des
@@ -399,6 +399,9 @@ def _serie_from_element(element):
             entite=entite,
             grandeur=_value(element, 'GrdSerie'),
             statut=_value(element, 'StatutSerie'),
+            dtdeb=_value(element, 'DtDebSerie', _UTC),
+            dtfin=_value(element, 'DtFinSerie', _UTC),
+            dtprod=_value(element, 'DtProdSerie', _UTC),
             observations=_observations_from_element(element.find('ObssHydro'))
         )
 
@@ -450,12 +453,15 @@ def _simulation_from_element(element):
             ),
             grandeur=_value(element, 'GrdSimul'),
             statut=_value(element, 'StatutSimul', int),
-            # qualite = int(float())
+            # warning: qualite is int(float())
             qualite=int(_value(element, 'IndiceQualiteSimul', float)),
             public=_value(element, 'PubliSimul', bool),
             commentaire=_value(element, 'ComSimul'),
             dtprod=_value(element, 'DtProdSimul', _UTC),
-            previsions=_previsions_from_element(element.find('Prevs'))
+            previsions=_previsions_from_element(element.find('Prevs')),
+            intervenant=_intervenant.Intervenant(
+                _value(element, 'CdIntervenant')
+            )
         )
 
 
