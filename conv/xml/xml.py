@@ -28,9 +28,10 @@ from libhydro.core import (
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1e"""
-__date__ = """2013-09-05"""
+__author__ = """Philippe Gouin""" \
+             """<philippe.gouin@developpement-durable.gouv.fr>"""
+__version__ = """0.1f"""
+__date__ = """2014-01-17"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -39,6 +40,7 @@ __date__ = """2013-09-05"""
 
 # -- class Message ------------------------------------------------------------
 class Message(object):
+
     """ClasseMessage.
 
     Classe pour manipuler les messages Xml hydrometrie.
@@ -65,7 +67,8 @@ class Message(object):
         # 'alarmes'
 
     def __init__(
-        self, scenario, siteshydro=None, series=None, simulations=None, strict=True
+        self, scenario, siteshydro=None, series=None,
+        simulations=None, strict=True
     ):
         """Initialisation.
 
@@ -85,6 +88,8 @@ class Message(object):
         self._strict = strict
 
         # -- full properties --
+        self._scenario = self._siteshydro = None
+        self._series = self._simulations = None
         self.scenario = scenario
         self.siteshydro = siteshydro
         self.series = series
@@ -93,11 +98,12 @@ class Message(object):
     # -- property scenario --
     @property
     def scenario(self):
-        """Scenario."""
+        """Return scenario."""
         return self._scenario
 
     @scenario.setter
     def scenario(self, scenario):
+        """Set scenario."""
         try:
 
             # None case
@@ -105,7 +111,10 @@ class Message(object):
                 raise TypeError('scenario is required')
 
             # other cases
-            if (self._strict) and (not isinstance(scenario, _from_xml.Scenario)):
+            if (
+                self._strict
+                and not isinstance(scenario, _from_xml.Scenario)
+            ):
                 raise TypeError('scenario incorrect')
 
             # all is well
@@ -117,11 +126,12 @@ class Message(object):
     # -- property siteshydro --
     @property
     def siteshydro(self):
-        """Siteshydro."""
+        """Return siteshydro."""
         return self._siteshydro
 
     @siteshydro.setter
     def siteshydro(self, siteshydro):
+        """Set siteshydro."""
         try:
 
             # None case
@@ -147,11 +157,12 @@ class Message(object):
     # -- property series --
     @property
     def series(self):
-        """Series."""
+        """Return series."""
         return self._series
 
     @series.setter
     def series(self, series):
+        """Set series."""
         try:
 
             # None case
@@ -177,11 +188,12 @@ class Message(object):
     # -- property simulations --
     @property
     def simulations(self):
-        """Simulations."""
+        """Return simulations."""
         return self._simulations
 
     @simulations.setter
     def simulations(self, simulations):
+        """Setsimulations."""
         try:
 
             # None case
@@ -204,9 +216,9 @@ class Message(object):
         except:
             raise
 
-    # -- class methods --
-    @classmethod
-    def from_file(cls, src):
+    # -- static methods --
+    @staticmethod
+    def from_file(src):
         """Parse le fichier src et retourne un xml.Message.
 
         Arguments:
@@ -226,10 +238,18 @@ class Message(object):
             raise ValueError("can't parse xml file with namespaces")
 
         return Message(
-            scenario=_from_xml._scenario_from_element(tree.find('Scenario')),
-            siteshydro=_from_xml._siteshydro_from_element(tree.find('RefHyd/SitesHydro')),
-            series=_from_xml._series_from_element(tree.find('Donnees/Series')),
-            simulations=_from_xml._simulations_from_element(tree.find('Donnees/Simuls'))
+            scenario=_from_xml._scenario_from_element(
+                tree.find('Scenario')
+            ),
+            siteshydro=_from_xml._siteshydro_from_element(
+                tree.find('RefHyd/SitesHydro')
+            ),
+            series=_from_xml._series_from_element(
+                tree.find('Donnees/Series')
+            ),
+            simulations=_from_xml._simulations_from_element(
+                tree.find('Donnees/Simuls')
+            )
         )
 
             # 'intervenants':
@@ -272,7 +292,7 @@ class Message(object):
             except Exception, e:
                 raise ValueError('bad element, {}'.format(e))
 
-    def write(self, file, force=False, encoding='utf-8', compression=0):
+    def write(self, file, encoding='utf-8', compression=0, force=False):
         """Ecrit le Message dans le fichier dst.
 
         Cette methode est un wrapper autour de lxml.etree.ElementTree.write.
@@ -280,9 +300,9 @@ class Message(object):
 
         Arguments:
             dst (fichier)
-            force (bool)
             encoding (string)
             compression (int de 0 a 9) = niveau de compression gzip
+            force (bool)
 
         """
         # check file
@@ -307,7 +327,7 @@ class Message(object):
         )
 
     def show(self):
-        """Screen print XML."""
+        """Return pretty print XML."""
         return _etree.tostring(
             _to_xml._to_xml(
                 scenario=self.scenario,
@@ -321,20 +341,21 @@ class Message(object):
         )
 
     def __unicode__(self):
-        """Unicode representation."""
+        """Return unicode representation."""
         try:
             scenario = self.scenario.__unicode__()
         except Exception:
             scenario = 'Message <sans scenario>'
-        return '{}\nContenu: {} siteshydro - {} series - {} simulations'.format(
-            scenario,
-            len(self.siteshydro),
-            len(self.series),
-            len(self.simulations)
-        )
+        return '{}\nContenu: {} siteshydro - ' \
+               '{} series - {} simulations'.format(
+                   scenario,
+                   len(self.siteshydro),
+                   len(self.series),
+                   len(self.simulations)
+               )
 
     def __str__(self):
-        """String representation."""
+        """Return string representation."""
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
