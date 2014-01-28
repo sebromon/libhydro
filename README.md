@@ -23,7 +23,7 @@ Installation
     * python 2.7
     * numpy 1.7.1
     * pandas 0.11.0
-    * lxml 3.2.3 pour le convertisseur xml
+    * lxml.etree 3.2.3 pour le convertisseur xml
 2. Récupérer le dépot
     * soit avec Mercurial: `hg clone http://arc.schapi:8001 (répertoire local)`
     * soit en le téléchargeant (bz2, zip, gz)
