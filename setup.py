@@ -53,7 +53,13 @@ setup(
     platforms=('any',),
     # license  # TODO
     # url='unknown',  # TODO - what is the download_url tag ?
-    packages=['core', 'conv', 'conv/shom', 'conv/xml'],
+    package_dir = {'libhydro': '.'},
+    # package='libhydro',
+    packages=[
+        #     # 'libhydro'
+        'libhydro.core',
+        'libhydro.conv'  # , 'libhydro.conv.shom', 'libhydro.conv.xml'
+    ],
     # data_files=[
     #     ('', ['__init__.py']),
     # ],

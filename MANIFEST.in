@@ -1,4 +1,3 @@
-include ez_setup.py
 include __init__.py
 include test/README.md
 recursive-include test/data *
