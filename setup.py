@@ -18,15 +18,6 @@ __date__ = """2014-01-30"""
 #    first shot
 
 
-# -- config -------------------------------------------------------------------
-# Get the local dir
-here = os.path.abspath(os.path.dirname(__file__))
-
-# Get the long description from the relevant file
-with open('DESCRIPTION.rst', encoding='utf-8') as f:
-    long_description = f.read()
-
-
 # -- functions ----------------------------------------------------------------
 def find_version(*file_paths):
     """Return the version number from a source file.
@@ -51,6 +42,14 @@ def find_version(*file_paths):
 
 
 # -- main ---------------------------------------------------------------------
+# Get the local dir
+here = os.path.abspath(os.path.dirname(__file__))
+
+# Get the long description from the relevant file
+with open('DESCRIPTION.rst') as f:
+    long_description = f.read()
+
+# Setup
 setup(
     name='libhydro',
     version=find_version('libhydro', '__init__.py'),
