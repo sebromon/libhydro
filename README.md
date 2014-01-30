@@ -21,9 +21,10 @@ Cette librairie fonctionne avec python 2.7 uniquement.
 Récupérer l'archive et la décompresser puis faire "python setup.py install".
 
 Sont nécessaires et installés automatiquement si besoin:
-    * numpy 1.7.1
-    * pandas 0.11.0
-    * lxml.etree 3.2.3 pour le convertisseur xml
+
+  * numpy 1.7.1
+  * pandas 0.11.0
+  * lxml.etree 3.2.3 pour le convertisseur xml
 
 Contact
 -------------------------------------------------------------------------------
