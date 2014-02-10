@@ -24,8 +24,8 @@ from __future__ import (
 
 #-- strings -------------------------------------------------------------------
 __author__ = """philippe.gouin@developpement-durable.gouv.fr"""
-__version__ = """0.1f"""
-__date__ = """2013-11-26"""
+__version__ = """0.1g"""
+__date__ = """2014-02-10"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -37,7 +37,7 @@ __date__ = """2013-11-26"""
 # TODO - write a decorator to check an attribute validity
 
 
-# -- config -------------------------------------------------------------------
+#-- config --------------------------------------------------------------------
 NOMENCLATURE = {
 
     #Syntaxe: "reference : {code: mnemonique, ...}"
@@ -147,6 +147,25 @@ NOMENCLATURE = {
         5: 'Modele statistique',
         6: 'Enchainement de modeles',
         7: 'Modele a propagation empirique'
+    },
+
+    # Type de seuil
+    528: {1: 'Absolu', 2: 'Gradient'},
+
+    # Nature du seuil
+    529: {
+        11: 'Seuil reglementaire valeur basse',
+        12: 'Seuil reglementaire valeur forte',
+        21: 'Seuil technique valeur basse',
+        22: 'Seuil technique valeur forte',
+        23: 'Seuil opérateur valeur basse',
+        24: 'Seuil opérateur valeur haute',
+        31: 'Seuil historique valeur basse',
+        32: 'Seuil historique valeur forte',
+        41: 'Seuil expertise valeur basse',
+        42: 'Seuil expertise valeur forte',
+        101: 'Seuil inferieur de valeur aberrante',
+        102: 'Seuil superieur de valeur aberrante'
     },
 
     # Type de site hydrometrique

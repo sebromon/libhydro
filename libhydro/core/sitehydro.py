@@ -37,7 +37,7 @@ __date__ = """2013-11-22"""
 # TODO - add navigability for Capteur => Station and Station => Site
 
 
-# -- config -------------------------------------------------------------------
+#-- config --------------------------------------------------------------------
 # config use classes definitions and is at the bottom
 
 
