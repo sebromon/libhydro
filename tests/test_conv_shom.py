@@ -2,14 +2,14 @@
 """Test program for shom converter.
 
 To run all tests just type:
-    './test_shom.py' or 'python test_shom.py'
+    './test_conv_shom.py' or 'python test_conv_shom.py'
 
 To run only a class test:
-    python -m unittest test_shom.TestClass
+    python -m unittest test_conv_shom.TestClass
 
 To run only a specific test:
-    python -m unittest test_shom.TestClass
-    python -m unittest test_shom.TestClass.test_method
+    python -m unittest test_conv_shom.TestClass
+    python -m unittest test_conv_shom.TestClass.test_method
 
 """
 #-- imports -------------------------------------------------------------------

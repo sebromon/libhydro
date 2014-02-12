@@ -2,14 +2,14 @@
 """Test program for xml.to_xml.
 
 To run all tests just type:
-    './test_xml_to_xml.py' or 'python test_xml_to_xml.py'
+    './test_conv_xml_to_xml.py' or 'python test_conv_xml_to_xml.py'
 
 To run only a class test:
-    python -m unittest test_xml_to_xml.TestClass
+    python -m unittest test_conv_xml_to_xml.TestClass
 
 To run only a specific test:
-    python -m unittest test_xml_to_xml.TestClass
-    python -m unittest test_xml_to_xml.TestClass.test_method
+    python -m unittest test_conv_xml_to_xml.TestClass
+    python -m unittest test_conv_xml_to_xml.TestClass.test_method
 
 """
 #-- imports -------------------------------------------------------------------
