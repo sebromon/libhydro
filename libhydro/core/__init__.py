@@ -11,6 +11,7 @@ Il contient les modules:
     # modeleprevision
     # nomenclature
     # obshydro
+    # seuil
     # simulation
     # sitehydro
 
@@ -21,14 +22,17 @@ __all__ = [
     'modeleprevision',
     'nomenclature',
     'obshydro',
+    'seuil',
     'simulation',
     'sitehydro'
 ]
 
+from . import evenement, intervenant, modeleprevision, nomenclature, \
+    obshydro, seuil, simulation, sitehydro
+
 # alarm
 # courbecorrection
 # courbetarage
-# evenement
 # gradienthydro
 # jaugeage
 # obselaboreehydro

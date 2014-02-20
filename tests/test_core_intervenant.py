@@ -30,9 +30,10 @@ from libhydro.core import intervenant
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1b"""
-__date__ = """2013-08-23"""
+__author__ = """Philippe Gouin""" \
+             """<philippe.gouin@developpement-durable.gouv.fr>"""
+__version__ = """0.1c"""
+__date__ = """2014-02-20"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -41,6 +42,7 @@ __date__ = """2013-08-23"""
 
 #-- class TestIntervenant -----------------------------------------------------
 class TestIntervenant(unittest.TestCase):
+
     """Intervenant class tests."""
 
     def test_base_01(self):
@@ -164,7 +166,7 @@ class TestIntervenant(unittest.TestCase):
         )
 
     def test_error_04(self):
-        """Contacts error."""
+        """Contact error."""
         contacts = [intervenant.Contact()]
         intervenant.Intervenant(contacts=contacts)
         self.assertRaises(
@@ -174,7 +176,7 @@ class TestIntervenant(unittest.TestCase):
         )
 
     def test_error_05(self):
-        """Contacts links error."""
+        """Contact link error."""
         it1 = intervenant.Intervenant(code=1)
         it2 = intervenant.Intervenant(code=2)
         contacts = [
@@ -195,8 +197,9 @@ class TestIntervenant(unittest.TestCase):
         )
 
 
-#-- class TestContact ----------------------------------------------------------
+#-- class TestContact ---------------------------------------------------------
 class TestContact(unittest.TestCase):
+
     """Contact class tests."""
 
     def test_base_01(self):
@@ -204,7 +207,7 @@ class TestContact(unittest.TestCase):
         c = intervenant.Contact()
         self.assertEqual(
             (c.code, c.nom, c.prenom, c.civilite, c.intervenant),
-            (0, None, None, None, None)
+            (None, None, None, None, None)
         )
 
     def test_base_02(self):
@@ -232,9 +235,9 @@ class TestContact(unittest.TestCase):
         """Code error."""
         it = intervenant.Contact(code=99)
         self.assertRaises(
-            TypeError,
+            ValueError,
             it.__setattr__,
-            *('code', None)
+            *('code', 'abcd')
         )
         self.assertRaises(
             ValueError,

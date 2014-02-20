@@ -17,7 +17,7 @@ from __future__ import (
 import sys as _sys
 import datetime as _datetime
 
-from libhydro.core.nomenclature import NOMENCLATURE as _NOMENCLATURE
+from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
 #-- strings -------------------------------------------------------------------

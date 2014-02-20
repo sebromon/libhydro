@@ -16,5 +16,5 @@ Exemples d'utilisation:
 __all__ = ['Message', 'Scenario']
 # for the user, this package is like a module, sub-modules names are
 # underscored to hide them
-from libhydro.conv.xml._from_xml import Scenario
-from libhydro.conv.xml.xml import Message
+from ._from_xml import Scenario
+from ._xml import Message

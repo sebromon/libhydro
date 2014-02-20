@@ -23,8 +23,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1d"""
-__date__ = """2013-11-22"""
+__version__ = """0.1e"""
+__date__ = """2014-02-20"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -218,7 +218,7 @@ class Contact(object):
     Classe pour manipuler des contacts.
 
     Proprietes:
-        code (entier < 9999, defaut 0)
+        code (entier < 9999)
         nom (string)
         prenom (string)
         civilite (entier parmi NOMENCLATURE[538])
@@ -243,12 +243,12 @@ class Contact(object):
     # Adresse
 
     def __init__(
-        self, code=0, nom=None, prenom=None, civilite=None, intervenant=None
+        self, code=None, nom=None, prenom=None, civilite=None, intervenant=None
     ):
         """Initialisation.
 
         Arguments:
-            code (entier < 9999, defaut 0)
+            code (entier < 9999)
             nom (string)
             prenom (string)
             civilite (entier parmi NOMENCLATURE[538])
@@ -261,11 +261,9 @@ class Contact(object):
         self.prenom = unicode(prenom) if (prenom is not None) else None
 
         # -- full properties --
-        self._code = 0
+        self._code = self._civilite = self._intervenant = None
         self.code = code
-        self._civilite = None
         self.civilite = civilite
-        self._intervenant = None
         self.intervenant = intervenant
 
     # -- property code --
@@ -280,13 +278,14 @@ class Contact(object):
         try:
 
             # None case
-            if code is None:
-                raise TypeError('code is required')
+            # if code is None:
+            #     raise TypeError('code is required')
 
             # other cases
-            code = int(code)
-            if not (0 <= code <= 9999):
-                raise ValueError('code must be in range 0-9999')
+            if code is not None:
+                code = int(code)
+                if not (0 <= code <= 9999):
+                    raise ValueError('code must be in range 0-9999')
 
             # all is well
             self._code = code

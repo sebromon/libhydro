@@ -27,14 +27,14 @@ sys.path.append(os.path.join('..', '..'))
 import unittest
 
 from libhydro.core import sitehydro
-from libhydro.core import composant
+from libhydro.core import _composant as composant
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1g"""
-__date__ = """2013-11-22"""
+__version__ = """0.1h"""
+__date__ = """2014-02-20"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -59,8 +59,11 @@ class TestSitehydro(unittest.TestCase):
         code = 'R5330101'
         s = sitehydro.Sitehydro(code=code)
         self.assertEqual(
-            (s.code, s.typesite, s.libelle, s.codeh2, s.stations, s.communes),
-            (code, 'REEL', None, None, [], [])
+            (
+                s.code, s.codeh2, s.typesite, s.libelle, s.libelleusuel,
+                s.stations, s.communes
+            ),
+            (code, None, 'REEL', None, None, [], [])
         )
 
     def test_base_02(self):
@@ -68,25 +71,27 @@ class TestSitehydro(unittest.TestCase):
         code = 'A3334550'
         codeh2 = 'A3334550'
         typesite = 'MAREGRAPHE'
-        libelle = 'La Saône [apres la crue] a Montelimar'
+        libelle = 'La Saône [apres la crue] a Montélimar'
+        libelleusuel = 'Montélimar'
         coord = (482000, 1897556.5, 26)
         stations = sitehydro.Stationhydro(
             code='%s01' % code, typestation='LIMNI'
         )
         communes = 32150
         s = sitehydro.Sitehydro(
-            code=code, codeh2=codeh2, typesite=typesite, libelle=libelle,
+            code=code, codeh2=codeh2, typesite=typesite,
+            libelle=libelle, libelleusuel=libelleusuel,
             coord=coord, stations=stations, communes=communes
         )
 
         self.assertEqual(
             (
-                s.code, s.codeh2, s.typesite, s.libelle, s.coord,
-                s.stations, s.communes
+                s.code, s.codeh2, s.typesite, s.libelle, s.libelleusuel,
+                s.coord, s.stations, s.communes
             ),
             (
-                code, codeh2, typesite, libelle, composant.Coord(*coord),
-                [stations], [unicode(communes)]
+                code, codeh2, typesite, libelle, libelleusuel,
+                composant.Coord(*coord), [stations], [unicode(communes)]
             )
         )
 
@@ -295,8 +300,11 @@ class TestStationhydro(unittest.TestCase):
         code = 'O033401101'
         s = sitehydro.Stationhydro(code=code)
         self.assertEqual(
-            (s.code, s.typestation, s.libelle, s.commune, s.ddcs),
-            (code, 'LIMNI', None, None, [])
+            (
+                s.code, s.typestation, s.libelle, s.libellecomplement,
+                s.commune, s.ddcs
+            ),
+            (code, 'LIMNI', None, None, None, [])
         )
 
     def test_base_02(self):
@@ -304,16 +312,24 @@ class TestStationhydro(unittest.TestCase):
         code = 'A033465001'
         typestation = 'LIMNI'
         libelle = 'La Seine a Paris - rive droite'
+        libellecomplement = 'rive droite'
         capteurs = [sitehydro.Capteur(code='V83310100101')]
         commune = '03150'
         ddcs = 33  # a numeric rezo
         s = sitehydro.Stationhydro(
-            code=code, typestation=typestation, libelle=libelle,
+            code=code, typestation=typestation,
+            libelle=libelle, libellecomplement=libellecomplement,
             capteurs=capteurs, commune=commune, ddcs=ddcs
         )
         self.assertEqual(
-            (s.code, s.typestation, s.libelle, s.capteurs, s.commune, s.ddcs),
-            (code, typestation, libelle, capteurs, commune, [unicode(ddcs)])
+            (
+                s.code, s.typestation, s.libelle, s.libellecomplement,
+                s.capteurs, s.commune, s.ddcs
+            ),
+            (
+                code, typestation, libelle, libellecomplement,
+                capteurs, commune, [unicode(ddcs)]
+            )
         )
 
     def test_base_03(self):

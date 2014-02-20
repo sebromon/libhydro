@@ -17,17 +17,20 @@ from __future__ import (
 
 import sys as _sys
 
-from libhydro.core.nomenclature import NOMENCLATURE as _NOMENCLATURE
-import libhydro.core.composant as _composant
+from .nomenclature import NOMENCLATURE as _NOMENCLATURE
+from . import _composant
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2f"""
-__date__ = """2013-11-22"""
+__contributor__ = """Camillo Montes (SYNAPSE)"""
+__version__ = """0.3a"""
+__date__ = """2014-02-20"""
 
 #HISTORY
+#V0.3 - 2014-02-20
+#    merge Camillo (CMO) work
 #V0.1 - 2013-07-12
 #    first shot
 
@@ -203,6 +206,7 @@ class Sitehydro(_Site_or_station):
         codeh2 (string(8)) = ancien code hydro2
         typesite (string parmi NOMENCLATURE[530])
         libelle (string)
+        libelleusuel (string)
         coord (Coord)
         stations (une liste de Station)
         communes (une liste de codes communes, char(5)) = code INSEE commune
@@ -211,7 +215,6 @@ class Sitehydro(_Site_or_station):
 
     # Sitehydro other properties
 
-    #libelleusuel
     #libellecomplement
     #mnemonique
     #precisionce
@@ -246,8 +249,9 @@ class Sitehydro(_Site_or_station):
     #tronconsvivilance
 
     def __init__(
-        self, code, codeh2=None, typesite='REEL', libelle=None,
-        coord=None, stations=None, communes=None, strict=True
+        self, code, codeh2=None, typesite='REEL',
+        libelle=None, libelleusuel=None, coord=None, stations=None,
+        communes=None, strict=True
     ):
         """Initialisation.
 
@@ -256,8 +260,7 @@ class Sitehydro(_Site_or_station):
             codeh2 (string(8)) = ancien code hydro2
             typesite (string parmi NOMENCLATURE[530], defaut REEL)
             libelle (string)
-            coord (liste ou dict) = (x, y, proj) ou
-                {'x': x, 'y': y, 'proj': proj}
+            libelleusuel (string)
             stations (une Station ou un iterable de Station)
             communes (un code commmune ou un iterable de codes)
             strict (bool, defaut True) = le mode permissif permet de lever les
@@ -272,6 +275,8 @@ class Sitehydro(_Site_or_station):
         )
 
         # -- simple properties --
+        self.libelleusuel = unicode(libelleusuel) \
+            if (libelleusuel is not None) else None
 
         # -- full properties --
         self._typesite = None
@@ -392,6 +397,8 @@ class Stationhydro(_Site_or_station):
         codeh2 (string(8)) = ancien code hydro2
         typestation (string parmi NOMENCLATURE[531])
         libelle (string)
+        libellecomplement (string)
+        niveauaffichage (int) = niveau d'affichage
         coord (Coord)
         capteurs (une liste de Capteur)
         commune (char(5)) = code INSEE commune
@@ -402,16 +409,12 @@ class Stationhydro(_Site_or_station):
 
     # Stationhydro other properties
 
-    #capteurs
-
-    #libellecomplement
     #descriptif
     #dtmaj
     #pk
     #dtes
     #dths
     #surveillance
-    #niveauaffichage
     #publication
     #delaidiscontinuite
     #delaiabsence
@@ -433,7 +436,8 @@ class Stationhydro(_Site_or_station):
 
     def __init__(
         self, code, codeh2=None, typestation='LIMNI', libelle=None,
-        coord=None, capteurs=None, commune=None, ddcs=None, strict=True
+        libellecomplement=None, niveauaffichage=0, coord=None, capteurs=None,
+        commune=None, ddcs=None, strict=True
     ):
         """Initialisation.
 
@@ -442,6 +446,8 @@ class Stationhydro(_Site_or_station):
             codeh2 (string(8)) = ancien code hydro2
             typestation (string parmi NOMENCLATURE[531], defaut LIMNI)
             libelle (string)
+            libellecomplement (string)
+            niveauaffichage (int) = niveau d'affichage
             coord (liste ou dict) = (x, y, proj) ou
                 {'x': x, 'y': y, 'proj': proj}
             capteurs (un Capteur ou un iterable de Capteur)
@@ -460,10 +466,14 @@ class Stationhydro(_Site_or_station):
         )
 
         # -- simple properties --
+        self.libellecomplement = unicode(libellecomplement) \
+            if (libellecomplement is not None) else None
 
         # -- full properties --
         self._typestation = 'LIMNI'
         self.typestation = typestation
+        self._niveauaffichage = 0
+        self.niveauaffichage = niveauaffichage
         self._capteurs = []
         self.capteurs = capteurs
         self._commune = None
@@ -496,6 +506,19 @@ class Stationhydro(_Site_or_station):
 
         except:
             raise
+
+    # -- property niveauaffichage --
+    @property
+    def niveauaffichage(self):
+        """Return niveau d'affichage."""
+        return self._niveauaffichage
+
+    @niveauaffichage.setter
+    def niveauaffichage(self, niveauaffichage):
+        """Set niveau d'affichage."""
+        # FIXME - Bd Hydro requires one of (0 111 191 311 391 511 591 911 991)
+        #         but it is not a SANDRE nomencature
+        self._niveauaffichage = int(niveauaffichage)
 
     # -- property capteurs --
     @property

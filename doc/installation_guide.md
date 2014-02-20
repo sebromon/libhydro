@@ -10,7 +10,7 @@ Installation sous Windows
   [http://docs.python.org/2/using/windows.html]
     "path = ... C:\Program Files\Python27;C:\Program Files\Python27\scripts"
     "PYTHONPATH = ..."
-    "proxy = http://direct1.proxy.i2:8080"
+    "proxy = http://direct.proxy.i2:8080"
 
 ### Pour ces dépendances en C/C++ utiliser les binaires de http://www.lfd.uci.edu/~gohlke/pythonlibs/ ###
     numpy

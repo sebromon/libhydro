@@ -23,7 +23,8 @@ from __future__ import (
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """philippe.gouin@developpement-durable.gouv.fr"""
+__author__ = """Philippe Gouin """ \
+             """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1g"""
 __date__ = """2014-02-10"""
 

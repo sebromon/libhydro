@@ -40,8 +40,9 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1g"""
-__date__ = """2013-11-23"""
+__contributor__ = """Camillo Montes (SYNAPSE)"""
+__version__ = """0.1h"""
+__date__ = """2014-02-20"""
 
 #HISTORY
 #V0.1 - 2013-08-18
@@ -303,6 +304,7 @@ def _sitehydro_from_element(element):
         if typesite is not None:
             args['typesite'] = typesite
         args['libelle'] = _value(element, 'LbSiteHydro')
+        args['libelleusuel'] = _value(element, 'LbUsuelSiteHydro')
         args['coord'] = _coord_from_element(
             element.find('CoordSiteHydro'), 'SiteHydro'
         )
@@ -329,6 +331,12 @@ def _stationhydro_from_element(element):
         if typestation is not None:
             args['typestation'] = typestation
         args['libelle'] = _value(element, 'LbStationHydro')
+        args['libellecomplement'] = _value(
+            element, 'ComplementLibelleStationHydro'
+        )
+        niveauaffichage = _value(element, 'NiveauAffichageStationHydro')
+        if niveauaffichage is not None:
+            args['niveauaffichage'] = niveauaffichage
         args['coord'] = _coord_from_element(
             element.find('CoordStationHydro'), 'StationHydro'
         )

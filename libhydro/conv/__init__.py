@@ -9,5 +9,5 @@ Il contient les modules:
 
 """
 __all__ = ['shom', 'xml']
-from shom import shom as shom
-import xml
+from .shom import shom
+from . import xml

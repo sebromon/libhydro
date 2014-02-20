@@ -26,7 +26,7 @@ sys.path.append(os.path.join('..', '..'))
 
 import unittest
 
-from libhydro.core import composant
+from libhydro.core import _composant as composant
 
 
 #-- strings -------------------------------------------------------------------
