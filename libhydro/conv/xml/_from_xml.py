@@ -33,7 +33,8 @@ from libhydro.core import (
     modeleprevision as _modeleprevision,
     obshydro as _obshydro,
     simulation as _simulation,
-    intervenant as _intervenant
+    intervenant as _intervenant,
+    evenement as _evenement
 )
 
 
@@ -42,7 +43,7 @@ __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
 __version__ = """0.1h"""
-__date__ = """2014-02-20"""
+__date__ = """2014-02-21"""
 
 #HISTORY
 #V0.1 - 2013-08-18
@@ -230,7 +231,9 @@ def _parse(src):
         'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro')),
         # 'sitesmeteo'
         # 'modelesprevision': '',
-        # 'evenements'
+        'evenements': _siteshydro_from_element(
+            tree.find('Donnees/Evenements')
+        ),
         # 'courbestarage'
         # 'jaugeages'
         # 'courbescorrection'
@@ -246,7 +249,7 @@ def _parse(src):
 
 # -- global functions ---------------------------------------------------------
 
-# TODO - these 3 functions can be factorised
+# TODO - these functions can be factorised
 
 def _siteshydro_from_element(element):
     """Return a list of sitehydro.Sitehydro from a <SitesHydro> element."""
@@ -264,6 +267,15 @@ def _series_from_element(element):
         for serie in element.findall('./Serie'):
             series.append(_serie_from_element(serie))
         return series
+
+
+def _evenements_from_element(element):
+    """Return a list of evenement.Evenement from a <Evenements> element."""
+    if element is not None:
+        evenements = []
+        for evenement in element.findall('./Evenement'):
+            evenements.append(_evenement_from_element(evenement))
+        return evenements
 
 
 def _simulations_from_element(element):
@@ -381,6 +393,39 @@ def _capteur_from_element(element):
             args['typemesure'] = typemesure
         # build Capteur
         return _sitehydro.Capteur(**args)
+
+
+def _evenement_from_element(element):
+    """Return a evenement.Evenement from a <Evenement> element."""
+    if element is not None:
+
+        # entite can be a Sitehydro, a Stationhydro or a Sitemeteo
+        entite = None
+        if element.find('CdSiteHydro') is not None:
+            entite = _sitehydro.Sitehydro(
+                code=_value(element, 'CdSiteHydro')
+            )
+        elif element.find('CdStationHydro') is not None:
+            entite = _sitehydro.Stationhydro(
+                code=_value(element, 'CdStationHydro')
+            )
+        elif element.find('CdSiteMeteo') is not None:
+            raise NotImplementedError('Sitemeteo is not already implemented')
+        #     entite = _sitemeteo.Sitemeteo(
+        #         code=_value(element, 'CdSiteMeteo')
+        #     )
+
+        # make the Evenement
+        return _evenement.Evenement(
+            entite=entite,
+            descriptif=_value(element, 'DescEvenement'),
+            contact=_intervenant.Contact(
+                code=_value(element.find('Emetteur'), 'CdContact'),
+            ),
+            dt=_value(element, 'DtEvenement', _UTC),
+            publication=_value(element, 'TypPublicationEvenement'),
+            dtmaj=_value(element, 'DtMajEvenement', _UTC),
+        )
 
 
 def _serie_from_element(element):

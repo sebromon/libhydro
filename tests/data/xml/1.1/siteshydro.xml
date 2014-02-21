@@ -25,7 +25,7 @@
       <SiteHydro>
         <CdSiteHydro>O1984310</CdSiteHydro>
         <LbSiteHydro>Le Touch à Toulouse [Saint-Martin-du-Touch]</LbSiteHydro>
-        <!-- <LbUsuelSiteHydro>St-Martin-du-Touch</LbUsuelSiteHydro> -->
+        <LbUsuelSiteHydro>St-Martin-du-Touch</LbUsuelSiteHydro>
         <TypSiteHydro>SOURCE</TypSiteHydro>
         <CdCommune>11354</CdCommune>
         <CdCommune>11355</CdCommune>
@@ -34,14 +34,18 @@
           <!--STATION 1.1 -->
           <StationHydro>
             <CdStationHydro>O198431001</CdStationHydro>
-            <LbStationHydro>station 1</LbStationHydro>
+            <LbStationHydro>Le Touch à Toulouse [Saint-Martin-du-Touch] - station 1</LbStationHydro>
             <TypStationHydro>LIMNI</TypStationHydro>
+            <ComplementLibelleStationHydro>station 1</ComplementLibelleStationHydro>
+            <NiveauAffichageStationHydro>911</NiveauAffichageStationHydro>
           </StationHydro>
           <!--STATION 1.2 -->
           <StationHydro>
             <CdStationHydro>O198431002</CdStationHydro>
-            <LbStationHydro>station 2</LbStationHydro>
+            <LbStationHydro>Le Touch à Toulouse [Saint-Martin-du-Touch] - station 2</LbStationHydro>
             <TypStationHydro>LIMNI</TypStationHydro>
+            <ComplementLibelleStationHydro>station 2</ComplementLibelleStationHydro>
+            <NiveauAffichageStationHydro>0</NiveauAffichageStationHydro>
           </StationHydro>
           <!--STATION 1.3 -->
           <StationHydro>
@@ -55,14 +59,15 @@
       <SiteHydro>
         <CdSiteHydro>O2000040</CdSiteHydro>
         <LbSiteHydro>La Garonne à Toulouse</LbSiteHydro>
-        <!-- <LbUsuelSiteHydro>Toulouse</LbUsuelSiteHydro> -->
+        <LbUsuelSiteHydro>Toulouse</LbUsuelSiteHydro>
         <TypSiteHydro>REEL</TypSiteHydro>
         <StationsHydro>
           <!--STATION 2.1 -->
           <StationHydro>
             <CdStationHydro>O200004001</CdStationHydro>
-            <LbStationHydro>La Garonne à Toulouse</LbStationHydro>
+            <LbStationHydro>La Garonne à Toulouse - station 1</LbStationHydro>
             <TypStationHydro>LIMNI</TypStationHydro>
+            <ComplementLibelleStationHydro>échelle principale</ComplementLibelleStationHydro>
             <CoordStationHydro>
               <CoordXStationHydro>15.0</CoordXStationHydro>
               <CoordYStationHydro>16.0</CoordYStationHydro>
@@ -76,7 +81,7 @@
       <SiteHydro>
         <CdSiteHydro>O1712510</CdSiteHydro>
         <LbSiteHydro>L'Ariège à Auterive</LbSiteHydro>
-        <!-- <LbUsuelSiteHydro>AUTERIVE</LbUsuelSiteHydro> -->
+        <LbUsuelSiteHydro>AUTERIVE</LbUsuelSiteHydro>
         <TypSiteHydro>REEL</TypSiteHydro>
         <!-- <MnSiteHydro/> -->
         <CoordSiteHydro>
@@ -156,7 +161,7 @@
             </CoordStationHydro>
             <!-- <PkStationHydro>1.0</PkStationHydro> -->
             <!-- <DtMiseServiceStationHydro>2007-03-25T15:00:00</DtMiseServiceStationHydro> -->
-            <!-- <NiveauAffichageStationHydro>1</NiveauAffichageStationHydro> -->
+            <NiveauAffichageStationHydro>1</NiveauAffichageStationHydro>
             <!-- <DroitPublicationStationHydro>20</DroitPublicationStationHydro> -->
             <!-- <EssaiStationHydro>false</EssaiStationHydro> -->
             <!-- <InfluLocaleStationHydro>2</InfluLocaleStationHydro> -->

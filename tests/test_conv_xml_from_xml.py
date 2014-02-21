@@ -33,8 +33,8 @@ from libhydro.conv.xml import (_from_xml as from_xml)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2013-11-23"""
+__version__ = """0.1d"""
+__date__ = """2014-02-21"""
 
 #HISTORY
 #V0.1 - 2013-08-24
@@ -92,6 +92,9 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(
             sitehydro.libelle, 'Le Touch à Toulouse [Saint-Martin-du-Touch]'
         )
+        self.assertEqual(
+            sitehydro.libelleusuel, 'St-Martin-du-Touch'
+        )
         self.assertEqual(sitehydro.typesite, 'SOURCE')
         self.assertEqual(sitehydro.code, 'O1984310')
         self.assertEqual(sitehydro.communes, ['11354', '11355', '2B021'])
@@ -100,9 +103,16 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         for i in range(1, 3):
             self.assertEqual(sitehydro.stations[i - 1].code, 'O19843100%i' % i)
             self.assertEqual(
-                sitehydro.stations[i - 1].libelle, 'station %i' % i
+                sitehydro.stations[i - 1].libelle, '%s - station %i' % (
+                    sitehydro.libelle, i
+                )
             )
             self.assertEqual(sitehydro.stations[i - 1].typestation, 'LIMNI')
+            self.assertEqual(
+                sitehydro.stations[i - 1].libellecomplement, 'station %i' % i
+            )
+        self.assertEqual(sitehydro.stations[0].niveauaffichage, 911)
+        self.assertEqual(sitehydro.stations[1].niveauaffichage, 0)
 
     def test_sitehydro_2(self):
         """Sitehydro 2 test."""
@@ -112,6 +122,7 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(sitehydro.typesite, 'REEL')
         # check station
         station = sitehydro.stations[0]
+        self.assertEqual(station.libellecomplement, 'échelle principale')
         self.assertEqual(station.coord.x, 15)
         self.assertEqual(station.coord.y, 16)
         self.assertEqual(station.coord.proj, 26)
@@ -129,6 +140,7 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(station.ddcs, ['10', '1000000001'])
         self.assertEqual(station.commune, '11354')
         self.assertEqual(station.codeh2, 'O1712510')
+        self.assertEqual(station.niveauaffichage, 1)
         # checkcapteurs
         capteurs = station.capteurs
         self.assertEqual(len(capteurs), 2)

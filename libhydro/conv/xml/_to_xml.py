@@ -27,8 +27,8 @@ import numpy as _numpy
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1f"""
-__date__ = """2013-11-27"""
+__version__ = """0.1g"""
+__date__ = """2014-02-21"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -41,7 +41,9 @@ __date__ = """2013-11-27"""
 
 # -- config -------------------------------------------------------------------
 # order matters in Xml, we must have the keys list !
-ORDERED_ACCEPTED_KEYS = ('scenario', 'siteshydro', 'series', 'simulations')
+ORDERED_ACCEPTED_KEYS = (
+    'scenario', 'siteshydro', 'evenements', 'series', 'simulations'
+)
 
 PREV_PROBABILITY = {
     50: 'ResMoyPrev',
@@ -51,7 +53,10 @@ PREV_PROBABILITY = {
 
 
 # -- testsfunction ------------------------------------------------------------
-def _to_xml(scenario=None, siteshydro=None, series=None, simulations=None):
+def _to_xml(
+    scenario=None, siteshydro=None,
+    evenements=None, series=None, simulations=None
+):
     """Return a etree.Element a partir des donnees passes en argument.
 
     Cette fonction est privee et les utilisateurs sont invites a utiliser la
@@ -60,6 +65,7 @@ def _to_xml(scenario=None, siteshydro=None, series=None, simulations=None):
     Arguments:
         scenario (xml.Scenario) = 1 element
         sitesydro (sitehydro.Sitehydro collection) = iterable or None
+        evenements (evenement.Evenement collection) = iterable ou None
         series (obshydro.Serie collection) = iterable or None
         simulations (simulation.Simulation collection) = iterable or None
 
@@ -70,7 +76,7 @@ def _to_xml(scenario=None, siteshydro=None, series=None, simulations=None):
     # init the tree
     tree = _etree.Element('hydrometrie')
 
-    # TODO - we should factorise those 3 lines
+    # TODO - we should factorise those lines
 
     # add the scenario
     if args['scenario'] is not None:
@@ -85,10 +91,14 @@ def _to_xml(scenario=None, siteshydro=None, series=None, simulations=None):
                     eval('_{}_to_element(args[k])'.format(k))
                 )
 
-    # add series and simulations
-    if (args['series'] is not None) or (args['simulations'] is not None):
+    # add the donnees
+    if (
+        (args['evenements'] is not None)
+        or (args['series'] is not None)
+        or (args['simulations'] is not None)
+    ):
         sub = _etree.SubElement(tree, 'Donnees')
-        for k in ORDERED_ACCEPTED_KEYS[2:4]:
+        for k in ('evenements', 'series', 'simulations'):
             if args[k] is not None:
                 sub.append(
                     eval('_{}_to_element(args[k])'.format(k))
@@ -115,6 +125,15 @@ def _siteshydro_to_element(siteshydro):
         element = _etree.Element('SitesHydro')
         for sitehydro in siteshydro:
             element.append(_sitehydro_to_element(sitehydro))
+        return element
+
+
+def _evenements_to_element(evenements):
+    """Return a <Evenements> element from a list of evenement.Evenement."""
+    if evenements is not None:
+        element = _etree.Element('Evenements')
+        for evenement in evenements:
+            element.append(_evenement_to_element(evenement))
         return element
 
 
@@ -188,6 +207,7 @@ def _sitehydro_to_element(sitehydro):
         story = _OrderedDict((
             ('CdSiteHydro', {'value': sitehydro.code}),
             ('LbSiteHydro', {'value': sitehydro.libelle}),
+            ('LbUsuelSiteHydro', {'value': sitehydro.libelleusuel}),
             ('TypSiteHydro', {'value': sitehydro.typesite}),
             ('CoordSiteHydro', {
                 'value': None,
@@ -234,9 +254,15 @@ def _stationhydro_to_element(stationhydro):
             ('CdStationHydro', {'value': stationhydro.code}),
             ('LbStationHydro', {'value': stationhydro.libelle}),
             ('TypStationHydro', {'value': stationhydro.typestation}),
+            ('ComplementLibelleStationHydro', {
+                'value': stationhydro.libellecomplement
+            }),
             ('CoordStationHydro', {
                 'value': None,
                 'force': True if stationhydro.coord is not None else False
+            }),
+            ('NiveauAffichageStationHydro', {
+                'value': stationhydro.niveauaffichage
             }),
             ('ReseauxMesureStationHydro', {
                 'value': None,
@@ -297,6 +323,28 @@ def _capteur_to_element(capteur):
 
         # action !
         return _factory(root=_etree.Element('Capteur'), story=story)
+
+
+def _evenement_to_element(evenement):
+    """Return a <Evenement> element from a evenement.Evenement."""
+
+    if evenement is not None:
+
+        # template for serie simple elements
+        story = _OrderedDict()
+        # entite can be a Sitehydro, a Stationhydro
+        # TODO - or a Sitemeteo
+        story['Cd%s' % evenement.entite.__class__.__name__.replace(
+            'hydro', 'Hydro')] = {'value': evenement.entite.code}
+        # suite
+        story['CdContact'] = {'value': evenement.contact.code}
+        story['DtEvenement'] = {'value': evenement.dt.isoformat()}
+        story['DescEvenement'] = {'value': evenement.descriptif}
+        story['TypPublicationEvenement'] = {'value': evenement.statut}
+        story['DtMajEvenement'] = {'value': evenement.dtmaj.isoformat()}
+
+        # action !
+        return _factory(root=_etree.Element('Evenement'), story=story)
 
 
 def _serie_to_element(serie):

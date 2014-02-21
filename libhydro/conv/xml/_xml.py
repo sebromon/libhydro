@@ -22,6 +22,7 @@ from . import (_from_xml, _to_xml)
 from libhydro.core import (
     # intervenant as _intervenant,  # FIXME
     sitehydro as _sitehydro,
+    evenement as _evenement,
     obshydro as _obshydro,
     simulation as _simulation
 )
@@ -30,8 +31,8 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1f"""
-__date__ = """2014-01-17"""
+__version__ = """0.1g"""
+__date__ = """2014-02-21"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -48,6 +49,7 @@ class Message(object):
     Proprietes:
         scenario (xml.Scenario) = un objet Scenario obligatoire
         sitesydro (sitehydro.Sitehydro collection) = iterable ou None
+        evenements (evenement.Evenement collection) = iterable ou None
         series (obshydro.Serie collection) = iterable ou None
         simulations (simulation.Simulation collection) = iterable ou None
 
@@ -56,7 +58,6 @@ class Message(object):
         # 'intervenants':
         # 'sitesmeteo'
         # 'modelesprevision': 'TODOS',
-        # 'evenements'
         # 'courbestarage'
         # 'jaugeages'
         # 'courbescorrection'
@@ -67,7 +68,7 @@ class Message(object):
         # 'alarmes'
 
     def __init__(
-        self, scenario, siteshydro=None, series=None,
+        self, scenario, siteshydro=None, evenements=None, series=None,
         simulations=None, strict=True
     ):
         """Initialisation.
@@ -75,6 +76,7 @@ class Message(object):
         Arguments:
             scenario (xml.Scenario) = un objet Scenario obligatoire
             sitesydro (sitehydro.Sitehydro collection) = iterable ou None
+            evenements (evenement.Evenement collection) = iterable ou None
             series (obshydro.Serie collection) = iterable ou None
             simulations (simulation.Simulation collection) = iterable ou None
             strict (bool, defaut True) = le mode permissif permet de lever les
@@ -89,9 +91,10 @@ class Message(object):
 
         # -- full properties --
         self._scenario = self._siteshydro = None
-        self._series = self._simulations = None
+        self._evenements = self._series = self._simulations = None
         self.scenario = scenario
         self.siteshydro = siteshydro
+        self.evenements = evenements
         self.series = series
         self.simulations = simulations
 
@@ -150,6 +153,37 @@ class Message(object):
 
             # all is well
             self._siteshydro = siteshydro
+
+        except:
+            raise
+
+    # -- property evenements --
+    @property
+    def evenements(self):
+        """Return evenements."""
+        return self._evenements
+
+    @evenements.setter
+    def evenements(self, evenements):
+        """Set evenements."""
+        try:
+
+            # None case
+            if (evenements is None):
+                evenements = []
+
+            # other cases
+            if isinstance(evenements, _evenement.Evenement):
+                evenements = [evenements]
+            elif self._strict:
+                for evenement in evenements:
+                    if not isinstance(evenement, _evenement.Evenement):
+                        raise TypeError(
+                            'evenement {} incorrect'.format(evenement)
+                        )
+
+            # all is well
+            self._evenements = evenements
 
         except:
             raise
@@ -244,6 +278,9 @@ class Message(object):
             siteshydro=_from_xml._siteshydro_from_element(
                 tree.find('RefHyd/SitesHydro')
             ),
+            evenements=_from_xml._evenements_from_element(
+                tree.find('Donnees/Evenements')
+            ),
             series=_from_xml._series_from_element(
                 tree.find('Donnees/Series')
             ),
@@ -255,7 +292,6 @@ class Message(object):
             # 'intervenants':
             # 'sitesmeteo'
             # 'modelesprevision': 'TODOS',
-            # 'evenements'
             # 'courbestarage'
             # 'jaugeages'
             # 'courbescorrection'
@@ -275,6 +311,7 @@ class Message(object):
         avec les regles suivantes:
             CLE PARMI   /      VALEUR
             siteshydro  = iterable de sitehydro.Sitehydro
+            evenements  = iterable d'evenement.Evenement
             series      = iterable de obshydro.Serie
             simulations = iterable de simulation.Simulation
 
@@ -313,6 +350,7 @@ class Message(object):
             _to_xml._to_xml(
                 scenario=self.scenario,
                 siteshydro=self.siteshydro,
+                evenements=self.evenements,
                 series=self.series,
                 simulations=self.simulations
             )
@@ -332,6 +370,7 @@ class Message(object):
             _to_xml._to_xml(
                 scenario=self.scenario,
                 siteshydro=self.siteshydro,
+                evenements=self.evenements,
                 series=self.series,
                 simulations=self.simulations
             ),
@@ -347,9 +386,11 @@ class Message(object):
         except Exception:
             scenario = 'Message <sans scenario>'
         return '{}\nContenu: {} siteshydro - ' \
+               '{} evenements - ' \
                '{} series - {} simulations'.format(
                    scenario,
                    len(self.siteshydro),
+                   len(self.evenements),
                    len(self.series),
                    len(self.simulations)
                )
