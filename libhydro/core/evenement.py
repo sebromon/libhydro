@@ -15,6 +15,7 @@ from __future__ import (
 
 import sys as _sys
 import datetime as _datetime
+import numpy as _numpy
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
@@ -22,8 +23,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1a"""
-__date__ = """2013-11-26"""
+__version__ = """0.1b"""
+__date__ = """2014-02-23"""
 
 #HISTORY
 #V0.1 - 2013-11-26
@@ -77,13 +78,61 @@ class Evenement(object):
         self.descriptif = unicode(descriptif) \
             if (descriptif is not None) else None
         self.contact = contact
-        self.dt = dt
-        self.dtmaj = dtmaj
         self._strict = bool(strict)
 
         # -- full properties --
-        self._publication = None
+        self._dt = self._dtmaj = self._publication = None
+        self.dt = dt
+        self.dtmaj = dtmaj
         self.publication = publication
+
+    # -- property dt --
+    @property
+    def dt(self):
+        """Return date."""
+        return self._dt
+
+    @dt.setter
+    def dt(self, dt):
+        """Set date."""
+        try:
+            if dt is not None:
+                if not isinstance(dt, _numpy.datetime64):
+                    try:
+                        dt = _numpy.datetime64(dt, 's')
+                    except Exception:
+                        try:
+                            dt = _numpy.datetime64(dt.isoformat(), 's')
+                        except Exception:
+                            raise TypeError('dt must be a date')
+            self._dt = dt
+
+        except:
+            raise
+
+    # -- property dtmaj --
+    @property
+    def dtmaj(self):
+        """Return dtmaj."""
+        return self._dtmaj
+
+    @dtmaj.setter
+    def dtmaj(self, dtmaj):
+        """Set dtmaj."""
+        try:
+            if dtmaj is not None:
+                if not isinstance(dtmaj, _numpy.datetime64):
+                    try:
+                        dtmaj = _numpy.datetime64(dtmaj, 's')
+                    except Exception:
+                        try:
+                            dtmaj = _numpy.datetime64(dtmaj.isoformat(), 's')
+                        except Exception:
+                            raise TypeError('dtmaj must be a date')
+            self._dtmaj = dtmaj
+
+        except:
+            raise
 
     # -- property publication --
     @property

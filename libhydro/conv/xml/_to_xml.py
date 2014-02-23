@@ -28,7 +28,7 @@ import numpy as _numpy
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1g"""
-__date__ = """2014-02-21"""
+__date__ = """2014-02-23"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -179,7 +179,7 @@ def _scenario_to_element(scenario):
                 }),
                 ('CdContact', {
                     'value': unicode(scenario.emetteur.code),
-                    'attr': {"schemeAgencyID": "SANDRE"}
+                    'attr': {"schemeAgencyID": "SANDRE"}  # FIXME -  wrong ?
                 })
             ))
         }
@@ -338,10 +338,10 @@ def _evenement_to_element(evenement):
             'hydro', 'Hydro')] = {'value': evenement.entite.code}
         # suite
         story['CdContact'] = {'value': evenement.contact.code}
-        story['DtEvenement'] = {'value': evenement.dt.isoformat()}
+        story['DtEvenement'] = {'value': evenement.dt.item().isoformat()}
         story['DescEvenement'] = {'value': evenement.descriptif}
-        story['TypPublicationEvenement'] = {'value': evenement.statut}
-        story['DtMajEvenement'] = {'value': evenement.dtmaj.isoformat()}
+        story['TypPublicationEvenement'] = {'value': evenement.publication}
+        story['DtMajEvenement'] = {'value': evenement.dtmaj.item().isoformat()}
 
         # action !
         return _factory(root=_etree.Element('Evenement'), story=story)

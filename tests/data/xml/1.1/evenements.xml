@@ -10,7 +10,7 @@
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">1520</CdIntervenant>
       <NomIntervenant>Service de Prévision des Crues (S.P.C.) Grand Delta</NomIntervenant>
-      <CdContact>26</CdContact>
+      <CdContact schemeAgencyID="SANDRE">26</CdContact>
     </Emetteur>
     <Destinataire>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
@@ -20,7 +20,7 @@
     <Evenements>
       <!-- Evenement 1 -->
       <Evenement>
-        <CdSiteHydro>A00010101</CdSiteHydro>
+        <CdSiteHydro>A0010101</CdSiteHydro>
         <CdContact>1</CdContact>
         <DtEvenement>1999-08-12T00:05</DtEvenement>
         <DescEvenement>Arrachement de l'échelle</DescEvenement>

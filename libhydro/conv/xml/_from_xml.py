@@ -231,7 +231,7 @@ def _parse(src):
         'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro')),
         # 'sitesmeteo'
         # 'modelesprevision': '',
-        'evenements': _siteshydro_from_element(
+        'evenements': _evenements_from_element(
             tree.find('Donnees/Evenements')
         ),
         # 'courbestarage'
@@ -420,7 +420,7 @@ def _evenement_from_element(element):
             entite=entite,
             descriptif=_value(element, 'DescEvenement'),
             contact=_intervenant.Contact(
-                code=_value(element.find('Emetteur'), 'CdContact'),
+                code=_value(element, 'CdContact'),
             ),
             dt=_value(element, 'DtEvenement', _UTC),
             publication=_value(element, 'TypPublicationEvenement'),

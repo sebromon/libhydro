@@ -35,7 +35,7 @@ from libhydro.core import sitehydro
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1a"""
-__date__ = """2014-02-12"""
+__date__ = """2014-02-23"""
 
 #HISTORY
 #V0.1 - 2014-02-12
@@ -77,7 +77,7 @@ class Testseuilhydro(unittest.TestCase):
         commentaire = 'Ce seuil ne sera jamais dépassé'
         publication = True
         valeurforcee = True
-        dtmaj = datetime.datetime.utcnow()
+        dtmaj = datetime.datetime(1953, 12, 31, 8)
         valeurs = [
             Valeurseuil(10), Valeurseuil(11), Valeurseuil(12)
         ]

@@ -5,12 +5,12 @@
     <CodeScenario>hydrometrie</CodeScenario>
     <VersionScenario>1.1</VersionScenario>
     <NomScenario>Echange de données hydrométriques</NomScenario>
-    <DateHeureCreationFichier>2010-02-26T10:05:00+03:00</DateHeureCreationFichier>
-    <RefFichier>20100226160756_donnees_sac30-2010-02-26-15-05.xml</RefFichier>
+    <DateHeureCreationFichier>2010-02-26T07:05:00</DateHeureCreationFichier>
+    <!-- <RefFichier>20100226160756_donnees_sac30-2010-02-26-15-05.xml</RefFichier> -->
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">1520</CdIntervenant>
-      <NomIntervenant>Service de Prévision des Crues (S.P.C.) Grand Delta</NomIntervenant>
-      <CdContact>26</CdContact>
+      <!-- <NomIntervenant>Service de Prévision des Crues (S.P.C.) Grand Delta</NomIntervenant> -->
+      <CdContact schemeAgencyID="SANDRE">26</CdContact>
     </Emetteur>
     <Destinataire>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
@@ -20,21 +20,21 @@
     <Evenements>
       <!-- Evenement 1 -->
       <Evenement>
-        <CdSiteHydro>A00010101</CdSiteHydro>
+        <CdSiteHydro>A0010101</CdSiteHydro>
         <CdContact>1</CdContact>
-        <DtEvenement>1999-08-12T00:05</DtEvenement>
+        <DtEvenement>1999-08-12T00:05:00</DtEvenement>
         <DescEvenement>Arrachement de l'échelle</DescEvenement>
         <TypPublicationEvenement>1</TypPublicationEvenement>
-        <DtMajEvenement>2000-05-10T22:05</DtMajEvenement>
+        <DtMajEvenement>2000-05-10T22:05:00</DtMajEvenement>
       </Evenement>
       <!-- Evenement 2 -->
       <Evenement>
         <CdStationHydro>Z853010101</CdStationHydro>
         <CdContact>8563</CdContact>
-        <DtEvenement>2010-02-26T10:05:00+01:00</DtEvenement>
+        <DtEvenement>2010-02-26T09:05:00</DtEvenement>
         <DescEvenement>Déplacement de la station de 22.5m</DescEvenement>
         <TypPublicationEvenement>100</TypPublicationEvenement>
-        <DtMajEvenement>2011-01-13T10:05:00+00:00</DtMajEvenement>
+        <DtMajEvenement>2011-01-13T10:05:00</DtMajEvenement>
       </Evenement>
     </Evenements>
   </Donnees>

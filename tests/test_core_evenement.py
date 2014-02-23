@@ -36,7 +36,7 @@ from libhydro.core import intervenant
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1a"""
-__date__ = """2013-11-26"""
+__date__ = """2014-02-23"""
 
 #HISTORY
 #V0.1 - 2013-11-26
@@ -66,7 +66,7 @@ class Testevenement(unittest.TestCase):
         entite = sitehydro.Stationhydro('R533010110')
         descriptif = 'some texte here'
         contact = intervenant.Contact(nom='moi')
-        dt = datetime.datetime.utcnow()
+        dt = datetime.datetime(1852, 2, 8, 5, 10, 8)
         publication = 10
         e = evenement.Evenement(
             entite=entite, descriptif=descriptif, contact=contact,

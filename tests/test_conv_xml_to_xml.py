@@ -36,8 +36,8 @@ from libhydro.conv.xml import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1b"""
-__date__ = """2013-11-24"""
+__version__ = """0.1c"""
+__date__ = """2014-02-23"""
 
 #HISTORY
 #V0.1 - 2013-08-30
@@ -45,7 +45,7 @@ __date__ = """2013-11-24"""
 
 
 #-- todos ---------------------------------------------------------------------
-# FIXME - factorise TestToXmlSitesHydros, ToXmlObssHydro, ToXmlSimulations
+# FIXME - factorize TestToXmlSitesHydros, ToXmlObssHydro, ToXmlSimulations
 
 
 # -- config -------------------------------------------------------------------
@@ -185,6 +185,38 @@ class TestToXmlSitesHydros(unittest.TestCase):
 
 #-- class TestToXmlSitesMeteo -------------------------------------------------
 #TODO
+
+
+#-- class TestToXmlEvenements -------------------------------------------------
+class TestToXmlEvenements(unittest.TestCase):
+
+    """ToXmlEvenements class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        # build expected string
+        self.expected = xml_to_unicode(
+            os.path.join('data', 'xml', '1.1', 'evenements_expected.xml')
+        )
+        # we have our own assertEqual function, more verbose
+        self.assertEqual = assert_unicode_equal
+
+    def test_base(self):
+        """Base test."""
+        # build objects from xml
+        data = from_xml._parse(
+            os.path.join('data', 'xml', '1.1', 'evenements.xml')
+        )
+        # build xml string from objects
+        xml = etree.tostring(
+            to_xml._to_xml(
+                scenario=data['scenario'],
+                evenements=data['evenements']
+            ),
+            encoding='utf-8'
+        ).decode('utf-8')
+        # test
+        self.assertEqual(xml, self.expected)
 
 
 #-- class TestToXmlObssHydro --------------------------------------------------

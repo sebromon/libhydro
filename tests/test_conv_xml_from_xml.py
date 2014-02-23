@@ -33,8 +33,8 @@ from libhydro.conv.xml import (_from_xml as from_xml)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1d"""
-__date__ = """2014-02-21"""
+__version__ = """0.1e"""
+__date__ = """2014-02-23"""
 
 #HISTORY
 #V0.1 - 2013-08-24
@@ -56,10 +56,12 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         """Check Keys test."""
         self.assertEqual(
             set(self.data.keys()),
-            set(('scenario', 'siteshydro', 'series', 'simulations'))
+            set(('scenario', 'siteshydro', 'evenements',
+                'series', 'simulations'))
         )
         self.assertIsNotNone(self.data['scenario'])
         self.assertIsNotNone(self.data['siteshydro'])
+        self.assertIsNone(self.data['evenements'])
         self.assertIsNone(self.data['series'])
         self.assertIsNone(self.data['simulations'])
 
@@ -162,8 +164,74 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         )
 
 
-#-- class TestFromXmlSitesMeteo ----------------------------------------------
-#TODO
+#-- class TestFromXmlSitesMeteo -----------------------------------------------
+# TODO
+
+
+#-- class TestFromXmlEvenements -----------------------------------------------
+class TestFromXmlEvenements(unittest.TestCase):
+
+    """FromXmlEvenements class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '1.1', 'evenements.xml')
+        )
+
+    def test_base(self):
+        """Check Keys test."""
+        self.assertEqual(
+            set(self.data.keys()),
+            set(('scenario', 'siteshydro', 'evenements',
+                'series', 'simulations'))
+        )
+        self.assertIsNotNone(self.data['scenario'])
+        self.assertIsNone(self.data['siteshydro'])
+        self.assertIsNotNone(self.data['evenements'])
+        self.assertIsNone(self.data['series'])
+        self.assertIsNone(self.data['simulations'])
+
+    def test_scenario(self):
+        """Scenario test."""
+        scenario = self.data['scenario']
+        self.assertEqual(scenario.code, 'hydrometrie')
+        self.assertEqual(scenario.version, '1.1')
+        self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
+        self.assertEqual(
+            scenario.dtprod, datetime.datetime(2010, 2, 26, 7, 5)
+        )
+        self.assertEqual(scenario.emetteur.code, 26)
+        self.assertEqual(scenario.emetteur.intervenant.code, 1520)
+        self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
+        self.assertEqual(scenario.destinataire.code, 1537)
+        self.assertEqual(scenario.destinataire.origine, 'SANDRE')
+
+    def test_evenement_0(self):
+        """Evenement 0 test."""
+        evenement = self.data['evenements'][0]
+        self.assertEqual(evenement.entite.code, 'A0010101')
+        self.assertEqual(evenement.contact.code, 1)
+        self.assertEqual(evenement.dt, datetime.datetime(1999, 8, 12, 0, 5))
+        self.assertEqual(evenement.descriptif, "Arrachement de l'échelle")
+        self.assertEqual(evenement.publication, 1)
+        self.assertEqual(
+            evenement.dtmaj, datetime.datetime(2000, 5, 10, 22, 5)
+        )
+
+    def test_evenement_1(self):
+        """Evenement 1 test."""
+        evenement = self.data['evenements'][1]
+        self.assertEqual(evenement.entite.code, 'Z853010101')
+        self.assertEqual(evenement.contact.code, 8563)
+        self.assertEqual(evenement.dt, datetime.datetime(2010, 2, 26, 9, 5))
+        self.assertEqual(
+            evenement.descriptif, 'Déplacement de la station de 22.5m'
+        )
+        self.assertEqual(evenement.publication, 100)
+        self.assertEqual(
+            evenement.dtmaj, datetime.datetime(2011, 1, 13, 10, 5)
+        )
 
 
 #-- class TestFromXmlObssHydro -----------------------------------------------
@@ -181,10 +249,12 @@ class TestFromXmlObssHydro(unittest.TestCase):
         """Check keys test."""
         self.assertEqual(
             set(self.data.keys()),
-            set(('scenario', 'siteshydro', 'series', 'simulations'))
+            set(('scenario', 'siteshydro', 'evenements',
+                 'series', 'simulations'))
         )
         self.assertIsNotNone(self.data['scenario'])
         self.assertIsNone(self.data['siteshydro'])
+        self.assertIsNone(self.data['evenements'])
         self.assertIsNotNone(self.data['series'])
         self.assertIsNone(self.data['simulations'])
 
@@ -268,10 +338,12 @@ class TestFromXmlSimulations(unittest.TestCase):
         """Check keys test."""
         self.assertEqual(
             set(self.data.keys()),
-            set(('scenario', 'siteshydro', 'series', 'simulations'))
+            set(('scenario', 'siteshydro', 'evenements',
+                 'series', 'simulations'))
         )
         self.assertIsNotNone(self.data['scenario'])
         self.assertIsNone(self.data['siteshydro'])
+        self.assertIsNone(self.data['evenements'])
         self.assertIsNone(self.data['series'])
         self.assertIsNotNone(self.data['simulations'])
 

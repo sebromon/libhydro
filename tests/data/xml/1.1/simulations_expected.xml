@@ -5,6 +5,7 @@
     <VersionScenario>1.1</VersionScenario>
     <NomScenario>Echange de données hydrométriques</NomScenario>
     <DateHeureCreationFichier>2010-02-26T09:30:00</DateHeureCreationFichier>
+    <!-- <RefFichier>11_sophie.xml</RefFichier> -->
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
       <CdContact schemeAgencyID="SANDRE">41</CdContact>
