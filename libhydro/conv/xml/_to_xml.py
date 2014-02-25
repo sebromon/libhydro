@@ -332,12 +332,12 @@ def _evenement_to_element(evenement):
 
         # template for serie simple elements
         story = _OrderedDict()
+        story['CdContact'] = {'value': evenement.contact.code}
         # entite can be a Sitehydro, a Stationhydro
         # TODO - or a Sitemeteo
         story['Cd%s' % evenement.entite.__class__.__name__.replace(
             'hydro', 'Hydro')] = {'value': evenement.entite.code}
         # suite
-        story['CdContact'] = {'value': evenement.contact.code}
         story['DtEvenement'] = {'value': evenement.dt.item().isoformat()}
         story['DescEvenement'] = {'value': evenement.descriptif}
         story['TypPublicationEvenement'] = {'value': evenement.publication}

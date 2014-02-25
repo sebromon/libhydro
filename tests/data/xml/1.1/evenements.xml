@@ -20,8 +20,8 @@
     <Evenements>
       <!-- Evenement 1 -->
       <Evenement>
-        <CdSiteHydro>A0010101</CdSiteHydro>
         <CdContact>1</CdContact>
+        <CdSiteHydro>A0010101</CdSiteHydro>
         <DtEvenement>1999-08-12T00:05</DtEvenement>
         <DescEvenement>Arrachement de l'échelle</DescEvenement>
         <TypPublicationEvenement>1</TypPublicationEvenement>
@@ -29,8 +29,8 @@
       </Evenement>
       <!-- Evenement 2 -->
       <Evenement>
-        <CdStationHydro>Z853010101</CdStationHydro>
         <CdContact>8563</CdContact>
+        <CdStationHydro>Z853010101</CdStationHydro>
         <DtEvenement>2010-02-26T10:05:00+01:00</DtEvenement>
         <DescEvenement>Déplacement de la station de 22.5m</DescEvenement>
         <TypPublicationEvenement>100</TypPublicationEvenement>
