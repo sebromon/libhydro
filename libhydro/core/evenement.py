@@ -23,8 +23,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1b"""
-__date__ = """2014-02-23"""
+__version__ = """0.1c"""
+__date__ = """2014-02-25"""
 
 #HISTORY
 #V0.1 - 2013-11-26
@@ -90,7 +90,7 @@ class Evenement(object):
     @property
     def dt(self):
         """Return date."""
-        return self._dt
+        return self._dt.item()
 
     @dt.setter
     def dt(self, dt):
@@ -100,10 +100,10 @@ class Evenement(object):
                 if not isinstance(dt, _numpy.datetime64):
                     try:
                         dt = _numpy.datetime64(dt, 's')
-                    except Exception:
+                    except (ValueError, TypeError):
                         try:
                             dt = _numpy.datetime64(dt.isoformat(), 's')
-                        except Exception:
+                        except (ValueError, TypeError, AttributeError):
                             raise TypeError('dt must be a date')
             self._dt = dt
 
@@ -114,7 +114,7 @@ class Evenement(object):
     @property
     def dtmaj(self):
         """Return dtmaj."""
-        return self._dtmaj
+        return self._dtmaj.item()
 
     @dtmaj.setter
     def dtmaj(self, dtmaj):
@@ -124,10 +124,10 @@ class Evenement(object):
                 if not isinstance(dtmaj, _numpy.datetime64):
                     try:
                         dtmaj = _numpy.datetime64(dtmaj, 's')
-                    except Exception:
+                    except (ValueError, TypeError):
                         try:
                             dtmaj = _numpy.datetime64(dtmaj.isoformat(), 's')
-                        except Exception:
+                        except (ValueError, TypeError, AttributeError):
                             raise TypeError('dtmaj must be a date')
             self._dtmaj = dtmaj
 

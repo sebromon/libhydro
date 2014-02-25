@@ -58,8 +58,8 @@ from . import sitehydro as _sitehydro
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1i"""
-__date__ = """2013-11-27"""
+__version__ = """0.1j"""
+__date__ = """2014-02-25"""
 
 #HISTORY
 #V0.1 - 2013-07-18
@@ -427,7 +427,8 @@ class Serie(object):
     @property
     def dtdeb(self):
         """Return date debut."""
-        return self._dtdeb
+        if self._dtdeb is not None:
+            return self._dtdeb.item()
 
     @dtdeb.setter
     def dtdeb(self, dtdeb):
@@ -437,10 +438,10 @@ class Serie(object):
                 if not isinstance(dtdeb, _numpy.datetime64):
                     try:
                         dtdeb = _numpy.datetime64(dtdeb, 's')
-                    except Exception:
+                    except (ValueError, TypeError):
                         try:
                             dtdeb = _numpy.datetime64(dtdeb.isoformat(), 's')
-                        except Exception:
+                        except (ValueError, TypeError, AttributeError):
                             raise TypeError('dtdeb must be a date')
             self._dtdeb = dtdeb
 
@@ -451,7 +452,8 @@ class Serie(object):
     @property
     def dtfin(self):
         """Return date fin."""
-        return self._dtfin
+        if self._dtfin is not None:
+            return self._dtfin.item()
 
     @dtfin.setter
     def dtfin(self, dtfin):
@@ -461,10 +463,10 @@ class Serie(object):
                 if not isinstance(dtfin, _numpy.datetime64):
                     try:
                         dtfin = _numpy.datetime64(dtfin, 's')
-                    except Exception:
+                    except (ValueError, TypeError):
                         try:
                             dtfin = _numpy.datetime64(dtfin.isoformat(), 's')
-                        except Exception:
+                        except (ValueError, TypeError, AttributeError):
                             raise TypeError('dtfin must be a date')
             self._dtfin = dtfin
 
@@ -475,7 +477,8 @@ class Serie(object):
     @property
     def dtprod(self):
         """Return date production."""
-        return self._dtprod
+        if self._dtprod is not None:
+            return self._dtprod.item()
 
     @dtprod.setter
     def dtprod(self, dtprod):
@@ -485,10 +488,10 @@ class Serie(object):
                 if not isinstance(dtprod, _numpy.datetime64):
                     try:
                         dtprod = _numpy.datetime64(dtprod, 's')
-                    except Exception:
+                    except (ValueError, TypeError):
                         try:
                             dtprod = _numpy.datetime64(dtprod.isoformat(), 's')
-                        except Exception:
+                        except (ValueError, TypeError, AttributeError):
                             raise TypeError('dtprod must be a date')
             self._dtprod = dtprod
 

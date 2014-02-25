@@ -30,6 +30,7 @@ from lxml import etree as _etree
 
 from libhydro.core import (
     sitehydro as _sitehydro,
+    seuil as _seuil,
     modeleprevision as _modeleprevision,
     obshydro as _obshydro,
     simulation as _simulation,
@@ -42,8 +43,8 @@ from libhydro.core import (
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.1h"""
-__date__ = """2014-02-21"""
+__version__ = """0.1i"""
+__date__ = """2014-02-25"""
 
 #HISTORY
 #V0.1 - 2013-08-18
@@ -210,6 +211,8 @@ def _parse(src):
     Retourne un dictionnaire avec les cles:
             # scenario: xml.Scenario
             # siteshydro: liste de sitehydro.Siteshydro ou None
+            # seuilshydro: liste de seuil.Seuilhydro ou None
+            # evenements: liste d'evenements ou None
             # series: liste de obshydro.Serie ou None
             # simulations: liste de simulation.Simulation ou None
 
@@ -229,6 +232,9 @@ def _parse(src):
         'scenario': _scenario_from_element(tree.find('Scenario')),
         # 'intervenants':
         'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro')),
+        'seuilshydro': _seuilshydro_from_element(
+            tree.find('RefHyd/SitesHydro')
+        ),
         # 'sitesmeteo'
         # 'modelesprevision': '',
         'evenements': _evenements_from_element(
@@ -260,13 +266,42 @@ def _siteshydro_from_element(element):
         return siteshydro
 
 
-def _series_from_element(element):
-    """Return a list of obshydro.Serie from a <Series> element."""
-    if element is not None:
-        series = []
-        for serie in element.findall('./Serie'):
-            series.append(_serie_from_element(serie))
-        return series
+def _seuilshydro_from_element(element):
+    """Return a list of seuil.Seuilhydro from a <SitesHydro> element."""
+    # FIXME - we have to group some seuil here
+    if (
+        (element is not None) and
+        element.find(
+            './SiteHydro/ValeursSeuilsSiteHydro/ValeursSeuilSiteHydro'
+        ) is not None
+    ):
+        # get all seuils
+        # we put them in a {(cdsitehydro, cdseuil): seuil.Seuilhydro,...}
+        # dictionnary to group similar seuils (bdhydro output is awful!)
+        seuilshydro = {}
+        for elementsitehydro in element.findall('./SiteHydro'):
+            # FIXME - we should/could use the already build sitehydro
+            sitehydro = _sitehydro_from_element(elementsitehydro)
+            for elementseuilhydro in elementsitehydro.findall(
+                './ValeursSeuilsSiteHydro/ValeursSeuilSiteHydro'
+            ):
+                seuilhydro = _seuilhydro_from_element(
+                    elementseuilhydro, sitehydro
+                )
+                if (sitehydro.code, seuilhydro.code) in seuilshydro:
+                    # add the valeurs to an existing entry
+                    # TODO - cleaner way ?
+                    seuilshydro[
+                        (sitehydro.code, seuilhydro.code)
+                    ].valeurs.extend(seuilhydro.valeurs)
+                else:
+                    # new entry
+                    seuilshydro[
+                        (sitehydro.code, seuilhydro.code)
+                    ] = seuilhydro
+
+        # return a list of seuils
+        return seuilshydro.values()
 
 
 def _evenements_from_element(element):
@@ -276,6 +311,15 @@ def _evenements_from_element(element):
         for evenement in element.findall('./Evenement'):
             evenements.append(_evenement_from_element(evenement))
         return evenements
+
+
+def _series_from_element(element):
+    """Return a list of obshydro.Serie from a <Series> element."""
+    if element is not None:
+        series = []
+        for serie in element.findall('./Serie'):
+            series.append(_serie_from_element(serie))
+        return series
 
 
 def _simulations_from_element(element):
@@ -395,6 +439,90 @@ def _capteur_from_element(element):
         return _sitehydro.Capteur(**args)
 
 
+def _seuilhydro_from_element(element, sitehydro):
+    """Return a seuil.Seuilhydro from a <ValeursSeuilSiteHydro> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['sitehydro'] = sitehydro
+        args['code'] = _value(element, 'CdSeuilSiteHydro')
+        args['typeseuil'] = _value(element, 'TypSeuilSiteHydro')
+        duree = _value(element, 'DureeSeuilSiteHydro')
+        if duree is not None:
+            args['duree'] = duree
+        args['nature'] = _value(element, 'NatureSeuilSiteHydro')
+        args['libelle'] = _value(element, 'LbUsuelSeuilSiteHydro')
+        args['mnemo'] = _value(element, 'MnemoSeuilSiteHydro')
+        args['gravite'] = _value(element, 'IndiceGraviteSeuilSiteHydro')
+        args['commentaire'] = _value(element, 'ComSeuilSiteHydro')
+        args['publication'] = _istrue(
+            _value(element, 'DroitPublicationSeuilSiteHydro')
+        )
+        args['valeurforcee'] = _value(element, 'ValForceeSeuilSiteHydro')
+        args['dtmaj'] = _value(element, 'DtMajSeuilSiteHydro', _UTC)
+        seuil = _seuil.Seuilhydro(**args)
+        # add the values
+        args['valeurs'] = []
+        valeurseuil = _valeurseuilsitehydro_from_element(
+            element, sitehydro, seuil
+        )
+        if valeurseuil is not None:
+            args['valeurs'].append(valeurseuil)
+        args['valeurs'].extend([
+            _valeurseuilstationhydro_from_element(e, seuil)
+            for e in element.findall(
+                './ValeursSeuilsStationHydro/ValeursSeuilStationHydro'
+            )
+        ])
+        # build Capteur
+        return _seuil.Seuilhydro(**args)
+
+
+def _valeurseuilsitehydro_from_element(element, sitehydro, seuil):
+    """Return a seuil.Valeurseuil from a <ValeursSeuilSiteHydro> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        valeur = _value(element, 'ValDebitSeuilSiteHydro')
+        if valeur is None:
+            # Q can be None if the seuil has only H values
+            # all other Valeurseuil related tags are ignored
+            return
+        args['valeur'] = valeur
+        args['seuil'] = seuil
+        args['entite'] = sitehydro
+        args['tolerance'] = _value(element, 'ToleranceSeuilSiteHydro')
+        args['dtactivation'] = _value(
+            element, 'DtActivationSeuilSiteHydro', _UTC
+        )
+        args['dtdesactivation'] = _value(
+            element, 'DtDesactivationSeuilSiteHydro', _UTC
+        )
+        # build Valeurseuil
+        return _seuil.Valeurseuil(**args)
+
+
+def _valeurseuilstationhydro_from_element(element, seuil):
+    """Return a seuil.Valeurseuil from a <ValeursSeuilStationHydro> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['valeur'] = _value(element, 'ValHauteurSeuilStationHydro')
+        args['seuil'] = seuil
+        args['entite'] = _sitehydro.Stationhydro(
+            code=_value(element, 'CdStationHydro')
+        )
+        args['tolerance'] = _value(element, 'ToleranceSeuilStationHydro')
+        args['dtactivation'] = _value(
+            element, 'DtActivationSeuilStationHydro', _UTC
+        )
+        args['dtdesactivation'] = _value(
+            element, 'DtDesactivationSeuilStationHydro', _UTC
+        )
+        # build Valeurseuil
+        return _seuil.Valeurseuil(**args)
+
+
 def _evenement_from_element(element):
     """Return a evenement.Evenement from a <Evenement> element."""
     if element is not None:
@@ -475,10 +603,9 @@ def _observations_from_element(element):
             qal = _value(o, 'QualifObsHydro', int)
             if qal is not None:
                 args['qal'] = qal
-            # we can't use bool injection here because bool('False') is True
-            cnt = _value(o, 'ContObsHydro')
-            if cnt is not None:
-                args['cnt'] = True if (cnt == 'True') else False
+            continuite = _istrue(_value(o, 'ContObsHydro'))
+            if continuite is not None:
+                args['cnt'] = continuite
             observations.append(_obshydro.Observation(**args))
 
         # build Observations
@@ -555,6 +682,14 @@ def _previsions_from_element(element):
 
 
 # -- utility functions --------------------------------------------------------
+def _istrue(s):
+    """Return wether s is a sort of True or None."""
+    # bool('False') is True...
+    if s is None:
+        return None
+    return (unicode(s).lower() in ('true', 'vrai', '1'))
+
+
 def _UTC(dte):
     """Return string date with suffix +00 if no time zone specified."""
     if (dte is not None) and (dte.find('+') == -1):

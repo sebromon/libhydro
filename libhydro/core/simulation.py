@@ -54,8 +54,8 @@ from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1h"""
-__date__ = """2013-11-27"""
+__version__ = """0.1i"""
+__date__ = """2014-02-25"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -441,7 +441,8 @@ class Simulation(object):
     @property
     def dtprod(self):
         """Return date production."""
-        return self._dtprod
+        if self._dtprod is not None:
+            return self._dtprod.item()
 
     @dtprod.setter
     def dtprod(self, dtprod):
@@ -451,10 +452,10 @@ class Simulation(object):
                 if not isinstance(dtprod, _numpy.datetime64):
                     try:
                         dtprod = _numpy.datetime64(dtprod, 's')
-                    except Exception:
+                    except (ValueError, TypeError):
                         try:
                             dtprod = _numpy.datetime64(dtprod.isoformat(), 's')
-                        except Exception:
+                        except (ValueError, TypeError, AttributeError):
                             raise TypeError('dtprod must be a date')
             self._dtprod = dtprod
 
@@ -521,7 +522,7 @@ class Simulation(object):
                    self.grandeur or '<sans grandeur>',
                    entite,
                    '<inconnue>' if not self.dtprod
-                   else self.dtprod.item().isoformat(),
+                   else self.dtprod.isoformat(),
                    '<inconnue>' if not self.qualite else '%i%%' % self.qualite,
                    self.commentaire or '<sans>',
                    '-' * 72,

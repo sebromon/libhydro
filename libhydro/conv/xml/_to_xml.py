@@ -28,7 +28,7 @@ import numpy as _numpy
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1g"""
-__date__ = """2014-02-23"""
+__date__ = """2014-02-25"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -338,10 +338,10 @@ def _evenement_to_element(evenement):
         story['Cd%s' % evenement.entite.__class__.__name__.replace(
             'hydro', 'Hydro')] = {'value': evenement.entite.code}
         # suite
-        story['DtEvenement'] = {'value': evenement.dt.item().isoformat()}
+        story['DtEvenement'] = {'value': evenement.dt.isoformat()}
         story['DescEvenement'] = {'value': evenement.descriptif}
         story['TypPublicationEvenement'] = {'value': evenement.publication}
-        story['DtMajEvenement'] = {'value': evenement.dtmaj.item().isoformat()}
+        story['DtMajEvenement'] = {'value': evenement.dtmaj.isoformat()}
 
         # action !
         return _factory(root=_etree.Element('Evenement'), story=story)
@@ -359,10 +359,10 @@ def _serie_to_element(serie):
             'hydro', 'Hydro')] = {'value': serie.entite.code}
         # suite
         story['GrdSerie'] = {'value': serie.grandeur}
-        story['DtDebSerie'] = {'value': serie.dtdeb.item().isoformat()}
-        story['DtFinSerie'] = {'value': serie.dtfin.item().isoformat()}
+        story['DtDebSerie'] = {'value': serie.dtdeb.isoformat()}
+        story['DtFinSerie'] = {'value': serie.dtfin.isoformat()}
         story['StatutSerie'] = {'value': unicode(serie.statut)}
-        story['DtProdSerie'] = {'value': serie.dtprod.item().isoformat()}
+        story['DtProdSerie'] = {'value': serie.dtprod.isoformat()}
 
         # make element <Serie>
         element = _factory(root=_etree.Element('Serie'), story=story)
@@ -415,7 +415,7 @@ def _simulation_to_element(simulation):
         story = _OrderedDict((
             ('GrdSimul', {'value': simulation.grandeur}),
             # dtprod is a numpy.datetime64 without any isoformat method
-            ('DtProdSimul', {'value': simulation.dtprod.item().isoformat()}),
+            ('DtProdSimul', {'value': simulation.dtprod.isoformat()}),
             ('IndiceQualiteSimul', {'value': unicode(simulation.qualite)}),
             ('StatutSimul', {'value': unicode(simulation.statut)}),
             ('PubliSimul', {'value': unicode(simulation.public).lower()}),

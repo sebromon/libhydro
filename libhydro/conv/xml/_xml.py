@@ -22,6 +22,7 @@ from . import (_from_xml, _to_xml)
 from libhydro.core import (
     # intervenant as _intervenant,  # FIXME
     sitehydro as _sitehydro,
+    seuil as _seuil,
     evenement as _evenement,
     obshydro as _obshydro,
     simulation as _simulation
@@ -31,8 +32,8 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1g"""
-__date__ = """2014-02-21"""
+__version__ = """0.1h"""
+__date__ = """2014-02-25"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -48,7 +49,8 @@ class Message(object):
 
     Proprietes:
         scenario (xml.Scenario) = un objet Scenario obligatoire
-        sitesydro (sitehydro.Sitehydro collection) = iterable ou None
+        siteshydro (sitehydro.Sitehydro collection) = iterable ou None
+        seuilshydro (seuil.Seuilhydro collection) = iterable or None
         evenements (evenement.Evenement collection) = iterable ou None
         series (obshydro.Serie collection) = iterable ou None
         simulations (simulation.Simulation collection) = iterable ou None
@@ -68,14 +70,15 @@ class Message(object):
         # 'alarmes'
 
     def __init__(
-        self, scenario, siteshydro=None, evenements=None, series=None,
-        simulations=None, strict=True
+        self, scenario, siteshydro=None, seuilshydro=None, evenements=None,
+        series=None, simulations=None, strict=True
     ):
         """Initialisation.
 
         Arguments:
             scenario (xml.Scenario) = un objet Scenario obligatoire
-            sitesydro (sitehydro.Sitehydro collection) = iterable ou None
+            siteshydro (sitehydro.Sitehydro collection) = iterable ou None
+            seuilshydro (seuil.Seuilhydro collection) = iterable ou None
             evenements (evenement.Evenement collection) = iterable ou None
             series (obshydro.Serie collection) = iterable ou None
             simulations (simulation.Simulation collection) = iterable ou None
@@ -90,10 +93,11 @@ class Message(object):
         self._strict = strict
 
         # -- full properties --
-        self._scenario = self._siteshydro = None
+        self._scenario = self._siteshydro = self._seuilshydro = None
         self._evenements = self._series = self._simulations = None
         self.scenario = scenario
         self.siteshydro = siteshydro
+        self.seuilshydro = seuilshydro
         self.evenements = evenements
         self.series = series
         self.simulations = simulations
@@ -153,6 +157,37 @@ class Message(object):
 
             # all is well
             self._siteshydro = siteshydro
+
+        except:
+            raise
+
+    # -- property seuilshydro --
+    @property
+    def seuilshydro(self):
+        """Return seuilshydro."""
+        return self._seuilshydro
+
+    @seuilshydro.setter
+    def seuilshydro(self, seuilshydro):
+        """Set seuilshydro."""
+        try:
+
+            # None case
+            if (seuilshydro is None):
+                seuilshydro = []
+
+            # other cases
+            if isinstance(seuilshydro, _seuil.Seuilhydro):
+                seuilshydro = [seuilshydro]
+            elif self._strict:
+                for seuilhydro in seuilshydro:
+                    if not isinstance(seuilhydro, _seuil.Seuilhydro):
+                        raise TypeError(
+                            'seuilhydro {} incorrect'.format(seuilhydro)
+                        )
+
+            # all is well
+            self._seuilshydro = seuilshydro
 
         except:
             raise
@@ -278,6 +313,9 @@ class Message(object):
             siteshydro=_from_xml._siteshydro_from_element(
                 tree.find('RefHyd/SitesHydro')
             ),
+            seuilshydro=_from_xml._seuilshydro_from_element(
+                tree.find('RefHyd/SitesHydro')
+            ),
             evenements=_from_xml._evenements_from_element(
                 tree.find('Donnees/Evenements')
             ),
@@ -383,7 +421,7 @@ class Message(object):
         """Return unicode representation."""
         try:
             scenario = self.scenario.__unicode__()
-        except Exception:
+        except AttributeError:
             scenario = 'Message <sans scenario>'
         return '{}\nContenu: {} siteshydro - ' \
                '{} evenements - ' \

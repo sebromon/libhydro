@@ -27,16 +27,16 @@ sys.path.append(os.path.join('..', '..'))
 import unittest
 import datetime
 import pandas
-import numpy
 
 from libhydro.conv import shom
 from libhydro.core import sitehydro
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1b"""
-__date__ = """2013-08-17"""
+__author__ = """Philippe Gouin """ \
+             """<philippe.gouin@developpement-durable.gouv.fr>"""
+__version__ = """0.1c"""
+__date__ = """2014-02-25"""
 
 #HISTORY
 #V0.1 - 2013-08-16
@@ -49,15 +49,8 @@ SRC = os.path.join('data', 'shom', 'LOCMARIAQUER.hfs')
 
 #-- class TestSimulationFromHFS -----------------------------------------------
 class TestSimulationFromHSF(unittest.TestCase):
+
     """SimulationFromHFS class tests."""
-
-    # def setUp(self):
-    #     """Hook method for setting up the test fixture before exercising it."""
-    #     pass
-
-    # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
 
     def test_base_01(self):
         """Base test."""
@@ -80,7 +73,7 @@ class TestSimulationFromHSF(unittest.TestCase):
     def test_base_02(self):
         """Second base test."""
         station = sitehydro.Stationhydro(code='-', libelle='LOC', strict=False)
-        dtprod = '2010-12-12 15:33'
+        dtprod = datetime.datetime(2010, 12, 12, 15, 33)
         sim = shom.simulation_from_hfs(
             src=SRC,
             stationhydro=station,
@@ -91,7 +84,7 @@ class TestSimulationFromHSF(unittest.TestCase):
         self.assertEqual(sim.entite, station)
         self.assertEqual(
             (sim.grandeur, sim.qualite, sim.commentaire, sim.dtprod),
-            ('H', 100, 'data SHOM', numpy.datetime64(dtprod))
+            ('H', 100, 'data SHOM', dtprod)
         )
         self.assertEqual(sim.modeleprevision.code, 'SCnMERshom')
         self.assertEqual(len(sim.previsions), 3)
@@ -121,21 +114,17 @@ class TestSimulationFromHSF(unittest.TestCase):
 
 #-- class TestSerieFromHFS -----------------------------------------------
 class TestSerieFromHSF(unittest.TestCase):
+
     """SerieFromHFS class tests."""
-
-    # def setUp(self):
-    #     """Hook method for setting up the test fixture before exercising it."""
-    #     pass
-
-    # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
 
     def test_base_01(self):
         """Base test."""
         serie = shom.serie_from_hfs(SRC)
         self.assertEqual(
-            (serie.entite.code, serie.entite.typestation, serie.entite.libelle),
+            (
+                serie.entite.code, serie.entite.typestation,
+                serie.entite.libelle
+            ),
             (None, 'LIMNI', 'LOCMARIAQUER')
         )
         self.assertEqual(
@@ -195,7 +184,7 @@ class TestSerieFromHSF(unittest.TestCase):
         )
 
     def test_error_02(self):
-        """Dates format error."""
+        """Check dates format error."""
         self.assertRaises(
             pandas.tseries.tools.DateParseError,
             shom.serie_from_hfs,
@@ -210,7 +199,7 @@ class TestSerieFromHSF(unittest.TestCase):
         )
 
     def test_error_03(self):
-        """Dates values error."""
+        """Check dates values error."""
         self.assertRaises(
             ValueError,
             shom.serie_from_hfs,

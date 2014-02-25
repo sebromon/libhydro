@@ -33,15 +33,15 @@ from libhydro.conv.xml import (_from_xml as from_xml)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1e"""
-__date__ = """2014-02-23"""
+__version__ = """0.1f"""
+__date__ = """2014-02-25"""
 
 #HISTORY
 #V0.1 - 2013-08-24
 #    first shot
 
 
-#-- class TestFromXmlSiteshydro ----------------------------------------------
+#-- class TestFromXmlSitesHydro ----------------------------------------------
 class TestFromXmlSitesHydros(unittest.TestCase):
 
     """FromXmlSitesHydro class tests."""
@@ -56,11 +56,12 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         """Check Keys test."""
         self.assertEqual(
             set(self.data.keys()),
-            set(('scenario', 'siteshydro', 'evenements',
+            set(('scenario', 'siteshydro', 'seuilshydro', 'evenements',
                 'series', 'simulations'))
         )
         self.assertIsNotNone(self.data['scenario'])
         self.assertIsNotNone(self.data['siteshydro'])
+        self.assertIsNone(self.data['seuilshydro'])
         self.assertIsNone(self.data['evenements'])
         self.assertIsNone(self.data['series'])
         self.assertIsNone(self.data['simulations'])
@@ -164,6 +165,187 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         )
 
 
+#-- class TestFromXmlSeuilsHydro ----------------------------------------------
+class TestFromXmlSeuilsHydros(unittest.TestCase):
+
+    """FromXmlSeuilsHydro class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '1.1', 'seuilshydro.xml')
+        )
+
+    def test_base(self):
+        """Check Keys test."""
+        self.assertEqual(
+            set(self.data.keys()),
+            set(('scenario', 'siteshydro', 'seuilshydro', 'evenements',
+                'series', 'simulations'))
+        )
+        self.assertIsNotNone(self.data['scenario'])
+        self.assertIsNotNone(self.data['siteshydro'])
+        self.assertIsNotNone(self.data['seuilshydro'])
+        self.assertIsNone(self.data['evenements'])
+        self.assertIsNone(self.data['series'])
+        self.assertIsNone(self.data['simulations'])
+
+    def test_seuils_sitehydro_0(self):
+        """Test seuils sitehydro 0."""
+        # check the sitehydro
+        sitehydro = self.data['siteshydro'][0]
+        self.assertEqual(sitehydro.code, 'U2655010')
+
+        # find the seuil
+        for seuil in self.data['seuilshydro']:
+            if (
+                (seuil.sitehydro.code == 'U2655010')
+                and (seuil.code == 2214)
+            ):
+                break
+
+        # check the seuil
+        # self.assertEqual(seuil.sitehydro, sitehydro)  # FIXME
+        self.assertEqual(seuil.typeseuil, 1)
+        self.assertEqual(seuil.duree, 0)
+        self.assertEqual(seuil.nature, 32)
+        self.assertEqual(seuil.libelle, 'Crue du 24/11/2003')
+        self.assertEqual(seuil.mnemo, 'Mnemonique')
+        self.assertEqual(seuil.gravite, 65)
+        self.assertEqual(seuil.commentaire, 'Commentaire du seuil')
+        self.assertEqual(seuil.publication, True)
+        self.assertEqual(seuil.valeurforcee, True)
+        self.assertEqual(seuil.dtmaj, datetime.datetime(2012, 2, 19, 8, 25))
+        self.assertEqual(seuil._strict, True)
+
+        # check the values
+        self.assertEqual(len(seuil.valeurs), 1)
+        self.assertEqual(seuil.valeurs[0].valeur, 7000465)
+        # self.assertEqual(seuil.valeurs[0].seuil, seuil)  # FIXME
+        self.assertEqual(seuil.valeurs[0].entite, seuil.sitehydro)
+        self.assertEqual(seuil.valeurs[0].tolerance, 0)
+        self.assertEqual(
+            seuil.valeurs[0].dtactivation,
+            datetime.datetime(2010, 5, 17, 13, 40, 2)
+        )
+        self.assertEqual(
+            seuil.valeurs[0].dtdesactivation,
+            datetime.datetime(2012, 2, 19, 9, 28)
+        )
+        self.assertEqual(seuil.valeurs[0]._strict, True)
+
+    def test_seuils_sitehydro_1(self):
+        """Test seuils sitehydro 1."""
+        # check the sitehydro
+        sitehydro = self.data['siteshydro'][1]
+        self.assertEqual(sitehydro.code, 'O2000040')
+
+        # find the seuil
+        for seuil in self.data['seuilshydro']:
+            if (
+                (seuil.sitehydro.code == 'O2000040')
+                and (seuil.code == 82)
+            ):
+                break
+
+        # check the seuil
+        # self.assertEqual(seuil.sitehydro, sitehydro)  # FIXME
+        self.assertEqual(seuil.typeseuil, 2)
+        self.assertEqual(seuil.duree, 60)
+        self.assertEqual(seuil.nature, 32)
+        self.assertEqual(seuil.libelle, 'Gradient durée 60')
+        self.assertEqual(seuil.mnemo, None)
+        self.assertEqual(seuil.gravite, None)
+        self.assertEqual(seuil.commentaire, None)
+        self.assertEqual(seuil.publication, False)
+        self.assertEqual(seuil.valeurforcee, False)
+        self.assertEqual(seuil.dtmaj, None)
+
+        # check the values
+        self.assertEqual(len(seuil.valeurs), 4)
+        self.assertEqual(seuil.valeurs[0].valeur, 85)
+        self.assertEqual(seuil.valeurs[1].valeur, 4380)
+        self.assertEqual(seuil.valeurs[2].valeur, 3520)
+        self.assertEqual(seuil.valeurs[3].valeur, 8320)
+        # self.assertEqual(seuil.valeurs[0].seuil, seuil)  # FIXME
+        self.assertEqual(seuil.valeurs[0].entite.code, 'O2000040')
+        self.assertEqual(seuil.valeurs[1].entite.code, 'O200004001')
+        self.assertEqual(seuil.valeurs[2].entite.code, 'O200004002')
+        self.assertEqual(seuil.valeurs[3].entite.code, 'O200004003')
+        self.assertEqual(seuil.valeurs[0].tolerance, 5)
+        self.assertEqual(seuil.valeurs[1].tolerance, 0)
+        self.assertEqual(seuil.valeurs[2].tolerance, None)
+        self.assertEqual(seuil.valeurs[3].tolerance, 10)
+        self.assertEqual(seuil.valeurs[0].dtactivation, None)
+        self.assertEqual(
+            seuil.valeurs[1].dtactivation,
+            datetime.datetime(2010, 6, 10, 10, 52, 57)
+        )
+        self.assertEqual(
+            seuil.valeurs[2].dtactivation,
+            datetime.datetime(2010, 6, 10, 11, 32, 57)
+        )
+        self.assertEqual(
+            seuil.valeurs[3].dtactivation,
+            datetime.datetime(2010, 6, 10, 11, 52, 57)
+        )
+        self.assertEqual(
+            seuil.valeurs[0].dtdesactivation, None
+        )
+        self.assertEqual(
+            seuil.valeurs[1].dtdesactivation, None
+        )
+        self.assertEqual(
+            seuil.valeurs[2].dtdesactivation,
+            datetime.datetime(2013, 10, 5, 5, 59, 29)
+        )
+        self.assertEqual(
+            seuil.valeurs[3].dtdesactivation, None
+        )
+
+    def test_seuils_sitehydro_2(self):
+        """Test seuils sitehydro 2."""
+        # find 4 seuils
+        seuils = []
+        for seuil in self.data['seuilshydro']:
+            if (
+                (seuil.sitehydro.code == 'O0144020')
+                and (seuil.code in range(1, 5))
+            ):
+                seuils.append(seuil)
+
+        # check the seuils
+        for i in range(4):
+            self.assertEqual(seuils[i].sitehydro.code, 'O0144020')
+            self.assertEqual(len(seuils[i].valeurs), 0)
+
+    def test_seuils_sitehydro_3(self):
+        """Test seuils sitehydro 3."""
+        # find 2 seuils
+        seuils = []
+        for seuil in self.data['seuilshydro']:
+            if (
+                (seuil.sitehydro.code == 'O6793330')
+                and (seuil.code in (338, 341))
+            ):
+                seuils.append(seuil)
+
+        # sort the seuils list
+        seuils = sorted(seuils, key=lambda s: getattr(s, 'code'))
+
+        # check the seuils
+        for i in range(1):
+            self.assertEqual(seuils[i].sitehydro.code, 'O6793330')
+        self.assertEqual(seuils[0].mnemo, 'Seuil de vigilance JAUNE')
+        self.assertEqual(len(seuils[0].valeurs), 2)
+        # print(seuils[0].valeurs)
+        self.assertEqual(seuils[0].valeurs[0].valeur, 100)
+        self.assertEqual(seuils[0].valeurs[1].valeur, 3200)
+        self.assertEqual(seuils[1].libelle, 'Crue du 08/04/1994')
+        self.assertEqual(len(seuils[1].valeurs), 1)
+        self.assertEqual(seuils[1].valeurs[0].valeur, 3500)
+
+
 #-- class TestFromXmlSitesMeteo -----------------------------------------------
 # TODO
 
@@ -183,11 +365,12 @@ class TestFromXmlEvenements(unittest.TestCase):
         """Check Keys test."""
         self.assertEqual(
             set(self.data.keys()),
-            set(('scenario', 'siteshydro', 'evenements',
+            set(('scenario', 'siteshydro', 'seuilshydro', 'evenements',
                 'series', 'simulations'))
         )
         self.assertIsNotNone(self.data['scenario'])
         self.assertIsNone(self.data['siteshydro'])
+        self.assertIsNone(self.data['seuilshydro'])
         self.assertIsNotNone(self.data['evenements'])
         self.assertIsNone(self.data['series'])
         self.assertIsNone(self.data['simulations'])
@@ -249,11 +432,12 @@ class TestFromXmlObssHydro(unittest.TestCase):
         """Check keys test."""
         self.assertEqual(
             set(self.data.keys()),
-            set(('scenario', 'siteshydro', 'evenements',
+            set(('scenario', 'siteshydro', 'seuilshydro', 'evenements',
                  'series', 'simulations'))
         )
         self.assertIsNotNone(self.data['scenario'])
         self.assertIsNone(self.data['siteshydro'])
+        self.assertIsNone(self.data['seuilshydro'])
         self.assertIsNone(self.data['evenements'])
         self.assertIsNotNone(self.data['series'])
         self.assertIsNone(self.data['simulations'])
@@ -338,11 +522,12 @@ class TestFromXmlSimulations(unittest.TestCase):
         """Check keys test."""
         self.assertEqual(
             set(self.data.keys()),
-            set(('scenario', 'siteshydro', 'evenements',
+            set(('scenario', 'siteshydro', 'seuilshydro', 'evenements',
                  'series', 'simulations'))
         )
         self.assertIsNotNone(self.data['scenario'])
         self.assertIsNone(self.data['siteshydro'])
+        self.assertIsNone(self.data['seuilshydro'])
         self.assertIsNone(self.data['evenements'])
         self.assertIsNone(self.data['series'])
         self.assertIsNotNone(self.data['simulations'])
