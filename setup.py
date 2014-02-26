@@ -10,8 +10,8 @@ import codecs
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1b"""
-__date__ = """2014-01-30"""
+__version__ = """0.1c"""
+__date__ = """2014-02-26"""
 
 #HISTORY
 #V0.1 - 2014-01-28
@@ -46,8 +46,8 @@ def find_version(*file_paths):
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Get the long description from the relevant file
-with open('DESCRIPTION.rst') as f:
-    long_description = f.read()
+with codecs.open('DESCRIPTION.rst', encoding='utf-8') as description:
+    long_description = description.read()
 
 # Setup
 setup(
@@ -108,7 +108,7 @@ setup(
     #     ],
     # },
     install_requires=(
-        'python >= 2.7',
+        'python >= 2.7, <3',
         'numpy >= 1.7.1',
         'pandas >= 0.11.0',
         'lxml >= 3.2.3'

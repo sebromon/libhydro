@@ -241,7 +241,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(sim.public, public)
         self.assertEqual(sim.commentaire, commentaire)
         self.assertEqual(sim.dtprod, dtprod)
-        self.assertEqual(sim.previsions, previsions)
+        self.assertEqual(sim.previsions.all(), previsions.all())
 
     def test_base_03(self):
         """Dtprod can be a string."""

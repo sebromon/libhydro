@@ -133,7 +133,7 @@ class TestSerieFromHSF(unittest.TestCase):
         )
         self.assertEqual(len(serie.observations), 144)
         self.assertEqual(
-            (serie.observations.irow(10), serie.observations.irow(10).name),
+            (serie.observations.irow(10).item(), serie.observations.irow(10).name),
             (3.71, datetime.datetime(2013, 1, 23, 1, 40))
         )
 
@@ -153,7 +153,7 @@ class TestSerieFromHSF(unittest.TestCase):
         )
         self.assertEqual(len(serie.observations), 3)
         self.assertEqual(
-            (serie.observations.irow(1), serie.observations.irow(1).name),
+            (serie.observations.irow(1).item(), serie.observations.irow(1).name),
             (3.34, datetime.datetime(2013, 1, 23, 12, 10))
         )
 
@@ -171,7 +171,7 @@ class TestSerieFromHSF(unittest.TestCase):
         )
         self.assertEqual(len(serie.observations), 144)
         self.assertEqual(
-            (serie.observations.irow(73), serie.observations.irow(73).name),
+            (serie.observations.irow(73).item(), serie.observations.irow(73).name),
             (3.34, datetime.datetime(2013, 1, 23, 12, 10))
         )
 
