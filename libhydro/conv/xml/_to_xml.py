@@ -25,7 +25,7 @@ import numpy as _numpy
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin""" \
+__author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1g"""
 __date__ = """2014-02-25"""

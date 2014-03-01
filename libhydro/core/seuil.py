@@ -16,16 +16,16 @@ from __future__ import (
 
 import sys as _sys
 import datetime as _datetime
-import numpy as _numpy
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
+from . import _composant
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2014-02-25"""
+__version__ = """0.1d"""
+__date__ = """2014-03-01"""
 
 #HISTORY
 #V0.1 - 2014-02-10
@@ -61,6 +61,8 @@ class _Seuil(object):
 
     """
 
+    dtmaj = _composant.Datefromeverything(required=False)
+
     def __init__(
         self, code=0, typeseuil=1, duree=0,
         nature=None, libelle=None, mnemo=None, gravite=None, commentaire=None,
@@ -77,7 +79,8 @@ class _Seuil(object):
             mnemo (string[50]) = mnemonique
             gravite (0 < entier < 100)
             commentaire (texte)
-            dtmaj (datetime.datetime) = date de mise a jour
+            dtmaj (numpy.datetime64 string, datetime.datetime...) =
+                date de mise a jour
             valeurs (liste de Valeurseuil)
             strict (bool, defaut True) = strict or fuzzy mode
 
@@ -89,6 +92,9 @@ class _Seuil(object):
         self.valeurs = valeurs  # FIXME - should be a full property
         self._strict = bool(strict)
 
+        # -- descriptors --
+        self.dtmaj = dtmaj
+
         # -- full properties --
         self._code = 0
         self.code = code
@@ -96,10 +102,9 @@ class _Seuil(object):
         self.typeseuil = typeseuil
         self._duree = 0
         self.duree = duree
-        self._nature = self._gravite = self._dtmaj = None
+        self._nature = self._gravite = None
         self.nature = nature
         self.gravite = gravite
-        self.dtmaj = dtmaj
 
     # -- property code --
     @property
@@ -215,31 +220,6 @@ class _Seuil(object):
         except:
             raise
 
-    # -- property dtmaj --
-    @property
-    def dtmaj(self):
-        """Return dtmaj."""
-        if self._dtmaj is not None:
-            return self._dtmaj.item()
-
-    @dtmaj.setter
-    def dtmaj(self, dtmaj):
-        """Set dtmaj."""
-        try:
-            if dtmaj is not None:
-                if not isinstance(dtmaj, _numpy.datetime64):
-                    try:
-                        dtmaj = _numpy.datetime64(dtmaj, 's')
-                    except (ValueError, TypeError):
-                        try:
-                            dtmaj = _numpy.datetime64(dtmaj.isoformat(), 's')
-                        except (ValueError, TypeError, AttributeError):
-                            raise TypeError('dtmaj must be a date')
-            self._dtmaj = dtmaj
-
-        except:
-            raise
-
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
@@ -318,7 +298,8 @@ class Seuilhydro(_Seuil):
             commentaire (texte)
             publication (bool, defaut False)
             valeurforcee (bool, defaut False)
-            dtmaj (datetime.datetime) = date de mise a jour
+            dtmaj (numpy.datetime64 string, datetime.datetime...) =
+                date de mise a jour
             valeurs (liste de Valeurseuil)
             strict (bool, defaut True) = strict or fuzzy mode
 
@@ -367,6 +348,9 @@ class Valeurseuil (object):
 
     """
 
+    dtactivation = _composant.Datefromeverything(required=False)
+    dtdesactivation = _composant.Datefromeverything(required=False)
+
     def __init__(
         self, valeur, seuil=None, entite=None,
         tolerance=None,
@@ -380,8 +364,8 @@ class Valeurseuil (object):
             seuil (Seuilhydro ou Seuilmeteo)
             entite (Sitehydro, stationhydro ou Grandeurmeteo)
             tolerance (numerique)
-            dtactivation (datetime.datetime)
-            dtdesactivation (datetime.datetime)
+            dtactivation (numpy.datetime64 string, datetime.datetime...)
+            dtdesactivation (numpy.datetime64 string, datetime.datetime...)
             strict (bool)
 
         """
@@ -393,66 +377,9 @@ class Valeurseuil (object):
         self.tolerance = float(tolerance) if tolerance else None
         self._strict = bool(strict)
 
-        # -- full properties --
-        self._dtactivation = self._dtdesactivation = None
+        # -- descriptors --
         self.dtactivation = dtactivation
         self.dtdesactivation = dtdesactivation
-
-    # -- property dtactivation --
-    @property
-    def dtactivation(self):
-        """Return dtactivation."""
-        if self._dtactivation is not None:
-            return self._dtactivation.item()
-
-    @dtactivation.setter
-    def dtactivation(self, dtactivation):
-        """Set dtactivation."""
-        try:
-            if dtactivation is not None:
-                if not isinstance(dtactivation, _numpy.datetime64):
-                    try:
-                        dtactivation = _numpy.datetime64(dtactivation, 's')
-                    except (ValueError, TypeError):
-                        try:
-                            dtactivation = _numpy.datetime64(
-                                dtactivation.isoformat(), 's'
-                            )
-                        except (ValueError, TypeError, AttributeError):
-                            raise TypeError('dtactivation must be a date')
-            self._dtactivation = dtactivation
-
-        except:
-            raise
-
-    # -- property dtdesactivation --
-    @property
-    def dtdesactivation(self):
-        """Return dtdesactivation."""
-        if self._dtdesactivation is not None:
-            return self._dtdesactivation.item()
-
-    @dtdesactivation.setter
-    def dtdesactivation(self, dtdesactivation):
-        """Set dtdesactivation."""
-        try:
-            if dtdesactivation is not None:
-                if not isinstance(dtdesactivation, _numpy.datetime64):
-                    try:
-                        dtdesactivation = _numpy.datetime64(
-                            dtdesactivation, 's'
-                        )
-                    except (ValueError, TypeError):
-                        try:
-                            dtdesactivation = _numpy.datetime64(
-                                dtdesactivation.isoformat(), 's'
-                            )
-                        except (ValueError, TypeError, AttributeError):
-                            raise TypeError('dtdesactivation must be a date')
-            self._dtdesactivation = dtdesactivation
-
-        except:
-            raise
 
     # -- other methods --
     def __unicode__(self):

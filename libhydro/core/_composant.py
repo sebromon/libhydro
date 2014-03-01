@@ -6,6 +6,10 @@ Ce module contient les elements communs a plusieurs modules.
 Il integre les classes:
     # Coord
 
+les descripteurs:
+    # Datefromeverything
+    # Nomenclatureitem
+
 et les fonctions:
     # is_code_hydro()
     # is_code_commune()
@@ -20,6 +24,9 @@ from __future__ import (
 )
 
 import sys as _sys
+import weakref as _weakref
+import numpy as _numpy
+import datetime as _datetime
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
@@ -27,10 +34,12 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1a"""
-__date__ = """2013-11-07"""
+__version__ = """0.2a"""
+__date__ = """2014-03-01"""
 
 #HISTORY
+#V0.2 - 2014-02-01
+#    add 2 descriptors
 #V0.1 - 2013-11-06
 #    first shot
 
@@ -130,6 +139,115 @@ class Coord(object):
             return self.__unicode__().encode(_sys.stdout.encoding)
 
 
+#-- class Datefromeverything --------------------------------------------------
+class Datefromeverything(object):
+
+    """Class Datefromeverything.
+
+    A descriptor to store a datetime.datetime property that can be initiated
+    in different manners using numpy.datetime64 facilities.
+
+    """
+
+    def __init__(self, required=True, default=None):
+        """Initialization.
+
+        Args:
+            required (bool, defaut True) = wether instance's value can
+                be None or not
+
+        """
+        self.required = bool(required)
+        self.default = default
+        self.data = _weakref.WeakKeyDictionary()
+
+    def __get__(self, instance, owner):
+        """Return instance value."""
+        return self.data.get(instance, default=self.default)
+
+    def __set__(self, instance, value):
+        """Set the datetime.datetime property.
+
+        Args:
+            value (
+                numpy.datetime64 or string to make one
+                datetime.datetime or iterable or dict to make it
+            )
+
+        String format: look at
+          [http://docs.scipy.org/doc/numpy-dev/reference/arrays.datetime.html]
+
+        """
+        if self.required and (value is None):
+            raise TypeError('a value other than None is required')
+        if (
+            (value is not None)
+            and not isinstance(value, _datetime.datetime)
+            and not isinstance(value, _numpy.datetime64)
+        ):
+            try:
+                if isinstance(value, dict):
+                    value = _datetime.datetime(**value)
+                elif isinstance(value, (str, unicode)):
+                    value = _numpy.datetime64(value, 's')
+                else:  # can be an iterable for datetime.datetime
+                    value = _datetime.datetime(*value)
+            except (ValueError, TypeError, AttributeError):
+                raise ValueError(
+                    'could not convert object to datetime.datetime'
+                )
+
+        # all is well
+        if isinstance(value, _numpy.datetime64):
+            value = value.item()
+        self.data[instance] = value
+
+
+#-- class Nomenclatureitem ----------------------------------------------------
+class Nomenclatureitem(object):
+
+    """Class Nomenclatureitem.
+
+    A descriptor to deal with 'in nomenclature.NOMENCLATURES' properties.
+
+    """
+
+    def __init__(self, nomenclature, strict=True, required=True, default=None):
+        """Initialization.
+
+        Args:
+            nomenclature (int) = the nomenclature ref
+            required (bool, defaut True) = wether instance's value can
+                be None or not
+
+        """
+        self.nomenclature = int(nomenclature)
+        self.strict = bool(strict)
+        self.required = bool(required)
+        self.default = default
+        self.data = _weakref.WeakKeyDictionary()
+
+    def __get__(self, instance, owner):
+        """Return instance value."""
+        return self.data.get(instance, default=self.default)
+
+    def __set__(self, instance, value):
+        """Set the 'in nomenclature' property."""
+        # None case
+        if (value is None):
+            if self.required:
+                raise TypeError('a value other than None is required')
+
+        # other cases
+        if (self.strict) and (value not in _NOMENCLATURE[self.nomenclature]):
+            raise ValueError(
+                'value should be in nomenclature %i' % self.nomenclature
+            )
+
+        # all is well
+        self.data[instance] = value
+
+
 #-- functions -----------------------------------------------------------------
 def is_code_hydro(code, length=8, raises=True):
     """Return whether or not code is a valid code hydro.
@@ -158,7 +276,7 @@ def is_code_hydro(code, length=8, raises=True):
         # all is well
         return True
 
-    except Exception:
+    except (ValueError, TypeError):
         if raises:
             raise
         else:
@@ -196,7 +314,7 @@ def is_code_commune(code, raises=True):
         # all is well
         return True
 
-    except Exception:
+    except (ValueError, TypeError):
         if raises:
             raise
         else:

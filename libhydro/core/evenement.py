@@ -15,16 +15,16 @@ from __future__ import (
 
 import sys as _sys
 import datetime as _datetime
-import numpy as _numpy
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
+from . import _composant
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2014-02-25"""
+__version__ = """0.1d"""
+__date__ = """2014-03-01"""
 
 #HISTORY
 #V0.1 - 2013-11-26
@@ -32,8 +32,7 @@ __date__ = """2014-02-25"""
 
 
 #-- todos ---------------------------------------------------------------------
-
-#-- config --------------------------------------------------------------------
+# nothing
 
 #-- class Evenement -----------------------------------------------------------
 class Evenement(object):
@@ -53,6 +52,9 @@ class Evenement(object):
 
     """
 
+    dt = _composant.Datefromeverything(required=False)
+    dtmaj = _composant.Datefromeverything(required=False)
+
     def __init__(
         self, entite, descriptif, contact,
         dt=_datetime.datetime.utcnow(), publication=100,
@@ -65,9 +67,11 @@ class Evenement(object):
                 sitemeteo.Sitemeteo) = entite concernee par l'evenement
             descriptif (string)
             contact (intervenant.Contact) = contact proprietaire de l'evenement
-            dt (datetime.datetime) = date de l'evenement
+            dt (numpy.datetime64 string, datetime.datetime...) =
+                date de l'evenement
             publication (entier parmi NOMENCLATURE[534]) = type de publication
-            dtmaj (datetime.datetime) = date de mise a jour
+            dtmaj (numpy.datetime64 string, datetime.datetime...) =
+                date de mise a jour
             strict (bool, defaut True) = en mode permissif le contact est
                 facultatif et le type de publication n'est pas controle
 
@@ -80,59 +84,13 @@ class Evenement(object):
         self.contact = contact
         self._strict = bool(strict)
 
-        # -- full properties --
-        self._dt = self._dtmaj = self._publication = None
+        # -- descriptors --
         self.dt = dt
         self.dtmaj = dtmaj
+
+        # -- full properties --
+        self._publication = None
         self.publication = publication
-
-    # -- property dt --
-    @property
-    def dt(self):
-        """Return date."""
-        return self._dt.item()
-
-    @dt.setter
-    def dt(self, dt):
-        """Set date."""
-        try:
-            if dt is not None:
-                if not isinstance(dt, _numpy.datetime64):
-                    try:
-                        dt = _numpy.datetime64(dt, 's')
-                    except (ValueError, TypeError):
-                        try:
-                            dt = _numpy.datetime64(dt.isoformat(), 's')
-                        except (ValueError, TypeError, AttributeError):
-                            raise TypeError('dt must be a date')
-            self._dt = dt
-
-        except:
-            raise
-
-    # -- property dtmaj --
-    @property
-    def dtmaj(self):
-        """Return dtmaj."""
-        return self._dtmaj.item()
-
-    @dtmaj.setter
-    def dtmaj(self, dtmaj):
-        """Set dtmaj."""
-        try:
-            if dtmaj is not None:
-                if not isinstance(dtmaj, _numpy.datetime64):
-                    try:
-                        dtmaj = _numpy.datetime64(dtmaj, 's')
-                    except (ValueError, TypeError):
-                        try:
-                            dtmaj = _numpy.datetime64(dtmaj.isoformat(), 's')
-                        except (ValueError, TypeError, AttributeError):
-                            raise TypeError('dtmaj must be a date')
-            self._dtmaj = dtmaj
-
-        except:
-            raise
 
     # -- property publication --
     @property

@@ -21,7 +21,7 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin""" \
+__author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1e"""
 __date__ = """2014-02-20"""

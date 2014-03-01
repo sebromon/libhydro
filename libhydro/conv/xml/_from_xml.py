@@ -40,7 +40,7 @@ from libhydro.core import (
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin""" \
+__author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
 __version__ = """0.1i"""

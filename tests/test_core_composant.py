@@ -27,15 +27,19 @@ sys.path.append(os.path.join('..', '..'))
 import unittest
 
 from libhydro.core import _composant as composant
+import datetime
+import numpy
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1a"""
-__date__ = """2013-11-07"""
+__version__ = """0.2a"""
+__date__ = """2014-03-01"""
 
 #HISTORY
+#V0.2 - 2014-03-01
+#    add the descriptor tests
 #V0.1 - 2013-11-07
 #    first shot
 
@@ -134,6 +138,100 @@ class TestCoord(unittest.TestCase):
             composant.Coord,
             **{'x': '1', 'y': 8156941.2368, 'proj': 8591674}
         )
+
+
+#-- class TestDatefromeverything ----------------------------------------------
+class TestDatefromeverything(unittest.TestCase):
+
+    """Datefromeverything class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        # define a class with value required
+        class VR(object):
+            dt = composant.Datefromeverything(required=True)
+
+            def __init__(self, dt=None):
+                self.dt = dt
+
+        self.VR = VR
+
+        # define a class with value not required
+        class VNR(object):
+            dt = composant.Datefromeverything(required=False)
+
+            def __init__(self, dt=None):
+                self.dt = dt
+
+        self.VNR = VNR
+
+    def test_value_required_init(self):
+        """Test the setters and getters when value is required."""
+        # init
+        dt = datetime.datetime(2008, 10, 10, 9, 33)
+        vrs = []
+        # build various objects
+        vrs.append(self.VR(
+            numpy.datetime64('2008-10-10T09:33+00:00')
+        ))
+        vrs.append(self.VR('2008-10-10T09:33+00:00'))
+        vrs.append(self.VR(dt))
+        vrs.append(self.VR([2008, 10, 10, 9, 33]))
+        vrs.append(self.VR(
+            {'year': 2008, 'month': 10, 'day': 10, 'hour': 9, 'minute': 33}
+        ))
+        for vr in vrs:
+            self.assertEqual(vr.dt, dt)
+
+    def test_value_required_error(self):
+        """The value required error."""
+        self.assertRaises(
+            TypeError,
+            self.VR,
+            None
+        )
+        self.assertRaises(
+            ValueError,
+            self.VR,
+            '2014-10-08'
+        )
+        self.assertRaises(
+            ValueError,
+            self.VR,
+            2014
+        )
+        self.assertRaises(
+            ValueError,
+            self.VR,
+            [2014]
+        )
+
+    def test_value_not_required_init(self):
+        """Test the setters and getters when value is not required."""
+        # init
+        dt = datetime.datetime(2010, 1, 5)
+        vnrs = []
+        # build various objects
+        vnrs.append(self.VNR(
+            numpy.datetime64('2010-01-05T02:00+02:00')
+        ))
+        vnrs.append(self.VNR('2010-01-05T02:00+02:00'))
+        vnrs.append(self.VNR(dt))
+        vnrs.append(self.VNR([2010, 1, 5, 0, 0]))
+        vnrs.append(self.VNR([2010, 1, 5]))
+        vnrs.append(self.VNR(
+            {'year': 2010, 'month': 1, 'day': 5, 'minute': 0}
+        ))
+        vnrs.append(self.VNR(
+            {'year': 2010, 'month': 1, 'day': 5}
+        ))
+        for vnr in vnrs:
+            self.assertEqual(vnr.dt, dt)
+
+    def test_value_not_required_error(self):
+        vnr = self.VNR()
+        self.assertEqual(vnr.dt, None)
+        vnr.dt = None
 
 
 #-- class TestIsCodeHydro -----------------------------------------------------

@@ -48,11 +48,12 @@ import numpy as _numpy
 import pandas as _pandas
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
+from . import _composant
 from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin""" \
+__author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1i"""
 __date__ = """2014-02-25"""
@@ -95,11 +96,12 @@ class Prevision(_numpy.ndarray):
         # la valeur maximum est celle de probabilite 100
 
     Proprietes:
-        dte (numpy.datetime64 ou string) = date UTC de la prevision au format
-            ISO 8601, arrondie a la seconde. A l'initialisation si le fuseau
-            horaire n'est pas precise, la date est consideree en heure locale.
-            Pour forcer la sasie d'une date UTC utiliser le fuseau +00:
-                np.datetime64('2000-01-01T09:28:00+00')
+        dte (numpy.datetime64) = date UTC de la prevision au format
+            ISO 8601, arrondie a la seconde. A l'initialisation par une string,
+            si le fuseau horaire n'est pas precise, la date est consideree en
+            heure locale. Pour forcer la sasie d'une date UTC utiliser
+            le fuseau +00:
+                numpy.datetime64('2000-01-01T09:28:00+00')
         res (numpy.float) = resultat
         prb (numpy.int entre 0 et 100, defaut 50) = probabilite du resultat
 
@@ -258,6 +260,8 @@ class Simulation(object):
 
     """
 
+    dtprod = _composant.Datefromeverything(required=False)
+
     # TODO - Simulation others attributes
 
     # sysalti
@@ -279,7 +283,8 @@ class Simulation(object):
             qualite (0 < int < 100) = indice de qualite
             public (bool, defaut False) = si True publication libre
             commentaire (texte)
-            dtprod (string ou datetime.datetime) = date de production
+            dtprod (numpy.datetime64 string, datetime.datetime...) =
+                date de production
             previsions (Previsions)
             intervenant (Intervenant)
             strict (bool, defaut True) = en mode permissif il n'y a pas de
@@ -293,15 +298,17 @@ class Simulation(object):
         self.intervenant = intervenant
         self._strict = bool(strict)
 
+        # -- descriptors --
+        self.dtprod = dtprod
+
         # -- full properties --
         self._entite = self._modeleprevision = self._grandeur = self._statut \
-            = self._qualite = self._dtprod = self._previsions = None
+            = self._qualite = self._previsions = None
         self.entite = entite
         self.modeleprevision = modeleprevision
         self.grandeur = grandeur
         self.statut = statut
         self.qualite = qualite
-        self.dtprod = dtprod
         self.previsions = previsions
 
     # -- property entite --
@@ -437,31 +444,6 @@ class Simulation(object):
         except:
             raise
 
-    # -- property dtprod --
-    @property
-    def dtprod(self):
-        """Return date production."""
-        if self._dtprod is not None:
-            return self._dtprod.item()
-
-    @dtprod.setter
-    def dtprod(self, dtprod):
-        """Set date production."""
-        try:
-            if dtprod is not None:
-                if not isinstance(dtprod, _numpy.datetime64):
-                    try:
-                        dtprod = _numpy.datetime64(dtprod, 's')
-                    except (ValueError, TypeError):
-                        try:
-                            dtprod = _numpy.datetime64(dtprod.isoformat(), 's')
-                        except (ValueError, TypeError, AttributeError):
-                            raise TypeError('dtprod must be a date')
-            self._dtprod = dtprod
-
-        except:
-            raise
-
     # -- property previsions --
     @property
     def previsions(self):
@@ -500,7 +482,7 @@ class Simulation(object):
                     _sitehydro._ARTICLE[self.entite.__class__],
                     self.entite.__unicode__()
                 )
-            except Exception:
+            except (AttributeError, KeyError):
                 entite = self.entite
 
         # prepare previsions

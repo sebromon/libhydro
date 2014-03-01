@@ -31,9 +31,10 @@ from libhydro.core import (simulation, modeleprevision, sitehydro)
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2013-08-24"""
+__author__ = """Philippe Gouin """ \
+             """<philippe.gouin@developpement-durable.gouv.fr>"""
+__version__ = """0.1d"""
+__date__ = """2014-03-01"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -395,7 +396,7 @@ class TestSimulation(unittest.TestCase):
         dtprod = '2020-01-01 10:00'
         simulation.Simulation(**{'dtprod': dtprod})
         self.assertRaises(
-            TypeError,
+            (TypeError, ValueError),
             simulation.Simulation,
             # **{'dtprod': dtprod}
             **{'dtprod': '2020-10 10:00'}

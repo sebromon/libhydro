@@ -19,7 +19,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
+__author__ = """Philippe Gouin """ \
+             """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1c"""
 __date__ = """2013-09-03"""
 
@@ -31,11 +32,9 @@ __date__ = """2013-09-03"""
 #-- todos ---------------------------------------------------------------------
 
 
-#-- config --------------------------------------------------------------------
-
-
 #-- class Sitehydro -----------------------------------------------------------
 class Modeleprevision(object):
+
     """Class Modeleprevision.
 
     Classe pour manipuler les modeles numeriques de prevision.
@@ -74,17 +73,19 @@ class Modeleprevision(object):
             (description is not None) else None
 
         # -- full properties --
+        self._code = self._typemodele = None
         self.code = code
         self.typemodele = typemodele
 
     # -- property code --
     @property
     def code(self):
-        """Code hydro."""
+        """Return code hydro."""
         return self._code
 
     @code.setter
     def code(self, code):
+        """Set code hydro."""
         try:
             if code is not None:
                 code = unicode(code)
@@ -97,11 +98,12 @@ class Modeleprevision(object):
     # -- property typemodele --
     @property
     def typemodele(self):
-        """Type de modele."""
+        """Return model type."""
         return self._typemodele
 
     @typemodele.setter
     def typemodele(self, typemodele):
+        """Set model type."""
         try:
             if typemodele is not None:
                 typemodele = int(typemodele)
@@ -113,7 +115,7 @@ class Modeleprevision(object):
 
     # -- other methods --
     def __unicode__(self):
-        """Unicode representation."""
+        """Return unicode representation."""
         return 'Modele de type {0} {1}::{2}\nDescription: {3}'.format(
             self.typemodele or '<inconnu>',
             self.code or '<sans code>',
@@ -122,7 +124,7 @@ class Modeleprevision(object):
         )
 
     def __str__(self):
-        """String representation."""
+        """Return string representation."""
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
