@@ -15,21 +15,24 @@ from __future__ import (
 
 import sys as _sys
 
-from .nomenclature import NOMENCLATURE as _NOMENCLATURE
+from . import _composant
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2013-09-03"""
+__version__ = """0.8a"""
+__date__ = """2014-03-02"""
 
 #HISTORY
+#V0.8 - 2014-03-02
+#    use descriptors
 #V0.1 - 2013-08-06
 #    first shot
 
 
 #-- todos ---------------------------------------------------------------------
+# PROGRESS - Modeleprevision 80%
 
 
 #-- class Sitehydro -----------------------------------------------------------
@@ -47,8 +50,12 @@ class Modeleprevision(object):
 
     """
 
+    # Modeleprevision other properties
+
     #dtmaj
     #auteur
+
+    typemodele = _composant.Nomenclatureitem(nomenclature=525, required=False)
 
     def __init__(
         self, code=None, libelle=None, typemodele=0, description=None,
@@ -68,14 +75,18 @@ class Modeleprevision(object):
 
         # -- simple properties --
         self._strict = bool(strict)
+        # adjust the descriptor
+        vars(self.__class__)['typemodele'].strict = self._strict
         self.libelle = unicode(libelle) if (libelle is not None) else None
         self.description = unicode(description) if \
             (description is not None) else None
 
-        # -- full properties --
-        self._code = self._typemodele = None
-        self.code = code
+        # -- descriptors --
         self.typemodele = typemodele
+
+        # -- full properties --
+        self._code = None
+        self.code = code
 
     # -- property code --
     @property
@@ -92,24 +103,6 @@ class Modeleprevision(object):
                 if (self._strict and (len(code) > 10)):
                     raise ValueError('code incorrect')
             self._code = code
-        except:
-            raise
-
-    # -- property typemodele --
-    @property
-    def typemodele(self):
-        """Return model type."""
-        return self._typemodele
-
-    @typemodele.setter
-    def typemodele(self, typemodele):
-        """Set model type."""
-        try:
-            if typemodele is not None:
-                typemodele = int(typemodele)
-                if (self._strict) and (typemodele not in _NOMENCLATURE[525]):
-                    raise ValueError('typemodele incorrect')
-            self._typemodele = typemodele
         except:
             raise
 

@@ -110,7 +110,7 @@ class Testevenement(unittest.TestCase):
             publication=10
         )
         self.assertRaises(
-            TypeError,
+            ValueError,
             e.__setattr__,
             *('publication', None)
         )

@@ -47,23 +47,26 @@ import sys as _sys
 import numpy as _numpy
 import pandas as _pandas
 
-from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 from . import _composant
 from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
+from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1i"""
-__date__ = """2014-02-25"""
+__version__ = """0.7a"""
+__date__ = """2014-03-02"""
 
 #HISTORY
+#V0.7 - 2014-03-02
+#    use descriptors
 #V0.1 - 2013-08-07
 #    first shot
 
 
 #-- todos ---------------------------------------------------------------------
+# PROGRESS - Prevision 100% - Previsions 90% - Simulation 80%
 # FIXME - integrity checks entite / grandeur
 # ADMIT_SIMULATION = {
 #     Sitehydro: {'H': False, 'Q': True},
@@ -260,9 +263,11 @@ class Simulation(object):
 
     """
 
+    grandeur = _composant.Nomenclatureitem(nomenclature=509, required=False)
+    statut = _composant.Nomenclatureitem(nomenclature=516)
     dtprod = _composant.Datefromeverything(required=False)
 
-    # TODO - Simulation others attributes
+    # Simulation others attributes
 
     # sysalti
     # refalti
@@ -293,21 +298,24 @@ class Simulation(object):
         """
 
         # -- simple properties --
+        self._strict = bool(strict)
+        # adjust the descriptors
+        vars(self.__class__)['grandeur'].strict = self._strict
+        vars(self.__class__)['statut'].strict = self._strict
         self.public = bool(public)
         self.commentaire = unicode(commentaire) if commentaire else None
         self.intervenant = intervenant
-        self._strict = bool(strict)
 
         # -- descriptors --
+        self.grandeur = grandeur
+        self.statut = statut
         self.dtprod = dtprod
 
         # -- full properties --
-        self._entite = self._modeleprevision = self._grandeur = self._statut \
-            = self._qualite = self._previsions = None
+        self._entite = self._modeleprevision = \
+            self._qualite = self._previsions = None
         self.entite = entite
         self.modeleprevision = modeleprevision
-        self.grandeur = grandeur
-        self.statut = statut
         self.qualite = qualite
         self.previsions = previsions
 
@@ -379,48 +387,6 @@ class Simulation(object):
                         'modeleprevision must be a Modeleprevision'
                     )
             self._modeleprevision = modeleprevision
-
-        except:
-            raise
-
-    # -- property grandeur --
-    @property
-    def grandeur(self):
-        """Return grandeur."""
-        return self._grandeur
-
-    @grandeur.setter
-    def grandeur(self, grandeur):
-        """Set grandeur."""
-        try:
-            if (grandeur is not None):
-                grandeur = unicode(grandeur)
-                if (self._strict) and (grandeur not in _NOMENCLATURE[509]):
-                    raise ValueError('grandeur incorrect')
-            self._grandeur = grandeur
-
-        except:
-            raise
-
-    # -- property statut --
-    @property
-    def statut(self):
-        """Return statut."""
-        return self._statut
-
-    @statut.setter
-    def statut(self, statut):
-        """Set statut."""
-        try:
-            # None case
-            if statut is None:
-                raise TypeError('statut is required')
-            # other cases
-            statut = int(statut)
-            if (self._strict) and (statut not in _NOMENCLATURE[516]):
-                raise ValueError('statut incorrect')
-            # all is well
-            self._statut = statut
 
         except:
             raise

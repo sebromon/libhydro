@@ -201,7 +201,7 @@ class TestSitehydro(unittest.TestCase):
         code = 'H0001010'
         s = sitehydro.Sitehydro(**{'code': code, 'typesite': 'REEL'})
         self.assertRaises(
-            TypeError,
+            ValueError,
             s.__setattr__,
             *('typesite', None)
         )
@@ -377,7 +377,7 @@ class TestStationhydro(unittest.TestCase):
         code = 'A033465001'
         s = sitehydro.Stationhydro(**{'code': code, 'typestation': 'LIMNI'})
         self.assertRaises(
-            TypeError,
+            ValueError,
             s.__setattr__,
             *('typestation', None)
         )
@@ -506,7 +506,7 @@ class TestCapteur(unittest.TestCase):
         """Typemesure error."""
         c = sitehydro.Capteur(**{'code': 'A14410010201', 'typemesure': 'H'})
         self.assertRaises(
-            TypeError,
+            ValueError,
             c.__setattr__,
             *('typemesure', None)
         )

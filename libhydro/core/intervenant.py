@@ -4,7 +4,6 @@
 Ce module contient les classes:
     # Intervenant
     # Contact
-    # Adresse -- not implemented --
 
 """
 #-- imports -------------------------------------------------------------------
@@ -18,20 +17,24 @@ from __future__ import (
 import sys as _sys
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
+from . import _composant
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1e"""
-__date__ = """2014-02-20"""
+__version__ = """0.2a"""
+__date__ = """2014-03-02"""
 
 #HISTORY
+#V0.2 - 2014-03-02
+#    use descriptors
 #V0.1 - 2013-08-20
 #    first shot
 
 
 #-- todos ---------------------------------------------------------------------
+# PROGRESS - Intervenant 50% - Contact 30%
 # TODO - use the BD Hydro intervenants list
 
 
@@ -77,7 +80,6 @@ class Intervenant(object):
         """
 
         # -- simple properties --
-        self.nom = self.mnemo = None
         self.nom = unicode(nom) if (nom is not None) else None
         self.mnemo = unicode(mnemo) if (mnemo is not None) else None
 
@@ -242,6 +244,8 @@ class Contact(object):
 
     # Adresse
 
+    civilite = _composant.Nomenclatureitem(nomenclature=538, required=False)
+
     def __init__(
         self, code=None, nom=None, prenom=None, civilite=None, intervenant=None
     ):
@@ -259,6 +263,9 @@ class Contact(object):
         # -- simple properties --
         self.nom = unicode(nom) if (nom is not None) else None
         self.prenom = unicode(prenom) if (prenom is not None) else None
+
+        # -- descriptors --
+        self.civilite = civilite
 
         # -- full properties --
         self._code = self._civilite = self._intervenant = None
@@ -289,26 +296,6 @@ class Contact(object):
 
             # all is well
             self._code = code
-
-        except:
-            raise
-
-    # -- property civilite --
-    @property
-    def civilite(self):
-        """Return civilite."""
-        return self._civilite
-
-    @civilite.setter
-    def civilite(self, civilite):
-        """Set civilite."""
-        try:
-
-            if civilite is not None:
-                civilite = int(civilite)
-                if civilite not in _NOMENCLATURE[538]:
-                    raise ValueError('civilite incorrect')
-            self._civilite = civilite
 
         except:
             raise
@@ -347,17 +334,17 @@ class Contact(object):
 
 
 # -- Class Adresse ------------------------------------------------------------
-class Adresse(object):
-
-    """Classe Adresse."""
-
-    def __init__(self):
-        raise NotImplementedError
-
-    # adresse1
-    # adresse2
-    # lieudit
-    # bp
-    # cp
-    # localite
-    # pays
+# class Adresse(object):
+#
+#     """Classe Adresse."""
+#
+#     def __init__(self):
+#         raise NotImplementedError
+#
+#     # adresse1
+#     # adresse2
+#     # lieudit
+#     # bp
+#     # cp
+#     # localite
+#     # pays

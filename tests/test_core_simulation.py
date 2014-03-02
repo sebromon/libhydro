@@ -33,8 +33,8 @@ from libhydro.core import (simulation, modeleprevision, sitehydro)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1d"""
-__date__ = """2014-03-01"""
+__version__ = """0.1e"""
+__date__ = """2014-03-02"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -43,14 +43,15 @@ __date__ = """2014-03-01"""
 
 #-- class TestPrevision -------------------------------------------------------
 class TestPrevision(unittest.TestCase):
+
     """Prevision class tests."""
 
     # def setUp(self):
-    #     """Hook method for setting up the test fixture before exercising it."""
+    # """Hook method for setting up the test fixture before exercising it."""
     #     pass
 
     # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
+    # """Hook method for deconstructing the test fixture after testing it."""
     #     pass
 
     def test_base_01(self):
@@ -96,7 +97,7 @@ class TestPrevision(unittest.TestCase):
         )
 
     def test_error_02(self):
-        """Res error."""
+        """Test res error."""
         simulation.Prevision(**{'dte': '2012-10-10 10:10', 'res': 10})
         self.assertRaises(
             ValueError,
@@ -106,7 +107,9 @@ class TestPrevision(unittest.TestCase):
 
     def test_error_03(self):
         """Prb error."""
-        simulation.Prevision(**{'dte': '2012-10-10 10:10', 'res': 25.8, 'prb': 22.3})
+        simulation.Prevision(
+            **{'dte': '2012-10-10 10:10', 'res': 25.8, 'prb': 22.3}
+        )
         self.assertRaises(
             ValueError,
             simulation.Prevision,
@@ -121,18 +124,19 @@ class TestPrevision(unittest.TestCase):
 
 #-- class TestPrevisions ------------------------------------------------------
 class TestPrevisions(unittest.TestCase):
+
     """Previsions class tests."""
 
     # def setUp(self):
-    #     """Hook method for setting up the test fixture before exercising it."""
+    # """Hook method for setting up the test fixture before exercising it."""
     #     pass
 
     # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
+    # """Hook method for deconstructing the test fixture after testing it."""
     #     pass
 
     def test_base_01(self):
-        """Previsions with one prevision."""
+        """Test previsions with one prevision."""
         dte = datetime.datetime(1953, 5, 18, 18, 5, 33)
         res = 8956321.2569
         prb = 75
@@ -184,14 +188,15 @@ class TestPrevisions(unittest.TestCase):
 
 #-- class TestSimulation ------------------------------------------------------
 class TestSimulation(unittest.TestCase):
+
     """Simulation class tests."""
 
     # def setUp(self):
-    #     """Hook method for setting up the test fixture before exercising it."""
+    # """Hook method for setting up the test fixture before exercising it."""
     #     pass
 
     # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
+    # """Hook method for deconstructing the test fixture after testing it."""
     #     pass
 
     def test_base_01(self):
@@ -301,7 +306,7 @@ class TestSimulation(unittest.TestCase):
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test."""
         entite = 'station'
-        modeleprevision = 'modele'
+        modele = 'modele'
         grandeur = 'RR'
         statut = 333333
         public = True
@@ -311,7 +316,7 @@ class TestSimulation(unittest.TestCase):
         previsions = [10, 20, 30]
         sim = simulation.Simulation(
             entite=entite,
-            modeleprevision=modeleprevision,
+            modeleprevision=modele,
             grandeur=grandeur,
             statut=statut,
             qualite=qualite,
@@ -322,7 +327,7 @@ class TestSimulation(unittest.TestCase):
             strict=False
         )
         self.assertEqual(sim.entite, entite)
-        self.assertEqual(sim.modeleprevision, modeleprevision)
+        self.assertEqual(sim.modeleprevision, modele)
         self.assertEqual(sim.grandeur, grandeur)
         self.assertEqual(sim.statut, statut)
         self.assertEqual(sim.qualite, qualite)
@@ -356,6 +361,8 @@ class TestSimulation(unittest.TestCase):
     def test_error_03(self):
         """Grandeur error."""
         simulation.Simulation(**{'grandeur': 'Q'})
+        simulation.Simulation(**{'grandeur': None})
+        print(vars(simulation.Simulation)['grandeur'].strict)
         self.assertRaises(
             ValueError,
             simulation.Simulation,
@@ -367,7 +374,7 @@ class TestSimulation(unittest.TestCase):
         """Statut error."""
         simulation.Simulation(**{'statut': 16})
         self.assertRaises(
-            TypeError,
+            ValueError,
             simulation.Simulation,
             # **{'statut': 16}
             **{'statut': None}
@@ -403,7 +410,7 @@ class TestSimulation(unittest.TestCase):
         )
 
     def test_error_07(self):
-        """Previsions error."""
+        """Test previsions error."""
         prvs = simulation.Previsions(
             simulation.Prevision(
                 **{'dte': '2012-10-10 10', 'res': 25.8, 'prb': 3}

@@ -17,7 +17,6 @@ from __future__ import (
 
 import sys as _sys
 
-from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 from . import _composant
 
 
@@ -25,17 +24,19 @@ from . import _composant
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.3a"""
-__date__ = """2014-02-20"""
+__version__ = """0.3b"""
+__date__ = """2014-03-02"""
 
 #HISTORY
 #V0.3 - 2014-02-20
+#    use descriptors
 #    merge Camillo (CMO) work
 #V0.1 - 2013-07-12
 #    first shot
 
 
 #-- todos ---------------------------------------------------------------------
+# PROGRESS - Sitehydro 20% - stationhydro 30% - Capteur 30%
 # FIXME - generalize typeentite in _Entite.typentite ?
 # TODO - add navigability for Capteur => Station and Station => Site
 
@@ -186,11 +187,11 @@ class _Site_or_station(_Entitehydro):
                 try:
                     # instanciate with a list
                     self._coord = _composant.Coord(*coord)
-                except Exception:
+                except (TypeError, ValueError, AttributeError):
                     try:
                         # instanciate with a dict
                         self._coord = _composant.Coord(**coord)
-                    except Exception:
+                    except (TypeError, ValueError, AttributeError):
                         raise TypeError('coord must be a list or a dict')
 
 
@@ -248,6 +249,8 @@ class Sitehydro(_Site_or_station):
     #communes
     #tronconsvivilance
 
+    typesite = _composant.Nomenclatureitem(nomenclature=530)
+
     def __init__(
         self, code, codeh2=None, typesite='REEL',
         libelle=None, libelleusuel=None, coord=None, stations=None,
@@ -273,43 +276,20 @@ class Sitehydro(_Site_or_station):
             code=code, codeh2=codeh2, libelle=libelle,
             coord=coord, strict=strict
         )
+        # adjust the descriptor
+        vars(self.__class__)['typesite'].strict = self._strict
 
         # -- simple properties --
         self.libelleusuel = unicode(libelleusuel) \
             if (libelleusuel is not None) else None
 
-        # -- full properties --
-        self._typesite = None
+        # -- descriptors --
         self.typesite = typesite
+
+        # -- full properties --
         self._stations = self._communes = []
         self.stations = stations
         self.communes = communes
-
-    # -- property typesite --
-    @property
-    def typesite(self):
-        """Return type site hydro."""
-        return self._typesite
-
-    @typesite.setter
-    def typesite(self, typesite):
-        """Set type site hydro."""
-        try:
-
-            # None case
-            if typesite is None:
-                raise TypeError('typesite is required')
-
-            # other cases
-            typesite = unicode(typesite)
-            if (self._strict) and (typesite not in _NOMENCLATURE[530]):
-                raise ValueError('typesite incorrect')
-
-            # all is well
-            self._typesite = typesite
-
-        except:
-            raise
 
     # -- property stations --
     @property
@@ -434,6 +414,8 @@ class Stationhydro(_Site_or_station):
     #stationattachee
     #plageutilisation
 
+    typestation = _composant.Nomenclatureitem(nomenclature=531)
+
     def __init__(
         self, code, codeh2=None, typestation='LIMNI', libelle=None,
         libellecomplement=None, niveauaffichage=0, coord=None, capteurs=None,
@@ -464,14 +446,17 @@ class Stationhydro(_Site_or_station):
             code=code, codeh2=codeh2, libelle=libelle,
             coord=coord, strict=strict
         )
+        # adjust the descriptor
+        vars(self.__class__)['typestation'].strict = self._strict
 
         # -- simple properties --
         self.libellecomplement = unicode(libellecomplement) \
             if (libellecomplement is not None) else None
 
-        # -- full properties --
-        self._typestation = 'LIMNI'
+        # -- descriptors --
         self.typestation = typestation
+
+        # -- full properties --
         self._niveauaffichage = 0
         self.niveauaffichage = niveauaffichage
         self._capteurs = []
@@ -480,32 +465,6 @@ class Stationhydro(_Site_or_station):
         self.commune = commune
         self._ddcs = []
         self.ddcs = ddcs
-
-    # -- property typestation --
-    @property
-    def typestation(self):
-        """Return type station hydro."""
-        return self._typestation
-
-    @typestation.setter
-    def typestation(self, typestation):
-        """Set type station hydro."""
-        try:
-
-            # none case
-            if typestation is None:
-                raise TypeError('typestation is required')
-
-            # other cases
-            typestation = unicode(typestation)
-            if (self._strict) and (typestation not in _NOMENCLATURE[531]):
-                raise ValueError('typestation incorrect')
-
-            # all is well
-            self._typestation = typestation
-
-        except:
-            raise
 
     # -- property niveauaffichage --
     @property
@@ -621,7 +580,7 @@ class Capteur(_Entitehydro):
     Proprietes:
         code (string(12)) = code hydro
         codeh2 (string(8)) = ancien code hydro2
-        typemesure (caractere parmi NOMENCLATURE[531]) = H ou Q
+        typemesure (caractere parmi NOMENCLATURE[520]) = H ou Q
         libelle (string)
 
     """
@@ -640,6 +599,8 @@ class Capteur(_Entitehydro):
     #plageutilisation
     #observateur
 
+    typemesure = _composant.Nomenclatureitem(nomenclature=520)
+
     def __init__(
         self, code, codeh2=None, typemesure='H', libelle=None,
         strict=True
@@ -649,7 +610,7 @@ class Capteur(_Entitehydro):
         Arguments:
             code (string(12)) = code hydro
             codeh2 (string(8)) = ancien code hydro2
-            typemesure (caractere parmi NOMENCLATURE[531], defaut H) = H ou Q
+            typemesure (caractere parmi NOMENCLATURE[520], defaut H) = H ou Q
             libelle (string)
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite du code et du type de mesure
@@ -660,38 +621,11 @@ class Capteur(_Entitehydro):
         super(Capteur, self).__init__(
             code=code, codeh2=codeh2, libelle=libelle, strict=strict
         )
+        # adjust the descriptor
+        vars(self.__class__)['typemesure'].strict = self._strict
 
-        # -- simple properties --
-
-        # -- full properties --
-        self._typemesure = 'H'
+        # -- descriptors --
         self.typemesure = typemesure
-
-    # -- property typemesure --
-    @property
-    def typemesure(self):
-        """Return type de mesure."""
-        return self._typemesure
-
-    @typemesure.setter
-    def typemesure(self, typemesure):
-        """Set type de mesure."""
-        try:
-
-            # None case
-            if typemesure is None:
-                raise TypeError('typemesure is required')
-
-            # other cases
-            typemesure = unicode(typemesure)
-            if (self._strict) and (typemesure not in _NOMENCLATURE[520]):
-                raise ValueError('typemesure incorrect')
-
-            # all is well
-            self._typemesure = typemesure
-
-        except:
-            raise
 
     # -- other methods --
     def __unicode__(self):

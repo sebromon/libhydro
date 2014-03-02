@@ -34,110 +34,18 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2a"""
-__date__ = """2014-03-01"""
+__version__ = """0.8a"""
+__date__ = """2014-03-02"""
 
 #HISTORY
-#V0.2 - 2014-02-01
-#    add 2 descriptors
+#V0.8 - 2014-02-01
+#    add and use descriptors
 #V0.1 - 2013-11-06
 #    first shot
 
 
 #-- todos ---------------------------------------------------------------------
-
-
-#-- class Coord ---------------------------------------------------------------
-class Coord(object):
-
-    """Classe Coord.
-
-    Classe pour manipuler des coordonnees.
-
-    Proprietes:
-        x, y (numerique)
-        proj (caractere parmi NOMENCLATURE[22]) = systeme de projection
-
-    """
-
-    def __init__(self, x, y, proj=None, strict=True):
-        """Initialisation.
-
-        Arguments:
-            x, y (numeriques)
-            proj (caractere parmi NOMENCLATURE[22]) = systeme de projection
-            strict (bool, defaut True) = le mode permissif permet de rendre
-                facultatif le parametre sysproj
-
-        """
-
-        # -- super --
-        # super(Coord, self).__init__(
-        #     x=float(x), y=float(y)
-        # )
-
-        # -- simple properties --
-        for crd in ('x', 'y'):
-            try:
-                self.__setattr__(crd, float(locals()[crd]))
-            except Exception:
-                raise TypeError('{} must be a number'.format(crd))
-        self._strict = bool(strict)
-
-        # -- full properties --
-        self._proj = None
-        self.proj = proj
-
-    # -- property proj --
-    @property
-    def proj(self):
-        """Return proj."""
-        return self._proj
-
-    @proj.setter
-    def proj(self, proj):
-        """Set proj."""
-        try:
-            if self._strict:
-                # none case
-                if proj is None:
-                    raise TypeError('proj is required')
-
-                # other cases
-                proj = int(proj)
-                if proj not in _NOMENCLATURE[22]:
-                    raise ValueError('unknown proj')
-
-            # all is well
-            self._proj = proj
-
-        except:
-            raise
-
-    # -- other methods --
-    def __eq__(self, other):
-        return (
-            (self.x == other.x)
-            and (self.y == other.y)
-            and (self.proj == other.proj)
-        )
-
-    def __unicode__(self):
-        """Return unicode representation."""
-        return 'Coord (x={0}, y={1}) [proj {2}]'.format(
-            self.x,
-            self.y,
-            _NOMENCLATURE[22][self.proj] if (self.proj is not None) else
-            '<projection inconnue>'
-        )
-
-    def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(_sys.stdout.encoding)
-
+# nothing
 
 #-- class Datefromeverything --------------------------------------------------
 class Datefromeverything(object):
@@ -210,6 +118,22 @@ class Nomenclatureitem(object):
 
     A descriptor to deal with 'in nomenclature.NOMENCLATURES' properties.
 
+    Should raise only a ValueError when value is not allowed (even with
+    the None case).
+
+    Properties:
+        nomenclature (int) = the nomenclature ref
+        valuetype (type) = a function to cast values to the nomenclature's
+            items type
+        strict (bool, default True) = wether or not the instance value has
+            to be in the nomenclature items
+        required (bool, defaut True) = wether or not instance's value can
+            be None
+        default =  a defautl value returned if the instance's value is not
+            in the dictionnary. Should be unused if the property has been
+            initialized.
+        data (weakref.WeakKeyDictionary)
+
     """
 
     def __init__(self, nomenclature, strict=True, required=True, default=None):
@@ -217,11 +141,19 @@ class Nomenclatureitem(object):
 
         Args:
             nomenclature (int) = the nomenclature ref
-            required (bool, defaut True) = wether instance's value can
-                be None or not
+            strict (bool, default True) = wether or not the instance value has
+                to be in the nomenclature items
+            required (bool, defaut True) = wether or not instance's value can
+                be None
+            default =  a defautl value returned if the instance's value is not
+                in the dictionnary. Should be unused if the property has been
+                initialized.
 
         """
         self.nomenclature = int(nomenclature)
+        if self.nomenclature not in _NOMENCLATURE:
+            raise ValueError('unknown nomenclature')
+        self.valuetype = type(_NOMENCLATURE[self.nomenclature].keys()[0])
         self.strict = bool(strict)
         self.required = bool(required)
         self.default = default
@@ -236,16 +168,91 @@ class Nomenclatureitem(object):
         # None case
         if (value is None):
             if self.required:
-                raise TypeError('a value other than None is required')
+                raise ValueError('a value other than None is required')
 
         # other cases
-        if (self.strict) and (value not in _NOMENCLATURE[self.nomenclature]):
-            raise ValueError(
-                'value should be in nomenclature %i' % self.nomenclature
-            )
+        else:
+            value = self.valuetype(value)
+            if (
+                (self.strict) and
+                (value not in _NOMENCLATURE[self.nomenclature])
+            ):
+                raise ValueError(
+                    'value should be in nomenclature %i' % self.nomenclature
+                )
 
         # all is well
         self.data[instance] = value
+
+
+#-- class Coord ---------------------------------------------------------------
+class Coord(object):
+
+    """Classe Coord.
+
+    Classe pour manipuler des coordonnees.
+
+    Proprietes:
+        x, y (numerique)
+        proj (caractere parmi NOMENCLATURE[22]) = systeme de projection
+
+    """
+
+    proj = Nomenclatureitem(nomenclature=22)
+
+    def __init__(self, x, y, proj=None, strict=True):
+        """Initialisation.
+
+        Arguments:
+            x, y (numeriques)
+            proj (caractere parmi NOMENCLATURE[22]) = systeme de projection
+            strict (bool, defaut True) = le mode permissif permet de rendre
+                facultatif le parametre proj
+
+        """
+
+        # -- simple properties --
+        self._strict = bool(strict)
+        # adjust the descriptor
+        vars(self.__class__)['proj'].required = self._strict
+
+        for crd in ('x', 'y'):
+            try:
+                self.__setattr__(crd, float(locals()[crd]))
+            except Exception:
+                raise TypeError('{} must be a number'.format(crd))
+
+        # -- descriptors --
+        self.proj = proj
+
+    # -- other methods --
+    def __eq__(self, other):
+        return (
+            # strictly required by the use of a descriptor
+            (self is other)
+            or
+            (
+                (self.x == other.x)
+                and (self.y == other.y)
+                and (self.proj == other.proj)
+            )
+        )
+
+    def __unicode__(self):
+        """Return unicode representation."""
+        return 'Coord (x={0}, y={1}) [proj {2}]'.format(
+            self.x,
+            self.y,
+            _NOMENCLATURE[22][self.proj] if (self.proj is not None) else
+            '<projection inconnue>'
+        )
+
+    def __str__(self):
+        """Return string representation."""
+        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
+            return self.__unicode__()
+        else:  # Python 2
+            return self.__unicode__().encode(_sys.stdout.encoding)
 
 
 #-- functions -----------------------------------------------------------------

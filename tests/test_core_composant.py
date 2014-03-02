@@ -35,7 +35,7 @@ import numpy
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.2a"""
-__date__ = """2014-03-01"""
+__date__ = """2014-03-02"""
 
 #HISTORY
 #V0.2 - 2014-03-01
@@ -129,7 +129,7 @@ class TestCoord(unittest.TestCase):
         """Proj error."""
         composant.Coord(**{'x': 1, 'y': 2.3, 'proj': 22})
         self.assertRaises(
-            TypeError,
+            ValueError,
             composant.Coord,
             **{'x': '1', 'y': 8156941.2368, 'proj': None}
         )
@@ -232,6 +232,151 @@ class TestDatefromeverything(unittest.TestCase):
         vnr = self.VNR()
         self.assertEqual(vnr.dt, None)
         vnr.dt = None
+
+
+#-- class TestNomenclatureitem ------------------------------------------------
+class TestNomenclatureitem(unittest.TestCase):
+
+    """Nomenclatureitem class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        # define a default class
+        class NI_strict_required(object):
+            ni = composant.Nomenclatureitem(nomenclature=509)
+
+            def __init__(self, ni):
+                self.ni = ni
+
+        self.NI_strict_required = NI_strict_required
+
+        # define a class with strict=False
+        class NI_required(object):
+            ni = composant.Nomenclatureitem(nomenclature=509, strict=False)
+
+            def __init__(self, ni='default value not in nomenclature'):
+                self.ni = ni
+
+        self.NI_required = NI_required
+
+        # define a class with required=False
+        class NI_strict(object):
+            ni = composant.Nomenclatureitem(nomenclature=509, required=False)
+
+            def __init__(self, ni='H'):
+                self.ni = ni
+
+        self.NI_strict = NI_strict
+
+    def test_NI_strict_required(self):
+        """NI_strict_required test.
+
+        Test the setters and getters when a value is required and has to
+        match the nomenclature.
+
+        """
+        ni = self.NI_strict_required('H')
+        self.assertEqual(ni.ni, 'H')
+        ni = self.NI_strict_required('Q')
+        self.assertEqual(ni.ni, 'Q')
+        ni.ni = 'H'
+        self.assertEqual(ni.ni, 'H')
+
+    def test_NI_strict_required_error(self):
+        """NI_strict_required error."""
+        self.assertRaises(
+            ValueError,
+            self.NI_strict_required,
+            None
+        )
+        self.assertRaises(
+            ValueError,
+            self.NI_strict_required,
+            'Z'
+        )
+        ni = self.NI_strict_required('H')
+        self.assertRaises(
+            ValueError,
+            ni.__setattr__,
+            *('ni', 'Z')
+        )
+        self.assertRaises(
+            ValueError,
+            ni.__setattr__,
+            *('ni', None)
+        )
+
+    def test_NI_required(self):
+        """NI_required test.
+
+        Test the setters and getters when a value is required.
+
+        """
+        ni = self.NI_required('H')
+        self.assertEqual(ni.ni, 'H')
+        ni = self.NI_required('Q')
+        self.assertEqual(ni.ni, 'Q')
+        ni = self.NI_required('Z')
+        self.assertEqual(ni.ni, 'Z')
+        ni = self.NI_required(3)
+        self.assertEqual(ni.ni, '3')
+        ni = self.NI_required()
+        self.assertEqual(ni.ni, 'default value not in nomenclature')
+        ni.ni = 5
+        self.assertEqual(ni.ni, '5')
+
+    def test_NI_required_error(self):
+        """NI_required error."""
+        self.assertRaises(
+            ValueError,
+            self.NI_required,
+            None
+        )
+        ni = self.NI_required('H')
+        self.assertRaises(
+            ValueError,
+            ni.__setattr__,
+            *('ni', None)
+        )
+
+    def test_NI_strict(self):
+        """NI_strict test.
+
+        Test the setters and getters whith a strict property.
+
+        """
+        ni = self.NI_strict('H')
+        self.assertEqual(ni.ni, 'H')
+        ni = self.NI_strict('Q')
+        self.assertEqual(ni.ni, 'Q')
+        ni = self.NI_strict(None)
+        self.assertEqual(ni.ni, None)
+        # default value
+        ni = self.NI_strict()
+        self.assertEqual(ni.ni, 'H')
+        ni.ni = None
+        self.assertEqual(ni.ni, None)
+        ni.ni = 'Q'
+        self.assertEqual(ni.ni, 'Q')
+
+    def test_NI_strict_error(self):
+        """NI_strict error."""
+        self.assertRaises(
+            ValueError,
+            self.NI_strict,
+            3
+        )
+        self.assertRaises(
+            ValueError,
+            self.NI_strict,
+            'Z'
+        )
+        ni = self.NI_strict('H')
+        self.assertRaises(
+            ValueError,
+            ni.__setattr__,
+            *('ni', '333')
+        )
 
 
 #-- class TestIsCodeHydro -----------------------------------------------------

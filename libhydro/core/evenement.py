@@ -16,23 +16,24 @@ from __future__ import (
 import sys as _sys
 import datetime as _datetime
 
-from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 from . import _composant
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1d"""
-__date__ = """2014-03-01"""
+__version__ = """1.0a"""
+__date__ = """2014-03-02"""
 
 #HISTORY
+#V1.0 - 2014-03-02
+#    use descriptors
 #V0.1 - 2013-11-26
 #    first shot
 
 
 #-- todos ---------------------------------------------------------------------
-# nothing
+# PROGRESS - Evenement 100%
 
 #-- class Evenement -----------------------------------------------------------
 class Evenement(object):
@@ -53,6 +54,7 @@ class Evenement(object):
     """
 
     dt = _composant.Datefromeverything(required=False)
+    publication = _composant.Nomenclatureitem(nomenclature=534)
     dtmaj = _composant.Datefromeverything(required=False)
 
     def __init__(
@@ -72,51 +74,69 @@ class Evenement(object):
             publication (entier parmi NOMENCLATURE[534]) = type de publication
             dtmaj (numpy.datetime64 string, datetime.datetime...) =
                 date de mise a jour
-            strict (bool, defaut True) = en mode permissif le contact est
-                facultatif et le type de publication n'est pas controle
+            strict (bool, defaut True) = en mode permissif le type de
+                publication n'est pas controle et les proprietes obligatoires
+                sont facultatives
 
         """
 
         # -- simple properties --
-        self.entite = entite
-        self.descriptif = unicode(descriptif) \
-            if (descriptif is not None) else None
-        self.contact = contact
         self._strict = bool(strict)
+        # adjust the descriptor
+        vars(self.__class__)['publication'].strict = self._strict
 
         # -- descriptors --
         self.dt = dt
+        self.publication = publication
         self.dtmaj = dtmaj
 
         # -- full properties --
-        self._publication = None
-        self.publication = publication
+        self._entite = self._descriptif = self._contact = None
+        self.entite = entite
+        self.descriptif = descriptif
+        self.contact = contact
 
-    # -- property publication --
+    # -- property entite --
     @property
-    def publication(self):
-        """Return type publication."""
-        return self._publication
+    def entite(self):
+        """Return entite."""
+        return self._entite
 
-    @publication.setter
-    def publication(self, publication):
-        """Set type publication."""
-        try:
+    @entite.setter
+    def entite(self, entite):
+        """Set entite."""
+        if entite is None:
+            if self._strict:
+                raise TypeError('entite is required')
+        self._entite = entite
 
-            # None case
-            if publication is None:
-                raise TypeError('publication is required')
+    # -- property descriptif --
+    @property
+    def descriptif(self):
+        """Return descriptif."""
+        return self._descriptif
 
-            # other cases
-            publication = int(publication)
-            if (self._strict) and (publication not in _NOMENCLATURE[534]):
-                raise ValueError('publication incorrect')
+    @descriptif.setter
+    def descriptif(self, descriptif):
+        """Set descriptif."""
+        if descriptif is None:
+            if self._strict:
+                raise TypeError('descriptif is required')
+        self._descriptif = unicode(descriptif)
 
-            # all is well
-            self._publication = publication
+    # -- property contact --
+    @property
+    def contact(self):
+        """Return contact."""
+        return self._contact
 
-        except:
-            raise
+    @contact.setter
+    def contact(self, contact):
+        """Set contact."""
+        if contact is None:
+            if self._strict:
+                raise TypeError('contact is required')
+        self._contact = contact
 
     # -- other methods --
     def __unicode__(self):
