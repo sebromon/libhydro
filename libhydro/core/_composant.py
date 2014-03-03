@@ -34,8 +34,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.8a"""
-__date__ = """2014-03-02"""
+__version__ = """0.8b"""
+__date__ = """2014-03-03"""
 
 #HISTORY
 #V0.8 - 2014-02-01
@@ -276,9 +276,15 @@ def is_code_hydro(code, length=8, raises=True):
         if not code[0].isupper():
             raise ValueError('code hydro first char must be upper')
 
-        # [1:] digits
-        if not code[1:].isdigit():
-            raise ValueError('code hydro [1:] chars must be digits')
+        # [1:-1] digits
+        if not code[1:-1].isdigit():
+            raise ValueError(
+                'code hydro chars except first and last must be digits'
+            )
+
+        # digit or upper last char
+        if not (code[-1].isdigit() or code[-1].isupper()):
+            raise ValueError('code hydro last char must be digit or upper')
 
         # all is well
         return True

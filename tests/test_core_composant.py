@@ -34,8 +34,8 @@ import numpy
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2a"""
-__date__ = """2014-03-02"""
+__version__ = """0.2b"""
+__date__ = """2014-03-03"""
 
 #HISTORY
 #V0.2 - 2014-03-01
@@ -400,6 +400,9 @@ class TestIsCodeHydro(unittest.TestCase):
         self.assertTrue(
             composant.is_code_hydro('A33305100101', 12, raises=True)
         )
+        # a bastard code Hydro2 !
+        self.assertTrue(composant.is_code_hydro('A842020C', raises=True))
+        self.assertTrue(composant.is_code_hydro('A842020C', raises=False))
 
     def test_bool_false(self):
         """False test."""
@@ -417,6 +420,9 @@ class TestIsCodeHydro(unittest.TestCase):
         )
         self.assertFalse(
             composant.is_code_hydro('A330C5100201', 12, raises=False)
+        )
+        self.assertFalse(
+            composant.is_code_hydro('A33051CC', raises=False)
         )
 
     def test_raises(self):
@@ -444,6 +450,12 @@ class TestIsCodeHydro(unittest.TestCase):
             ValueError,
             composant.is_code_hydro,
             **{'code': '33001000', 'raises': True}
+        )
+        # wrong chars
+        self.assertRaises(
+            ValueError,
+            composant.is_code_hydro,
+            **{'code': 'A33001CC', 'raises': True}
         )
 
 
