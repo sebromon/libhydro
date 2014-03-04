@@ -45,7 +45,8 @@ __date__ = """2014-03-03"""
 
 
 #-- todos ---------------------------------------------------------------------
-# nothing
+# TODO - use regex for codes matching functions
+
 
 #-- class Datefromeverything --------------------------------------------------
 class Datefromeverything(object):
