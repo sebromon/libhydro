@@ -32,12 +32,16 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1h"""
-__date__ = """2014-02-25"""
+__version__ = """0.1i"""
+__date__ = """2014-03-09"""
 
 #HISTORY
 #V0.1 - 2013-08-20
 #    first shot
+
+
+#-- todos ---------------------------------------------------------------------
+# TODO - factorize 5 Message properties in a descriptor (except scenario)
 
 
 # -- class Message ------------------------------------------------------------
@@ -349,6 +353,7 @@ class Message(object):
         avec les regles suivantes:
             CLE PARMI   /      VALEUR
             siteshydro  = iterable de sitehydro.Sitehydro
+            seuilshydro = iterable de seuil.Seuilhydro
             evenements  = iterable d'evenement.Evenement
             series      = iterable de obshydro.Serie
             simulations = iterable de simulation.Simulation
@@ -388,6 +393,7 @@ class Message(object):
             _to_xml._to_xml(
                 scenario=self.scenario,
                 siteshydro=self.siteshydro,
+                seuilshydro=self.seuilshydro,
                 evenements=self.evenements,
                 series=self.series,
                 simulations=self.simulations
@@ -408,6 +414,7 @@ class Message(object):
             _to_xml._to_xml(
                 scenario=self.scenario,
                 siteshydro=self.siteshydro,
+                seuilshydro=self.seuilshydro,
                 evenements=self.evenements,
                 series=self.series,
                 simulations=self.simulations
@@ -423,11 +430,12 @@ class Message(object):
             scenario = self.scenario.__unicode__()
         except AttributeError:
             scenario = 'Message <sans scenario>'
-        return '{}\nContenu: {} siteshydro - ' \
+        return '{}\nContenu: {} siteshydro - {} seuilshydro - ' \
                '{} evenements - ' \
                '{} series - {} simulations'.format(
                    scenario,
                    len(self.siteshydro),
+                   len(self.seuilshydro),
                    len(self.evenements),
                    len(self.series),
                    len(self.simulations)

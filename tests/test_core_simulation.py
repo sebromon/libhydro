@@ -362,7 +362,6 @@ class TestSimulation(unittest.TestCase):
         """Grandeur error."""
         simulation.Simulation(**{'grandeur': 'Q'})
         simulation.Simulation(**{'grandeur': None})
-        print(vars(simulation.Simulation)['grandeur'].strict)
         self.assertRaises(
             ValueError,
             simulation.Simulation,

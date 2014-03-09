@@ -59,8 +59,8 @@ from . import sitehydro as _sitehydro
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1k"""
-__date__ = """2014-03-01"""
+__version__ = """0.1l"""
+__date__ = """2014-03-09"""
 
 #HISTORY
 #V0.1 - 2013-07-18
@@ -68,6 +68,7 @@ __date__ = """2014-03-01"""
 
 
 #-- todos ---------------------------------------------------------------------
+# PROGRESS - Serie 60% - Observations 100% - Observation 100%
 # FIXME - integriey checks entity / grandeur /statut
 # ADMIT_SERIE = {
 #     Sitehydro: 'Q',
@@ -268,7 +269,7 @@ class Serie(object):
     Proprietes:
         entite (Sitehydro, Stationhydro ou Capteur)
         grandeur (char in NOMENCLATURE[509]) = H ou Q
-        statut (int in NOMENCALTURE[510]) = donnee brute, corrigee...
+        statut (int in NOMENCLATURE[510]) = donnee brute, corrigee...
         dtdeb (datetime.datetime)
         dtfin (datetime.datetime)
         dtprod (datetime.datetime)
@@ -279,6 +280,8 @@ class Serie(object):
     dtdeb = _composant.Datefromeverything(required=False)
     dtfin = _composant.Datefromeverything(required=False)
     dtprod = _composant.Datefromeverything(required=False)
+    grandeur = _composant.Nomenclatureitem(nomenclature=509)
+    statut = _composant.Nomenclatureitem(nomenclature=510)
 
     # TODO - Serie others attributes
 
@@ -310,17 +313,21 @@ class Serie(object):
         # -- simple properties --
         self._strict = bool(strict)
 
+        # adjust the descriptor
+        vars(self.__class__)['grandeur'].strict = self._strict
+        vars(self.__class__)['grandeur'].required = self._strict
+        vars(self.__class__)['statut'].strict = self._strict
+
         # -- descriptors --
         self.dtdeb = dtdeb
         self.dtfin = dtfin
         self.dtprod = dtprod
-
-        # -- full properties --
-        self._entite = self._grandeur = self._observations = None
-        self._statut = 0
-        self.entite = entite
         self.grandeur = grandeur
         self.statut = statut
+
+        # -- full properties --
+        self._entite = self._observations = None
+        self.entite = entite
         self.observations = observations
 
     # -- property entite --
@@ -349,57 +356,6 @@ class Serie(object):
                     'entite must be a Sitehydro, a Stationhydro or a Capteur'
                 )
             self._entite = entite
-        except:
-            raise
-
-    # -- property grandeur --
-    @property
-    def grandeur(self):
-        """Return grandeur."""
-        return self._grandeur
-
-    @grandeur.setter
-    def grandeur(self, grandeur):
-        """Set grandeur."""
-        try:
-            if self._strict:
-
-                # None case
-                if grandeur is None:
-                    raise TypeError('grandeur is required')
-
-                # other cases
-                grandeur = unicode(grandeur)
-                if (grandeur not in _NOMENCLATURE[509]):
-                    raise ValueError('grandeur incorrect')
-
-            # all is well
-            self._grandeur = grandeur
-
-        except:
-            raise
-
-    # -- property statut --
-    @property
-    def statut(self):
-        """Return statut."""
-        return self._statut
-
-    @statut.setter
-    def statut(self, statut):
-        """Set statut."""
-        try:
-
-            # None case
-            if statut is None:
-                raise TypeError('statut is required')
-
-            # other cases
-            statut = int(statut)
-            if (self._strict) and (statut not in _NOMENCLATURE[510]):
-                raise ValueError('statut incorrect')
-            self._statut = statut
-
         except:
             raise
 

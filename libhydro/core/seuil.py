@@ -24,8 +24,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1d"""
-__date__ = """2014-03-01"""
+__version__ = """0.1e"""
+__date__ = """2014-03-09"""
 
 #HISTORY
 #V0.1 - 2014-02-10
@@ -33,6 +33,7 @@ __date__ = """2014-03-01"""
 
 
 #-- todos ---------------------------------------------------------------------
+# PROGRESS - Seuilhydro 100% - Valeurseuil 60% - Seuilmeteo 0%
 # TODO - write Class Seuilmeteo
 # TODO - in Class Seuilhydro: add ctrl 'duree is required only for grad type'
 # TODO - in Class Seuilhydro: add ctrl 'libelle and mnemo are exclusive'
@@ -62,6 +63,8 @@ class _Seuil(object):
     """
 
     dtmaj = _composant.Datefromeverything(required=False)
+    typeseuil = _composant.Nomenclatureitem(nomenclature=528)
+    nature = _composant.Nomenclatureitem(nomenclature=529, required=False)
 
     def __init__(
         self, code=0, typeseuil=1, duree=0,
@@ -94,16 +97,14 @@ class _Seuil(object):
 
         # -- descriptors --
         self.dtmaj = dtmaj
+        self.typeseuil = typeseuil
+        self.nature = nature
 
         # -- full properties --
-        self._code = 0
+        self._code = self._duree = 0
         self.code = code
-        self._typeseuil = 1
-        self.typeseuil = typeseuil
-        self._duree = 0
         self.duree = duree
-        self._nature = self._gravite = None
-        self.nature = nature
+        self._gravite = None
         self.gravite = gravite
 
     # -- property code --
@@ -127,32 +128,6 @@ class _Seuil(object):
         except:
             raise
 
-    # -- property typeseuil --
-    @property
-    def typeseuil(self):
-        """Return typeseuil."""
-        return self._typeseuil
-
-    @typeseuil.setter
-    def typeseuil(self, typeseuil):
-        """Set typeseuil."""
-        try:
-
-            # None case
-            if typeseuil is None:
-                raise TypeError('typeseuil is required')
-
-            # other cases
-            typeseuil = int(typeseuil)
-            if typeseuil not in _NOMENCLATURE[528]:
-                raise ValueError('typeseuil incorrect')
-
-            # all is well
-            self._typeseuil = typeseuil
-
-        except:
-            raise
-
     # -- property duree --
     @property
     def duree(self):
@@ -170,29 +145,6 @@ class _Seuil(object):
 
             # other cases
             self._duree = float(duree)
-
-        except:
-            raise
-
-    # -- property nature --
-    @property
-    def nature(self):
-        """Return nature."""
-        return self._nature
-
-    @nature.setter
-    def nature(self, nature):
-        """Set nature."""
-        try:
-
-            # all cases
-            if nature is not None:
-                nature = int(nature)
-                if nature not in _NOMENCLATURE[529]:
-                    raise ValueError('nature incorrect')
-
-            # all is well
-            self._nature = nature
 
         except:
             raise

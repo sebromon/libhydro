@@ -27,8 +27,8 @@ import numpy as _numpy
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1g"""
-__date__ = """2014-02-25"""
+__version__ = """0.1h"""
+__date__ = """2014-03-09"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -42,7 +42,8 @@ __date__ = """2014-02-25"""
 # -- config -------------------------------------------------------------------
 # order matters in Xml, we must have the keys list !
 ORDERED_ACCEPTED_KEYS = (
-    'scenario', 'siteshydro', 'evenements', 'series', 'simulations'
+    'scenario', 'siteshydro', 'seuilshydro',
+    'evenements', 'series', 'simulations'
 )
 
 PREV_PROBABILITY = {
@@ -54,7 +55,7 @@ PREV_PROBABILITY = {
 
 # -- testsfunction ------------------------------------------------------------
 def _to_xml(
-    scenario=None, siteshydro=None,
+    scenario=None, siteshydro=None, seuilshydro=None,
     evenements=None, series=None, simulations=None
 ):
     """Return a etree.Element a partir des donnees passes en argument.
@@ -76,20 +77,29 @@ def _to_xml(
     # init the tree
     tree = _etree.Element('hydrometrie')
 
-    # TODO - we should factorise those lines
+    # TODO - we could factorize those lines
 
     # add the scenario
     if args['scenario'] is not None:
         tree.append(_scenario_to_element(args['scenario']))
 
-    # add the siteshydro
-    if args['siteshydro'] is not None:
+    # add the referentiel
+    if (
+        (args['siteshydro'] is not None)
+        or (args['seuilshydro'] is not None)
+    ):
+        # here we add the common SitesHydro tag...
         sub = _etree.SubElement(tree, 'RefHyd')
-        for k in ORDERED_ACCEPTED_KEYS[1:2]:
+        sub = _etree.SubElement(sub, 'SitesHydro')
+        # for k in ('siteshydro', 'seuilshydro'):
+        for k in ('siteshydro', ):
             if args[k] is not None:
-                sub.append(
-                    eval('_{}_to_element(args[k])'.format(k))
+                # ... and here we have to remove it because
+                # seuilshydro are childs of siteshydro
+                element = eval(
+                    '_{}_to_element(args[k])'.format(k)
                 )
+                sub.append(element.find('SitesHydro'))
 
     # add the donnees
     if (
@@ -117,7 +127,6 @@ def _to_xml(
 
 # -- global functions ---------------------------------------------------------
 
-# TODO - these 3 functions can be factorised
 
 def _siteshydro_to_element(siteshydro):
     """Return a <SitesHydro> element from a list of sitehydro.Sitehydro."""
@@ -126,6 +135,17 @@ def _siteshydro_to_element(siteshydro):
         for sitehydro in siteshydro:
             element.append(_sitehydro_to_element(sitehydro))
         return element
+
+
+def _seuilshydro_to_element(seuilshydro):
+    """Return a <SitesHydro> element from a list of seuil.Seuilhydro."""
+    if seuilshydro is not None:
+        element = _etree.Element('SitesHydro')
+        for seuilhydro in seuilshydro:
+            element.append(_seuilhydro_to_element(seuilhydro))
+        return element
+
+# TODO - these 3 functions can be factorised
 
 
 def _evenements_to_element(evenements):
@@ -239,6 +259,25 @@ def _sitehydro_to_element(sitehydro):
             child = element.find('StationsHydro')
             for station in sitehydro.stations:
                 child.append(_stationhydro_to_element(station))
+
+        # return
+        return element
+
+
+def _seuilhydro_to_element(seuilhydro):
+    """Return a <SiteHydro> element from a seuil.Seuilhydro."""
+
+    if seuilhydro is not None:
+
+        # template for seuilhydro simple elements
+        story = _OrderedDict((
+            ('CdSiteHydro', {'value': seuilhydro.sitehydro.code}),
+        ))
+
+        # FIXME - seuils
+
+        # make element <SiteHydro>
+        element = _factory(root=_etree.Element('SiteHydro'), story=story)
 
         # return
         return element

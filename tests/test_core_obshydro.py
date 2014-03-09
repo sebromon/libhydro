@@ -34,8 +34,8 @@ from libhydro.core import (sitehydro, obshydro)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1e"""
-__date__ = """2013-11-27"""
+__version__ = """0.1f"""
+__date__ = """2014-03-09"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -372,7 +372,7 @@ class TestSerie(unittest.TestCase):
         o = obshydro.Observations(obshydro.Observation('2012-10-03 06:00', 33))
         obshydro.Serie(**{'entite': s, 'grandeur': 'H', 'observations': o})
         self.assertRaises(
-            TypeError,
+            ValueError,
             obshydro.Serie,
             **{'entite': s, 'grandeur': None, 'observations': o}
         )
@@ -390,7 +390,7 @@ class TestSerie(unittest.TestCase):
             **{'entite': s, 'grandeur': 'H', 'statut': 12, 'observations': o}
         )
         self.assertRaises(
-            TypeError,
+            ValueError,
             obshydro.Serie,
             **{'entite': s, 'grandeur': 'H', 'statut': None, 'observations': o}
         )
