@@ -33,8 +33,8 @@ from libhydro.conv.xml import (_from_xml as from_xml)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1f"""
-__date__ = """2014-02-25"""
+__version__ = """0.1h"""
+__date__ = """2014-03-20"""
 
 #HISTORY
 #V0.1 - 2013-08-24
@@ -138,6 +138,12 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(site.coord.y, 1781803)
         self.assertEqual(site.coord.proj, 26)
         self.assertEqual(site.codeh2, 'O1235401')
+        self.assertEqual(len(site.tronconsvigilance), 2)
+        self.assertEqual(site.tronconsvigilance[0].code, 'AG3')
+        self.assertEqual(site.tronconsvigilance[1].code, 'AG5')
+        self.assertEqual(
+            site.tronconsvigilance[1].libelle, 'Troncon Adour àvâl'
+        )
         # check station
         station = site.stations[0]
         self.assertEqual(station.ddcs, ['10', '1000000001'])
@@ -344,6 +350,26 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         self.assertEqual(seuils[1].libelle, 'Crue du 08/04/1994')
         self.assertEqual(len(seuils[1].valeurs), 1)
         self.assertEqual(seuils[1].valeurs[0].valeur, 3500)
+
+    def test_seuils_sitehydro_4(self):
+        """Test seuils sitehydro 4."""
+        # find the seuil
+        seuils = []
+        for seuil in self.data['seuilshydro']:
+            if (seuil.sitehydro.code == 'O3334020'):
+                seuils.append(seuil)
+
+        # check we have only the seuil number 19
+        self.assertEqual(len(seuils), 1)
+        self.assertEqual(seuils[0].code, 19)
+        self.assertEqual(seuils[0].libelle, 'Crue du 24/11/2003')
+        seuil = seuils[0]
+
+        # check the 4 seuil values
+        for i in range(4):
+            self.assertEqual(seuil.valeurs[i].valeur, i + 1)
+            self.assertEqual(seuil.valeurs[i].entite, seuil.sitehydro)
+            self.assertEqual(seuil.valeurs[i].seuil, seuil)
 
 
 #-- class TestFromXmlSitesMeteo -----------------------------------------------

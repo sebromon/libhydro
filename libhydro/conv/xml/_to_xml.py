@@ -23,12 +23,18 @@ from collections import OrderedDict as _OrderedDict
 from lxml import etree as _etree
 import numpy as _numpy
 
+from libhydro.core import (
+    _composant,
+    sitehydro as _sitehydro,
+    seuil as _seuil
+)
+
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1h"""
-__date__ = """2014-03-09"""
+__version__ = """0.2b"""
+__date__ = """2014-03-16"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -91,15 +97,15 @@ def _to_xml(
         # here we add the common SitesHydro tag...
         sub = _etree.SubElement(tree, 'RefHyd')
         sub = _etree.SubElement(sub, 'SitesHydro')
-        # for k in ('siteshydro', 'seuilshydro'):
-        for k in ('siteshydro', ):
+        for k in ('siteshydro', 'seuilshydro'):
             if args[k] is not None:
                 # ... and here we have to remove it because
                 # seuilshydro are childs of siteshydro
                 element = eval(
                     '_{}_to_element(args[k])'.format(k)
                 )
-                sub.append(element.find('SitesHydro'))
+                for elementsitehydro in element.findall('./SiteHydro'):
+                    sub.append(elementsitehydro)
 
     # add the donnees
     if (
@@ -126,23 +132,59 @@ def _to_xml(
 
 
 # -- global functions ---------------------------------------------------------
-
-
 def _siteshydro_to_element(siteshydro):
     """Return a <SitesHydro> element from a list of sitehydro.Sitehydro."""
     if siteshydro is not None:
         element = _etree.Element('SitesHydro')
         for sitehydro in siteshydro:
-            element.append(_sitehydro_to_element(sitehydro))
+            element.append(_sitehydro_to_element(sitehydro=sitehydro))
         return element
 
 
 def _seuilshydro_to_element(seuilshydro):
     """Return a <SitesHydro> element from a list of seuil.Seuilhydro."""
     if seuilshydro is not None:
-        element = _etree.Element('SitesHydro')
+        # the ugly XML doesn't support many seuil values for the same site
+        # if we have some, we have to split them on duplicates sites
+        newseuils = []
         for seuilhydro in seuilshydro:
-            element.append(_seuilhydro_to_element(seuilhydro))
+            if seuilhydro.valeurs is not None:
+                valeurs_site = [
+                    valeur for valeur in seuilhydro.valeurs
+                    if isinstance(valeur.entite, _sitehydro.Sitehydro)
+                ]
+                if len(valeurs_site) > 1:
+                    for valeur in valeurs_site[1:]:
+                        # for each value expect the first one, we make a new
+                        # and simple Seuilhydro, attachd to a new Sitehydro
+                        seuil = _seuil.Seuilhydro(
+                            sitehydro=_sitehydro.Sitehydro(
+                                code=seuilhydro.sitehydro.code
+                            ),
+                            code=seuilhydro.code
+                        )
+                        # we add the value to the seuil...
+                        seuil.valeurs = [valeur]
+                        newseuils.append(seuil)
+                        # ... and remove it from the initial iterable
+                        seuilhydro.valeurs.remove(valeur)
+        seuilshydro.extend(newseuils)
+
+        # now we group the seuilshydro by Sitehydro, putting them into a dict:
+        #     {sitehydro: [seuilhydro, ...], ...}
+        siteshydro = {}
+        for seuilhydro in seuilshydro:
+            siteshydro.setdefault(seuilhydro.sitehydro, []).append(seuilhydro)
+
+        # make the elements
+        element = _etree.Element('SitesHydro')
+        for sitehydro in siteshydro:
+            element.append(
+                _sitehydro_to_element(
+                    sitehydro=sitehydro,
+                    seuilshydro=siteshydro[siteshydro]
+                )
+            )
         return element
 
 # TODO - these 3 functions can be factorised
@@ -198,8 +240,7 @@ def _scenario_to_element(scenario):
                              scenario.emetteur.intervenant.origine}
                 }),
                 ('CdContact', {
-                    'value': unicode(scenario.emetteur.code),
-                    'attr': {"schemeAgencyID": "SANDRE"}  # FIXME -  wrong ?
+                    'value': unicode(scenario.emetteur.code)
                 })
             ))
         }
@@ -218,10 +259,21 @@ def _scenario_to_element(scenario):
         return _factory(root=_etree.Element('Scenario'), story=story)
 
 
-def _sitehydro_to_element(sitehydro):
-    """Return a <SiteHydro> element from a sitehydro.Sitehydro."""
+def _sitehydro_to_element(sitehydro, seuilshydro=None):
+    """Return a <SiteHydro> element from a sitehydro.Sitehydro.
+
+    Args:
+        sitehydro (sitehydro.Sitehydro)
+        seuilshydro (an iterable of seuil.Seuilhydro) = the seuilshydro
+            belonging to the sitehydro. They are added to the sub tag
+            <ValeursSeuilsSiteHydro>
+
+    """
 
     if sitehydro is not None:
+
+        if seuilshydro is None:
+            seuilshydro = []
 
         # template for sitehydro simple elements
         story = _OrderedDict((
@@ -238,6 +290,10 @@ def _sitehydro_to_element(sitehydro):
             ('StationsHydro', {
                 'value': None,
                 'force': True if (len(sitehydro.stations) > 0) else False
+            }),
+            ('ValeursSeuilsSiteHydro', {
+                'value': None,
+                'force': True if (len(seuilshydro) > 0) else False
             })
         ))
 
@@ -260,27 +316,125 @@ def _sitehydro_to_element(sitehydro):
             for station in sitehydro.stations:
                 child.append(_stationhydro_to_element(station))
 
+        # add the seuils if necessary
+        if len(seuilshydro) > 0:
+            child = element.find('ValeursSeuilsSiteHydro')
+            for seuilhydro in seuilshydro:
+                child.append(_seuilhydro_to_element(seuilhydro))
+
         # return
         return element
 
 
 def _seuilhydro_to_element(seuilhydro):
-    """Return a <SiteHydro> element from a seuil.Seuilhydro."""
-
+    """Return a <ValeursSeuilSiteHydro> element from a seuil.Seuilhydro."""
     if seuilhydro is not None:
 
-        # template for seuilhydro simple elements
+        # extract the unique Valeurseuil for the site
+        sitevaleurseuil = [
+            valeur for valeur in seuilhydro.valeurs
+            if isinstance(valeur.entite, _sitehydro.Sitehydro)
+        ]
+        if len(sitevaleurseuil) > 1:
+            raise ValueError(
+                'more than one site valeurseuil for seuil %i' % seuilhydro.code
+            )
+        elif len(sitevaleurseuil) == 1:
+            sitevaleurseuil = sitevaleurseuil[0]
+            seuilhydro.valeurs.remove(sitevaleurseuil)
+        else:
+            sitevaleurseuil = None
+
+        # template for seuilhydro simple element
         story = _OrderedDict((
-            ('CdSiteHydro', {'value': seuilhydro.sitehydro.code}),
+            ('CdSeuilSiteHydro', {'value': seuilhydro.code}),
+            ('TypSeuilSiteHydro', {'value': seuilhydro.typeseuil}),
+            ('NatureSeuilSiteHydro', {'value': seuilhydro.nature}),
+            ('DureeSeuilSiteHydro', {'value': seuilhydro.duree}),
+            ('LbUsuelSeuilSiteHydro', {'value': seuilhydro.libelle}),
+            ('MnemoSeuilSiteHydro', {'value': seuilhydro.mnemo}),
+            ('DroitPublicationSeuilSiteHydro', {
+                'value': seuilhydro.publication
+            }),
+            ('IndiceGraviteSeuilSiteHydro', {'value': seuilhydro.gravite}),
+            ('ValForceeSeuilSiteHydro', {'value': seuilhydro.valeurforcee}),
+            ('ComSeuilSiteHydro', {'value': seuilhydro.commentaire})
         ))
 
-        # FIXME - seuils
+        # add site values
+        if sitevaleurseuil is not None:
+            story['ValDebitSeuilSiteHydro'] = {
+                'value': sitevaleurseuil.valeur
+            }
+            story['DtActivationSeuilSteHydro'] = {
+                'value': sitevaleurseuil.dtactivation.isoformat()
+            }
+            story['DtDesactivationSeuilSiteHydro'] = {
+                'value': sitevaleurseuil.dtdesactivation.isoformat()
+            }
 
-        # make element <SiteHydro>
-        element = _factory(root=_etree.Element('SiteHydro'), story=story)
+        # add the stations values
+        if len(seuilhydro.valeurs) > 0:
+            story['ValeursSeuilsStationHydro'] = {'value': None, 'force': True}
+
+        # add the last tags, in disorder :)
+        if sitevaleurseuil is not None:
+            story['ToleranceSeuilSiteHydro'] = {
+                'value': sitevaleurseuil.tolerance
+            }
+        story['DtMajSeuilSiteHydro'] = {'value': seuilhydro.dtmaj.isoformat()}
+
+        # make element <ValeursSeuilsStationHydro>
+        element = _factory(
+            root=_etree.Element('ValeursSeuilsSiteHydro'),
+            story=story
+        )
+
+        # add the <ValeursSeuilsStationHydro> if necessary
+        if len(seuilhydro.valeurs) > 0:
+            child = element.find('ValeursSeuilsStationHydro')
+            for valeur in seuilhydro.vaileurs:
+                child.append(_valeurseuilstationhydro_to_element(valeur))
 
         # return
         return element
+
+
+def _valeurseuilstationhydro_to_element(valeurseuil):
+    """Return a <ValeursSeuilStationHydro> element from a seuil.Valeurseuil.
+
+    Requires valeurseuil.entite.code to be a station hydro one.
+
+    """
+    if valeurseuil is not None:
+
+        # prerequisite
+        if not _composant.is_code_hydro(
+            code=valeurseuil.entite, length=8, raises=True
+        ):
+            raise TypeError(
+                'valeurseuil.entite is not a sitehydro.Stationhydro'
+            )
+
+        # template for valeurseuilstationhydro simple element
+        story = _OrderedDict((
+            ('CdStationHydro', {'value': valeurseuil.entite.code}),
+            ('ValHauteurSeuilStationHydro', {
+                'value': valeurseuil.valeur
+            }),
+            ('DtActivationSeuilStationHydro', {
+                'value': valeurseuil.dtactivation.isoformat()
+            }),
+            ('DtDesactivationSeuilStationHydro', {
+                'value': valeurseuil.dtdesactivation.isoformat()
+            }),
+            ('ToleranceSeuilStationHydro', {'value': valeurseuil.tolerance})
+        ))
+
+        # action !
+        return _factory(
+            root=_etree.Element('ValeursSeuilStationHydro'), story=story
+        )
 
 
 def _stationhydro_to_element(stationhydro):
@@ -569,8 +723,7 @@ def _factory(root, story):
                 'force': bool (default False)
             }
 
-        If value is a list or a tuple, an xml tag is created for each
-        item of values.
+        If value is an iterable, an xml tag is created for each item of values.
 
         When force is True, a None value create the element tag, otherwise
         rule is left.

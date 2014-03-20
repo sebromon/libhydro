@@ -152,7 +152,7 @@ class TestFunctions(unittest.TestCase):
 
 
 #-- class TestToXmlSiteshydro -------------------------------------------------
-class TestToXmlSitesHydros(unittest.TestCase):
+class TestToXmlSitesHydro(unittest.TestCase):
 
     """ToXmlSitesHydro class tests."""
 

@@ -8,7 +8,7 @@
     <!-- <RefFichier>11_sophie.xml</RefFichier> -->
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
-      <CdContact schemeAgencyID="SANDRE">41</CdContact>
+      <CdContact>41</CdContact>
     </Emetteur>
     <Destinataire>
       <CdIntervenant schemeAgencyID="SANDRE">14</CdIntervenant>

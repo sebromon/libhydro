@@ -233,9 +233,9 @@ class Coord(object):
             (self is other)
             or
             (
-                (self.x == other.x)
-                and (self.y == other.y)
-                and (self.proj == other.proj)
+                (self.x == other.x) and
+                (self.y == other.y) and
+                (self.proj == other.proj)
             )
         )
 

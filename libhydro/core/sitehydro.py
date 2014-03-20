@@ -5,6 +5,7 @@ Ce module contient les classes:
     # Sitehydro
     # Stationhydro
     # Capteur
+    # Tronconvigilance
 
 """
 #-- imports -------------------------------------------------------------------
@@ -24,8 +25,8 @@ from . import _composant
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.3b"""
-__date__ = """2014-03-02"""
+__version__ = """0.3c"""
+__date__ = """2014-03-20"""
 
 #HISTORY
 #V0.3 - 2014-02-20
@@ -39,6 +40,7 @@ __date__ = """2014-03-02"""
 # PROGRESS - Sitehydro 20% - stationhydro 30% - Capteur 30%
 # FIXME - generalize typeentite in _Entite.typentite ?
 # TODO - add navigability for Capteur => Station and Station => Site
+# TODO - __eq__ for all classes
 
 
 #-- config --------------------------------------------------------------------
@@ -211,6 +213,7 @@ class Sitehydro(_Site_or_station):
         coord (Coord)
         stations (une liste de Station)
         communes (une liste de codes communes, char(5)) = code INSEE commune
+        tronconsvigilance (une liste de Tronconvigilance)
 
     """
 
@@ -246,15 +249,13 @@ class Sitehydro(_Site_or_station):
     #rolecontact
     #zonehydro
     #tronconhydro
-    #communes
-    #tronconsvivilance
 
     typesite = _composant.Nomenclatureitem(nomenclature=530)
 
     def __init__(
         self, code, codeh2=None, typesite='REEL',
         libelle=None, libelleusuel=None, coord=None, stations=None,
-        communes=None, strict=True
+        communes=None, tronconsvigilance=None, strict=True
     ):
         """Initialisation.
 
@@ -266,6 +267,7 @@ class Sitehydro(_Site_or_station):
             libelleusuel (string)
             stations (une Station ou un iterable de Station)
             communes (un code commmune ou un iterable de codes)
+            tronconsvigilance (un Tronconvigilance ou un iterable)
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite du type, du code et des stations
 
@@ -287,9 +289,10 @@ class Sitehydro(_Site_or_station):
         self.typesite = typesite
 
         # -- full properties --
-        self._stations = self._communes = []
+        self._stations = self._communes = self._tronconsvigilance = []
         self.stations = stations
         self.communes = communes
+        self.tronconsvigilance = tronconsvigilance
 
     # -- property stations --
     @property
@@ -345,6 +348,34 @@ class Sitehydro(_Site_or_station):
         for commune in communes:
             if _composant.is_code_commune(commune):
                 self._communes.append(unicode(commune))
+
+    # -- property tronconsvigilance --
+    @property
+    def tronconsvigilance(self):
+        """Return tronconsvigilance."""
+        return self._tronconsvigilance
+
+    @tronconsvigilance.setter
+    def tronconsvigilance(self, tronconsvigilance):
+        """Set tronconsvigilance."""
+        self._tronconsvigilance = []
+        # None case
+        if tronconsvigilance is None:
+            return
+        # one troncon, we make a list with it
+        if isinstance(tronconsvigilance, Tronconvigilance):
+            tronconsvigilance = [tronconsvigilance]
+        # an iterable of tronconsvigilance
+        for tronconvigilance in tronconsvigilance:
+            # some checks
+            if self._strict:
+                if not isinstance(tronconvigilance, Tronconvigilance):
+                    raise TypeError(
+                        'tronconsvigilance must be a Tronconvigilance '
+                        'or an iterable of Tronconvigilance'
+                    )
+            # add station
+            self._tronconsvigilance.append(tronconvigilance)
 
     # -- other methods --
     def __unicode__(self):
@@ -632,6 +663,55 @@ class Capteur(_Entitehydro):
         """Return unicode representation."""
         return 'Capteur {0} {1}::{2}'.format(
             self.typemesure or '<sans type de mesure>',
+            self.code or '<sans code>',
+            self.libelle or '<sans libelle>'
+        )
+
+    def __str__(self):
+        """Return string representation."""
+        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
+            return self.__unicode__()
+        else:  # Python 2
+            return self.__unicode__().encode(_sys.stdout.encoding)
+
+
+#-- class Capteur -------------------------------------------------------------
+class Tronconvigilance(object):
+
+    """Classe Tronconvigilance.
+
+    Classe pour manipuler les troncons de vigilance.
+
+    Proprietes:
+        code (string(8)) = code alphanumerique du troncon
+        libelle (string) = libelle du troncon
+
+    """
+    def __init__(self, code=None, libelle=None):
+        """Initialisation.
+
+        Arguments:
+            code (string(8)) = code alphanumerique du troncon
+            libelle (string) = libelle du troncon
+
+        """
+        self.code = unicode(code) if (code is not None) else None
+        self.libelle = unicode(libelle) if (libelle is not None) else None
+
+    # -- other methods --
+    def __eq__(self, other):
+        return (
+            (self is other)
+            or
+            (
+                (self.code == other.code) and
+                (self.libelle == other.libelle)
+            )
+        )
+
+    def __unicode__(self):
+        """Return unicode representation."""
+        return 'Troncon de vigilance {0}::{1}'.format(
             self.code or '<sans code>',
             self.libelle or '<sans libelle>'
         )

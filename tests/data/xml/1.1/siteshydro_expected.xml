@@ -7,7 +7,7 @@
     <DateHeureCreationFichier>2010-02-26T12:53:10</DateHeureCreationFichier>
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">25</CdIntervenant>
-      <CdContact schemeAgencyID="SANDRE">1069</CdContact>
+      <CdContact>1069</CdContact>
     </Emetteur>
     <Destinataire>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
@@ -80,6 +80,15 @@
           <CoordYSiteHydro>1781803.0</CoordYSiteHydro>
           <ProjCoordSiteHydro>26</ProjCoordSiteHydro>
         </CoordSiteHydro>
+        <TronconsVigilanceSiteHydro>
+          <TronconVigilanceSiteHydro>
+            <CdTronconVigilance>AG3</CdTronconVigilance>
+          </TronconVigilanceSiteHydro>
+          <TronconVigilanceSiteHydro>
+            <CdTronconVigilance>AG5</CdTronconVigilance>
+            <NomCTronconVigilance>Troncon Adour àvâl</NomCTronconVigilance>
+          </TronconVigilanceSiteHydro>
+        </TronconsVigilanceSiteHydro>
         <CdSiteHydroAncienRef>O1235401</CdSiteHydroAncienRef>
         <StationsHydro>
           <StationHydro>

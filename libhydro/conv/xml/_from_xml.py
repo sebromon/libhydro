@@ -43,8 +43,8 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.1i"""
-__date__ = """2014-02-25"""
+__version__ = """0.1k"""
+__date__ = """2014-03-20"""
 
 #HISTORY
 #V0.1 - 2013-08-18
@@ -289,8 +289,13 @@ def _seuilshydro_from_element(element):
                     elementseuilhydro, sitehydro
                 )
                 if (sitehydro.code, seuilhydro.code) in seuilshydro:
+                    # change the seuil object in the new seuil values
+                    # to assure the navigability
+                    for valeur in seuilhydro.valeurs:
+                        valeur.seuil = seuilshydro[
+                            (sitehydro.code, seuilhydro.code)
+                        ]
                     # add the valeurs to an existing entry
-                    # TODO - cleaner way ?
                     seuilshydro[
                         (sitehydro.code, seuilhydro.code)
                     ].valeurs.extend(seuilhydro.valeurs)
@@ -371,13 +376,32 @@ def _sitehydro_from_element(element):
         args['communes'] = [
             unicode(e.text) for e in element.findall('CdCommune')
         ]
+        args['tronconsvigilance'] = [
+            _tronconvigilance_from_element(e)
+            for e in element.findall(
+                'TronconsVigilanceSiteHydro/TronconVigilanceSiteHydro'
+            )
+        ]
 
         # build Site
         return _sitehydro.Sitehydro(**args)
 
 
+def _tronconvigilance_from_element(element):
+    """Return a sitehydro.Tronconvigilance from a <TronconVigilanceSiteHydro>
+    element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['code'] = _value(element, 'CdTronconVigilance')
+        args['libelle'] = _value(element, 'NomCTronconVigilance')
+
+        # build Tronconvigilance
+        return _sitehydro.Tronconvigilance(**args)
+
+
 def _stationhydro_from_element(element):
-    """Return a sitehydro.Stationhydro from a <Stationhydro> element."""
+    """Return a sitehydro.Stationhydro from a <StationHydro> element."""
     if element is not None:
         # prepare args
         args = {}

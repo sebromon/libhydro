@@ -9,7 +9,7 @@
     </Emetteur>
     <Destinataire>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
-      <CdContact schemeAgencyID="SCHAPI">4</CdContact>
+      <CdContact>4</CdContact>
     </Destinataire>
   </Scenario>
   <Donnees>

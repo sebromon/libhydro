@@ -42,6 +42,7 @@ __date__ = """2014-03-09"""
 
 #-- todos ---------------------------------------------------------------------
 # TODO - factorize 5 Message properties in a descriptor (except scenario)
+# TODO - implement intervenants and modelesprevision
 
 
 # -- class Message ------------------------------------------------------------
@@ -61,9 +62,10 @@ class Message(object):
 
     """
 
-        # 'intervenants':
+        # 'intervenants': 'TODO',
+        # 'modelesprevision': 'TODO'
+
         # 'sitesmeteo'
-        # 'modelesprevision': 'TODOS',
         # 'courbestarage'
         # 'jaugeages'
         # 'courbescorrection'

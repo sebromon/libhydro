@@ -24,8 +24,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1e"""
-__date__ = """2014-03-09"""
+__version__ = """0.1f"""
+__date__ = """2014-03-19"""
 
 #HISTORY
 #V0.1 - 2014-02-10
@@ -38,6 +38,7 @@ __date__ = """2014-03-09"""
 # TODO - in Class Seuilhydro: add ctrl 'duree is required only for grad type'
 # TODO - in Class Seuilhydro: add ctrl 'libelle and mnemo are exclusive'
 # TODO - in Class Valseuil: move all properties in full properties
+# TODO - write __unicode__ method for Seuilhydro
 
 
 #-- class _Seuil --------------------------------------------------------------
@@ -87,12 +88,14 @@ class _Seuil(object):
             valeurs (liste de Valeurseuil)
             strict (bool, defaut True) = strict or fuzzy mode
 
+        La navigabilite des valeurs vers le seuil est assuree par le
+        constructeur.
+
         """
         # -- simple properties --
         self.libelle = unicode(libelle) if libelle else None
         self.mnemo = unicode(mnemo) if mnemo else None
         self.commentaire = unicode(commentaire) if commentaire else None
-        self.valeurs = valeurs  # FIXME - should be a full property
         self._strict = bool(strict)
 
         # -- descriptors --
@@ -104,8 +107,9 @@ class _Seuil(object):
         self._code = self._duree = 0
         self.code = code
         self.duree = duree
-        self._gravite = None
+        self._gravite = self._valeurs = None
         self.gravite = gravite
+        self.valeurs = valeurs
 
     # -- property code --
     @property
@@ -171,6 +175,22 @@ class _Seuil(object):
 
         except:
             raise
+
+    @property
+    def valeurs(self):
+        """Return valeurs."""
+        return self._valeurs
+
+    @valeurs.setter
+    def valeurs(self, valeurs):
+        """Set valeurs."""
+        # assert the navigability from valeur to seuil
+        if valeurs is not None:
+            for valeur in valeurs:
+                valeur.seuil = self
+
+        # all is well
+        self._valeurs = valeurs
 
     # -- other methods --
     def __unicode__(self):
@@ -265,7 +285,8 @@ class Seuilhydro(_Seuil):
         )
 
         # -- simple properties --
-        self.sitehydro = sitehydro  # FIXME - should be  a full property
+        # FIXME - seuil.sitehydro should be  a full property
+        self.sitehydro = sitehydro
         self.publication = bool(publication)
         self.valeurforcee = bool(valeurforcee)
 
@@ -320,12 +341,17 @@ class Valeurseuil (object):
             dtdesactivation (numpy.datetime64 string, datetime.datetime...)
             strict (bool)
 
+        La navigabilite des valeurs vers le seuil est assuree par le
+        constructeur.
+
         """
         # -- simple properties --
-        # TODO - all these properties should be full properties
+        # TODO - all the Valeurseuil properties should be full properties
         self.valeur = float(valeur)
-        self.seuil = seuil  # TODO - required unless strict is False
-        self.entite = entite  # TODO - required unless strict is False
+        # TODO - Valeurseuil.seuil is required unless strict is False
+        self.seuil = seuil
+        # TODO - Valeurseuil.entite is required unless strict is False
+        self.entite = entite
         self.tolerance = float(tolerance) if tolerance else None
         self._strict = bool(strict)
 

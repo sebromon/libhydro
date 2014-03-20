@@ -33,8 +33,8 @@ from libhydro.core import _composant as composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1h"""
-__date__ = """2014-02-20"""
+__version__ = """0.1i"""
+__date__ = """2014-03-20"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -46,14 +46,6 @@ class TestSitehydro(unittest.TestCase):
 
     """Sitehydro class tests."""
 
-    # def setUp(self):
-    # """Hook method for setting up the test fixture before exercising it."""
-    # pass
-
-    # def tearDown(self):
-    # """Hook method for deconstructing the test fixture after testing it."""
-    # pass
-
     def test_base_01(self):
         """Empty site."""
         code = 'R5330101'
@@ -61,9 +53,9 @@ class TestSitehydro(unittest.TestCase):
         self.assertEqual(
             (
                 s.code, s.codeh2, s.typesite, s.libelle, s.libelleusuel,
-                s.stations, s.communes
+                s.stations, s.communes, s.tronconsvigilance
             ),
-            (code, None, 'REEL', None, None, [], [])
+            (code, None, 'REEL', None, None, [], [], [])
         )
 
     def test_base_02(self):
@@ -74,24 +66,29 @@ class TestSitehydro(unittest.TestCase):
         libelle = 'La Saône [apres la crue] a Montélimar'
         libelleusuel = 'Montélimar'
         coord = (482000, 1897556.5, 26)
-        stations = sitehydro.Stationhydro(
+        station = sitehydro.Stationhydro(
             code='%s01' % code, typestation='LIMNI'
         )
-        communes = 32150
+        commune = 32150
+        tronconvigilance = sitehydro.Tronconvigilance(
+            code='AC1', libelle='La Liane'
+        )
         s = sitehydro.Sitehydro(
             code=code, codeh2=codeh2, typesite=typesite,
             libelle=libelle, libelleusuel=libelleusuel,
-            coord=coord, stations=stations, communes=communes
+            coord=coord, stations=station, communes=commune,
+            tronconsvigilance=tronconvigilance
         )
 
         self.assertEqual(
             (
                 s.code, s.codeh2, s.typesite, s.libelle, s.libelleusuel,
-                s.coord, s.stations, s.communes
+                s.coord, s.stations, s.communes, s.tronconsvigilance
             ),
             (
                 code, codeh2, typesite, libelle, libelleusuel,
-                composant.Coord(*coord), [stations], [unicode(communes)]
+                composant.Coord(*coord), [station], [unicode(commune)],
+                [tronconvigilance]
             )
         )
 
@@ -113,24 +110,37 @@ class TestSitehydro(unittest.TestCase):
             )
         )
         communes = [32150, 31100]
+        tronconsvigilance = (
+            sitehydro.Tronconvigilance(
+                code='AC1', libelle='La Liane 1'
+            ),
+            sitehydro.Tronconvigilance(
+                code='AC2', libelle='La Liane 2'
+            ),
+            sitehydro.Tronconvigilance(
+                code='AC3', libelle='La Liane 3'
+            )
+        )
         s = sitehydro.Sitehydro(
             code=code, typesite=typesite, libelle=libelle,
-            coord=coord, stations=stations, communes=communes
+            coord=coord, stations=stations, communes=communes,
+            tronconsvigilance=tronconsvigilance
         )
         self.assertEqual(
             (
                 s.code, s.typesite, s.libelle, s.coord,
-                s.stations, s.communes
+                s.stations, s.communes, s.tronconsvigilance
             ),
             (
                 code, typesite, libelle, composant.Coord(**coord),
                 [st for st in stations],
-                [unicode(commune) for commune in communes]
+                [unicode(commune) for commune in communes],
+                [tronconvigilance for tronconvigilance in tronconsvigilance]
             )
         )
 
     def test_base_04(self):
-        """Update stations attribute."""
+        """Update some attributes."""
         code = 'A3334550'
         typesite = 'REEL'
         libelle = 'La Saône [apres la crue] a Montelimar [hé oui]'
@@ -155,6 +165,15 @@ class TestSitehydro(unittest.TestCase):
         s.communes = '2B810'
         s.communes = ['2A001', 33810, 44056, '2B033']
         s.communes = None
+        self.assertEqual(s.tronconsvigilance, [])
+        t = sitehydro.Tronconvigilance(
+            code='XX33',
+            libelle='Le Târtémpion'
+        )
+        s.tronconsvigilance = t
+        self.assertEqual(s.tronconsvigilance, [t])
+        s.tronconsvigilance = (t, t, t)
+        self.assertEqual(s.tronconsvigilance, [t, t, t])
 
     def test_str_01(self):
         """Test __str__ method with None values."""
@@ -175,12 +194,14 @@ class TestSitehydro(unittest.TestCase):
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test with None values."""
         code = stations = None
+        trv = ['tr1']
         s = sitehydro.Sitehydro(
-            code=code,  stations=stations, strict=False
+            code=code,  stations=stations, tronconsvigilance=trv,
+            strict=False
         )
         self.assertEqual(
-            (s.typesite, s.code, s.stations),
-            ('REEL', code, [])
+            (s.typesite, s.code, s.stations, s.tronconsvigilance),
+            ('REEL', code, [], trv)
         )
 
     def test_fuzzy_mode_02(self):
@@ -281,19 +302,26 @@ class TestSitehydro(unittest.TestCase):
             **{'code': code, 'coord': coord[0]}
         )
 
+    def test_error_06(self):
+        """Tronconsvigilance error."""
+        code = 'A2351010'
+        sitehydro.Sitehydro(
+            **{
+                'code': code,
+                'tronconsvigilance': sitehydro.Tronconvigilance()
+            }
+        )
+        self.assertRaises(
+            TypeError,
+            sitehydro.Sitehydro,
+            **{'code': code, 'tronconsvigilance': 'I am not a troncon'}
+        )
+
 
 #-- class TestStationhydro ----------------------------------------------------
 class TestStationhydro(unittest.TestCase):
 
     """Stationhydro class tests."""
-
-    # def setUp(self):
-    # """Hook method for setting up the test fixture before exercising it."""
-    # pass
-
-    # def tearDown(self):
-    # """Hook method for deconstructing the test fixture after testing it."""
-    # pass
 
     def test_base_01(self):
         """Base case with empty station."""
@@ -455,14 +483,6 @@ class TestCapteur(unittest.TestCase):
 
     """Capteur class tests."""
 
-    # def setUp(self):
-    # """Hook method for setting up the test fixture before exercising it."""
-    # pass
-
-    # def tearDown(self):
-    # """Hook method for deconstructing the test fixture after testing it."""
-    # pass
-
     def test_base_01(self):
         """Base case with empty capteur."""
         code = 'V83310100101'
@@ -534,6 +554,42 @@ class TestCapteur(unittest.TestCase):
             sitehydro.Capteur,
             **{'code': 'B4401122010133'}
         )
+
+
+#-- class TestTronconvigilance ------------------------------------------------
+class TestTronconvigilance(unittest.TestCase):
+
+    """Tronconvigilance class tests."""
+
+    def test_base_01(self):
+        """Base case with empty troncon."""
+        t = sitehydro.Tronconvigilance()
+        self.assertEqual(
+            (t.code, t.libelle),
+            (None, None)
+        )
+
+    def test_base_02(self):
+        """Base case test."""
+        code = 'LO18'
+        libelle = 'Loire amont'
+        t = sitehydro.Tronconvigilance(code=code, libelle=libelle)
+        self.assertEqual(
+            (t.code, t.libelle),
+            (code, libelle)
+        )
+
+    def test_str_01(self):
+        """Test __str__ method with None values."""
+        t = sitehydro.Tronconvigilance()
+        self.assertTrue(t.__str__().rfind('Troncon') > -1)
+
+    def test_str_02(self):
+        """Test __str__ method."""
+        code = 'LO18'
+        libelle = 'Loire amont'
+        t = sitehydro.Tronconvigilance(code=code, libelle=libelle)
+        self.assertTrue(t.__str__().rfind('Troncon') > -1)
 
 
 #-- main ----------------------------------------------------------------------
