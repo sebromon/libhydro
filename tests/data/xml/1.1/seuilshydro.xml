@@ -4,9 +4,11 @@
   <Scenario>
     <CodeScenario>hydrometrie</CodeScenario>
     <VersionScenario>1.1</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
     <DateHeureCreationFichier>2012-06-04T09:22:44</DateHeureCreationFichier>
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact>1</CdContact>
     </Emetteur>
     <Destinataire>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
@@ -40,6 +42,7 @@
       <!-- 1 SEUIL - seuil de gradient pour 1 site et 3 stations-->
       <SiteHydro>
         <CdSiteHydro>O2000040</CdSiteHydro>
+        <TypSiteHydro>SOURCE</TypSiteHydro>
         <ValeursSeuilsSiteHydro>
           <ValeursSeuilSiteHydro>
             <CdSeuilSiteHydro>82</CdSeuilSiteHydro>
@@ -76,6 +79,7 @@
       <!-- 4 SEUILS without values -->
       <SiteHydro>
         <CdSiteHydro>O0144020</CdSiteHydro>
+        <TypSiteHydro>PLANDEAU</TypSiteHydro>
         <ValeursSeuilsSiteHydro>
           <ValeursSeuilSiteHydro>
             <CdSeuilSiteHydro>1</CdSeuilSiteHydro>
@@ -176,6 +180,7 @@
       <!-- 1 SEUIL with 4 Q values, only the last is active -->
       <SiteHydro>
         <CdSiteHydro>O3334020</CdSiteHydro>
+        <TypSiteHydro>VIRTUEL</TypSiteHydro>
         <ValeursSeuilsSiteHydro>
           <ValeursSeuilSiteHydro>
             <CdSeuilSiteHydro>19</CdSeuilSiteHydro>
@@ -213,7 +218,7 @@
           </ValeursSeuilSiteHydro>
         </ValeursSeuilsSiteHydro>
       </SiteHydro>
-      <!-- SEUILS 5 -->
+      <!-- SEUILS -->
       <!-- <SiteHydro> -->
       <!--   <CdSiteHydro>O0502520</CdSiteHydro> -->
       <!--   <ValeursSeuilsSiteHydro> -->

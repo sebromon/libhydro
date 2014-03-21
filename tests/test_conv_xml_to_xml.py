@@ -36,8 +36,8 @@ from libhydro.conv.xml import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2014-02-23"""
+__version__ = """0.1d"""
+__date__ = """2014-03-21"""
 
 #HISTORY
 #V0.1 - 2013-08-30
@@ -180,6 +180,77 @@ class TestToXmlSitesHydro(unittest.TestCase):
             encoding='utf-8'
         ).decode('utf-8')
         # test
+        self.assertEqual(xml, self.expected)
+
+
+#-- class TestToXmlSeuilsHydro ------------------------------------------------
+class TestToXmlSeuilsHydro(unittest.TestCase):
+
+    """ToXmlSeuilsHydro class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        # build expected string
+        self.expected = xml_to_unicode(
+            os.path.join('data', 'xml', '1.1', 'seuilshydro_expected.xml')
+        )
+        # we have our own assertEqual function, more verbose
+        self.assertEqual = assert_unicode_equal
+
+    def test_base(self):
+        """Base test."""
+        # build objects from xml
+        data = from_xml._parse(
+            os.path.join('data', 'xml', '1.1', 'seuilshydro.xml')
+        )
+
+        # for this one we can't compare the whole 2 xmls because the seuils
+        # manipulations change their order
+
+        # for seuil in data['seuilshydro']:
+        #     if seuil.sitehydro.code =='O2000040':
+        #     # here we need to sort the seuils from 1 to 4
+
+        ordered_seuils = []
+        # sort the sites
+        for codesite in (
+            'U2655010', 'O2000040', 'O0144020', 'O6793330', 'O3334020'
+        ):
+            for seuil in data['seuilshydro']:
+                if seuil.sitehydro.code == codesite:
+
+                    # here we need to sort the seuils after
+                    # sort the seuil 1 to 4 for codesite == 'O0144020':
+                    # here we need to sort the seuils from 1 to 4
+                    if codesite == 'O2000040':
+                        break
+
+                    # here we need to sort the stations
+                    if codesite == 'O2000040':
+                        ordered_valeurs = []
+                        for codestation in (
+                            'O2000040',
+                            'O200004001', 'O200004002', 'O200004003'
+                        ):
+                            for valeurseuil in seuil.valeurs:
+                                if valeurseuil.entite.code == codestation:
+                                    ordered_valeurs.append(valeurseuil)
+                                    break
+                        seuil.valeurs = ordered_valeurs
+
+                    ordered_seuils.append(seuil)
+                    break
+
+        # build xml string from objects
+        xml = etree.tostring(
+            to_xml._to_xml(
+                scenario=data['scenario'],
+                seuilshydro=ordered_seuils
+            ),
+            encoding='utf-8'
+        ).decode('utf-8')
+        # test
+        # print(xml)
         self.assertEqual(xml, self.expected)
 
 

@@ -242,7 +242,7 @@ class Sitehydro(_Site_or_station):
 
     #siteattache
     #siteassocie
-    #masses
+    #masses d'eau
     #entitehydro
     #loistats
     #images
@@ -675,7 +675,7 @@ class Capteur(_Entitehydro):
             return self.__unicode__().encode(_sys.stdout.encoding)
 
 
-#-- class Capteur -------------------------------------------------------------
+#-- class Tronconvigilance ----------------------------------------------------
 class Tronconvigilance(object):
 
     """Classe Tronconvigilance.

@@ -33,8 +33,8 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2b"""
-__date__ = """2014-03-16"""
+__version__ = """0.2c"""
+__date__ = """2014-03-21"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -72,6 +72,7 @@ def _to_xml(
     Arguments:
         scenario (xml.Scenario) = 1 element
         sitesydro (sitehydro.Sitehydro collection) = iterable or None
+        seuilshydro (seuil.Seuilhydro collection) = iterable or None
         evenements (evenement.Evenement collection) = iterable ou None
         series (obshydro.Serie collection) = iterable or None
         simulations (simulation.Simulation collection) = iterable or None
@@ -144,35 +145,33 @@ def _siteshydro_to_element(siteshydro):
 def _seuilshydro_to_element(seuilshydro):
     """Return a <SitesHydro> element from a list of seuil.Seuilhydro."""
     if seuilshydro is not None:
-        # the ugly XML doesn't support many seuil values for the same site
-        # if we have some, we have to split them on duplicates sites
+        # the ugly XML doesn't support many Q values within a seuil
+        # to deal with that use case, we have to split the values on
+        # duplicates seuils
         newseuils = []
         for seuilhydro in seuilshydro:
             if seuilhydro.valeurs is not None:
                 valeurs_site = [
                     valeur for valeur in seuilhydro.valeurs
-                    if isinstance(valeur.entite, _sitehydro.Sitehydro)
+                    if (valeur.entite == seuilhydro.sitehydro)
                 ]
                 if len(valeurs_site) > 1:
                     for valeur in valeurs_site[1:]:
-                        # for each value expect the first one, we make a new
-                        # and simple Seuilhydro, attachd to a new Sitehydro
+                        # for each value except the first one, we make a new
+                        # Seuilhydro with the same code and a uniq value
                         seuil = _seuil.Seuilhydro(
-                            sitehydro=_sitehydro.Sitehydro(
-                                code=seuilhydro.sitehydro.code
-                            ),
-                            code=seuilhydro.code
+                            sitehydro=seuilhydro.sitehydro,
+                            code=seuilhydro.code,
+                            valeurs=[valeur]
                         )
-                        # we add the value to the seuil...
-                        seuil.valeurs = [valeur]
                         newseuils.append(seuil)
-                        # ... and remove it from the initial iterable
+                        # then we remove the value from the initial iterable
                         seuilhydro.valeurs.remove(valeur)
         seuilshydro.extend(newseuils)
 
         # now we group the seuilshydro by Sitehydro, putting them into a dict:
         #     {sitehydro: [seuilhydro, ...], ...}
-        siteshydro = {}
+        siteshydro = _OrderedDict()
         for seuilhydro in seuilshydro:
             siteshydro.setdefault(seuilhydro.sitehydro, []).append(seuilhydro)
 
@@ -182,7 +181,7 @@ def _seuilshydro_to_element(seuilshydro):
             element.append(
                 _sitehydro_to_element(
                     sitehydro=sitehydro,
-                    seuilshydro=siteshydro[siteshydro]
+                    seuilshydro=siteshydro[sitehydro]
                 )
             )
         return element
@@ -285,6 +284,12 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None):
                 'value': None,
                 'force': True if sitehydro.coord is not None else False
             }),
+            ('TronconsVigilanceSiteHydro', {
+                'value': None,
+                'force': True if (
+                    len(sitehydro.tronconsvigilance) > 0
+                ) else False
+            }),
             ('CdCommune', {'value': sitehydro.communes}),
             ('CdSiteHydroAncienRef', {'value': sitehydro.codeh2}),
             ('StationsHydro', {
@@ -310,6 +315,12 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None):
         # make element <SiteHydro>
         element = _factory(root=_etree.Element('SiteHydro'), story=story)
 
+        # add the tronconsvigilance if necessary
+        if len(sitehydro.tronconsvigilance) > 0:
+            child = element.find('TronconsVigilanceSiteHydro')
+            for tronconvigilance in sitehydro.tronconsvigilance:
+                child.append(_tronconvigilance_to_element(tronconvigilance))
+
         # add the stations if necessary
         if len(sitehydro.stations) > 0:
             child = element.find('StationsHydro')
@@ -324,6 +335,23 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None):
 
         # return
         return element
+
+
+def _tronconvigilance_to_element(tronconvigilance):
+    """Return a <TronconVigilanceSiteHydro> element from a
+    sitehydro.Tronconvigilance."""
+    if tronconvigilance is not None:
+
+        # template for tronconvigilance simple elements
+        story = _OrderedDict((
+            ('CdTronconVigilance', {'value': tronconvigilance.code}),
+            ('NomCTronconVigilance', {'value': tronconvigilance.libelle})
+        ))
+
+        # action !
+        return _factory(
+            root=_etree.Element('TronconVigilanceSiteHydro'), story=story
+        )
 
 
 def _seuilhydro_to_element(seuilhydro):
@@ -366,11 +394,13 @@ def _seuilhydro_to_element(seuilhydro):
             story['ValDebitSeuilSiteHydro'] = {
                 'value': sitevaleurseuil.valeur
             }
-            story['DtActivationSeuilSteHydro'] = {
+            story['DtActivationSeuilSiteHydro'] = {
                 'value': sitevaleurseuil.dtactivation.isoformat()
+                if sitevaleurseuil.dtactivation is not None else None
             }
             story['DtDesactivationSeuilSiteHydro'] = {
                 'value': sitevaleurseuil.dtdesactivation.isoformat()
+                if sitevaleurseuil.dtdesactivation is not None else None
             }
 
         # add the stations values
@@ -382,18 +412,21 @@ def _seuilhydro_to_element(seuilhydro):
             story['ToleranceSeuilSiteHydro'] = {
                 'value': sitevaleurseuil.tolerance
             }
-        story['DtMajSeuilSiteHydro'] = {'value': seuilhydro.dtmaj.isoformat()}
+        story['DtMajSeuilSiteHydro'] = {
+            'value': seuilhydro.dtmaj.isoformat()
+            if seuilhydro.dtmaj is not None else None
+        }
 
         # make element <ValeursSeuilsStationHydro>
         element = _factory(
-            root=_etree.Element('ValeursSeuilsSiteHydro'),
+            root=_etree.Element('ValeursSeuilSiteHydro'),
             story=story
         )
 
         # add the <ValeursSeuilsStationHydro> if necessary
         if len(seuilhydro.valeurs) > 0:
             child = element.find('ValeursSeuilsStationHydro')
-            for valeur in seuilhydro.vaileurs:
+            for valeur in seuilhydro.valeurs:
                 child.append(_valeurseuilstationhydro_to_element(valeur))
 
         # return
@@ -410,7 +443,7 @@ def _valeurseuilstationhydro_to_element(valeurseuil):
 
         # prerequisite
         if not _composant.is_code_hydro(
-            code=valeurseuil.entite, length=8, raises=True
+            code=valeurseuil.entite.code, length=10, raises=False
         ):
             raise TypeError(
                 'valeurseuil.entite is not a sitehydro.Stationhydro'
@@ -424,9 +457,11 @@ def _valeurseuilstationhydro_to_element(valeurseuil):
             }),
             ('DtActivationSeuilStationHydro', {
                 'value': valeurseuil.dtactivation.isoformat()
+                if valeurseuil.dtactivation is not None else None
             }),
             ('DtDesactivationSeuilStationHydro', {
                 'value': valeurseuil.dtdesactivation.isoformat()
+                if valeurseuil.dtdesactivation is not None else None
             }),
             ('ToleranceSeuilStationHydro', {'value': valeurseuil.tolerance})
         ))
