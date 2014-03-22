@@ -171,7 +171,7 @@ def _seuilshydro_to_element(seuilshydro):
 
         # now we group the seuilshydro by Sitehydro, putting them into a dict:
         #     {sitehydro: [seuilhydro, ...], ...}
-        siteshydro = _OrderedDict()
+        siteshydro = {}  # _OrderedDict()
         for seuilhydro in seuilshydro:
             siteshydro.setdefault(seuilhydro.sitehydro, []).append(seuilhydro)
 
@@ -436,7 +436,7 @@ def _seuilhydro_to_element(seuilhydro):
 def _valeurseuilstationhydro_to_element(valeurseuil):
     """Return a <ValeursSeuilStationHydro> element from a seuil.Valeurseuil.
 
-    Requires valeurseuil.entite.code to be a station hydro one.
+    Requires valeurseuil.entite.code to be a station hydro code.
 
     """
     if valeurseuil is not None:

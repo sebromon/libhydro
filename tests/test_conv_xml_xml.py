@@ -36,7 +36,8 @@ from libhydro.conv.xml import (Scenario, Message)
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
+__author__ = """Philippe Gouin""" \
+             """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1d"""
 __date__ = """2013-09-05"""
 
@@ -139,12 +140,20 @@ class TestScenario(unittest.TestCase):
         self.assertRaises(
             TypeError,
             Scenario,
-            **{'emetteur': emetteur, 'destinataire': destinataire, 'dtprod': {}}
+            **{
+                'emetteur': emetteur,
+                'destinataire': destinataire,
+                'dtprod': {}
+            }
         )
         self.assertRaises(
             ValueError,
             Scenario,
-            **{'emetteur': emetteur, 'destinataire': destinataire, 'dtprod': 'ff'}
+            **{
+                'emetteur': emetteur,
+                'destinataire': destinataire,
+                'dtprod': 'ff'
+            }
         )
 
 
@@ -155,7 +164,7 @@ class TestMessage(unittest.TestCase):
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
         self.file_sit = os.path.join(FILES_PATH, 'siteshydro.xml')
-        self.file_obs = os.path.join(FILES_PATH, 'obsshydro.xml')
+        self.file_obs = os.path.join(FILES_PATH, 'series.xml')
         self.file_sim = os.path.join(FILES_PATH, 'simulations.xml')
         self.tmp_dir = tempfile.mkdtemp(prefix='test_xml_')
         self.tmp_file = tempfile.mktemp(dir=self.tmp_dir)
@@ -180,7 +189,7 @@ class TestMessage(unittest.TestCase):
         msg.siteshydro = msg.siteshydro[0]
 
     def test_base_03(self):
-        """Message from file obsshydro."""
+        """Message from file series."""
         msg = Message.from_file(self.file_obs)
         msg.write(self.tmp_file, force=True)
         msg.series = msg.series[0]

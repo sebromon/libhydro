@@ -34,7 +34,7 @@ from libhydro.conv.xml import (_from_xml as from_xml)
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1h"""
-__date__ = """2014-03-20"""
+__date__ = """2014-03-22"""
 
 #HISTORY
 #V0.1 - 2013-08-24
@@ -443,15 +443,15 @@ class TestFromXmlEvenements(unittest.TestCase):
         )
 
 
-#-- class TestFromXmlObssHydro -----------------------------------------------
-class TestFromXmlObssHydro(unittest.TestCase):
+#-- class TestFromXmlSeries ---------------------------------------------------
+class TestFromXmlSeries(unittest.TestCase):
 
-    """FromXmlObssHydro class tests."""
+    """FromXmlSeries class tests."""
 
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
         self.data = from_xml._parse(
-            os.path.join('data', 'xml', '1.1', 'obsshydro.xml')
+            os.path.join('data', 'xml', '1.1', 'series.xml')
         )
 
     def test_base(self):
