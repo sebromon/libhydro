@@ -34,33 +34,34 @@ from libhydro.core import sitehydro
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1a"""
-__date__ = """2014-02-23"""
+__version__ = """0.1b"""
+__date__ = """2014-03-23"""
 
 #HISTORY
 #V0.1 - 2014-02-12
 #    first shot
 
 
-#-- class Testseuilhydro ------------------------------------------------------
-class Testseuilhydro(unittest.TestCase):
+#-- class TestSeuilhydro ------------------------------------------------------
+class TestSeuilhydro(unittest.TestCase):
 
     """Seuilhydro class tests."""
 
     def test_base_01(self):
         """Minimum Seuilhydro."""
-        seuil = Seuilhydro()
+        code = 'seuil 1'
+        seuil = Seuilhydro(code)
         self.assertEqual(
             (
-                seuil.sitehydro, seuil.code, seuil.typeseuil,
+                seuil.code, seuil.sitehydro, seuil.typeseuil,
                 seuil.duree, seuil.nature, seuil.libelle,
                 seuil.mnemo, seuil.gravite, seuil.commentaire,
                 seuil.publication, seuil.valeurforcee,
-                seuil.valeurs
+                seuil.dtmaj, seuil.valeurs
             ),
             (
-                None, 0, 1, 0, None, None, None, None, None,
-                False, False, None
+                code, None, None, None, None, None, None, None, None,
+                None, None, None, None
             )
         )
 
@@ -82,8 +83,8 @@ class Testseuilhydro(unittest.TestCase):
             Valeurseuil(10), Valeurseuil(11), Valeurseuil(12)
         ]
         seuil = Seuilhydro(
-            sitehydro=site,
             code=code,
+            sitehydro=site,
             typeseuil=typeseuil,
             duree=duree,
             nature=nature,
@@ -98,14 +99,15 @@ class Testseuilhydro(unittest.TestCase):
         )
         self.assertEqual(
             (
-                seuil.sitehydro, seuil.code, seuil.typeseuil, seuil.duree,
+                seuil.code, seuil.sitehydro, seuil.typeseuil, seuil.duree,
                 seuil.nature, seuil.libelle, seuil.mnemo, seuil.gravite,
                 seuil.commentaire, seuil.publication, seuil.valeurforcee,
                 seuil.dtmaj, seuil.valeurs
             ),
             (
-                site, code, typeseuil, duree, nature, libelle, mnemo, gravite,
-                commentaire, publication, valeurforcee, dtmaj, valeurs
+                unicode(code), site, typeseuil, duree, nature, libelle,
+                mnemo, gravite, commentaire, publication, valeurforcee,
+                dtmaj, valeurs
             )
         )
 
@@ -133,9 +135,53 @@ class Testseuilhydro(unittest.TestCase):
     #         (e.contact, e.publication), (None, publication)
     #     )
 
+    def test_equality_01(self):
+        """Test equality and inequality without valeurs."""
+        site = sitehydro.Sitehydro('R5330001')
+        code = 175896
+        typeseuil = 1
+        duree = 0
+        seuil = Seuilhydro(
+            sitehydro=site, code=code, typeseuil=typeseuil, duree=duree
+        )
+        other = Seuilhydro(
+            sitehydro=site, code=code, typeseuil=typeseuil, duree=duree
+        )
+        self.assertEqual(seuil, other)
+        other = Seuilhydro(
+            sitehydro=site, code='2', typeseuil=typeseuil, duree=duree
+        )
+        self.assertNotEqual(seuil, other)
+        other = Seuilhydro(
+            sitehydro=site, code=code, typeseuil=2, duree=10
+        )
+        self.assertNotEqual(seuil, other)
+        other.typeseuil = other.duree = None
+        self.assertTrue(seuil.__eq__(other, lazzy=True))
+
+    def test_equality_02(self):
+        """Test equality and inequality with valeurs."""
+        # assert equality
+        valeurs = [Valeurseuil(i) for i in range(10)]
+        seuil = Seuilhydro(code=1, valeurs=valeurs[:])
+        other = Seuilhydro(code=1, valeurs=valeurs[:])
+        self.assertEqual(seuil, other)
+        self.assertTrue(seuil.__eq__(other, cmp_values=True))
+        self.assertTrue(seuil.__eq__(other, cmp_values=False))
+        # a shorter list of values
+        other.valeurs = valeurs[1:]
+        self.assertNotEqual(seuil, other)
+        self.assertFalse(seuil.__eq__(other, cmp_values=True))
+        self.assertTrue(seuil.__eq__(other, cmp_values=False))
+        # a different value
+        other.valeurs = valeurs[:]
+        self.assertEqual(seuil, other)
+        seuil.valeurs[2] = Valeurseuil(899.3)
+        self.assertNotEqual(seuil, other)
+
     def test_error_01(self):
         """Code error."""
-        code = 175896
+        code = '175896'
         seuil = Seuilhydro(code=code)
         self.assertEqual(seuil.code, code)
         self.assertRaises(
@@ -143,78 +189,105 @@ class Testseuilhydro(unittest.TestCase):
             Seuilhydro,
             **{'code': None}
         )
-        self.assertRaises(
-            ValueError,
-            Seuilhydro,
-            **{'code': 'not a integer'}
-        )
 
     def test_error_02(self):
         """Typeseuil error."""
         typeseuil = 1
-        seuil = Seuilhydro(typeseuil=typeseuil)
+        seuil = Seuilhydro(code=1, typeseuil=typeseuil)
         self.assertEqual(seuil.typeseuil, typeseuil)
         self.assertRaises(
             ValueError,
             Seuilhydro,
-            **{'typeseuil': 'xxx'}
+            **{'code': 1, 'typeseuil': 'xxx'}
         )
         self.assertRaises(
             ValueError,
             Seuilhydro,
-            **{'typeseuil': 999}
-            # **{'typeseuil': 1}
+            **{'code': 1, 'typeseuil': 999}
+            # **{'code': 1, 'typeseuil': 1}
         )
 
     def test_error_03(self):
         """Duree error."""
+        # not an integer
         duree = 10.5
-        seuil = Seuilhydro(duree=duree)
+        seuil = Seuilhydro(code=1, duree=duree)
         self.assertEqual(seuil.duree, duree)
         self.assertRaises(
             TypeError,
             Seuilhydro,
-            **{'duree': None}
+            **{'code': 1, 'duree': 'not a integer'}
+        )
+        # default value is 0 for absolute seuil
+        seuil = Seuilhydro(code=1, typeseuil=1)
+        self.assertEqual(seuil.duree, 0)
+        # absolute seuil duree must be 0
+        self.assertRaises(
+            ValueError,
+            Seuilhydro,
+            **{'code': 1, 'typeseuil': 1, 'duree': 5}
+        )
+        # gradient seuil must have a duree
+        self.assertRaises(
+            ValueError,
+            Seuilhydro,
+            **{'code': 1, 'typeseuil': 2, 'duree': None}
         )
         self.assertRaises(
             ValueError,
             Seuilhydro,
-            **{'duree': 'not a integer'}
+            **{'code': 1, 'typeseuil': 2, 'duree': 0}
         )
 
     def test_error_04(self):
         """Nature error."""
         nature = 101
-        seuil = Seuilhydro(nature=nature)
+        seuil = Seuilhydro(code=0, nature=nature)
         self.assertEqual(seuil.nature, nature)
         self.assertRaises(
             ValueError,
             Seuilhydro,
-            **{'nature': 49}
+            **{'code': 0, 'nature': 49}
         )
 
     def test_error_05(self):
         """Gravite error."""
         gravite = 100
-        seuil = Seuilhydro(gravite=gravite)
+        seuil = Seuilhydro(code='aaa', gravite=gravite)
         self.assertEqual(seuil.gravite, gravite)
         gravite = 0
-        seuil = Seuilhydro(gravite=gravite)
+        seuil = Seuilhydro(code='aaa', gravite=gravite)
         self.assertEqual(seuil.gravite, gravite)
         self.assertRaises(
             ValueError,
             Seuilhydro,
-            **{'gravite': 101}
+            **{'code': 'aaa', 'gravite': 101}
         )
         self.assertRaises(
             ValueError,
             Seuilhydro,
-            **{'gravite': -1}
+            **{'code': 'aaa', 'gravite': -1}
+        )
+        self.assertRaises(
+            TypeError,
+            Seuilhydro,
+            **{'code': 'aaa', 'gravite': 'xx'}
+        )
+
+    def test_error_06(self):
+        """Valeurs error."""
+        valeurs = [Valeurseuil(10)]
+        seuil = Seuilhydro(code='A22', valeurs=valeurs)
+        self.assertEqual(seuil.code, 'A22')
+        self.assertRaises(
+            TypeError,
+            Seuilhydro,
+            **{'code': 0, 'valeurs': [9, 10]}
         )
 
 
-#-- class Testvaleurseuil -----------------------------------------------------
-class Testvaleurseuil(unittest.TestCase):
+#-- class TestValeurseuil -----------------------------------------------------
+class TestValeurseuil(unittest.TestCase):
 
     """Valeurseuil class tests."""
 
@@ -225,7 +298,7 @@ class Testvaleurseuil(unittest.TestCase):
 
     def test_base_02(self):
         """Full Valeurseuil."""
-        seuil = Seuilhydro(strict=False)
+        seuil = Seuilhydro(code=1, strict=False)
         entite = sitehydro.Sitehydro(code='Z8250001')
         tolerance = '10.3'
         valeur = '253.42'
@@ -274,6 +347,23 @@ class Testvaleurseuil(unittest.TestCase):
     #     self.assertEqual(
     #         (e.contact, e.publication), (None, publication)
     #     )
+
+    def test_equality(self):
+        """Test equality and inequality."""
+        valeur = 8
+        tolerance = 5
+        entite = sitehydro.Stationhydro('R533010110')
+        valseuil = Valeurseuil(
+            entite=entite, valeur=valeur, tolerance=tolerance
+        )
+        other = Valeurseuil(
+            entite=entite, valeur=valeur, tolerance=tolerance
+        )
+        self.assertEqual(valseuil, other)
+        other = Valeurseuil(
+            entite=entite, valeur=10, tolerance=tolerance
+        )
+        self.assertNotEqual(valseuil, other)
 
     def test_error_01(self):
         """Valeur error."""

@@ -18,10 +18,10 @@ from __future__ import (
     print_function as _print_function
 )
 
-from collections import OrderedDict as _OrderedDict
+import collections as _collections
 
-from lxml import etree as _etree
 import numpy as _numpy
+from lxml import etree as _etree
 
 from libhydro.core import (
     _composant,
@@ -34,7 +34,7 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.2c"""
-__date__ = """2014-03-21"""
+__date__ = """2014-03-23"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -62,7 +62,8 @@ PREV_PROBABILITY = {
 # -- testsfunction ------------------------------------------------------------
 def _to_xml(
     scenario=None, siteshydro=None, seuilshydro=None,
-    evenements=None, series=None, simulations=None
+    evenements=None, series=None, simulations=None,
+    ordered=False
 ):
     """Return a etree.Element a partir des donnees passes en argument.
 
@@ -76,6 +77,7 @@ def _to_xml(
         evenements (evenement.Evenement collection) = iterable ou None
         series (obshydro.Serie collection) = iterable or None
         simulations (simulation.Simulation collection) = iterable or None
+        ordered (bool)
 
     """
     # make a deep copy of locals() which is a dict {arg_name: arg_value, ...}
@@ -95,18 +97,20 @@ def _to_xml(
         (args['siteshydro'] is not None)
         or (args['seuilshydro'] is not None)
     ):
-        # here we add the common SitesHydro tag...
+        # we add the common SitesHydro tag and we remove it from each element
+        # because seuilshydro are childs of siteshydro
         sub = _etree.SubElement(tree, 'RefHyd')
         sub = _etree.SubElement(sub, 'SitesHydro')
-        for k in ('siteshydro', 'seuilshydro'):
-            if args[k] is not None:
-                # ... and here we have to remove it because
-                # seuilshydro are childs of siteshydro
-                element = eval(
-                    '_{}_to_element(args[k])'.format(k)
-                )
-                for elementsitehydro in element.findall('./SiteHydro'):
-                    sub.append(elementsitehydro)
+        if args['siteshydro'] is not None:
+            element = _siteshydro_to_element(args['siteshydro'])
+            for elementsitehydro in element.findall('./SiteHydro'):
+                sub.append(elementsitehydro)
+        if args['seuilshydro'] is not None:
+            element = _seuilshydro_to_element(
+                seuilshydro=args['seuilshydro'], ordered=ordered
+            )
+            for elementsitehydro in element.findall('./SiteHydro'):
+                sub.append(elementsitehydro)
 
     # add the donnees
     if (
@@ -142,7 +146,7 @@ def _siteshydro_to_element(siteshydro):
         return element
 
 
-def _seuilshydro_to_element(seuilshydro):
+def _seuilshydro_to_element(seuilshydro, ordered=False):
     """Return a <SitesHydro> element from a list of seuil.Seuilhydro."""
     if seuilshydro is not None:
         # the ugly XML doesn't support many Q values within a seuil
@@ -171,7 +175,10 @@ def _seuilshydro_to_element(seuilshydro):
 
         # now we group the seuilshydro by Sitehydro, putting them into a dict:
         #     {sitehydro: [seuilhydro, ...], ...}
-        siteshydro = {}  # _OrderedDict()
+        if ordered:
+            siteshydro = _collections.OrderedDict()
+        else:
+            siteshydro = {}
         for seuilhydro in seuilshydro:
             siteshydro.setdefault(seuilhydro.sitehydro, []).append(seuilhydro)
 
@@ -223,7 +230,7 @@ def _scenario_to_element(scenario):
     if scenario is not None:
 
         # template for scenario simple element
-        story = _OrderedDict((
+        story = _collections.OrderedDict((
             ('CodeScenario', {'value': scenario.code}),
             ('VersionScenario', {'value': scenario.version}),
             ('NomScenario', {'value': scenario.nom}),
@@ -232,7 +239,7 @@ def _scenario_to_element(scenario):
         ))
         # template for scenario sub-element <Emetteur>
         story['Emetteur'] = {
-            'sub': _OrderedDict((
+            'sub': _collections.OrderedDict((
                 ('CdIntervenant', {
                     'value': unicode(scenario.emetteur.intervenant.code),
                     'attr': {"schemeAgencyID":
@@ -275,7 +282,7 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None):
             seuilshydro = []
 
         # template for sitehydro simple elements
-        story = _OrderedDict((
+        story = _collections.OrderedDict((
             ('CdSiteHydro', {'value': sitehydro.code}),
             ('LbSiteHydro', {'value': sitehydro.libelle}),
             ('LbUsuelSiteHydro', {'value': sitehydro.libelleusuel}),
@@ -305,7 +312,7 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None):
         # update the coord if necessary
         if sitehydro.coord is not None:
             story['CoordSiteHydro'] = {
-                'sub': _OrderedDict((
+                'sub': _collections.OrderedDict((
                     ('CoordXSiteHydro', {'value': sitehydro.coord.x}),
                     ('CoordYSiteHydro', {'value': sitehydro.coord.y}),
                     ('ProjCoordSiteHydro', {'value': sitehydro.coord.proj})
@@ -343,7 +350,7 @@ def _tronconvigilance_to_element(tronconvigilance):
     if tronconvigilance is not None:
 
         # template for tronconvigilance simple elements
-        story = _OrderedDict((
+        story = _collections.OrderedDict((
             ('CdTronconVigilance', {'value': tronconvigilance.code}),
             ('NomCTronconVigilance', {'value': tronconvigilance.libelle})
         ))
@@ -374,7 +381,7 @@ def _seuilhydro_to_element(seuilhydro):
             sitevaleurseuil = None
 
         # template for seuilhydro simple element
-        story = _OrderedDict((
+        story = _collections.OrderedDict((
             ('CdSeuilSiteHydro', {'value': seuilhydro.code}),
             ('TypSeuilSiteHydro', {'value': seuilhydro.typeseuil}),
             ('NatureSeuilSiteHydro', {'value': seuilhydro.nature}),
@@ -450,7 +457,7 @@ def _valeurseuilstationhydro_to_element(valeurseuil):
             )
 
         # template for valeurseuilstationhydro simple element
-        story = _OrderedDict((
+        story = _collections.OrderedDict((
             ('CdStationHydro', {'value': valeurseuil.entite.code}),
             ('ValHauteurSeuilStationHydro', {
                 'value': valeurseuil.valeur
@@ -478,7 +485,7 @@ def _stationhydro_to_element(stationhydro):
     if stationhydro is not None:
 
         # template for stationhydro simple element
-        story = _OrderedDict((
+        story = _collections.OrderedDict((
             ('CdStationHydro', {'value': stationhydro.code}),
             ('LbStationHydro', {'value': stationhydro.libelle}),
             ('TypStationHydro', {'value': stationhydro.typestation}),
@@ -507,7 +514,7 @@ def _stationhydro_to_element(stationhydro):
         # update the coord if necessary
         if stationhydro.coord is not None:
             story['CoordStationHydro'] = {
-                'sub': _OrderedDict((
+                'sub': _collections.OrderedDict((
                     ('CoordXStationHydro', {'value': stationhydro.coord.x}),
                     ('CoordYStationHydro', {'value': stationhydro.coord.y}),
                     ('ProjCoordStationHydro',
@@ -542,7 +549,7 @@ def _capteur_to_element(capteur):
     if capteur is not None:
 
         # template for capteur simple element
-        story = _OrderedDict((
+        story = _collections.OrderedDict((
             ('CdCapteur', {'value': capteur.code}),
             ('LbCapteur', {'value': capteur.libelle}),
             ('TypMesureCapteur', {'value': capteur.typemesure}),
@@ -559,7 +566,7 @@ def _evenement_to_element(evenement):
     if evenement is not None:
 
         # template for serie simple elements
-        story = _OrderedDict()
+        story = _collections.OrderedDict()
         story['CdContact'] = {'value': evenement.contact.code}
         # entite can be a Sitehydro, a Stationhydro
         # TODO - or a Sitemeteo
@@ -581,7 +588,7 @@ def _serie_to_element(serie):
     if serie is not None:
 
         # template for serie simple elements
-        story = _OrderedDict()
+        story = _collections.OrderedDict()
         # entite can be a Sitehydro, a Stationhydro or a Capteur
         story['Cd%s' % serie.entite.__class__.__name__.replace(
             'hydro', 'Hydro')] = {'value': serie.entite.code}
@@ -640,7 +647,7 @@ def _simulation_to_element(simulation):
     if simulation is not None:
 
         # template for simulation simple element
-        story = _OrderedDict((
+        story = _collections.OrderedDict((
             ('GrdSimul', {'value': simulation.grandeur}),
             # dtprod is a numpy.datetime64 without any isoformat method
             ('DtProdSimul', {'value': simulation.dtprod.isoformat()}),

@@ -22,10 +22,10 @@ from __future__ import (
 )
 
 import sys as _sys
-
 import datetime as _datetime
-import numpy as _numpy
+import collections as _collections
 
+import numpy as _numpy
 from lxml import etree as _etree
 
 from libhydro.core import (
@@ -233,7 +233,8 @@ def _parse(src):
         # 'intervenants':
         'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro')),
         'seuilshydro': _seuilshydro_from_element(
-            tree.find('RefHyd/SitesHydro')
+            element=tree.find('RefHyd/SitesHydro'),
+            ordered=True
         ),
         # 'sitesmeteo'
         # 'modelesprevision': '',
@@ -266,8 +267,12 @@ def _siteshydro_from_element(element):
         return siteshydro
 
 
-def _seuilshydro_from_element(element):
-    """Return a list of seuil.Seuilhydro from a <SitesHydro> element."""
+def _seuilshydro_from_element(element, ordered=False):
+    """Return a list of seuil.Seuilhydro from a <SitesHydro> element.
+
+    When ordered is True, we use an OrderedDict to keep the XML initial order.
+
+    """
     # FIXME - we have to group some seuil here
     if (
         (element is not None) and
@@ -278,7 +283,7 @@ def _seuilshydro_from_element(element):
         # get all seuils
         # we put them in a {(cdsitehydro, cdseuil): seuil.Seuilhydro,...}
         # dictionnary to group similar seuils (bdhydro output is awful!)
-        seuilshydro = {}
+        seuilshydro = _collections.OrderedDict() if ordered else {}
         for elementsitehydro in element.findall('./SiteHydro'):
             # FIXME - we should/could use the already build sitehydro
             sitehydro = _sitehydro_from_element(elementsitehydro)
@@ -289,6 +294,20 @@ def _seuilshydro_from_element(element):
                     elementseuilhydro, sitehydro
                 )
                 if (sitehydro.code, seuilhydro.code) in seuilshydro:
+                    # check that the seuil complies with it predecessors
+                    if not seuilhydro.__eq__(
+                        other=seuilshydro[(sitehydro.code, seuilhydro.code)],
+                        lazzy=True,
+                        cmp_values=False
+                    ):
+                        print(seuilhydro)
+                        print(seuilshydro[(sitehydro.code, seuilhydro.code)])
+                        raise ValueError(
+                            'seuilhydro %s from sitehydro %s '
+                            'has inconsistent metadatas' % (
+                                seuilhydro.code, sitehydro.code
+                            )
+                        )
                     # change the seuil object in the new seuil values
                     # to assure the navigability
                     for valeur in seuilhydro.valeurs:
@@ -470,7 +489,9 @@ def _seuilhydro_from_element(element, sitehydro):
         args = {}
         args['sitehydro'] = sitehydro
         args['code'] = _value(element, 'CdSeuilSiteHydro')
-        args['typeseuil'] = _value(element, 'TypSeuilSiteHydro')
+        typeseuil = _value(element, 'TypSeuilSiteHydro')
+        if typeseuil is not None:
+            args['typeseuil'] = typeseuil
         duree = _value(element, 'DureeSeuilSiteHydro')
         if duree is not None:
             args['duree'] = duree

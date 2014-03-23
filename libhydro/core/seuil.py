@@ -15,7 +15,6 @@ from __future__ import (
 )
 
 import sys as _sys
-import datetime as _datetime
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 from . import _composant
@@ -24,8 +23,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1f"""
-__date__ = """2014-03-19"""
+__version__ = """0.2a"""
+__date__ = """2014-03-23"""
 
 #HISTORY
 #V0.1 - 2014-02-10
@@ -35,8 +34,7 @@ __date__ = """2014-03-19"""
 #-- todos ---------------------------------------------------------------------
 # PROGRESS - Seuilhydro 100% - Valeurseuil 60% - Seuilmeteo 0%
 # TODO - write Class Seuilmeteo
-# TODO - in Class Seuilhydro: add ctrl 'duree is required only for grad type'
-# TODO - in Class Seuilhydro: add ctrl 'libelle and mnemo are exclusive'
+# TODO - in Class Seuilhydro: BDTR.Warning 'libelle and mnemo are exclusive' ?
 # TODO - in Class Valseuil: move all properties in full properties
 # TODO - write __unicode__ method for Seuilhydro
 
@@ -47,7 +45,7 @@ class _Seuil(object):
     """Abstract base class for seuils.
 
     Properties:
-        code (entier) = code seuil
+        code (string) = code seuil
         typeseuil (entier parmi NOMENCLATURE[528]) = type du seuil
         duree (numerique) = duree du seuil en minutes
         nature (entier parmi NOMENCLATURE[529]) = nature du seuil
@@ -64,18 +62,18 @@ class _Seuil(object):
     """
 
     dtmaj = _composant.Datefromeverything(required=False)
-    typeseuil = _composant.Nomenclatureitem(nomenclature=528)
+    typeseuil = _composant.Nomenclatureitem(nomenclature=528, required=False)
     nature = _composant.Nomenclatureitem(nomenclature=529, required=False)
 
     def __init__(
-        self, code=0, typeseuil=1, duree=0,
+        self, code, typeseuil=None, duree=None,
         nature=None, libelle=None, mnemo=None, gravite=None, commentaire=None,
-        dtmaj=_datetime.datetime.utcnow(), valeurs=None, strict=True
+        dtmaj=None, valeurs=None, strict=True
     ):
         """Initialisation.
 
         Arguments:
-            code (entier) = code seuil
+            code (string) = code seuil
             typeseuil (entier parmi NOMENCLATURE[528]) = type du seuil
             duree (numerique) = duree du seuil en minutes
             nature (entier parmi NOMENCLATURE[529]) = nature du seuil
@@ -104,12 +102,14 @@ class _Seuil(object):
         self.nature = nature
 
         # -- full properties --
-        self._code = self._duree = 0
+        self._code = self._duree = self._gravite = self._valeurs = None
         self.code = code
         self.duree = duree
-        self._gravite = self._valeurs = None
         self.gravite = gravite
         self.valeurs = valeurs
+
+        # -- some checks
+        self._check_typeseuil_and_duree()
 
     # -- property code --
     @property
@@ -120,17 +120,12 @@ class _Seuil(object):
     @code.setter
     def code(self, code):
         """Set code."""
-        try:
+        # None case
+        if code is None:
+            raise TypeError('code is required')
 
-            # None case
-            if code is None:
-                raise TypeError('code is required')
-
-            # other cases
-            self._code = int(code)
-
-        except:
-            raise
+        # other cases
+        self._code = unicode(code)
 
     # -- property duree --
     @property
@@ -141,17 +136,13 @@ class _Seuil(object):
     @duree.setter
     def duree(self, duree):
         """Set duree."""
-        try:
-
-            # None case
-            if duree is None:
-                raise TypeError('duree is required')
-
-            # other cases
-            self._duree = float(duree)
-
-        except:
-            raise
+        if duree is not None:
+            try:
+                duree = float(duree)
+            except:
+                raise TypeError('duree should be a number')
+        self._duree = duree
+        self._check_typeseuil_and_duree()
 
     # -- property gravite --
     @property
@@ -162,19 +153,14 @@ class _Seuil(object):
     @gravite.setter
     def gravite(self, gravite):
         """Set gravite."""
-        try:
-
-            # None case
-            if gravite is not None:
+        if gravite is not None:
+            try:
                 gravite = int(gravite)
-                if not (0 <= gravite <= 100):
-                    raise ValueError('gravite out of range')
-
-            # all is well
-            self._gravite = gravite
-
-        except:
-            raise
+            except:
+                raise TypeError('gravite must be an int')
+            if not (0 <= gravite <= 100):
+                raise ValueError('gravite out of range')
+        self._gravite = gravite
 
     @property
     def valeurs(self):
@@ -185,25 +171,45 @@ class _Seuil(object):
     def valeurs(self, valeurs):
         """Set valeurs."""
         # assert the navigability from valeur to seuil
-        if valeurs is not None:
-            for valeur in valeurs:
-                valeur.seuil = self
+        if self._strict and (valeurs is not None):
+            try:
+                for valeur in valeurs:
+                    valeur.seuil = self
+
+            except AttributeError:
+                raise TypeError('valeurs should be an iterable of Valeurseuil')
 
         # all is well
         self._valeurs = valeurs
 
     # -- other methods --
+    def _check_typeseuil_and_duree(self):
+        """Assert some hydrologic rules."""
+        if (self.typeseuil == 2) and (self.duree in (None, 0)):
+                raise ValueError('gradient seuil must have a duree')
+        if self.typeseuil == 1:  # absolute seuil
+            if self.duree is None:
+                self.duree = 0
+            elif self.duree != 0:
+                raise ValueError('absolute seuil duree must be 0')
+
     def __unicode__(self):
         """Return unicode representation."""
         return '''Seuil {code} de type {typeseuil} ''' \
-               '''et de duree {duree} mn\n''' \
+               '''et de duree {duree}\n''' \
                '''{nature}\n''' \
                '''Intitule: {intitule}\n''' \
                '''Gravite: {gravite}\n''' \
                '''Valeurs:\n{valeurs}\n'''.format(
                    code=self.code,
-                   typeseuil=_NOMENCLATURE[528][self.typeseuil],
-                   duree=self.duree,
+                   typeseuil=(
+                       _NOMENCLATURE[528][self.typeseuil]
+                       if self.typeseuil is not None else '<sans type>'
+                   ),
+                   duree=(
+                       '%s mn' % self.duree if self.duree is not None
+                       else '<sans duree>'
+                   ),
                    nature=(
                        _NOMENCLATURE[529][self.nature]
                        if self.nature is not None
@@ -211,10 +217,12 @@ class _Seuil(object):
                    ),
                    intitule=self.libelle or self.mnemo or '<sans intitule>',
                    gravite=self.gravite or '<gravite inconnue>',
-                   valeurs='\n'.join(
-                       ['  %s' % v.__unicode__() for v in self.valeurs]
-                   ) if (self.valeurs not in (None, []))
-                   else '    <sans valeurs>'
+                   valeurs=(
+                       '\n'.join(
+                           ['  %s' % unicode(v) for v in self.valeurs]
+                       ) if (self.valeurs not in (None, []))
+                       else '%s<sans valeurs>' % (' ' * 4)
+                   )
                )
 
     def __str__(self):
@@ -231,8 +239,8 @@ class Seuilhydro(_Seuil):
     """Classe Seuilhydro.
 
     Proprietes:
+        code (string) = code seuil
         sitehydro (sitehydro.Sitehydro) = site hydro du seuil
-        code (entier) = code seuil
         typeseuil (entier parmi NOMENCLATURE[528]) = type du seuil
         duree (numerique) = duree du seuil en minutes
         nature (entier parmi NOMENCLATURE[529]) = nature du seuil
@@ -251,16 +259,16 @@ class Seuilhydro(_Seuil):
     """
 
     def __init__(
-        self, sitehydro=None, code=0, typeseuil=1, duree=0,
+        self, code, sitehydro=None, typeseuil=None, duree=None,
         nature=None, libelle=None, mnemo=None, gravite=None, commentaire=None,
-        publication=False, valeurforcee=False,
-        dtmaj=_datetime.datetime.utcnow(), valeurs=None, strict=True
+        publication=None, valeurforcee=None, dtmaj=None, valeurs=None,
+        strict=True
     ):
         """Initialisation.
 
         Arguments:
+            code (string) = code seuil
             sitehydro (sitehydro.Sitehydro) = site hydro du seuil
-            code (entier) = code seuil
             typeseuil (entier parmi NOMENCLATURE[528]) = type du seuil
             duree (numerique) = duree du seuil en minutes
             nature (entier parmi NOMENCLATURE[529]) = nature du seuil
@@ -287,10 +295,52 @@ class Seuilhydro(_Seuil):
         # -- simple properties --
         # FIXME - seuil.sitehydro should be  a full property
         self.sitehydro = sitehydro
-        self.publication = bool(publication)
-        self.valeurforcee = bool(valeurforcee)
+        self.publication = bool(publication) if publication is not None \
+            else None
+        self.valeurforcee = bool(valeurforcee) if valeurforcee is not None \
+            else None
 
     # -- other methods --
+    def __eq__(self, other, lazzy=False, cmp_values=True):
+        """Return True ou False.
+
+        In lazzy mode do not return False when an attribute is None.
+        If not cmp_value, the function checks only the seuil metadatas.
+
+        """
+        # short test
+        if self is other:
+            return True
+
+        # check the seuil metadatas
+        for attr in (
+            'sitehydro', 'code', 'typeseuil', 'duree', 'nature', 'libelle',
+            'mnemo', 'gravite', 'commentaire', 'publication', 'valeurforcee',
+            'dtmaj'
+        ):
+            first = getattr(self, attr, True)
+            second = getattr(other, attr, False)
+            if lazzy and (first is None or second is None):
+                continue
+            if first != second:
+                return False
+
+        # check the values
+        if cmp_values:
+            try:
+                if len(self.valeurs) != len(other.valeurs):
+                    return False
+                for valeur in self.valeurs:
+                    if valeur not in other.valeurs:
+                        return False
+            except TypeError:
+                # None case or non iterable values (fuzzy mode)
+                if self.valeurs == self.valeurs:
+                    return True
+
+        # all is well
+        return True
+
     # def __unicode__(self):
     #     """Return unicode representation."""
     #     return '''Seuil hydro {code} de type {typeseuil}'''.format(
@@ -360,6 +410,18 @@ class Valeurseuil (object):
         self.dtdesactivation = dtdesactivation
 
     # -- other methods --
+    def __eq__(self, other):
+        """Return True ou False."""
+        if self is other:
+            return True
+        for attr in (
+            'valeur', 'seuil', 'entite', 'tolerance',
+            'dtactivation', 'dtdesactivation'
+        ):
+            if getattr(self, attr, True) != getattr(other, attr, False):
+                return False
+        return True
+
     def __unicode__(self):
         """Return unicode representation."""
         return '''{valeur} (tolerance {tolerance})'''.format(

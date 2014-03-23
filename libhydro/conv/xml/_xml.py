@@ -32,8 +32,8 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1i"""
-__date__ = """2014-03-09"""
+__version__ = """0.1j"""
+__date__ = """2014-03-23"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -77,7 +77,7 @@ class Message(object):
 
     def __init__(
         self, scenario, siteshydro=None, seuilshydro=None, evenements=None,
-        series=None, simulations=None, strict=True
+        series=None, simulations=None, ordered=False, strict=True
     ):
         """Initialisation.
 
@@ -88,6 +88,8 @@ class Message(object):
             evenements (evenement.Evenement collection) = iterable ou None
             series (obshydro.Serie collection) = iterable ou None
             simulations (simulation.Simulation collection) = iterable ou None
+            ordered (bool, default False) = if True tries to keep things in
+                order when serialising (slower)
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite des elements
 
@@ -96,7 +98,8 @@ class Message(object):
         # -- super --
 
         # -- simple properties --
-        self._strict = strict
+        self._ordered = bool(ordered)
+        self._strict = bool(strict)
 
         # -- full properties --
         self._scenario = self._siteshydro = self._seuilshydro = None
@@ -207,27 +210,22 @@ class Message(object):
     @evenements.setter
     def evenements(self, evenements):
         """Set evenements."""
-        try:
+        # None case
+        if (evenements is None):
+            evenements = []
 
-            # None case
-            if (evenements is None):
-                evenements = []
+        # other cases
+        if isinstance(evenements, _evenement.Evenement):
+            evenements = [evenements]
+        elif self._strict:
+            for evenement in evenements:
+                if not isinstance(evenement, _evenement.Evenement):
+                    raise TypeError(
+                        'evenement {} incorrect'.format(evenement)
+                    )
 
-            # other cases
-            if isinstance(evenements, _evenement.Evenement):
-                evenements = [evenements]
-            elif self._strict:
-                for evenement in evenements:
-                    if not isinstance(evenement, _evenement.Evenement):
-                        raise TypeError(
-                            'evenement {} incorrect'.format(evenement)
-                        )
-
-            # all is well
-            self._evenements = evenements
-
-        except:
-            raise
+        # all is well
+        self._evenements = evenements
 
     # -- property series --
     @property
@@ -293,12 +291,14 @@ class Message(object):
 
     # -- static methods --
     @staticmethod
-    def from_file(src):
+    def from_file(src, ordered=False):
         """Parse le fichier src et retourne un xml.Message.
 
         Arguments:
             src (nom de fichier, url, objet fichier...) = source de donnee. Les
                 type de src acceptes sont ceux de lxml.etree.parse
+            ordered (bool, default False) = if True tries to keep things in
+                order
 
         """
         # read the file
@@ -320,7 +320,8 @@ class Message(object):
                 tree.find('RefHyd/SitesHydro')
             ),
             seuilshydro=_from_xml._seuilshydro_from_element(
-                tree.find('RefHyd/SitesHydro')
+                element=tree.find('RefHyd/SitesHydro'),
+                ordered=ordered
             ),
             evenements=_from_xml._evenements_from_element(
                 tree.find('Donnees/Evenements')
@@ -398,7 +399,8 @@ class Message(object):
                 seuilshydro=self.seuilshydro,
                 evenements=self.evenements,
                 series=self.series,
-                simulations=self.simulations
+                simulations=self.simulations,
+                ordered=self._ordered
             )
         )
         tree.write(

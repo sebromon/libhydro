@@ -700,6 +700,7 @@ class Tronconvigilance(object):
 
     # -- other methods --
     def __eq__(self, other):
+        """Return True ou False."""
         return (
             (self is other)
             or

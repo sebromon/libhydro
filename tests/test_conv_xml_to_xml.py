@@ -41,7 +41,7 @@ __date__ = """2014-03-22"""
 
 #HISTORY
 #V0.2 - 2014-03-22
-#    factorize base tests in a suite
+#    factorize all the base tests in a suite
 #V0.1 - 2013-08-30
 #    first shot
 
@@ -74,7 +74,17 @@ def xml_to_unicode(fname):
 
 
 def assert_unicode_equal(xml, expected, msg=None):
-    """Raise personnal AssertionError on failure."""
+    """Raise personnal AssertionError on failure.
+
+    Compare the 2 xml strings char by char and returns the exact place where
+    it doesn't match, with 2 * COMPARE lenght char context.
+
+    Example:
+        HeureCreationFichier><Emetteur><CdIntervenant schemeAgencyID="SANDRE
+                    ----------------------v----------------------
+        HeureCreationFichier><Emetteur><CdContact>26</CdContact></Emetteur><
+
+    """
     for (i, c) in enumerate(expected):
         try:
             assert(xml[i] == c)
@@ -96,75 +106,75 @@ def assert_unicode_equal(xml, expected, msg=None):
 
 
 #-- class TestToXmlSeuilsHydro ------------------------------------------------
-class TestToXmlSeuilsHydro(unittest.TestCase):
-
-    """ToXmlSeuilsHydro class tests."""
-
-    def setUp(self):
-        """Hook method for setting up the test fixture before exercising it."""
-        # build expected string
-        self.expected = xml_to_unicode(
-            os.path.join('data', 'xml', '1.1', 'seuilshydro_expected.xml')
-        )
-        # we have our own assertEqual function, more verbose
-        self.assertEqual = assert_unicode_equal
-
-    def test_base(self):
-        """Base test."""
-        # build objects from xml
-        # data = from_xml._parse(
-        #     os.path.join('data', 'xml', '1.1', 'seuilshydro.xml')
-        # )
-
-        # for this one we can't compare the whole 2 xmls because the seuils
-        # manipulations change their order
-
-        # for seuil in data['seuilshydro']:
-        #     if seuil.sitehydro.code =='O2000040':
-        #     # here we need to sort the seuils from 1 to 4
-
-        # ordered_seuils = []
-        # # sort the sites
-        # for codesite in (
-        #     'U2655010', 'O2000040', 'O0144020', 'O6793330', 'O3334020'
-        # ):
-        #     for seuil in data['seuilshydro']:
-        #         if seuil.sitehydro.code == codesite:
-
-        #             # here we need to sort the seuils after
-        #             # sort the seuil 1 to 4 for codesite == 'O0144020':
-        #             # here we need to sort the seuils from 1 to 4
-        #             if codesite == 'O2000040':
-        #                 break
-
-        #             # here we need to sort the stations
-        #             if codesite == 'O2000040':
-        #                 ordered_valeurs = []
-        #                 for codestation in (
-        #                     'O2000040',
-        #                     'O200004001', 'O200004002', 'O200004003'
-        #                 ):
-        #                     for valeurseuil in seuil.valeurs:
-        #                         if valeurseuil.entite.code == codestation:
-        #                             ordered_valeurs.append(valeurseuil)
-        #                             break
-        #                 seuil.valeurs = ordered_valeurs
-
-        #             ordered_seuils.append(seuil)
-        #             break
-
-        return
-        # build xml string from objects
-        # xml = etree.tostring(
-        #     to_xml._to_xml(
-        #         scenario=data['scenario'],
-        #         seuilshydro=ordered_seuils
-        #     ),
-        #     encoding='utf-8'
-        # ).decode('utf-8')
-        # # test
-        # # print(xml)
-        # self.assertEqual(xml, self.expected)
+# class TestToXmlSeuilsHydro(unittest.TestCase):
+#
+#     """ToXmlSeuilsHydro class tests."""
+#
+#     def setUp(self):
+#"""Hook method for setting up the test fixture before exercising it."""
+#         # build expected string
+#         self.expected = xml_to_unicode(
+#             os.path.join('data', 'xml', '1.1', 'seuilshydro_expected.xml')
+#         )
+#         # we have our own assertEqual function, more verbose
+#         self.assertEqual = assert_unicode_equal
+#
+#     def test_base(self):
+#         """Base test."""
+#         # build objects from xml
+#         # data = from_xml._parse(
+#         #     os.path.join('data', 'xml', '1.1', 'seuilshydro.xml')
+#         # )
+#
+#         # for this one we can't compare the whole 2 xmls because the seuils
+#         # manipulations change their order
+#
+#         # for seuil in data['seuilshydro']:
+#         #     if seuil.sitehydro.code =='O2000040':
+#         #     # here we need to sort the seuils from 1 to 4
+#
+#         # ordered_seuils = []
+#         # # sort the sites
+#         # for codesite in (
+#         #     'U2655010', 'O2000040', 'O0144020', 'O6793330', 'O3334020'
+#         # ):
+#         #     for seuil in data['seuilshydro']:
+#         #         if seuil.sitehydro.code == codesite:
+#
+#         #             # here we need to sort the seuils after
+#         #             # sort the seuil 1 to 4 for codesite == 'O0144020':
+#         #             # here we need to sort the seuils from 1 to 4
+#         #             if codesite == 'O2000040':
+#         #                 break
+#
+#         #             # here we need to sort the stations
+#         #             if codesite == 'O2000040':
+#         #                 ordered_valeurs = []
+#         #                 for codestation in (
+#         #                     'O2000040',
+#         #                     'O200004001', 'O200004002', 'O200004003'
+#         #                 ):
+#         #                     for valeurseuil in seuil.valeurs:
+#         #                         if valeurseuil.entite.code == codestation:
+#         #                             ordered_valeurs.append(valeurseuil)
+#         #                             break
+#         #                 seuil.valeurs = ordered_valeurs
+#
+#         #             ordered_seuils.append(seuil)
+#         #             break
+#
+#         return
+#         # build xml string from objects
+#         # xml = etree.tostring(
+#         #     to_xml._to_xml(
+#         #         scenario=data['scenario'],
+#         #         seuilshydro=ordered_seuils
+#         #     ),
+#         #     encoding='utf-8'
+#         # ).decode('utf-8')
+#         # # test
+#         # # print(xml)
+#         # self.assertEqual(xml, self.expected)
 
 
 # -- class ParametrizedTestCase -----------------------------------------------
@@ -209,22 +219,23 @@ class ToXmlBaseTest(ParametrizedTestCase):
     """
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
-        # FIXME: discover hack (unittest discover trie to ru nthis test)
-        if (self.param is None) or (self.param == 'None'):
-            return  # self.skipTest('no param, skip')
-
         # build the expected string
-        self.expected = xml_to_unicode(
-            os.path.join('data', 'xml', '1.1', '%s_expected.xml' % self.param)
-        )
+        if self.param is not None:
+            self.expected = xml_to_unicode(
+                os.path.join(
+                    'data', 'xml', '1.1', '%s_expected.xml' % self.param
+                )
+            )
         # set our own assertEqual function, more verbose
         self.assertEqual = assert_unicode_equal
 
     def test_base(self):
         """Base test."""
-        # FIXME: discover hack (unittest discover trie to ru nthis test)
-        if (self.param is None) or (self.param == 'None'):
-            return  # self.skipTest('no param, skip')
+
+        # TODO discover hack - we do not want unittest.discover to run this
+        #                      test directly. But it count as a real test :-(
+        if self.param is None:
+            self.skipTest('this test runs in a separated TestSuite')
 
         # build object from xml
         data = from_xml._parse(
@@ -234,11 +245,13 @@ class ToXmlBaseTest(ParametrizedTestCase):
         xml = etree.tostring(
             to_xml._to_xml(**{
                 'scenario': data['scenario'],
-                self.param: data[self.param]
+                self.param: data[self.param],
+                'ordered': True
             }),
             encoding='utf-8'
         ).decode('utf-8')
         # test
+        # DEBUG - if self.param == 'seuilshydro': print(xml)
         self.assertEqual(
             xml,
             self.expected,
@@ -248,11 +261,16 @@ class ToXmlBaseTest(ParametrizedTestCase):
 
 #-- class TestAllXmlBaseTests -------------------------------------------------
 class TestAllXmlBaseTests(unittest.TestCase):
-    """Run All test in a TestSuite for the unittest discover option."""
+    """Run All base tests in a TestSuite.
+
+    Required by unittest.discover.
+
+    """
     # TODO sitesmeteo, obssmeteo, modelesprevision
     suite = unittest.TestSuite()
-    for unit in ('siteshydro', 'evenements', 'series', 'simulations'):
-        # print(unit)
+    for unit in (
+        'siteshydro', 'seuilshydro', 'evenements', 'series', 'simulations'
+    ):
         suite.addTest(
             ParametrizedTestCase.parametrize(ToXmlBaseTest, param=unit)
         )

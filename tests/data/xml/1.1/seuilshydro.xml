@@ -73,6 +73,7 @@
               </ValeursSeuilStationHydro>
             </ValeursSeuilsStationHydro>
             <ToleranceSeuilSiteHydro>5</ToleranceSeuilSiteHydro>
+            <DtMajSeuilSiteHydro>2014-03-23T09:51:56</DtMajSeuilSiteHydro>
           </ValeursSeuilSiteHydro>
         </ValeursSeuilsSiteHydro>
       </SiteHydro>
@@ -193,10 +194,10 @@
             <DtActivationSeuilSiteHydro>2010-01-01T00:00:00</DtActivationSeuilSiteHydro>
             <DtDesactivationSeuilSiteHydro>2010-12-31T23:59:59</DtDesactivationSeuilSiteHydro>
             <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro>
+            <DtMajSeuilSiteHydro>2000-03-23T09:51:56</DtMajSeuilSiteHydro>
           </ValeursSeuilSiteHydro>
           <ValeursSeuilSiteHydro>
             <CdSeuilSiteHydro>19</CdSeuilSiteHydro>
-            <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
             <ValDebitSeuilSiteHydro>2</ValDebitSeuilSiteHydro>
             <DtActivationSeuilSiteHydro>2011-01-01T00:00:00</DtActivationSeuilSiteHydro>
             <DtDesactivationSeuilSiteHydro>2011-12-31T23:59:59</DtDesactivationSeuilSiteHydro>
@@ -204,14 +205,12 @@
           </ValeursSeuilSiteHydro>
           <ValeursSeuilSiteHydro>
             <CdSeuilSiteHydro>19</CdSeuilSiteHydro>
-            <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
             <ValDebitSeuilSiteHydro>3</ValDebitSeuilSiteHydro>
             <DtActivationSeuilSiteHydro>2012-01-01T00:00:00</DtActivationSeuilSiteHydro>
             <DtDesactivationSeuilSiteHydro>2012-12-31T23:59:59</DtDesactivationSeuilSiteHydro>
           </ValeursSeuilSiteHydro>
           <ValeursSeuilSiteHydro>
             <CdSeuilSiteHydro>19</CdSeuilSiteHydro>
-            <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
             <ValDebitSeuilSiteHydro>4</ValDebitSeuilSiteHydro>
             <DtActivationSeuilSiteHydro>2013-01-01T00:00:00</DtActivationSeuilSiteHydro>
             <DtDesactivationSeuilSiteHydro></DtDesactivationSeuilSiteHydro>

@@ -33,8 +33,8 @@ from libhydro.conv.xml import (_from_xml as from_xml)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1h"""
-__date__ = """2014-03-22"""
+__version__ = """0.1i"""
+__date__ = """2014-03-23"""
 
 #HISTORY
 #V0.1 - 2013-08-24
@@ -206,7 +206,7 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         for seuil in self.data['seuilshydro']:
             if (
                 (seuil.sitehydro.code == 'U2655010')
-                and (seuil.code == 2214)
+                and (seuil.code == '2214')
             ):
                 break
 
@@ -250,7 +250,7 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         for seuil in self.data['seuilshydro']:
             if (
                 (seuil.sitehydro.code == 'O2000040')
-                and (seuil.code == 82)
+                and (seuil.code == '82')
             ):
                 break
 
@@ -264,8 +264,10 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         self.assertEqual(seuil.gravite, None)
         self.assertEqual(seuil.commentaire, None)
         self.assertEqual(seuil.publication, False)
-        self.assertEqual(seuil.valeurforcee, False)
-        self.assertEqual(seuil.dtmaj, None)
+        self.assertEqual(seuil.valeurforcee, None)
+        self.assertEqual(
+            seuil.dtmaj, datetime.datetime(2014, 3, 23, 9, 51, 56)
+        )
 
         # check the values
         self.assertEqual(len(seuil.valeurs), 4)
@@ -273,7 +275,7 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         self.assertEqual(seuil.valeurs[1].valeur, 4380)
         self.assertEqual(seuil.valeurs[2].valeur, 3520)
         self.assertEqual(seuil.valeurs[3].valeur, 8320)
-        # self.assertEqual(seuil.valeurs[0].seuil, seuil)  # FIXME
+        self.assertEqual(seuil.valeurs[0].seuil, seuil)
         self.assertEqual(seuil.valeurs[0].entite.code, 'O2000040')
         self.assertEqual(seuil.valeurs[1].entite.code, 'O200004001')
         self.assertEqual(seuil.valeurs[2].entite.code, 'O200004002')
@@ -316,7 +318,7 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         for seuil in self.data['seuilshydro']:
             if (
                 (seuil.sitehydro.code == 'O0144020')
-                and (seuil.code in range(1, 5))
+                and (seuil.code in [unicode(i) for i in range(1, 5)])
             ):
                 seuils.append(seuil)
 
@@ -332,7 +334,7 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         for seuil in self.data['seuilshydro']:
             if (
                 (seuil.sitehydro.code == 'O6793330')
-                and (seuil.code in (338, 341))
+                and (seuil.code in ('338', '341'))
             ):
                 seuils.append(seuil)
 
@@ -361,7 +363,7 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
 
         # check we have only the seuil number 19
         self.assertEqual(len(seuils), 1)
-        self.assertEqual(seuils[0].code, 19)
+        self.assertEqual(seuils[0].code, '19')
         self.assertEqual(seuils[0].libelle, 'Crue du 24/11/2003')
         seuil = seuils[0]
 
