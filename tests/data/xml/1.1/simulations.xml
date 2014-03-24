@@ -32,8 +32,8 @@
         <Prevs>
           <Prev>
             <DtPrev>2010-02-26T14:00:00</DtPrev>
-            <ResMinPrev>10</ResMinPrev>
             <ResMoyPrev>30</ResMoyPrev>
+            <ResMinPrev>10</ResMinPrev>
             <ResMaxPrev>50</ResMaxPrev>
             <ProbsPrev>
               <ProbPrev>
@@ -63,7 +63,7 @@
         <DtProdSimul>2010-02-26T14:45:00</DtProdSimul>
         <IndiceQualiteSimul>21.000</IndiceQualiteSimul>
         <StatutSimul>4</StatutSimul>
-        <PubliSimul>True</PubliSimul>
+        <PubliSimul>true</PubliSimul>
         <CdStationHydro>Y161202001</CdStationHydro>
         <CdModelePrevision>ScMerSHOM</CdModelePrevision>
         <CdContact schemeAgencyID="SANDRE">41</CdContact>
@@ -106,7 +106,7 @@
       <!-- simulation 2 -->
       <Simul>
         <GrdSimul>Q</GrdSimul>
-        <DtProdSimul>2010-02-26T14:45:00+05</DtProdSimul>
+        <DtProdSimul>2010-02-26T14:45:00+05:00</DtProdSimul>
         <IndiceQualiteSimul>29.000</IndiceQualiteSimul>
         <StatutSimul>16</StatutSimul>
         <CdSiteHydro>Y1612020</CdSiteHydro>
@@ -115,19 +115,19 @@
         <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
         <Prevs>
           <Prev>
-            <DtPrev>2010-02-26T14:00:00+05</DtPrev>
+            <DtPrev>2010-02-26T14:00:00+05:00</DtPrev>
             <ResMinPrev>22</ResMinPrev>
           </Prev>
           <Prev>
-            <DtPrev>2010-02-26T15:00:00+05</DtPrev>
+            <DtPrev>2010-02-26T15:00:00+05:00</DtPrev>
             <ResMaxPrev>33</ResMaxPrev>
           </Prev>
           <Prev>
-            <DtPrev>2010-02-26T16:00:00+05</DtPrev>
+            <DtPrev>2010-02-26T16:00:00+05:00</DtPrev>
             <ResMinPrev>44</ResMinPrev>
           </Prev>
           <Prev>
-            <DtPrev>2010-02-26T17:00:00+05</DtPrev>
+            <DtPrev>2010-02-26T17:00:00+05:00</DtPrev>
             <ResMaxPrev>55</ResMaxPrev>
           </Prev>
         </Prevs>

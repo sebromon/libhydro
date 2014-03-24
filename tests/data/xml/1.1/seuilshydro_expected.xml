@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- <hydrometrie xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1/sandre_sc_hydrometrie.xsd"> -->
 <hydrometrie>
   <Scenario>
     <CodeScenario>hydrometrie</CodeScenario>
@@ -27,9 +28,9 @@
             <DureeSeuilSiteHydro>0.0</DureeSeuilSiteHydro>
             <LbUsuelSeuilSiteHydro>Crue du 24/11/2003</LbUsuelSeuilSiteHydro>
             <MnemoSeuilSiteHydro>Mnemonique</MnemoSeuilSiteHydro>
-            <DroitPublicationSeuilSiteHydro>True</DroitPublicationSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro>
             <IndiceGraviteSeuilSiteHydro>65</IndiceGraviteSeuilSiteHydro>
-            <ValForceeSeuilSiteHydro>True</ValForceeSeuilSiteHydro>
+            <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
             <ComSeuilSiteHydro>Commentaire du seuil</ComSeuilSiteHydro>
             <ValDebitSeuilSiteHydro>7000465.0</ValDebitSeuilSiteHydro>
             <DtActivationSeuilSiteHydro>2010-05-17T13:40:02</DtActivationSeuilSiteHydro>
@@ -50,7 +51,7 @@
             <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro>
             <DureeSeuilSiteHydro>60.0</DureeSeuilSiteHydro>
             <LbUsuelSeuilSiteHydro>Gradient durée 60</LbUsuelSeuilSiteHydro>
-            <DroitPublicationSeuilSiteHydro>False</DroitPublicationSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
             <ValDebitSeuilSiteHydro>85.0</ValDebitSeuilSiteHydro>
             <ValeursSeuilsStationHydro>
               <ValeursSeuilStationHydro>
@@ -88,9 +89,9 @@
             <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro>
             <DureeSeuilSiteHydro>0.0</DureeSeuilSiteHydro>
             <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro>
-            <DroitPublicationSeuilSiteHydro>False</DroitPublicationSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
             <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro>
-            <ValForceeSeuilSiteHydro>True</ValForceeSeuilSiteHydro>
+            <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
           </ValeursSeuilSiteHydro>
           <ValeursSeuilSiteHydro>
             <CdSeuilSiteHydro>2</CdSeuilSiteHydro>
@@ -98,9 +99,9 @@
             <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro>
             <DureeSeuilSiteHydro>0.0</DureeSeuilSiteHydro>
             <MnemoSeuilSiteHydro>Seuil de vigilance ORANGE</MnemoSeuilSiteHydro>
-            <DroitPublicationSeuilSiteHydro>False</DroitPublicationSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
             <IndiceGraviteSeuilSiteHydro>50</IndiceGraviteSeuilSiteHydro>
-            <ValForceeSeuilSiteHydro>True</ValForceeSeuilSiteHydro>
+            <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
           </ValeursSeuilSiteHydro>
           <ValeursSeuilSiteHydro>
             <CdSeuilSiteHydro>3</CdSeuilSiteHydro>
@@ -108,9 +109,9 @@
             <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro>
             <DureeSeuilSiteHydro>0.0</DureeSeuilSiteHydro>
             <MnemoSeuilSiteHydro>Seuil de vigilance ROUGE</MnemoSeuilSiteHydro>
-            <DroitPublicationSeuilSiteHydro>False</DroitPublicationSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
             <IndiceGraviteSeuilSiteHydro>75</IndiceGraviteSeuilSiteHydro>
-            <ValForceeSeuilSiteHydro>True</ValForceeSeuilSiteHydro>
+            <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
           </ValeursSeuilSiteHydro>
           <ValeursSeuilSiteHydro>
             <CdSeuilSiteHydro>4</CdSeuilSiteHydro>
@@ -118,8 +119,8 @@
             <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro>
             <DureeSeuilSiteHydro>0.0</DureeSeuilSiteHydro>
             <LbUsuelSeuilSiteHydro>Crue du 06/11/1997</LbUsuelSeuilSiteHydro>
-            <DroitPublicationSeuilSiteHydro>True</DroitPublicationSeuilSiteHydro>
-            <ValForceeSeuilSiteHydro>True</ValForceeSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro>
+            <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
           </ValeursSeuilSiteHydro>
         </ValeursSeuilsSiteHydro>
       </SiteHydro>
@@ -134,9 +135,9 @@
             <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro>
             <DureeSeuilSiteHydro>0.0</DureeSeuilSiteHydro>
             <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro>
-            <DroitPublicationSeuilSiteHydro>False</DroitPublicationSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
             <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro>
-            <ValForceeSeuilSiteHydro>True</ValForceeSeuilSiteHydro>
+            <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
             <ValDebitSeuilSiteHydro>100.0</ValDebitSeuilSiteHydro>
             <ValeursSeuilsStationHydro>
               <ValeursSeuilStationHydro>
@@ -153,9 +154,9 @@
             <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro>
             <DureeSeuilSiteHydro>0.0</DureeSeuilSiteHydro>
             <LbUsuelSeuilSiteHydro>Crue du 08/04/1994</LbUsuelSeuilSiteHydro>
-            <DroitPublicationSeuilSiteHydro>True</DroitPublicationSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro>
             <IndiceGraviteSeuilSiteHydro>30</IndiceGraviteSeuilSiteHydro>
-            <ValForceeSeuilSiteHydro>True</ValForceeSeuilSiteHydro>
+            <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
             <ValeursSeuilsStationHydro>
               <ValeursSeuilStationHydro>
                 <CdStationHydro>O679333001</CdStationHydro>
@@ -178,7 +179,7 @@
             <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro>
             <DureeSeuilSiteHydro>0.0</DureeSeuilSiteHydro>
             <LbUsuelSeuilSiteHydro>Crue du 24/11/2003</LbUsuelSeuilSiteHydro>
-            <DroitPublicationSeuilSiteHydro>True</DroitPublicationSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro>
             <IndiceGraviteSeuilSiteHydro>65</IndiceGraviteSeuilSiteHydro>
             <ValDebitSeuilSiteHydro>1.0</ValDebitSeuilSiteHydro>
             <DtActivationSeuilSiteHydro>2010-01-01T00:00:00</DtActivationSeuilSiteHydro>

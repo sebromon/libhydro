@@ -130,8 +130,8 @@
             <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro>
             <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
             <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro>
-            <ValDebitSeuilSiteHydro>100</ValDebitSeuilSiteHydro>
             <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
+            <ValDebitSeuilSiteHydro>100</ValDebitSeuilSiteHydro>
           </ValeursSeuilSiteHydro>
           <ValeursSeuilSiteHydro>
             <CdSeuilSiteHydro>338</CdSeuilSiteHydro>

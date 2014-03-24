@@ -22,8 +22,8 @@
       <Serie>
         <CdSiteHydro>V7144010</CdSiteHydro>
         <GrdSerie>Q</GrdSerie>
-        <DtDebSerie>2010-02-26T13:10:00+02</DtDebSerie>
-        <DtFinSerie>2010-02-26T14:55:00+02</DtFinSerie>
+        <DtDebSerie>2010-02-26T13:10:00+02:00</DtDebSerie>
+        <DtFinSerie>2010-02-26T14:55:00+02:00</DtFinSerie>
         <StatutSerie>4</StatutSerie>
         <DtProdSerie>2010-02-26T14:55:00</DtProdSerie>
         <SysAltiSerie>31</SysAltiSerie>
@@ -31,12 +31,12 @@
           <ObsHydro>
             <DtObsHydro>2010-02-26T13:10:00+02:00</DtObsHydro>
             <ResObsHydro>20992.0</ResObsHydro>
-            <ContObsHydro>True</ContObsHydro>
+            <ContObsHydro>true</ContObsHydro>
           </ObsHydro>
           <ObsHydro>
-            <DtObsHydro>2010-02-26T13:15:00+02</DtObsHydro>
+            <DtObsHydro>2010-02-26T13:15:00+02:00</DtObsHydro>
             <ResObsHydro>21176.0</ResObsHydro>
-            <ContObsHydro>True</ContObsHydro>
+            <ContObsHydro>true</ContObsHydro>
           </ObsHydro>
         </ObssHydro>
       </Serie>
@@ -55,14 +55,14 @@
             <ResObsHydro>20</ResObsHydro>
             <MethObsHydro>12</MethObsHydro>
             <QualifObsHydro>12</QualifObsHydro>
-            <ContObsHydro>False</ContObsHydro>
+            <ContObsHydro>false</ContObsHydro>
           </ObsHydro>
           <ObsHydro>
             <DtObsHydro>2010-02-26T13:15:00</DtObsHydro>
             <ResObsHydro>21</ResObsHydro>
             <MethObsHydro>12</MethObsHydro>
             <QualifObsHydro>8</QualifObsHydro>
-            <ContObsHydro>False</ContObsHydro>
+            <ContObsHydro>false</ContObsHydro>
           </ObsHydro>
         </ObssHydro>
       </Serie>

@@ -33,8 +33,8 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2c"""
-__date__ = """2014-03-23"""
+__version__ = """0.2d"""
+__date__ = """2014-03-24"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -389,10 +389,14 @@ def _seuilhydro_to_element(seuilhydro):
             ('LbUsuelSeuilSiteHydro', {'value': seuilhydro.libelle}),
             ('MnemoSeuilSiteHydro', {'value': seuilhydro.mnemo}),
             ('DroitPublicationSeuilSiteHydro', {
-                'value': seuilhydro.publication
+                'value': unicode(seuilhydro.publication).lower() if
+                seuilhydro.publication is not None else None
             }),
             ('IndiceGraviteSeuilSiteHydro', {'value': seuilhydro.gravite}),
-            ('ValForceeSeuilSiteHydro', {'value': seuilhydro.valeurforcee}),
+            ('ValForceeSeuilSiteHydro', {
+                'value': unicode(seuilhydro.valeurforcee).lower()
+                if seuilhydro.valeurforcee is not None else None
+            }),
             ('ComSeuilSiteHydro', {'value': seuilhydro.commentaire})
         ))
 
