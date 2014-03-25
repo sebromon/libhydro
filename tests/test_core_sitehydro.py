@@ -33,8 +33,8 @@ from libhydro.core import _composant as composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1i"""
-__date__ = """2014-03-20"""
+__version__ = """0.1j"""
+__date__ = """2014-03-25"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -578,6 +578,16 @@ class TestTronconvigilance(unittest.TestCase):
             (t.code, t.libelle),
             (code, libelle)
         )
+
+    def test_equality(self):
+        """Equality test."""
+        code = 'LO18'
+        libelle = 'Loire amont'
+        troncon = sitehydro.Tronconvigilance(code=code, libelle=libelle)
+        other = sitehydro.Tronconvigilance(code=code, libelle=libelle)
+        self.assertEqual(troncon, other)
+        other.libelle = 'Seine'
+        self.assertNotEqual(troncon, other)
 
     def test_str_01(self):
         """Test __str__ method with None values."""

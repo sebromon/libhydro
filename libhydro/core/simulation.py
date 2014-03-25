@@ -55,8 +55,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.7a"""
-__date__ = """2014-03-02"""
+__version__ = """0.7b"""
+__date__ = """2014-03-25"""
 
 #HISTORY
 #V0.7 - 2014-03-02
@@ -68,11 +68,12 @@ __date__ = """2014-03-02"""
 #-- todos ---------------------------------------------------------------------
 # PROGRESS - Prevision 100% - Previsions 90% - Simulation 80%
 # FIXME - integrity checks entite / grandeur
-# ADMIT_SIMULATION = {
-#     Sitehydro: {'H': False, 'Q': True},
-#     Stationhydro: {'H': True, 'Q': False},
-#     Capteur: {'H': False, 'Q':False}
-# }
+#     grandeur is a descriptor, it needs a callback
+#     ADMIT_SIMULATION = {
+#         Sitehydro: {'H': False, 'Q': True},
+#         Stationhydro: {'H': True, 'Q': False},
+#         Capteur: {'H': False, 'Q':False}
+#     }
 # def _admit_simulation(self, grandeur):
 #      return ADMIT_SIMULATION[self.__class][grandeur]
 
@@ -263,6 +264,7 @@ class Simulation(object):
 
     """
 
+    # FIXME - add a callback to grandeur to check cinsistency with entite
     grandeur = _composant.Nomenclatureitem(nomenclature=509, required=False)
     statut = _composant.Nomenclatureitem(nomenclature=516)
     dtprod = _composant.Datefromeverything(required=False)
@@ -341,26 +343,19 @@ class Simulation(object):
                     )
 
                 # Q prevs on Sitehydro only, H prevs on Stationhydro
-
-                # FIXME - integrity checks
-                try:
-
-                    if (self.grandeur is not None):
-                        if (self.grandeur == 'Q') and \
-                                not isinstance(entite, _sitehydro.Sitehydro):
-                            raise TypeError(
-                                'Q previsions, entite must be a Sitehydro'
-                            )
-                        if (self.grandeur == 'H') and \
-                                not isinstance(
-                                    entite, _sitehydro.Stationhydro
-                                ):
-                            raise TypeError(
-                                'H previsions, entite must be a Stationhydro'
-                            )
-
-                except AttributeError:
-                    pass
+                if (self.grandeur is not None):
+                    if (self.grandeur == 'Q') and \
+                            not isinstance(entite, _sitehydro.Sitehydro):
+                        raise TypeError(
+                            'Q previsions, entite must be a Sitehydro'
+                        )
+                    if (self.grandeur == 'H') and \
+                            not isinstance(
+                                entite, _sitehydro.Stationhydro
+                            ):
+                        raise TypeError(
+                            'H previsions, entite must be a Stationhydro'
+                        )
 
             # all is well
             self._entite = entite

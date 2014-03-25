@@ -38,8 +38,8 @@ from libhydro.conv.xml import (Scenario, Message)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1e"""
-__date__ = """2014-03-23"""
+__version__ = """0.1f"""
+__date__ = """2014-03-25"""
 
 #HISTORY
 #V0.1 - 2013-08-22
@@ -268,6 +268,28 @@ class TestMessage(unittest.TestCase):
         )
 
     def test_error_03(self):
+        """Seuilshydro error."""
+        emetteur = intervenant.Contact()
+        destinataire = intervenant.Intervenant()
+        scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
+        self.assertRaises(
+            TypeError,
+            Message,
+            **{'scenario': scenario, 'seuilshydro': 'seuilshydro'}
+        )
+
+    def test_error_04(self):
+        """Evenements error."""
+        emetteur = intervenant.Contact()
+        destinataire = intervenant.Intervenant()
+        scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
+        self.assertRaises(
+            TypeError,
+            Message,
+            **{'scenario': scenario, 'evenements': 'evenements'}
+        )
+
+    def test_error_05(self):
         """Series error."""
         emetteur = intervenant.Contact()
         destinataire = intervenant.Intervenant()
@@ -278,7 +300,7 @@ class TestMessage(unittest.TestCase):
             **{'scenario': scenario, 'series': 'series'}
         )
 
-    def test_error_04(self):
+    def test_error_06(self):
         """Simulations error."""
         emetteur = intervenant.Contact()
         destinataire = intervenant.Intervenant()

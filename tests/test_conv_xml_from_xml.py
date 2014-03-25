@@ -33,8 +33,8 @@ from libhydro.conv.xml import (_from_xml as from_xml)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1i"""
-__date__ = """2014-03-23"""
+__version__ = """0.1j"""
+__date__ = """2014-03-25"""
 
 #HISTORY
 #V0.1 - 2013-08-24
@@ -372,6 +372,14 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
             self.assertEqual(seuil.valeurs[i].valeur, i + 1)
             self.assertEqual(seuil.valeurs[i].entite, seuil.sitehydro)
             self.assertEqual(seuil.valeurs[i].seuil, seuil)
+
+    def test_seuils_sitehydro_5(self):
+        """Test seuils with a bad xml."""
+        self.assertRaises(
+            ValueError,
+            from_xml._parse,
+            os.path.join('data', 'xml', '1.1', 'seuilshydro_inconsistent.xml')
+        )
 
 
 #-- class TestFromXmlSitesMeteo -----------------------------------------------

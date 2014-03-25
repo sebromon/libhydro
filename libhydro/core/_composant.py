@@ -34,8 +34,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.8b"""
-__date__ = """2014-03-03"""
+__version__ = """0.8c"""
+__date__ = """2014-03-25"""
 
 #HISTORY
 #V0.8 - 2014-02-01
@@ -228,6 +228,7 @@ class Coord(object):
 
     # -- other methods --
     def __eq__(self, other):
+        """Return True ou False."""
         return (
             # strictly required by the use of a descriptor
             (self is other)
@@ -238,6 +239,10 @@ class Coord(object):
                 (self.proj == other.proj)
             )
         )
+
+    def __ne__(self, other):
+        """Return True ou False."""
+        return not self.__eq__(other)
 
     def __unicode__(self):
         """Return unicode representation."""

@@ -34,8 +34,8 @@ from libhydro.core import sitehydro
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1b"""
-__date__ = """2014-03-23"""
+__version__ = """0.1c"""
+__date__ = """2014-03-25"""
 
 #HISTORY
 #V0.1 - 2014-02-12
@@ -136,7 +136,8 @@ class TestSeuilhydro(unittest.TestCase):
     #     )
 
     def test_equality_01(self):
-        """Test equality and inequality without valeurs."""
+        """Test equality and inequality with metadata only."""
+        # prepare
         site = sitehydro.Sitehydro('R5330001')
         code = 175896
         typeseuil = 1
@@ -147,11 +148,15 @@ class TestSeuilhydro(unittest.TestCase):
         other = Seuilhydro(
             sitehydro=site, code=code, typeseuil=typeseuil, duree=duree
         )
+        # equality
+        self.assertEqual(seuil, seuil)
         self.assertEqual(seuil, other)
-        other = Seuilhydro(
-            sitehydro=site, code='2', typeseuil=typeseuil, duree=duree
-        )
+        # inequality
+        other.sitehydro = None
         self.assertNotEqual(seuil, other)
+        other.sitehydro, other.code = site, 2
+        self.assertNotEqual(seuil, other)
+        # lazy mode
         other = Seuilhydro(
             sitehydro=site, code=code, typeseuil=2, duree=10
         )
@@ -174,9 +179,17 @@ class TestSeuilhydro(unittest.TestCase):
         self.assertFalse(seuil.__eq__(other, cmp_values=True))
         self.assertTrue(seuil.__eq__(other, cmp_values=False))
         # a different value
-        other.valeurs = valeurs[:]
+        seuil.valeurs = other.valeurs = [Valeurseuil(0)]
         self.assertEqual(seuil, other)
-        seuil.valeurs[2] = Valeurseuil(899.3)
+        other.valeurs = [Valeurseuil(899.3)]
+        self.assertNotEqual(seuil, other)
+        # None case
+        seuil.valeurs = other.valeurs = None
+        self.assertEqual(seuil, other)
+        # non iterable values
+        seuil._strict = other._strict = False
+        self.assertEqual(seuil, other)
+        seuil.valeurs, other.valeurs = 5, 7
         self.assertNotEqual(seuil, other)
 
     def test_error_01(self):

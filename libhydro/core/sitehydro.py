@@ -25,8 +25,8 @@ from . import _composant
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.3c"""
-__date__ = """2014-03-20"""
+__version__ = """0.3d"""
+__date__ = """2014-03-25"""
 
 #HISTORY
 #V0.3 - 2014-02-20
@@ -709,6 +709,10 @@ class Tronconvigilance(object):
                 (self.libelle == other.libelle)
             )
         )
+
+    def __ne__(self, other):
+        """Return True ou False."""
+        return not self.__eq__(other)
 
     def __unicode__(self):
         """Return unicode representation."""

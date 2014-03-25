@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <hydrometrie xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1/sandre_sc_hydrometrie.xsd"> -->
+<hydrometrie>
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>1.1</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2012-06-04T09:22:44</DateHeureCreationFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact>1</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact>7</CdContact>
+    </Destinataire>
+  </Scenario>
+  <RefHyd>
+    <SitesHydro>
+      <SiteHydro>
+        <CdSiteHydro>U2655010</CdSiteHydro>
+        <ValeursSeuilsSiteHydro>
+          <ValeursSeuilSiteHydro>
+            <CdSeuilSiteHydro>2214</CdSeuilSiteHydro>
+            <LbUsuelSeuilSiteHydro>Crue du 24/11/2003</LbUsuelSeuilSiteHydro>
+          </ValeursSeuilSiteHydro>
+          <ValeursSeuilSiteHydro>
+            <CdSeuilSiteHydro>2214</CdSeuilSiteHydro>
+            <!-- the same seuil (code and site), but with a different metadata -->
+            <LbUsuelSeuilSiteHydro>Crue JAUNE</LbUsuelSeuilSiteHydro>
+          </ValeursSeuilSiteHydro>
+        </ValeursSeuilsSiteHydro>
+      </SiteHydro>
+    </SitesHydro>
+  </RefHyd>
+</hydrometrie>

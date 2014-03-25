@@ -300,8 +300,6 @@ def _seuilshydro_from_element(element, ordered=False):
                         lazzy=True,
                         cmp_values=False
                     ):
-                        print(seuilhydro)
-                        print(seuilshydro[(sitehydro.code, seuilhydro.code)])
                         raise ValueError(
                             'seuilhydro %s from sitehydro %s '
                             'has inconsistent metadatas' % (

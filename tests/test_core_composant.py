@@ -34,8 +34,8 @@ import numpy
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2b"""
-__date__ = """2014-03-03"""
+__version__ = """0.2c"""
+__date__ = """2014-03-25"""
 
 #HISTORY
 #V0.2 - 2014-03-01
@@ -84,6 +84,10 @@ class TestCoord(unittest.TestCase):
         self.assertEqual(
             composant.Coord(5, 10, 26),
             composant.Coord(5, 10, 26),
+        )
+        self.assertNotEqual(
+            composant.Coord(5, 10, 26),
+            composant.Coord(6, 10, 26),
         )
 
     def test_str_01(self):
@@ -378,6 +382,14 @@ class TestNomenclatureitem(unittest.TestCase):
             *('ni', '333')
         )
 
+    def test_error_01(self):
+        """Nomenclature error."""
+        self.assertRaises(
+            ValueError,
+            composant.Nomenclatureitem,
+            **{'nomenclature': 0}
+        )
+
 
 #-- class TestIsCodeHydro -----------------------------------------------------
 class TestIsCodeHydro(unittest.TestCase):
@@ -450,6 +462,12 @@ class TestIsCodeHydro(unittest.TestCase):
             ValueError,
             composant.is_code_hydro,
             **{'code': '33001000', 'raises': True}
+        )
+        # wrong last char
+        self.assertRaises(
+            ValueError,
+            composant.is_code_hydro,
+            **{'code': 'A333101a', 'raises': True}
         )
         # wrong chars
         self.assertRaises(

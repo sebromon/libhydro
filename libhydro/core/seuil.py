@@ -23,8 +23,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2a"""
-__date__ = """2014-03-23"""
+__version__ = """0.2b"""
+__date__ = """2014-03-25"""
 
 #HISTORY
 #V0.1 - 2014-02-10
@@ -304,8 +304,8 @@ class Seuilhydro(_Seuil):
     def __eq__(self, other, lazzy=False, cmp_values=True):
         """Return True ou False.
 
-        In lazzy mode do not return False when an attribute is None.
-        If not cmp_value, the function checks only the seuil metadatas.
+        In lazzy mode do not test an attribute whose counterpart is None.
+        If not cmp_values, the function checks only the seuil metadatas.
 
         """
         # short test
@@ -327,19 +327,40 @@ class Seuilhydro(_Seuil):
 
         # check the values
         if cmp_values:
-            try:
-                if len(self.valeurs) != len(other.valeurs):
-                    return False
-                for valeur in self.valeurs:
-                    if valeur not in other.valeurs:
-                        return False
-            except TypeError:
-                # None case or non iterable values (fuzzy mode)
-                if self.valeurs == self.valeurs:
-                    return True
+            return self.__eq__valeurs(other)
 
-        # all is well
+        # all is the same
         return True
+
+    def __eq__valeurs(self, other):
+        """Return a bool comparing attribute valeurs."""
+        # compare the values
+        try:
+            if len(self.valeurs) != len(other.valeurs):
+                return False
+            for valeur in self.valeurs:
+                for othervaleur in other.valeurs:
+                    if othervaleur == valeur:
+                        break
+                else:
+                    return False
+
+        except TypeError:
+            # None case or non iterable values (fuzzy mode)
+            if self.valeurs != other.valeurs:
+                return False
+
+        # all is the same
+        return True
+
+    def __ne__(self, other, lazzy=False, cmp_values=True):
+        """Return True ou False.
+
+        In lazzy mode do not test an attribute whose counterpart is None.
+        If not cmp_values, the function checks only the seuil metadatas.
+
+        """
+        return not self.__eq__(other, lazzy=lazzy, cmp_values=cmp_values)
 
     # def __unicode__(self):
     #     """Return unicode representation."""
@@ -421,6 +442,10 @@ class Valeurseuil (object):
             if getattr(self, attr, True) != getattr(other, attr, False):
                 return False
         return True
+
+    def __ne__(self, other):
+        """Return True ou False."""
+        return not self.__eq__(other)
 
     def __unicode__(self):
         """Return unicode representation."""

@@ -35,8 +35,8 @@ from libhydro.core import intervenant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1a"""
-__date__ = """2014-02-23"""
+__version__ = """0.1b"""
+__date__ = """2014-03-25"""
 
 #HISTORY
 #V0.1 - 2013-11-26
@@ -101,6 +101,51 @@ class Testevenement(unittest.TestCase):
         )
 
     def test_error_01(self):
+        """Entite error."""
+        entite = sitehydro.Stationhydro('R533010110')
+        descriptif = 'some texte here'
+        contact = intervenant.Contact(nom='moi')
+        e = evenement.Evenement(
+            entite=entite, contact=contact, descriptif=descriptif
+        )
+        self.assertEqual(e.entite, entite)
+        self.assertRaises(
+            TypeError,
+            evenement.Evenement,
+            **{'entite': None, 'contact': contact, 'descriptif': descriptif}
+        )
+
+    def test_error_02(self):
+        """Descriptif error."""
+        entite = sitehydro.Stationhydro('R533010110')
+        descriptif = 'some texte here'
+        contact = intervenant.Contact(nom='moi')
+        e = evenement.Evenement(
+            entite=entite, contact=contact, descriptif=descriptif
+        )
+        self.assertEqual(e.descriptif, descriptif)
+        self.assertRaises(
+            TypeError,
+            evenement.Evenement,
+            **{'entite': entite, 'contact': contact, 'descriptif': None}
+        )
+
+    def test_error_03(self):
+        """Contact error."""
+        entite = sitehydro.Stationhydro('R533010110')
+        descriptif = 'some texte here'
+        contact = intervenant.Contact(nom='moi')
+        e = evenement.Evenement(
+            entite=entite, contact=contact, descriptif=descriptif
+        )
+        self.assertEqual(e.contact, contact)
+        self.assertRaises(
+            TypeError,
+            evenement.Evenement,
+            **{'entite': entite, 'contact': None, 'descriptif': descriptif}
+        )
+
+    def test_error_04(self):
         """Publication error."""
         entite = sitehydro.Stationhydro('R533010110')
         descriptif = 'some texte here'

@@ -33,8 +33,8 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2d"""
-__date__ = """2014-03-24"""
+__version__ = """0.2e"""
+__date__ = """2014-03-25"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -372,7 +372,7 @@ def _seuilhydro_to_element(seuilhydro):
         ]
         if len(sitevaleurseuil) > 1:
             raise ValueError(
-                'more than one site valeurseuil for seuil %i' % seuilhydro.code
+                'more than one site valeurseuil for seuil %s' % seuilhydro.code
             )
         elif len(sitevaleurseuil) == 1:
             sitevaleurseuil = sitevaleurseuil[0]

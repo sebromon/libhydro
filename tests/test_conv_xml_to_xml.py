@@ -32,12 +32,14 @@ from libhydro.conv.xml import (
     _to_xml as to_xml,
     _from_xml as from_xml
 )
+from libhydro.core import (sitehydro, seuil)
+
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2a"""
-__date__ = """2014-03-22"""
+__version__ = """0.2b"""
+__date__ = """2014-03-25"""
 
 #HISTORY
 #V0.2 - 2014-03-22
@@ -106,76 +108,38 @@ def assert_unicode_equal(xml, expected, msg=None):
 
 
 #-- class TestToXmlSeuilsHydro ------------------------------------------------
-# class TestToXmlSeuilsHydro(unittest.TestCase):
-#
-#     """ToXmlSeuilsHydro class tests."""
-#
-#     def setUp(self):
-#"""Hook method for setting up the test fixture before exercising it."""
-#         # build expected string
-#         self.expected = xml_to_unicode(
-#             os.path.join('data', 'xml', '1.1', 'seuilshydro_expected.xml')
-#         )
-#         # we have our own assertEqual function, more verbose
-#         self.assertEqual = assert_unicode_equal
-#
-#     def test_base(self):
-#         """Base test."""
-#         # build objects from xml
-#         # data = from_xml._parse(
-#         #     os.path.join('data', 'xml', '1.1', 'seuilshydro.xml')
-#         # )
-#
-#         # for this one we can't compare the whole 2 xmls because the seuils
-#         # manipulations change their order
-#
-#         # for seuil in data['seuilshydro']:
-#         #     if seuil.sitehydro.code =='O2000040':
-#         #     # here we need to sort the seuils from 1 to 4
-#
-#         # ordered_seuils = []
-#         # # sort the sites
-#         # for codesite in (
-#         #     'U2655010', 'O2000040', 'O0144020', 'O6793330', 'O3334020'
-#         # ):
-#         #     for seuil in data['seuilshydro']:
-#         #         if seuil.sitehydro.code == codesite:
-#
-#         #             # here we need to sort the seuils after
-#         #             # sort the seuil 1 to 4 for codesite == 'O0144020':
-#         #             # here we need to sort the seuils from 1 to 4
-#         #             if codesite == 'O2000040':
-#         #                 break
-#
-#         #             # here we need to sort the stations
-#         #             if codesite == 'O2000040':
-#         #                 ordered_valeurs = []
-#         #                 for codestation in (
-#         #                     'O2000040',
-#         #                     'O200004001', 'O200004002', 'O200004003'
-#         #                 ):
-#         #                     for valeurseuil in seuil.valeurs:
-#         #                         if valeurseuil.entite.code == codestation:
-#         #                             ordered_valeurs.append(valeurseuil)
-#         #                             break
-#         #                 seuil.valeurs = ordered_valeurs
-#
-#         #             ordered_seuils.append(seuil)
-#         #             break
-#
-#         return
-#         # build xml string from objects
-#         # xml = etree.tostring(
-#         #     to_xml._to_xml(
-#         #         scenario=data['scenario'],
-#         #         seuilshydro=ordered_seuils
-#         #     ),
-#         #     encoding='utf-8'
-#         # ).decode('utf-8')
-#         # # test
-#         # # print(xml)
-#         # self.assertEqual(xml, self.expected)
+class TestToXmlSeuilsHydro(unittest.TestCase):
 
+    """ToXmlSeuilsHydro class tests, with some specific tests for seuils."""
+
+    def test_error_01(self):
+        """More than one site valeurseuil."""
+        site = sitehydro.Sitehydro('X2221010')
+        seuilhydro = seuil.Seuilhydro('33', sitehydro=site)
+        seuilhydro.valeurs = [
+            seuil.Valeurseuil(2, entite=site),
+            seuil.Valeurseuil(5, entite=site)
+        ]
+        self.assertRaises(
+            ValueError,
+            to_xml._seuilhydro_to_element,
+            seuilhydro
+        )
+
+    def test_error_02(self):
+        """Valeurseuil entite is not a stationhydro."""
+        site = sitehydro.Sitehydro('X2221010')
+        seuilhydro = seuil.Seuilhydro('33', sitehydro=site)
+        valeurseuil = seuil.Valeurseuil(
+            valeur=2,
+            seuil=seuilhydro,
+            entite=site
+        )
+        self.assertRaises(
+            TypeError,
+            to_xml._valeurseuilstationhydro_to_element,
+            valeurseuil
+        )
 
 # -- class ParametrizedTestCase -----------------------------------------------
 class ParametrizedTestCase(unittest.TestCase):

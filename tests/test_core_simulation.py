@@ -33,8 +33,8 @@ from libhydro.core import (simulation, modeleprevision, sitehydro)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1e"""
-__date__ = """2014-03-02"""
+__version__ = """0.1f"""
+__date__ = """2014-03-25"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -338,13 +338,31 @@ class TestSimulation(unittest.TestCase):
 
     def test_error_01(self):
         """Entite error."""
-        entite = sitehydro.Stationhydro(code='A044010101')
-        simulation.Simulation(**{'entite': entite})
+        # init
+        site = sitehydro.Sitehydro(code='A0440101')
+        station = sitehydro.Stationhydro(code='A044010101')
+        simul = simulation.Simulation(
+            **{'entite': station, 'grandeur': 'H'}
+        )
+        self.assertEqual(simul.grandeur, 'H')
+        # wrong entite
         self.assertRaises(
             TypeError,
             simulation.Simulation,
             # **{'entite': entite}
             **{'entite': 25}
+        )
+        # site with a H simulation
+        self.assertRaises(
+            TypeError,
+            simulation.Simulation,
+            **{'entite': site, 'grandeur': 'H'}
+        )
+        # station with a Q simulation
+        self.assertRaises(
+            TypeError,
+            simulation.Simulation,
+            **{'entite': station, 'grandeur': 'Q'}
         )
 
     def test_error_02(self):
