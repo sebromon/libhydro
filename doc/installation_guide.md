@@ -1,7 +1,15 @@
 INSTALLATION DETAILLE D'UN ENVIRONNEMENT VIRTUEL PYTHON POUR LIBHYDRO
 ===============================================================================
 
-Installation sous Windows
+Installation packagée sous Windows (conseille)
+-------------------------------------------------------------------------------
+Télécharger et lancer l'installeur miniconda:
+    http://conda.pydata.org/miniconda.html
+Installer les pré-requis en mode console:
+    conda install pandas lxml
+(les dépendances sont prises en charge par l'installeur).
+
+Installation manuelle sous Windows (non conseille)
 -------------------------------------------------------------------------------
 ### Installer Python ###
     utiliser python2.7.5.msi
@@ -10,7 +18,7 @@ Installation sous Windows
   [http://docs.python.org/2/using/windows.html]
     "path = ... C:\Program Files\Python27;C:\Program Files\Python27\scripts"
     "PYTHONPATH = ..."
-    "proxy = http://direct1.proxy.i2:8080"
+    "proxy = http://direct.proxy.i2:8080"
 
 ### Pour ces dépendances en C/C++ utiliser les binaires de http://www.lfd.uci.edu/~gohlke/pythonlibs/ ###
     numpy
@@ -71,6 +79,8 @@ http://sametmax.com/les-environnement-virtuels-python-virtualenv-et-virtualenvwr
 pip install virtualenv
 
 Creer un environnement virtuel:
+    mkvirtualenv --system-site-packages --prompt '[libhydro]' ~/.virtualenvs/libhydro
+    OU
     virtualenv --system-site-packages (dest_dir)
 On peux utiliser les paquets de l'environnement de base avec --system-site-packages
 (ces paquets sont surchargés par ceux du virtualenv)
@@ -102,6 +112,9 @@ Pandas (do not forget the 's' !!)
 Lxml:
     sudo yum install libxslt-devel.x86_64 libxml2-devel.x86_64
     pip install lxml  # 3.2.3
+
+Suds (version suds-jurko):
+   pip install suds-jurko
 
 Check with pip freeze:
     pip freeze:

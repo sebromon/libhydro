@@ -1,34 +1,50 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head><title>Python: module libhydro.conv.xml.xml</title>
+<html><head><title>Python: package libhydro.conv.xml</title>
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
 <tr bgcolor="#7799ee">
 <td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="libhydro.html"><font color="#ffffff">libhydro</font></a>.<a href="libhydro.conv.html"><font color="#ffffff">conv</font></a>.<a href="libhydro.conv.xml.html"><font color="#ffffff">xml</font></a>.xml</strong></big></big> (version 0.1e, 2013-09-05)</font></td
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="libhydro.html"><font color="#ffffff">libhydro</font></a>.<a href="libhydro.conv.html"><font color="#ffffff">conv</font></a>.xml</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/philippe/devel/libhydro/conv/xml/xml.py">/home/philippe/devel/libhydro/conv/xml/xml.py</a></font></td></tr></table>
-    <p><tt>Module&nbsp;xml.classes.<br>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/philippe/devel/libhydro/libhydro/conv/xml/__init__.py">/home/philippe/devel/libhydro/libhydro/conv/xml/__init__.py</a></font></td></tr></table>
+    <p><tt>Module&nbsp;libhydro.conv.xml.<br>
 &nbsp;<br>
-Ce&nbsp;module&nbsp;contient&nbsp;la&nbsp;classe:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;<a href="#Message">Message</a></tt></p>
+Le&nbsp;module&nbsp;xml&nbsp;contient&nbsp;des&nbsp;convertisseurs&nbsp;de&nbsp;et&nbsp;vers&nbsp;les&nbsp;fichiers&nbsp;au&nbsp;format<br>
+Xml&nbsp;Hydrometrie&nbsp;(version&nbsp;1.1&nbsp;exclusivement),&nbsp;disponibles&nbsp;au&nbsp;travers&nbsp;la&nbsp;classe<br>
+<a href="#Message">Message</a>.<br>
+&nbsp;<br>
+Il&nbsp;contient&nbsp;les&nbsp;classes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;<a href="#Message">Message</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;<a href="#Scenario">Scenario</a><br>
+&nbsp;<br>
+Exemples&nbsp;d'utilisation:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;La&nbsp;fonction&nbsp;principale&nbsp;pour&nbsp;decoder&nbsp;des&nbsp;messages&nbsp;Xml&nbsp;est<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'xml.from_file(src)'&nbsp;qui&nbsp;permet&nbsp;d'instancier&nbsp;un&nbsp;objet&nbsp;<a href="#Message">Message</a>&nbsp;contenant<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tous&nbsp;les&nbsp;objets&nbsp;decrits&nbsp;dans&nbsp;le&nbsp;fichier&nbsp;source.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&gt;&nbsp;m&nbsp;=&nbsp;xml.<a href="#Message">Message</a>('fichier_xml_hydrometrie.xml')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&gt;&nbsp;print(m)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Message">Message</a>&nbsp;du&nbsp;2012-06-04&nbsp;09:22:44<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Emis&nbsp;par&nbsp;le&nbsp;Contact&nbsp;842::&nbsp;Monsieur&nbsp;Jean&nbsp;Jean&nbsp;pour&nbsp;l'Intervenant<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SANDRE&nbsp;845::SPC&nbsp;de&nbsp;la&nbsp;Colline&nbsp;[1&nbsp;contact]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Contenu:&nbsp;5&nbsp;siteshydro&nbsp;-&nbsp;9&nbsp;seuilshydro&nbsp;-&nbsp;3&nbsp;evenements<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;series&nbsp;-&nbsp;5&nbsp;simulations<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Pour&nbsp;serialiser&nbsp;(enregistrer&nbsp;dans&nbsp;un&nbsp;fichier)&nbsp;des&nbsp;donnees&nbsp;en&nbsp;Xml&nbsp;on<br>
+&nbsp;&nbsp;&nbsp;&nbsp;utilise&nbsp;la&nbsp;methode&nbsp;'write(file)'&nbsp;d'un&nbsp;<a href="#Message">Message</a>.</tt></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Package Contents</strong></big></font></td></tr>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="lxml.etree.html">lxml.etree</a><br>
-<a href="libhydro.conv.xml._from_xml.html">libhydro.conv.xml._from_xml</a><br>
-</td><td width="25%" valign=top><a href="libhydro.core.obshydro.html">libhydro.core.obshydro</a><br>
-<a href="os.html">os</a><br>
-</td><td width="25%" valign=top><a href="libhydro.core.simulation.html">libhydro.core.simulation</a><br>
-<a href="libhydro.core.sitehydro.html">libhydro.core.sitehydro</a><br>
-</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
-<a href="libhydro.conv.xml._to_xml.html">libhydro.conv.xml._to_xml</a><br>
-</td></tr></table></td></tr></table><p>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="libhydro.conv.xml._from_xml.html">_from_xml</a><br>
+</td><td width="25%" valign=top><a href="libhydro.conv.xml._to_xml.html">_to_xml</a><br>
+</td><td width="25%" valign=top><a href="libhydro.conv.xml._xml.html">_xml</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -39,7 +55,8 @@ Ce&nbsp;module&nbsp;contient&nbsp;la&nbsp;classe:<br>
 <dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
 </font></dt><dd>
 <dl>
-<dt><font face="helvetica, arial"><a href="libhydro.conv.xml.xml.html#Message">Message</a>
+<dt><font face="helvetica, arial"><a href="libhydro.conv.xml._from_xml.html#Scenario">libhydro.conv.xml._from_xml.Scenario</a>
+</font></dt><dt><font face="helvetica, arial"><a href="libhydro.conv.xml._xml.html#Message">libhydro.conv.xml._xml.Message</a>
 </font></dt></dl>
 </dd>
 </dl>
@@ -55,25 +72,31 @@ Ce&nbsp;module&nbsp;contient&nbsp;la&nbsp;classe:<br>
 Classe&nbsp;pour&nbsp;manipuler&nbsp;les&nbsp;messages&nbsp;Xml&nbsp;hydrometrie.<br>
 &nbsp;<br>
 Proprietes:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;scenario&nbsp;(xml.Scenario)&nbsp;=&nbsp;un&nbsp;objet&nbsp;Scenario&nbsp;obligatoire<br>
-&nbsp;&nbsp;&nbsp;&nbsp;sitesydro&nbsp;(sitehydro.Sitehydro&nbsp;collection)&nbsp;=&nbsp;iterable&nbsp;ou&nbsp;None<br>
+&nbsp;&nbsp;&nbsp;&nbsp;scenario&nbsp;(xml.<a href="#Scenario">Scenario</a>)&nbsp;=&nbsp;un&nbsp;objet&nbsp;<a href="#Scenario">Scenario</a>&nbsp;obligatoire<br>
+&nbsp;&nbsp;&nbsp;&nbsp;siteshydro&nbsp;(sitehydro.Sitehydro&nbsp;collection)&nbsp;=&nbsp;iterable&nbsp;ou&nbsp;None<br>
+&nbsp;&nbsp;&nbsp;&nbsp;seuilshydro&nbsp;(seuil.Seuilhydro&nbsp;collection)&nbsp;=&nbsp;iterable&nbsp;or&nbsp;None<br>
+&nbsp;&nbsp;&nbsp;&nbsp;evenements&nbsp;(evenement.Evenement&nbsp;collection)&nbsp;=&nbsp;iterable&nbsp;ou&nbsp;None<br>
 &nbsp;&nbsp;&nbsp;&nbsp;series&nbsp;(obshydro.Serie&nbsp;collection)&nbsp;=&nbsp;iterable&nbsp;ou&nbsp;None<br>
 &nbsp;&nbsp;&nbsp;&nbsp;simulations&nbsp;(simulation.Simulation&nbsp;collection)&nbsp;=&nbsp;iterable&nbsp;ou&nbsp;None<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="Message-__init__"><strong>__init__</strong></a>(self, scenario, siteshydro<font color="#909090">=None</font>, series<font color="#909090">=None</font>, simulations<font color="#909090">=None</font>, strict<font color="#909090">=True</font>)</dt><dd><tt>Initialisation.<br>
+<dl><dt><a name="Message-__init__"><strong>__init__</strong></a>(self, scenario, siteshydro<font color="#909090">=None</font>, seuilshydro<font color="#909090">=None</font>, evenements<font color="#909090">=None</font>, series<font color="#909090">=None</font>, simulations<font color="#909090">=None</font>, ordered<font color="#909090">=False</font>, strict<font color="#909090">=True</font>)</dt><dd><tt>Initialisation.<br>
 &nbsp;<br>
 Arguments:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;scenario&nbsp;(xml.Scenario)&nbsp;=&nbsp;un&nbsp;objet&nbsp;Scenario&nbsp;obligatoire<br>
-&nbsp;&nbsp;&nbsp;&nbsp;sitesydro&nbsp;(sitehydro.Sitehydro&nbsp;collection)&nbsp;=&nbsp;iterable&nbsp;ou&nbsp;None<br>
+&nbsp;&nbsp;&nbsp;&nbsp;scenario&nbsp;(xml.<a href="#Scenario">Scenario</a>)&nbsp;=&nbsp;un&nbsp;objet&nbsp;<a href="#Scenario">Scenario</a>&nbsp;obligatoire<br>
+&nbsp;&nbsp;&nbsp;&nbsp;siteshydro&nbsp;(sitehydro.Sitehydro&nbsp;collection)&nbsp;=&nbsp;iterable&nbsp;ou&nbsp;None<br>
+&nbsp;&nbsp;&nbsp;&nbsp;seuilshydro&nbsp;(seuil.Seuilhydro&nbsp;collection)&nbsp;=&nbsp;iterable&nbsp;ou&nbsp;None<br>
+&nbsp;&nbsp;&nbsp;&nbsp;evenements&nbsp;(evenement.Evenement&nbsp;collection)&nbsp;=&nbsp;iterable&nbsp;ou&nbsp;None<br>
 &nbsp;&nbsp;&nbsp;&nbsp;series&nbsp;(obshydro.Serie&nbsp;collection)&nbsp;=&nbsp;iterable&nbsp;ou&nbsp;None<br>
 &nbsp;&nbsp;&nbsp;&nbsp;simulations&nbsp;(simulation.Simulation&nbsp;collection)&nbsp;=&nbsp;iterable&nbsp;ou&nbsp;None<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ordered&nbsp;(bool,&nbsp;default&nbsp;False)&nbsp;=&nbsp;if&nbsp;True&nbsp;tries&nbsp;to&nbsp;keep&nbsp;things&nbsp;in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;order&nbsp;when&nbsp;serialising&nbsp;(slower)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;strict&nbsp;(bool,&nbsp;defaut&nbsp;True)&nbsp;=&nbsp;le&nbsp;mode&nbsp;permissif&nbsp;permet&nbsp;de&nbsp;lever&nbsp;les<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;controles&nbsp;de&nbsp;validite&nbsp;des&nbsp;elements</tt></dd></dl>
 
-<dl><dt><a name="Message-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>String&nbsp;representation.</tt></dd></dl>
+<dl><dt><a name="Message-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Return&nbsp;string&nbsp;representation.</tt></dd></dl>
 
-<dl><dt><a name="Message-__unicode__"><strong>__unicode__</strong></a>(self)</dt><dd><tt>Unicode&nbsp;representation.</tt></dd></dl>
+<dl><dt><a name="Message-__unicode__"><strong>__unicode__</strong></a>(self)</dt><dd><tt>Return&nbsp;unicode&nbsp;representation.</tt></dd></dl>
 
 <dl><dt><a name="Message-add"><strong>add</strong></a>(self, **kargs)</dt><dd><tt>Ajoute&nbsp;des&nbsp;elements&nbsp;au&nbsp;<a href="#Message">Message</a>.<br>
 &nbsp;<br>
@@ -83,29 +106,33 @@ Les&nbsp;elements&nbsp;a&nbsp;ajouter&nbsp;doivent&nbsp;etre&nbsp;passes&nbsp;so
 avec&nbsp;les&nbsp;regles&nbsp;suivantes:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;CLE&nbsp;PARMI&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VALEUR<br>
 &nbsp;&nbsp;&nbsp;&nbsp;siteshydro&nbsp;&nbsp;=&nbsp;iterable&nbsp;de&nbsp;sitehydro.Sitehydro<br>
+&nbsp;&nbsp;&nbsp;&nbsp;seuilshydro&nbsp;=&nbsp;iterable&nbsp;de&nbsp;seuil.Seuilhydro<br>
+&nbsp;&nbsp;&nbsp;&nbsp;evenements&nbsp;&nbsp;=&nbsp;iterable&nbsp;d'evenement.Evenement<br>
 &nbsp;&nbsp;&nbsp;&nbsp;series&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;iterable&nbsp;de&nbsp;obshydro.Serie<br>
 &nbsp;&nbsp;&nbsp;&nbsp;simulations&nbsp;=&nbsp;iterable&nbsp;de&nbsp;simulation.Simulation</tt></dd></dl>
 
-<dl><dt><a name="Message-show"><strong>show</strong></a>(self)</dt><dd><tt>Screen&nbsp;print&nbsp;XML.</tt></dd></dl>
+<dl><dt><a name="Message-show"><strong>show</strong></a>(self)</dt><dd><tt>Return&nbsp;pretty&nbsp;print&nbsp;XML.</tt></dd></dl>
 
-<dl><dt><a name="Message-write"><strong>write</strong></a>(self, file, force<font color="#909090">=False</font>, encoding<font color="#909090">=u'utf-8'</font>, compression<font color="#909090">=0</font>)</dt><dd><tt>Ecrit&nbsp;le&nbsp;<a href="#Message">Message</a>&nbsp;dans&nbsp;le&nbsp;fichier&nbsp;dst.<br>
+<dl><dt><a name="Message-write"><strong>write</strong></a>(self, file, encoding<font color="#909090">=u'utf-8'</font>, compression<font color="#909090">=0</font>, force<font color="#909090">=False</font>)</dt><dd><tt>Ecrit&nbsp;le&nbsp;<a href="#Message">Message</a>&nbsp;dans&nbsp;le&nbsp;fichier&nbsp;dst.<br>
 &nbsp;<br>
 Cette&nbsp;methode&nbsp;est&nbsp;un&nbsp;wrapper&nbsp;autour&nbsp;de&nbsp;lxml.etree.ElementTree.write.<br>
 Se&nbsp;referer&nbsp;a&nbsp;la&nbsp;documentation&nbsp;de&nbsp;lxml&nbsp;pour&nbsp;le&nbsp;detail&nbsp;des&nbsp;options.<br>
 &nbsp;<br>
 Arguments:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;dst&nbsp;(fichier)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;force&nbsp;(bool)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;encoding&nbsp;(string)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;compression&nbsp;(int&nbsp;de&nbsp;0&nbsp;a&nbsp;9)&nbsp;=&nbsp;niveau&nbsp;de&nbsp;compression&nbsp;gzip</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;compression&nbsp;(int&nbsp;de&nbsp;0&nbsp;a&nbsp;9)&nbsp;=&nbsp;niveau&nbsp;de&nbsp;compression&nbsp;gzip<br>
+&nbsp;&nbsp;&nbsp;&nbsp;force&nbsp;(bool)</tt></dd></dl>
 
 <hr>
-Class methods defined here:<br>
-<dl><dt><a name="Message-from_file"><strong>from_file</strong></a>(cls, src)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Parse&nbsp;le&nbsp;fichier&nbsp;src&nbsp;et&nbsp;retourne&nbsp;un&nbsp;xml.<a href="#Message">Message</a>.<br>
+Static methods defined here:<br>
+<dl><dt><a name="Message-from_file"><strong>from_file</strong></a>(src, ordered<font color="#909090">=False</font>)</dt><dd><tt>Parse&nbsp;le&nbsp;fichier&nbsp;src&nbsp;et&nbsp;retourne&nbsp;un&nbsp;xml.<a href="#Message">Message</a>.<br>
 &nbsp;<br>
 Arguments:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;src&nbsp;(nom&nbsp;de&nbsp;fichier,&nbsp;url,&nbsp;objet&nbsp;fichier...)&nbsp;=&nbsp;source&nbsp;de&nbsp;donnee.&nbsp;Les<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type&nbsp;de&nbsp;src&nbsp;acceptes&nbsp;sont&nbsp;ceux&nbsp;de&nbsp;lxml.etree.parse</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type&nbsp;de&nbsp;src&nbsp;acceptes&nbsp;sont&nbsp;ceux&nbsp;de&nbsp;lxml.etree.parse<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ordered&nbsp;(bool,&nbsp;default&nbsp;False)&nbsp;=&nbsp;if&nbsp;True&nbsp;tries&nbsp;to&nbsp;keep&nbsp;things&nbsp;in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;order</tt></dd></dl>
 
 <hr>
 Data descriptors defined here:<br>
@@ -115,18 +142,80 @@ Data descriptors defined here:<br>
 <dl><dt><strong>__weakref__</strong></dt>
 <dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
 </dl>
+<dl><dt><strong>evenements</strong></dt>
+<dd><tt>Return&nbsp;evenements.</tt></dd>
+</dl>
 <dl><dt><strong>scenario</strong></dt>
-<dd><tt>Scenario.</tt></dd>
+<dd><tt>Return&nbsp;scenario.</tt></dd>
 </dl>
 <dl><dt><strong>series</strong></dt>
-<dd><tt>Series.</tt></dd>
+<dd><tt>Return&nbsp;series.</tt></dd>
+</dl>
+<dl><dt><strong>seuilshydro</strong></dt>
+<dd><tt>Return&nbsp;seuilshydro.</tt></dd>
 </dl>
 <dl><dt><strong>simulations</strong></dt>
-<dd><tt>Simulations.</tt></dd>
+<dd><tt>Return&nbsp;simulations.</tt></dd>
 </dl>
 <dl><dt><strong>siteshydro</strong></dt>
-<dd><tt>Siteshydro.</tt></dd>
+<dd><tt>Return&nbsp;siteshydro.</tt></dd>
 </dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Scenario">class <strong>Scenario</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Classe&nbsp;<a href="#Scenario">Scenario</a>.<br>
+&nbsp;<br>
+Classe&nbsp;pour&nbsp;manipuler&nbsp;les&nbsp;scenarios&nbsp;des&nbsp;messages&nbsp;SANDRE.<br>
+&nbsp;<br>
+Proprietes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;code&nbsp;=&nbsp;hydrometrie<br>
+&nbsp;&nbsp;&nbsp;&nbsp;version&nbsp;=&nbsp;1.1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;nom&nbsp;=&nbsp;'Echange&nbsp;de&nbsp;donnees&nbsp;hydrometriques'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dtprod&nbsp;(datetime.datetime)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emetteur&nbsp;(intervenant.Contact)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;destinataire&nbsp;(intervenant.Intervenant)<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Scenario-__init__"><strong>__init__</strong></a>(self, emetteur, destinataire, dtprod<font color="#909090">=None</font>)</dt><dd><tt>Constructeur.<br>
+&nbsp;<br>
+Arguments:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;emetteur&nbsp;(intervenant.Contact)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;destinataire&nbsp;(intervenant.Intervenant)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dtprod&nbsp;(datetime&nbsp;ou&nbsp;isoformat,&nbsp;defaut&nbsp;utcnow())</tt></dd></dl>
+
+<dl><dt><a name="Scenario-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Return&nbsp;string&nbsp;representation.</tt></dd></dl>
+
+<dl><dt><a name="Scenario-__unicode__"><strong>__unicode__</strong></a>(self)</dt><dd><tt>Return&nbsp;unicode&nbsp;representation.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>destinataire</strong></dt>
+<dd><tt>Return&nbsp;message&nbsp;destinataire.</tt></dd>
+</dl>
+<dl><dt><strong>dtprod</strong></dt>
+<dd><tt>Return&nbsp;message&nbsp;generation&nbsp;date.</tt></dd>
+</dl>
+<dl><dt><strong>emetteur</strong></dt>
+<dd><tt>Return&nbsp;message&nbsp;emetteur.</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>code</strong> = u'hydrometrie'</dl>
+
+<dl><dt><strong>nom</strong> = u'Echange de donn<font color="#c040c0">\xe9</font>es hydrom<font color="#c040c0">\xe9</font>triques'</dl>
+
+<dl><dt><strong>version</strong> = u'1.1'</dl>
+
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
@@ -134,14 +223,5 @@ Data descriptors defined here:<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><strong>__author__</strong> = u'Philippe Gouin &lt;philippe.gouin@developpement-durable.gouv.fr&gt;'<br>
-<strong>__date__</strong> = u'2013-09-05'<br>
-<strong>__version__</strong> = u'0.1e'</td></tr></table><p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#7799ee">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial"><big><strong>Author</strong></big></font></td></tr>
-    
-<tr><td bgcolor="#7799ee"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Philippe&nbsp;Gouin&nbsp;&lt;philippe.gouin@developpement-durable.gouv.fr&gt;</td></tr></table>
+<td width="100%"><strong>__all__</strong> = ['Message', 'Scenario']</td></tr></table>
 </body></html>

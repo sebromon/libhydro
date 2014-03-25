@@ -9,6 +9,8 @@ syntax: glob
 .coverage
 # specific files
 REMINDER*
+dist
+libhydro.egg-info
 
 # -----------------------------------------------------------------------------
 #syntax: regexp

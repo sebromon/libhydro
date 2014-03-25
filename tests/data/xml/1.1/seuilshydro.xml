@@ -1,0 +1,978 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <hydrometrie xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1/sandre_sc_hydrometrie.xsd"> -->
+<hydrometrie>
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>1.1</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2012-06-04T09:22:44</DateHeureCreationFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact>1</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact>7</CdContact>
+    </Destinataire>
+  </Scenario>
+  <RefHyd>
+    <SitesHydro>
+        <!-- 1 SEUIL - 1 site hydro simple -->
+      <SiteHydro>
+        <CdSiteHydro>U2655010</CdSiteHydro>
+        <ValeursSeuilsSiteHydro>
+          <ValeursSeuilSiteHydro>
+            <CdSeuilSiteHydro>2214</CdSeuilSiteHydro>
+            <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
+            <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro>
+            <LbUsuelSeuilSiteHydro>Crue du 24/11/2003</LbUsuelSeuilSiteHydro>
+            <MnemoSeuilSiteHydro>Mnemonique</MnemoSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro>
+            <IndiceGraviteSeuilSiteHydro>65</IndiceGraviteSeuilSiteHydro>
+            <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
+            <ComSeuilSiteHydro>Commentaire du seuil</ComSeuilSiteHydro>
+            <ValDebitSeuilSiteHydro>7000465</ValDebitSeuilSiteHydro>
+            <DtActivationSeuilSiteHydro>2010-05-17T13:40:02</DtActivationSeuilSiteHydro>
+            <DtDesactivationSeuilSiteHydro>2012-02-19T09:28:00</DtDesactivationSeuilSiteHydro>
+            <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro>
+            <DtMajSeuilSiteHydro>2012-02-19T08:25:00</DtMajSeuilSiteHydro>
+          </ValeursSeuilSiteHydro>
+        </ValeursSeuilsSiteHydro>
+      </SiteHydro>
+      <!-- 1 SEUIL - seuil de gradient pour 1 site et 3 stations-->
+      <SiteHydro>
+        <CdSiteHydro>O2000040</CdSiteHydro>
+        <TypSiteHydro>SOURCE</TypSiteHydro>
+        <ValeursSeuilsSiteHydro>
+          <ValeursSeuilSiteHydro>
+            <CdSeuilSiteHydro>82</CdSeuilSiteHydro>
+            <TypSeuilSiteHydro>2</TypSeuilSiteHydro>
+            <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro>
+            <DureeSeuilSiteHydro>60</DureeSeuilSiteHydro>
+            <LbUsuelSeuilSiteHydro>Gradient durée 60</LbUsuelSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
+            <ValDebitSeuilSiteHydro>85</ValDebitSeuilSiteHydro>
+            <ValeursSeuilsStationHydro>
+              <ValeursSeuilStationHydro>
+                <CdStationHydro>O200004001</CdStationHydro>
+                <ValHauteurSeuilStationHydro>4380</ValHauteurSeuilStationHydro>
+                <DtActivationSeuilStationHydro>2010-06-10T10:52:57</DtActivationSeuilStationHydro>
+                <ToleranceSeuilStationHydro>0</ToleranceSeuilStationHydro>
+              </ValeursSeuilStationHydro>
+              <ValeursSeuilStationHydro>
+                <CdStationHydro>O200004002</CdStationHydro>
+                <ValHauteurSeuilStationHydro>3520</ValHauteurSeuilStationHydro>
+                <DtActivationSeuilStationHydro>2010-06-10T11:32:57</DtActivationSeuilStationHydro>
+                <DtDesactivationSeuilStationHydro>2013-10-05T08:59:29+03:00</DtDesactivationSeuilStationHydro>
+              </ValeursSeuilStationHydro>
+              <ValeursSeuilStationHydro>
+                <CdStationHydro>O200004003</CdStationHydro>
+                <ValHauteurSeuilStationHydro>8320</ValHauteurSeuilStationHydro>
+                <DtActivationSeuilStationHydro>2010-06-10T11:52:57</DtActivationSeuilStationHydro>
+                <ToleranceSeuilStationHydro>10</ToleranceSeuilStationHydro>
+              </ValeursSeuilStationHydro>
+            </ValeursSeuilsStationHydro>
+            <ToleranceSeuilSiteHydro>5</ToleranceSeuilSiteHydro>
+            <DtMajSeuilSiteHydro>2014-03-23T09:51:56</DtMajSeuilSiteHydro>
+          </ValeursSeuilSiteHydro>
+        </ValeursSeuilsSiteHydro>
+      </SiteHydro>
+      <!-- 4 SEUILS without values -->
+      <SiteHydro>
+        <CdSiteHydro>O0144020</CdSiteHydro>
+        <TypSiteHydro>PLANDEAU</TypSiteHydro>
+        <ValeursSeuilsSiteHydro>
+          <ValeursSeuilSiteHydro>
+            <CdSeuilSiteHydro>1</CdSeuilSiteHydro>
+            <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
+            <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro>
+            <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
+            <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro>
+            <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
+          </ValeursSeuilSiteHydro>
+          <ValeursSeuilSiteHydro>
+            <CdSeuilSiteHydro>2</CdSeuilSiteHydro>
+            <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
+            <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro>
+            <MnemoSeuilSiteHydro>Seuil de vigilance ORANGE</MnemoSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
+            <IndiceGraviteSeuilSiteHydro>50</IndiceGraviteSeuilSiteHydro>
+            <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
+          </ValeursSeuilSiteHydro>
+          <ValeursSeuilSiteHydro>
+            <CdSeuilSiteHydro>3</CdSeuilSiteHydro>
+            <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
+            <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro>
+            <MnemoSeuilSiteHydro>Seuil de vigilance ROUGE</MnemoSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
+            <IndiceGraviteSeuilSiteHydro>75</IndiceGraviteSeuilSiteHydro>
+            <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
+          </ValeursSeuilSiteHydro>
+          <ValeursSeuilSiteHydro>
+            <CdSeuilSiteHydro>4</CdSeuilSiteHydro>
+            <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
+            <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro>
+            <LbUsuelSeuilSiteHydro>Crue du 06/11/1997</LbUsuelSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro>
+            <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
+          </ValeursSeuilSiteHydro>
+        </ValeursSeuilsSiteHydro>
+      </SiteHydro>
+      <!-- 2 SEUILS - with a group by-->
+      <SiteHydro>
+        <CdSiteHydro>O6793330</CdSiteHydro>
+        <ValeursSeuilsSiteHydro>
+          <ValeursSeuilSiteHydro>
+            <CdSeuilSiteHydro>338</CdSeuilSiteHydro>
+            <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
+            <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro>
+            <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
+            <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro>
+            <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
+            <ValDebitSeuilSiteHydro>100</ValDebitSeuilSiteHydro>
+          </ValeursSeuilSiteHydro>
+          <ValeursSeuilSiteHydro>
+            <CdSeuilSiteHydro>338</CdSeuilSiteHydro>
+            <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
+            <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro>
+            <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
+            <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro>
+            <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
+            <ValeursSeuilsStationHydro>
+              <ValeursSeuilStationHydro>
+                <CdStationHydro>O679333001</CdStationHydro>
+                <ValHauteurSeuilStationHydro>3200</ValHauteurSeuilStationHydro>
+                <DtActivationSeuilStationHydro>2010-06-11T09:00:31</DtActivationSeuilStationHydro>
+                <ToleranceSeuilStationHydro>0</ToleranceSeuilStationHydro>
+              </ValeursSeuilStationHydro>
+            </ValeursSeuilsStationHydro>
+          </ValeursSeuilSiteHydro>
+          <ValeursSeuilSiteHydro>
+            <CdSeuilSiteHydro>341</CdSeuilSiteHydro>
+            <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
+            <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro>
+            <LbUsuelSeuilSiteHydro>Crue du 08/04/1994</LbUsuelSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro>
+            <IndiceGraviteSeuilSiteHydro>30</IndiceGraviteSeuilSiteHydro>
+            <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
+          </ValeursSeuilSiteHydro>
+          <ValeursSeuilSiteHydro>
+            <CdSeuilSiteHydro>341</CdSeuilSiteHydro>
+            <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
+            <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro>
+            <LbUsuelSeuilSiteHydro>Crue du 08/04/1994</LbUsuelSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro>
+            <IndiceGraviteSeuilSiteHydro>30</IndiceGraviteSeuilSiteHydro>
+            <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
+            <ValeursSeuilsStationHydro>
+              <ValeursSeuilStationHydro>
+                <CdStationHydro>O679333001</CdStationHydro>
+                <ValHauteurSeuilStationHydro>3500</ValHauteurSeuilStationHydro>
+                <DtActivationSeuilStationHydro>2010-06-11T09:00:31</DtActivationSeuilStationHydro>
+                <ToleranceSeuilStationHydro>0</ToleranceSeuilStationHydro>
+              </ValeursSeuilStationHydro>
+            </ValeursSeuilsStationHydro>
+          </ValeursSeuilSiteHydro>
+        </ValeursSeuilsSiteHydro>
+      </SiteHydro>
+      <!-- 1 SEUIL with 4 Q values, only the last is active -->
+      <SiteHydro>
+        <CdSiteHydro>O3334020</CdSiteHydro>
+        <TypSiteHydro>VIRTUEL</TypSiteHydro>
+        <ValeursSeuilsSiteHydro>
+          <ValeursSeuilSiteHydro>
+            <CdSeuilSiteHydro>19</CdSeuilSiteHydro>
+            <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
+            <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro>
+            <LbUsuelSeuilSiteHydro>Crue du 24/11/2003</LbUsuelSeuilSiteHydro>
+            <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro>
+            <IndiceGraviteSeuilSiteHydro>65</IndiceGraviteSeuilSiteHydro>
+            <ValDebitSeuilSiteHydro>1</ValDebitSeuilSiteHydro>
+            <DtActivationSeuilSiteHydro>2010-01-01T00:00:00</DtActivationSeuilSiteHydro>
+            <DtDesactivationSeuilSiteHydro>2010-12-31T23:59:59</DtDesactivationSeuilSiteHydro>
+            <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro>
+            <DtMajSeuilSiteHydro>2000-03-23T09:51:56</DtMajSeuilSiteHydro>
+          </ValeursSeuilSiteHydro>
+          <ValeursSeuilSiteHydro>
+            <CdSeuilSiteHydro>19</CdSeuilSiteHydro>
+            <ValDebitSeuilSiteHydro>2</ValDebitSeuilSiteHydro>
+            <DtActivationSeuilSiteHydro>2011-01-01T00:00:00</DtActivationSeuilSiteHydro>
+            <DtDesactivationSeuilSiteHydro>2011-12-31T23:59:59</DtDesactivationSeuilSiteHydro>
+            <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro>
+          </ValeursSeuilSiteHydro>
+          <ValeursSeuilSiteHydro>
+            <CdSeuilSiteHydro>19</CdSeuilSiteHydro>
+            <ValDebitSeuilSiteHydro>3</ValDebitSeuilSiteHydro>
+            <DtActivationSeuilSiteHydro>2012-01-01T00:00:00</DtActivationSeuilSiteHydro>
+            <DtDesactivationSeuilSiteHydro>2012-12-31T23:59:59</DtDesactivationSeuilSiteHydro>
+          </ValeursSeuilSiteHydro>
+          <ValeursSeuilSiteHydro>
+            <CdSeuilSiteHydro>19</CdSeuilSiteHydro>
+            <ValDebitSeuilSiteHydro>4</ValDebitSeuilSiteHydro>
+            <DtActivationSeuilSiteHydro>2013-01-01T00:00:00</DtActivationSeuilSiteHydro>
+            <DtDesactivationSeuilSiteHydro></DtDesactivationSeuilSiteHydro>
+          </ValeursSeuilSiteHydro>
+        </ValeursSeuilsSiteHydro>
+      </SiteHydro>
+      <!-- SEUILS -->
+      <!-- <SiteHydro> -->
+      <!--   <CdSiteHydro>O0502520</CdSiteHydro> -->
+      <!--   <ValeursSeuilsSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>21</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>22</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ORANGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>50</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>23</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ROUGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>75</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>24</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 10/06/2000</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>25</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 19/05/1977</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>26</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 23/06/1875</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>21</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>22</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ORANGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>50</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>23</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ROUGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>75</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>24</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 10/06/2000</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>25</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 19/05/1977</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>26</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 23/06/1875</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>21</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>22</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ORANGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>50</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>23</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ROUGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>75</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>24</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 10/06/2000</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>25</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 19/05/1977</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>26</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 23/06/1875</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>21</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>22</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ORANGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>50</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>23</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ROUGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>75</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>24</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 10/06/2000</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>25</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 19/05/1977</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>26</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 23/06/1875</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>21</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>22</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ORANGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>50</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>23</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ROUGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>75</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>24</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 10/06/2000</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>25</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 19/05/1977</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>26</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 23/06/1875</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>21</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>22</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ORANGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>50</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>23</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ROUGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>75</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>24</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 10/06/2000</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>25</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 19/05/1977</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>26</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 23/06/1875</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--   </ValeursSeuilsSiteHydro> -->
+      <!-- </SiteHydro> -->
+      <!-- SEUILS 6 -->
+      <!-- <SiteHydro> -->
+      <!--   <CdSiteHydro>K2981910</CdSiteHydro> -->
+      <!--   <ValeursSeuilsSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>694</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>94000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>695</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ORANGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>50</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>252000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>696</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ROUGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>75</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>450000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>729</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 11/04/2008</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>111000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>730</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 03/11/2008</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>55</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>301000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>731</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 02/12/2003</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>65</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ComSeuilSiteHydro>Crue de référence de station du RIC</ComSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>347000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>694</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>94000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>695</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ORANGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>50</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>252000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>696</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ROUGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>75</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>450000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>729</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 11/04/2008</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>111000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>730</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 03/11/2008</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>55</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>301000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>731</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 02/12/2003</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>65</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ComSeuilSiteHydro>Crue de référence de station du RIC</ComSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>347000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>694</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>94000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>695</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ORANGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>50</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>252000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>696</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ROUGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>75</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>450000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>729</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 11/04/2008</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>111000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>730</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 03/11/2008</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>55</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>301000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>731</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 02/12/2003</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>65</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ComSeuilSiteHydro>Crue de référence de station du RIC</ComSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>347000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>694</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>94000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>695</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ORANGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>50</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>252000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>696</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ROUGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>75</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>450000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>729</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 11/04/2008</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>111000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>730</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 03/11/2008</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>55</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>301000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>731</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 02/12/2003</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>65</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ComSeuilSiteHydro>Crue de référence de station du RIC</ComSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>347000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>694</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>94000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>695</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ORANGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>50</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>252000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>696</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ROUGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>75</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>450000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>729</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 11/04/2008</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>111000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>730</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 03/11/2008</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>55</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>301000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>731</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 02/12/2003</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>65</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ComSeuilSiteHydro>Crue de référence de station du RIC</ComSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>347000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>694</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>94000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>695</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ORANGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>50</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>252000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>696</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro> -->
+      <!--       <MnemoSeuilSiteHydro>Seuil de vigilance ROUGE</MnemoSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>75</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>450000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>729</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 11/04/2008</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>111000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>730</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 03/11/2008</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>55</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>301000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--     <ValeursSeuilSiteHydro> -->
+      <!--       <CdSeuilSiteHydro>731</CdSeuilSiteHydro> -->
+      <!--       <TypSeuilSiteHydro>1</TypSeuilSiteHydro> -->
+      <!--       <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro> -->
+      <!--       <LbUsuelSeuilSiteHydro>Crue du 02/12/2003</LbUsuelSeuilSiteHydro> -->
+      <!--       <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro> -->
+      <!--       <IndiceGraviteSeuilSiteHydro>65</IndiceGraviteSeuilSiteHydro> -->
+      <!--       <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro> -->
+      <!--       <ComSeuilSiteHydro>Crue de référence de station du RIC</ComSeuilSiteHydro> -->
+      <!--       <ValDebitSeuilSiteHydro>347000</ValDebitSeuilSiteHydro> -->
+      <!--       <DtActivationSeuilSiteHydro>2010-09-28T17:36:36</DtActivationSeuilSiteHydro> -->
+      <!--       <ToleranceSeuilSiteHydro>0</ToleranceSeuilSiteHydro> -->
+      <!--     </ValeursSeuilSiteHydro> -->
+      <!--   </ValeursSeuilsSiteHydro> -->
+      <!-- </SiteHydro> -->
+    </SitesHydro>
+  </RefHyd>
+</hydrometrie>
