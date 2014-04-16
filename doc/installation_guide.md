@@ -9,6 +9,21 @@ Installer les pré-requis en mode console:
     conda install pandas lxml
 (les dépendances sont prises en charge par l'installeur).
 
+Régler la variable d'environnement PYTHONPATH:
+    C:\Program Files\Miniconda\;C:\Program Files\Miniconda\Lib\site-packages
+
+Pour installer libhydro et ses dépendances:
+    python setup.py install
+
+Si problème d'encodage avec le module 'mimetypes':
+    changer la ligne 250 de
+        except UnicodeEncodeError:
+    en
+        except (UnicodeEncodeError, UnicodeDecodeError):
+
+Si le setup libhydro essaye d'installer une nouvelle version de python:
+    commenter l'entrée relative a python dans la liste 'install_requires'
+
 Installation manuelle sous Windows (non conseille)
 -------------------------------------------------------------------------------
 ### Installer Python ###
@@ -49,11 +64,11 @@ Référence: [http://toomuchdata.com/2012/06/25/how-to-install-python-2-7-3-on-c
 La version python 2.4.3 de l'os, nécessaire pour pas mal de programmes, est:
     /usr/bin/python
 
-Dependances:
+Dépendances:
     # yum groupinstall "Development tools" - big but needed to enable all features in python
     # yum install gcc zlib-devel bzip2-devel openssl-devel ncurses-devel readline-devel sqlite sqlite-devel
 
-    Verifier que gcc est installe, sinon: yum install gcc
+    Vérifier que gcc est installé, sinon: yum install gcc
     Readline: yum install readline-devel.x86_64 readline-devel.i386
     Zlib: yum install zlib-devel.x86_64 zlib-devel.i386
     Sqlite (for iPython): yum install sqlite.x86_64 sqlite-devel.x86_64
@@ -78,7 +93,7 @@ http://sametmax.com/les-environnement-virtuels-python-virtualenv-et-virtualenvwr
 
 pip install virtualenv
 
-Creer un environnement virtuel:
+Créer un environnement virtuel:
     mkvirtualenv --system-site-packages --prompt '[libhydro]' ~/.virtualenvs/libhydro
     OU
     virtualenv --system-site-packages (dest_dir)
