@@ -11,6 +11,7 @@ syntax: glob
 REMINDER*
 dist
 libhydro.egg-info
+TODO*
 
 # -----------------------------------------------------------------------------
 #syntax: regexp
