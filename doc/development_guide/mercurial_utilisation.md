@@ -38,3 +38,5 @@ Basic commands
     hg incoming|pull (project)    # pull changesets from project
     hg merge                      # merge the new tip from project into our working directory
     hg outgoing|push (project)    # push changesets from project
+
+    hg branch staging|stable      # activate a branch

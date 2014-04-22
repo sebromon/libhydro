@@ -23,7 +23,7 @@ import sys as _sys
 import suds as _suds
 from lxml import etree as _etree
 
-from ..conv.xml import Message
+from ..conv.xml import Message as _Message
 
 
 #-- strings -------------------------------------------------------------------
@@ -276,7 +276,7 @@ class BdHydroWsClient(object):
             f = open(tmpFile, 'w')
             f.write(wsResult['xmlprevcrues'].encode('utf8'))
             f.close()
-            message = Message.from_file(tmpFile)
+            message = _Message.from_file(tmpFile)
             return message
         else:
             raise ValueError(

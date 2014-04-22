@@ -10,3 +10,5 @@ Le meta-package libhydro est constitue des packages:
 """
 __version__ = '0.4.0'
 __all__ = ['core', 'conv', 'bdhydro']
+
+from .bdhydro import bdhydro
