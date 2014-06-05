@@ -9,6 +9,15 @@ Installer les pré-requis en mode console:
     conda install pandas lxml
 (les dépendances sont prises en charge par l'installeur).
 
+Probleme avec pip autour d'une erreur d'encodage ligne 249 du fichier mimetypes.py
+     remplacer la ligne 250: ::
+
+        except UnicodeEncodeError:
+
+    par: ::
+
+        except (UnicodeEncodeError, UnicodeDecodeError):
+
 Installation manuelle sous Windows (non conseille)
 -------------------------------------------------------------------------------
 ### Installer Python ###

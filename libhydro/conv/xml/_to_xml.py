@@ -33,8 +33,8 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2e"""
-__date__ = """2014-03-25"""
+__version__ = """0.2f"""
+__date__ = """2014-06-05"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -653,11 +653,16 @@ def _simulation_to_element(simulation):
         # template for simulation simple element
         story = _collections.OrderedDict((
             ('GrdSimul', {'value': simulation.grandeur}),
-            # dtprod is a numpy.datetime64 without any isoformat method
             ('DtProdSimul', {'value': simulation.dtprod.isoformat()}),
-            ('IndiceQualiteSimul', {'value': unicode(simulation.qualite)}),
+            ('IndiceQualiteSimul', {
+                'value': unicode(simulation.qualite)
+                if simulation.qualite is not None else None
+            }),
             ('StatutSimul', {'value': unicode(simulation.statut)}),
-            ('PubliSimul', {'value': unicode(simulation.public).lower()}),
+            ('PubliSimul', {
+                'value': unicode(simulation.public).lower()
+                if simulation.public is not None else 'false'
+            }),
             ('ComSimul', {'value': simulation.commentaire})
         ))
         # entite can be a Sitehydro or a Stationhydro

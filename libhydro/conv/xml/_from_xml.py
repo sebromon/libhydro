@@ -43,8 +43,8 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.1k"""
-__date__ = """2014-03-20"""
+__version__ = """0.1l"""
+__date__ = """2014-06-05"""
 
 #HISTORY
 #V0.1 - 2013-08-18
@@ -668,6 +668,11 @@ def _simulation_from_element(element):
             entite = _sitehydro.Stationhydro(
                 code=_value(element, 'CdStationHydro')
             )
+        # prepare the qualite
+        # warning: qualite is int(float())
+        qualite = _value(element, 'IndiceQualiteSimul', float)
+        if qualite is not None:
+            qualite = int(qualite)
         # make the Simulation
         return _simulation.Simulation(
             entite=entite,
@@ -676,8 +681,7 @@ def _simulation_from_element(element):
             ),
             grandeur=_value(element, 'GrdSimul'),
             statut=_value(element, 'StatutSimul', int),
-            # warning: qualite is int(float())
-            qualite=int(_value(element, 'IndiceQualiteSimul', float)),
+            qualite=qualite,
             public=_value(element, 'PubliSimul', bool),
             commentaire=_value(element, 'ComSimul'),
             dtprod=_value(element, 'DtProdSimul', _UTC),

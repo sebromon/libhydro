@@ -33,8 +33,8 @@ from libhydro.conv.xml import (_from_xml as from_xml)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1j"""
-__date__ = """2014-03-25"""
+__version__ = """0.1k"""
+__date__ = """2014-06-05"""
 
 #HISTORY
 #V0.1 - 2013-08-24
@@ -653,7 +653,7 @@ class TestFromXmlSimulations(unittest.TestCase):
         self.assertEqual(simulation.modeleprevision.code, '13_09')
         self.assertEqual(simulation.grandeur, 'Q')
         self.assertEqual(simulation.statut, 16)
-        self.assertEqual(simulation.qualite, 29)
+        self.assertEqual(simulation.qualite, None)
         self.assertEqual(simulation.public, False)
         self.assertEqual(
             simulation.dtprod, datetime.datetime(2010, 2, 26, 9, 45)
