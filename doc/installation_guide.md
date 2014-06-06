@@ -1,6 +1,10 @@
 INSTALLATION DETAILLE D'UN ENVIRONNEMENT VIRTUEL PYTHON POUR LIBHYDRO
 ===============================================================================
 
+author = """philippe.gouin@developpement-durable.gouv.fr"""
+version = """0.2a"""
+date = """2014-06-06"""
+
 Installation packagée sous Windows (conseille)
 -------------------------------------------------------------------------------
 Télécharger et lancer l'installeur miniconda:
