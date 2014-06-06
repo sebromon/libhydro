@@ -8,7 +8,7 @@ A library to deal with Hydrometrie datas.
 Get the library from Mercurial
 -------------------------------------------------------------------------------
 Clone the repo::
-    hg clone http://arc.schapi:8001 (local directory)
+    hg clone https://PhilippeGouin@bitbucket.org/PhilippeGouin/libhydro
 
 or upload a release (bz2, zip, gz) from the web page.
 
