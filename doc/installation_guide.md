@@ -9,21 +9,38 @@ Installer les pré-requis en mode console:
     conda install pandas lxml
 (les dépendances sont prises en charge par l'installeur).
 
+<<<<<<< /home/philippe/devel/libhydro/doc/installation_guide.md
 Régler la variable d'environnement PYTHONPATH:
     C:\Program Files\Miniconda\;C:\Program Files\Miniconda\Lib\site-packages
+=======
+Probleme avec pip autour d'une erreur d'encodage ligne 249 du fichier mimetypes.py
+     remplacer la ligne 250: ::
+>>>>>>> /tmp/philippe/installation_guide.md~other.j6QXuB
 
+<<<<<<< /home/philippe/devel/libhydro/doc/installation_guide.md
 Pour installer libhydro et ses dépendances:
     python setup.py install
+=======
+        except UnicodeEncodeError:
+>>>>>>> /tmp/philippe/installation_guide.md~other.j6QXuB
 
+<<<<<<< /home/philippe/devel/libhydro/doc/installation_guide.md
 Si problème d'encodage avec le module 'mimetypes':
     changer la ligne 250 de
         except UnicodeEncodeError:
     en
+=======
+    par: ::
+
+>>>>>>> /tmp/philippe/installation_guide.md~other.j6QXuB
         except (UnicodeEncodeError, UnicodeDecodeError):
 
+<<<<<<< /home/philippe/devel/libhydro/doc/installation_guide.md
 Si le setup libhydro essaye d'installer une nouvelle version de python:
     commenter l'entrée relative a python dans la liste 'install_requires'
 
+=======
+>>>>>>> /tmp/philippe/installation_guide.md~other.j6QXuB
 Installation manuelle sous Windows (non conseille)
 -------------------------------------------------------------------------------
 ### Installer Python ###

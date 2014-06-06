@@ -264,7 +264,7 @@ class Simulation(object):
 
     """
 
-    # FIXME - add a callback to grandeur to check cinsistency with entite
+    # FIXME - add a callback to grandeur to check inconsistency with entite
     grandeur = _composant.Nomenclatureitem(nomenclature=509, required=False)
     statut = _composant.Nomenclatureitem(nomenclature=516)
     dtprod = _composant.Datefromeverything(required=False)

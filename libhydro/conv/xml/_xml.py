@@ -55,7 +55,7 @@ class Message(object):
     Proprietes:
         scenario (xml.Scenario) = un objet Scenario obligatoire
         siteshydro (sitehydro.Sitehydro collection) = iterable ou None
-        seuilshydro (seuil.Seuilhydro collection) = iterable or None
+        seuilshydro (seuil.Seuilhydro collection) = iterable ou None
         evenements (evenement.Evenement collection) = iterable ou None
         series (obshydro.Serie collection) = iterable ou None
         simulations (simulation.Simulation collection) = iterable ou None

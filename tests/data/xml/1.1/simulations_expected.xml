@@ -102,7 +102,7 @@
       <Simul>
         <GrdSimul>Q</GrdSimul>
         <DtProdSimul>2010-02-26T09:45:00</DtProdSimul>
-        <IndiceQualiteSimul>29</IndiceQualiteSimul>
+        <!-- <IndiceQualiteSimul></IndiceQualiteSimul> -->
         <StatutSimul>16</StatutSimul>
         <PubliSimul>false</PubliSimul>
         <CdSiteHydro>Y1612020</CdSiteHydro>
