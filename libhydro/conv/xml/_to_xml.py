@@ -33,8 +33,8 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2f"""
-__date__ = """2014-06-05"""
+__version__ = """0.2g"""
+__date__ = """2014-06-06"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -658,7 +658,10 @@ def _simulation_to_element(simulation):
                 'value': unicode(simulation.qualite)
                 if simulation.qualite is not None else None
             }),
-            ('StatutSimul', {'value': unicode(simulation.statut)}),
+            ('StatutSimul', {
+                'value': unicode(simulation.statut)
+                if simulation.statut is not None else None
+            }),
             ('PubliSimul', {
                 'value': unicode(simulation.public).lower()
                 if simulation.public is not None else 'false'
