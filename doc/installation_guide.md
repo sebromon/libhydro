@@ -13,38 +13,15 @@ Installer les pré-requis en mode console:
     conda install pandas lxml
 (les dépendances sont prises en charge par l'installeur).
 
-<<<<<<< /home/philippe/devel/libhydro/doc/installation_guide.md
-Régler la variable d'environnement PYTHONPATH:
-    C:\Program Files\Miniconda\;C:\Program Files\Miniconda\Lib\site-packages
-=======
 Probleme avec pip autour d'une erreur d'encodage ligne 249 du fichier mimetypes.py
      remplacer la ligne 250: ::
->>>>>>> /tmp/philippe/installation_guide.md~other.j6QXuB
 
-<<<<<<< /home/philippe/devel/libhydro/doc/installation_guide.md
-Pour installer libhydro et ses dépendances:
-    python setup.py install
-=======
         except UnicodeEncodeError:
->>>>>>> /tmp/philippe/installation_guide.md~other.j6QXuB
 
-<<<<<<< /home/philippe/devel/libhydro/doc/installation_guide.md
-Si problème d'encodage avec le module 'mimetypes':
-    changer la ligne 250 de
-        except UnicodeEncodeError:
-    en
-=======
     par: ::
 
->>>>>>> /tmp/philippe/installation_guide.md~other.j6QXuB
         except (UnicodeEncodeError, UnicodeDecodeError):
 
-<<<<<<< /home/philippe/devel/libhydro/doc/installation_guide.md
-Si le setup libhydro essaye d'installer une nouvelle version de python:
-    commenter l'entrée relative a python dans la liste 'install_requires'
-
-=======
->>>>>>> /tmp/philippe/installation_guide.md~other.j6QXuB
 Installation manuelle sous Windows (non conseille)
 -------------------------------------------------------------------------------
 ### Installer Python ###
@@ -85,11 +62,11 @@ Référence: [http://toomuchdata.com/2012/06/25/how-to-install-python-2-7-3-on-c
 La version python 2.4.3 de l'os, nécessaire pour pas mal de programmes, est:
     /usr/bin/python
 
-Dépendances:
+Dependances:
     # yum groupinstall "Development tools" - big but needed to enable all features in python
     # yum install gcc zlib-devel bzip2-devel openssl-devel ncurses-devel readline-devel sqlite sqlite-devel
 
-    Vérifier que gcc est installé, sinon: yum install gcc
+    Verifier que gcc est installe, sinon: yum install gcc
     Readline: yum install readline-devel.x86_64 readline-devel.i386
     Zlib: yum install zlib-devel.x86_64 zlib-devel.i386
     Sqlite (for iPython): yum install sqlite.x86_64 sqlite-devel.x86_64
@@ -114,7 +91,7 @@ http://sametmax.com/les-environnement-virtuels-python-virtualenv-et-virtualenvwr
 
 pip install virtualenv
 
-Créer un environnement virtuel:
+Creer un environnement virtuel:
     mkvirtualenv --system-site-packages --prompt '[libhydro]' ~/.virtualenvs/libhydro
     OU
     virtualenv --system-site-packages (dest_dir)
