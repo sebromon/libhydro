@@ -35,8 +35,8 @@ import numpy
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2c"""
-__date__ = """2014-03-25"""
+__version__ = """0.2d"""
+__date__ = """2014-07-07"""
 
 #HISTORY
 #V0.2 - 2014-03-01
@@ -478,63 +478,105 @@ class TestIsCodeHydro(unittest.TestCase):
         )
 
 
-#-- class TestIsCodeCommune ---------------------------------------------------
-class TestIsCodecommune(unittest.TestCase):
+#-- class TestIsCodeInsee -----------------------------------------------------
+class TestIsCodeInsee(unittest.TestCase):
 
-    """Function is_code_commune class tests."""
+    """Function is_code_insee class tests."""
 
     def test_bool_true(self):
         """True test."""
-        self.assertTrue(composant.is_code_commune('32150', raises=False))
-        self.assertTrue(composant.is_code_commune(32150, raises=False))
-        self.assertTrue(composant.is_code_commune('02531', raises=True))
-        self.assertTrue(composant.is_code_commune('2A531', raises=False))
-        self.assertTrue(composant.is_code_commune('2A531', raises=True))
-        self.assertTrue(composant.is_code_commune('2B531', raises=False))
-        self.assertTrue(composant.is_code_commune('2B531', raises=True))
+        # commune code
+        self.assertTrue(composant.is_code_insee('32150', raises=False))
+        self.assertTrue(composant.is_code_insee(32150, raises=False))
+        self.assertTrue(composant.is_code_insee('02531', raises=True))
+        self.assertTrue(composant.is_code_insee('2A531', raises=False))
+        self.assertTrue(composant.is_code_insee('2A531', raises=True))
+        self.assertTrue(
+            composant.is_code_insee('2B531', length=5, raises=False)
+        )
+        self.assertTrue(
+            composant.is_code_insee('2B531', length=5, raises=True)
+        )
+        # meteo code
+        self.assertTrue(
+            composant.is_code_insee('032150010', length=9, raises=False)
+        )
+        self.assertTrue(
+            composant.is_code_insee(211503310, length=9, raises=False)
+        )
+        self.assertTrue(
+            composant.is_code_insee('025312113', length=9, raises=True)
+        )
+        self.assertTrue(
+            composant.is_code_insee('02A531979', length=9, raises=False)
+        )
+        self.assertTrue(
+            composant.is_code_insee('02B531001', length=9, raises=True)
+        )
 
     def test_bool_false(self):
         """False test."""
         # TypeError
-        self.assertFalse(composant.is_code_commune([], raises=False))
+        self.assertFalse(composant.is_code_insee([], raises=False))
         # too short
-        self.assertFalse(composant.is_code_commune('3310', raises=False))
+        self.assertFalse(composant.is_code_insee('3310', raises=False))
+        self.assertFalse(
+            composant.is_code_insee('3310', length=5, raises=False)
+        )
+        self.assertFalse(
+            composant.is_code_insee('03311001', length=9, raises=False)
+        )
         # too long
-        self.assertFalse(composant.is_code_commune('333051', raises=False))
+        self.assertFalse(composant.is_code_insee('333051', raises=False))
+        self.assertFalse(
+            composant.is_code_insee('333051', length=5, raises=False)
+        )
+        self.assertFalse(
+            composant.is_code_insee('0333333333', length=9, raises=False)
+        )
         # wrong chars
-        self.assertFalse(composant.is_code_commune('3A250', raises=False))
-        self.assertFalse(composant.is_code_commune('2C201', raises=False))
+        self.assertFalse(composant.is_code_insee('3A250', raises=False))
+        self.assertFalse(composant.is_code_insee('2C201', raises=False))
+        self.assertFalse(
+            composant.is_code_insee('02C201001', length=9, raises=False)
+        )
 
     def test_raises(self):
         """Error test."""
         # TypeError (ValueError because code is cast in unicode)
         self.assertRaises(
             ValueError,
-            composant.is_code_commune,
+            composant.is_code_insee,
             **{'code': [], 'raises': True}
         )
         # too short
         self.assertRaises(
             ValueError,
-            composant.is_code_commune,
+            composant.is_code_insee,
             **{'code': '3310', 'raises': True}
         )
         # too long
         self.assertRaises(
             ValueError,
-            composant.is_code_commune,
+            composant.is_code_insee,
             **{'code': '233305', 'raises': True}
         )
         # wrong chars
         self.assertRaises(
             ValueError,
-            composant.is_code_commune,
+            composant.is_code_insee,
             **{'code': '2D100', 'raises': True}
         )
         self.assertRaises(
             ValueError,
-            composant.is_code_commune,
+            composant.is_code_insee,
             **{'code': '2A10W', 'raises': True}
+        )
+        # wrong length
+        self.assertRaises(
+            ValueError,
+            composant.is_code_insee,
+            **{'code': '233305', 'length': -1, 'raises': True}
         )
 
 

@@ -26,7 +26,7 @@ __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
 __version__ = """0.3d"""
-__date__ = """2014-03-25"""
+__date__ = """2014-07-07"""
 
 #HISTORY
 #V0.3 - 2014-02-20
@@ -37,7 +37,8 @@ __date__ = """2014-03-25"""
 
 
 #-- todos ---------------------------------------------------------------------
-# PROGRESS - Sitehydro 20% - stationhydro 30% - Capteur 30%
+# PROGRESS - Sitehydro 20% - Stationhydro 30% - Capteur 30%
+#            Tronconvigilance 100%
 # FIXME - generalize typeentite in _Entite.typentite ?
 # TODO - add navigability for Capteur => Station and Station => Site
 # TODO - __eq__ for all classes
@@ -138,11 +139,8 @@ class _Site_or_station(_Entitehydro):
     """Abstract base class for Sitehydro and Stationhydro.
 
     Properties:
-
-        -- properties of _Entitehydro --
-
-        coord (liste ou dict) = (x, y, proj) ou
-            {'x': x, 'y': y, 'proj': proj}
+        -- properties of _Entitehydro     --
+        -- properties of _composant.Coord --
 
     """
 
@@ -153,9 +151,7 @@ class _Site_or_station(_Entitehydro):
         """Constructor.
 
         Arguments:
-
             -- args of _Entitehydro --
-
             coord (liste ou dict) = (x, y, proj) ou
                 {'x': x, 'y': y, 'proj': proj}
 
@@ -165,8 +161,6 @@ class _Site_or_station(_Entitehydro):
         super(_Site_or_station, self).__init__(
             code=code, codeh2=codeh2, libelle=libelle, strict=strict
         )
-
-        # -- simple properties --
 
         # -- full properties --
         self._coord = None
@@ -210,9 +204,11 @@ class Sitehydro(_Site_or_station):
         typesite (string parmi NOMENCLATURE[530])
         libelle (string)
         libelleusuel (string)
-        coord (Coord)
+        coord (Coord) =
+            x, y (float)
+            proj (int parmi NOMENCLATURE[22]) = systeme de projection
         stations (une liste de Station)
-        communes (une liste de codes communes, char(5)) = code INSEE commune
+        communes (une liste de codes communes, string(5)) = code INSEE commune
         tronconsvigilance (une liste de Tronconvigilance)
 
     """
@@ -224,8 +220,7 @@ class Sitehydro(_Site_or_station):
     #precisionce
     #pkamont
     #pkaval
-    #altitude
-    #sysalti
+    #altitude, sysalti
     #dtmaj
     #bv
     #fuseau
@@ -265,6 +260,9 @@ class Sitehydro(_Site_or_station):
             typesite (string parmi NOMENCLATURE[530], defaut REEL)
             libelle (string)
             libelleusuel (string)
+            coord (list ou dict) =
+                (x, y, proj) ou {'x': x, 'y': y, 'proj': proj}
+                avec proj (int parmi NOMENCLATURE[22]) = systeme de projection
             stations (une Station ou un iterable de Station)
             communes (un code commmune ou un iterable de codes)
             tronconsvigilance (un Tronconvigilance ou un iterable)
@@ -342,11 +340,11 @@ class Sitehydro(_Site_or_station):
         if communes is None:
             return
         # one commune, we make a list with it
-        if _composant.is_code_commune(communes, raises=False):
+        if _composant.is_code_insee(communes, length=5, raises=False):
             communes = [communes]
         # an iterable of communes
         for commune in communes:
-            if _composant.is_code_commune(commune):
+            if _composant.is_code_insee(commune, length=5):
                 self._communes.append(unicode(commune))
 
     # -- property tronconsvigilance --
@@ -410,10 +408,12 @@ class Stationhydro(_Site_or_station):
         libelle (string)
         libellecomplement (string)
         niveauaffichage (int) = niveau d'affichage
-        coord (Coord)
+        coord (Coord) =
+            x, y (float)
+            proj (int parmi NOMENCLATURE[22]) = systeme de projection
         capteurs (une liste de Capteur)
-        commune (char(5)) = code INSEE commune
-        ddcs (liste de char(10)) = liste de reseaux de mesure SANDRE
+        commune (string(5)) = code INSEE commune
+        ddcs (liste de string(10)) = liste de reseaux de mesure SANDRE
             (dispositifs de collecte)
 
     """
@@ -461,11 +461,12 @@ class Stationhydro(_Site_or_station):
             libelle (string)
             libellecomplement (string)
             niveauaffichage (int) = niveau d'affichage
-            coord (liste ou dict) = (x, y, proj) ou
-                {'x': x, 'y': y, 'proj': proj}
+            coord (list ou dict) =
+                (x, y, proj) ou {'x': x, 'y': y, 'proj': proj}
+                avec proj (int parmi NOMENCLATURE[22]) = systeme de projection
             capteurs (un Capteur ou un iterable de Capteur)
-            commune (char(5)) = code INSEE commune
-            ddcs (un code char(10) ou un iterable de char(10)) = reseaux de
+            commune (string(5)) = code INSEE commune
+            ddcs (un code string(10) ou un iterable de string(10)) = reseaux de
                 mesure SANDRE
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite du type et du code
@@ -555,7 +556,7 @@ class Stationhydro(_Site_or_station):
         """Set code commune."""
         if commune is not None:
             commune = unicode(commune)
-            _composant.is_code_commune(commune)
+            _composant.is_code_insee(commune, length=5)
         self._commune = commune
 
     # -- property ddcs --

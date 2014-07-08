@@ -12,7 +12,7 @@ les descripteurs:
 
 et les fonctions:
     # is_code_hydro()
-    # is_code_commune()
+    # is_code_insee()
 
 """
 #-- imports -------------------------------------------------------------------
@@ -35,7 +35,7 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.8c"""
-__date__ = """2014-03-25"""
+__date__ = """2014-07-07"""
 
 #HISTORY
 #V0.8 - 2014-02-01
@@ -194,8 +194,8 @@ class Coord(object):
     Classe pour manipuler des coordonnees.
 
     Proprietes:
-        x, y (numerique)
-        proj (caractere parmi NOMENCLATURE[22]) = systeme de projection
+        x, y (float)
+        proj (int parmi NOMENCLATURE[22]) = systeme de projection
 
     """
 
@@ -205,8 +205,8 @@ class Coord(object):
         """Initialisation.
 
         Arguments:
-            x, y (numeriques)
-            proj (caractere parmi NOMENCLATURE[22]) = systeme de projection
+            x, y (float)
+            proj (int parmi NOMENCLATURE[22]) = systeme de projection
             strict (bool, defaut True) = le mode permissif permet de rendre
                 facultatif le parametre proj
 
@@ -266,7 +266,7 @@ def is_code_hydro(code, length=8, raises=True):
     """Return whether or not code is a valid code hydro.
 
     Arguments:
-       code (char)
+       code (string)
        length (int, default 8) = code size
        raises (bool, default True) = if False doesn't raise
 
@@ -302,33 +302,47 @@ def is_code_hydro(code, length=8, raises=True):
             return False
 
 
-def is_code_commune(code, raises=True):
-    """Return whether or not code is a valid INSEE commune code.
+def is_code_insee(code, length=5, raises=True):
+    """Return whether or not code is a valid INSEE code.
 
-    Le numero de la commune est le numero INSEE de la commune base sur 5
-    caracteres. Pour les communes de metropoles, les deux premiers caracteres
-    correspondent au numero du departement auquel la commune appartient. Pour
-    les DOM, les trois premiers caracteres correspondent au code du departement
-    auquel la commune appartient.  Il est a noter que ce numero de la commune
-    est au format caractere afin de gerer les communes de la Corse (2A et 2B).
+    Un code INSEE de commune est construit sur 5 caracteres. Pour les
+    communes de metropole, les deux premiers caracteres correspondent
+    au numero du departement de la commune. Pour les DOM, les trois
+    premiers caracteres correspondent au numero du departement de la
+    commune. Il est a noter que ce code est au format caractere afin de
+    gerer les communes de la Corse (2A et 2B).
+
+    Un code INSEE de site meteorologique est construit sur 9 caracteres.
+    Les 6 premiers forment le code INSEE de la commune de localisation,
+    prefixe d'un zero significatif, ou bien un code de pays pour les
+    postes hors du territoire national. Les 3 derniers caracteres sont
+    un numero d'ordre du site meteorologique.
 
     Arguments:
-       code (char)
+       code (string(length), default length is 5)
        raises (bool, default True) = if False doesn't raise
 
     """
+    # pre-condition
+    if length not in (5, 9):
+        raise ValueError('length must be 5 or 9')
+
     try:
         # prepare
         code = unicode(code)
 
-        # 5 chars length
-        if len(code) != 5:
-            raise ValueError('code must be 5 chars long')
+        # chars length
+        if len(code) != length:
+            raise ValueError('INSEE code must be %i chars long' % length)
 
         # code commune must be all digit or 2(A|B)xxx
         if not code.isdigit():
-            if not ((code[:2] in ('2A', '2B')) and (code[2:].isdigit())):
-                raise ValueError('illegal char in code')
+            start = length is 9  # 0 or 1
+            if not (
+                (code[start:start + 2] in ('2A', '2B')) and
+                (code[start + 2:].isdigit())
+            ):
+                raise ValueError('illegal char in INSEE code')
 
         # all is well
         return True

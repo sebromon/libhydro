@@ -1,51 +1,86 @@
-INSTALLATION DETAILLE D'UN ENVIRONNEMENT VIRTUEL PYTHON POUR LIBHYDRO
+INSTALLATION DETAILLEE D'UN ENVIRONNEMENT PYTHON POUR LIBHYDRO
 ===============================================================================
 
-author = """philippe.gouin@developpement-durable.gouv.fr"""
-version = """0.2a"""
-date = """2014-06-06"""
+* Auteur: philippe.gouin@developpement-durable.gouv.fr
+* Version: 0.2b
+* Mise à jour: 2014-07-08
 
-Installation packagée sous Windows (conseille)
+Installation packagée sous Windows (conseillé)
 -------------------------------------------------------------------------------
-Télécharger et lancer l'installeur miniconda:
-    http://conda.pydata.org/miniconda.html
-Installer les pré-requis en mode console:
+### Télécharger et installer l'installeur miniconda ###
+Conda est un gestionnaire de paquets compilés prenant en charge les dépendances.
+
+[Réf: http://conda.pydata.org/miniconda.html]
+(http://conda.pydata.org/miniconda.html)
+
+### Déclarer le proxy du ministère ####
+L'installateur conda doit pouvoir accéder à internet pour télécharger les
+paquets à installer.
+
+Les 2 variables à déclarer sont:
+    http_proxy=http://direct.proxy.i2:8080
+    https_proxy=http://direct.proxy.i2:8080
+
+On peut le faire au choix:
+    * dans les variables d'environnement (clic droit sur le poste de travail,
+      propriétés, avancé, variables d'environnement, variables utilisateur)
+    * dans un fichier .condarc ([Réf: http://conda.pydata.org/docs/config.html)
+      (http://conda.pydata.org/docs/config.htm))
+
+### Installer les pré-requis à libhydro ###
+Installer les pré-requis pour libhydro:
     conda install pandas lxml
-(les dépendances sont prises en charge par l'installeur).
 
-Probleme avec pip autour d'une erreur d'encodage ligne 249 du fichier mimetypes.py
-     remplacer la ligne 250: ::
+En profiter pour installer d'autres paquets utiles:
+   * ipython, un "powerful interactive shell"
+   * spider, un editeur "for the Python language with advanced editing, interactive testing, debugging and introspection features"
 
-        except UnicodeEncodeError:
+Si problème avec pip autour d'une erreur d'encodage ligne 249 du fichier
+mimetypes.py, remplacer la ligne 250:
 
-    par: ::
+    except UnicodeEncodeError:
 
-        except (UnicodeEncodeError, UnicodeDecodeError):
+par:
 
-Installation manuelle sous Windows (non conseille)
+    except (UnicodeEncodeError, UnicodeDecodeError):
+
+### Installer libhydro ###
+Dans une console faire:
+    python setup.py install
+
+Installation manuelle sous Windows (non conseillé)
 -------------------------------------------------------------------------------
 ### Installer Python ###
-    utiliser python2.7.5.msi
+Utiliser python2.7.5.msi
 
-### Régler les variables d'environnment ###
-  [http://docs.python.org/2/using/windows.html]
-    "path = ... C:\Program Files\Python27;C:\Program Files\Python27\scripts"
-    "PYTHONPATH = ..."
-    "proxy = http://direct.proxy.i2:8080"
+### Régler les variables d'environnement ###
+Réf: http://docs.python.org/2/using/windows.html
 
-### Pour ces dépendances en C/C++ utiliser les binaires de http://www.lfd.uci.edu/~gohlke/pythonlibs/ ###
+    path=... C:\Program Files\Python27;C:\Program Files\Python27\scripts
+    PYTHONPATH=...
+    proxy=http://direct.proxy.i2:8080
+
+### Dépendances en C ou C++ ###
+Pour les dépendances suivantes nécessitant une compilation, il est préférable
+d'utiliser des paquetsfaut déjà construits, disponibles sur Pypi ou
+[ici](http://www.lfd.uci.edu/~gohlke/pythonlibs/)
+
     numpy
     python-dateutil
     pandas
     lxml
 
 ### Installer les setup-tools et pip (optionnel) ###
-  [ref: http://www.pip-installer.org/en/latest/installing.html]
+Réf: http://www.pip-installer.org/en/latest/installing.html
+
     get ez_setup.py
     python ez_setup.py
     get get-pip.py
     python get-pip.py (need the proxy !)
     pip install --upgrade setuptools
+
+### Installer libhydro ###
+    python setup.py install
 
 ### Installer IPython (optionnel) ###
     pip install ipython
@@ -53,24 +88,32 @@ Installation manuelle sous Windows (non conseille)
 Installation sous Linux
 -------------------------------------------------------------------------------
 ### Installer Python avec un gestionnaire de paquets ###
-yum install python.
-Si yum ne propose pas la bonne version, trouver un rpm ou se compiler sa propre version de python.
+    yum install python.
+
+Si yum ne propose pas la bonne version, trouver un rpm ou se compiler sa
+propre version de python.
 
 ### Compiler Python sous Linux (CentOs 6.2) ###
-Référence: [http://toomuchdata.com/2012/06/25/how-to-install-python-2-7-3-on-centos-6-2/]
+Réf: [http://toomuchdata.com/2012/06/25/how-to-install-python-2-7-3-on-centos-6-2/]
 
 La version python 2.4.3 de l'os, nécessaire pour pas mal de programmes, est:
     /usr/bin/python
 
 Dependances:
-    # yum groupinstall "Development tools" - big but needed to enable all features in python
-    # yum install gcc zlib-devel bzip2-devel openssl-devel ncurses-devel readline-devel sqlite sqlite-devel
 
-    Verifier que gcc est installe, sinon: yum install gcc
-    Readline: yum install readline-devel.x86_64 readline-devel.i386
-    Zlib: yum install zlib-devel.x86_64 zlib-devel.i386
-    Sqlite (for iPython): yum install sqlite.x86_64 sqlite-devel.x86_64
-    Ssl (if needed): yum install openssl-devel.i386 openssl-devel.x86_64
+    yum groupinstall "Development tools"
+    #big but needed to enable all features in python
+
+    yum install gcc zlib-devel bzip2-devel openssl-devel ncurses-devel
+    readline-devel sqlite sqlite-devel
+
+Verifier que gcc est installe, sinon:
+    yum install gcc
+
+Readline: yum install readline-devel.x86_64 readline-devel.i386
+Zlib: yum install zlib-devel.x86_64 zlib-devel.i386
+Sqlite (for iPython): yum install sqlite.x86_64 sqlite-devel.x86_64
+Ssl (if needed): yum install openssl-devel.i386 openssl-devel.x86_64
 
 Failed to build sqlite3 (need a patch):
     wget -O patch_sqlite https://raw.github.com/gist/2727063/

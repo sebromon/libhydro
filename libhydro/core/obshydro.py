@@ -15,7 +15,7 @@ d'un pandas.DataFrame dont l'index est une serie de timestamp.
 
 """
 
-# On peux aussi utiliser directement les classes de la librairie Pandas, les
+# On peut aussi utiliser directement les classes de la librairie Pandas, les
 # Series ou les DataFrame.
 #
 # Exemple pour instancier une Series:
@@ -60,7 +60,7 @@ from . import sitehydro as _sitehydro
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1l"""
-__date__ = """2014-03-09"""
+__date__ = """2014-07-07"""
 
 #HISTORY
 #V0.1 - 2013-07-18
@@ -181,7 +181,7 @@ class Observations(_pandas.DataFrame):
 
     Les donnees sont contenues dans 4 colonnes du DataFrame (voir Observation).
 
-    Un objet Observations peux etre instancie de multiples facons a l'aide des
+    Un objet Observations peut etre instancie de multiples facons a l'aide des
     fonctions proposees par Pandas, sous reserve de respecter le nom des
     colonnes et leur typage:
         DataFrame.from_records: constructor from tuples, also record arrays
@@ -191,7 +191,7 @@ class Observations(_pandas.DataFrame):
         read_csv / read_table / read_clipboard
         ...
 
-    On peux obtenir une pandas.Series ne contenant que l'index et res avec:
+    On peut obtenir une pandas.Series ne contenant que l'index et res avec:
         obs = observations.res
 
     """
@@ -241,7 +241,7 @@ class Observations(_pandas.DataFrame):
             observations (Observations)
             others (Observation ou Observations) = observation(s) a ajouter
 
-        Pour agreger 2 Observations, on peux aussi utiliser la methode append
+        Pour agreger 2 Observations, on peut aussi utiliser la methode append
         des DataFrame ou bien directement la fonction concat de pandas.
 
         Attention, les DataFrame ne sont JAMAIS modifies, ces fonctions
@@ -268,8 +268,8 @@ class Serie(object):
 
     Proprietes:
         entite (Sitehydro, Stationhydro ou Capteur)
-        grandeur (char in NOMENCLATURE[509]) = H ou Q
-        statut (int in NOMENCLATURE[510]) = donnee brute, corrigee...
+        grandeur (char parmi NOMENCLATURE[509]) = H ou Q
+        statut (int parmi NOMENCLATURE[510]) = donnee brute, corrigee...
         dtdeb (datetime.datetime)
         dtfin (datetime.datetime)
         dtprod (datetime.datetime)
@@ -298,8 +298,8 @@ class Serie(object):
 
         Arguments:
             entite (Sitehydro, Stationhydro ou Capteur)
-            grandeur (char in NOMENCLATURE[509]) = H ou Q
-            statut (int in NOMENCLATURE[510], defaut 0) = donnee brute,
+            grandeur (char parmi NOMENCLATURE[509]) = H ou Q
+            statut (int parmi NOMENCLATURE[510], defaut 0) = donnee brute,
                 corrigee...
             dtdeb (numpy.datetime64)
             dtfin (numpy.datetime64)

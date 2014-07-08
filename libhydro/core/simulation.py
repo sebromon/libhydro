@@ -12,7 +12,7 @@ d'une pandas.Series a double index, un timestamp et une probabilite.
 
 """
 
-# On peux aussi utiliser directement les classes de la librairie Pandas, les
+# On peut aussi utiliser directement les classes de la librairie Pandas, les
 # Series ou les DataFrame.
 #
 # Exemple pour instancier une Series:
@@ -181,7 +181,7 @@ class Previsions(_pandas.Series):
     ou a une date precise:
         previsions['2013-01-23 01:00'][50]
 
-    On peux slicer une serie mais il faut que l'index soit ordonne par la
+    On peut slicer une serie mais il faut que l'index soit ordonne par la
     colonne utilisee:
         # trier par la date
         ordered_prev = previsions.sortlevel(0)
