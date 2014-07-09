@@ -10,30 +10,32 @@ Installation packagée sous Windows (conseillé)
 ### Télécharger et installer l'installeur miniconda ###
 Conda est un gestionnaire de paquets compilés prenant en charge les dépendances.
 
-[Réf: http://conda.pydata.org/miniconda.html]
-(http://conda.pydata.org/miniconda.html)
+[Réf: http://conda.pydata.org/miniconda.html](http://conda.pydata.org/miniconda.html)
 
 ### Déclarer le proxy du ministère ####
 L'installateur conda doit pouvoir accéder à internet pour télécharger les
 paquets à installer.
 
 Les 2 variables à déclarer sont:
+
     http_proxy=http://direct.proxy.i2:8080
     https_proxy=http://direct.proxy.i2:8080
 
 On peut le faire au choix:
+
     * dans les variables d'environnement (clic droit sur le poste de travail,
       propriétés, avancé, variables d'environnement, variables utilisateur)
-    * dans un fichier .condarc ([Réf: http://conda.pydata.org/docs/config.html)
-      (http://conda.pydata.org/docs/config.htm))
+    * dans un fichier .condarc ([Réf: http://conda.pydata.org/docs/config.html)(http://conda.pydata.org/docs/config.htm))
 
 ### Installer les pré-requis à libhydro ###
 Installer les pré-requis pour libhydro:
+
     conda install pandas lxml
 
 En profiter pour installer d'autres paquets utiles:
-   * ipython, un "powerful interactive shell"
-   * spider, un editeur "for the Python language with advanced editing, interactive testing, debugging and introspection features"
+
+   * _ipython_, un "powerful interactive shell"
+   * _spider_, un editeur "for the Python language with advanced editing, interactive testing, debugging and introspection features"
 
 Si problème avec pip autour d'une erreur d'encodage ligne 249 du fichier
 mimetypes.py, remplacer la ligne 250:
@@ -46,6 +48,7 @@ par:
 
 ### Installer libhydro ###
 Dans une console faire:
+
     python setup.py install
 
 Installation manuelle sous Windows (non conseillé)
@@ -54,126 +57,138 @@ Installation manuelle sous Windows (non conseillé)
 Utiliser python2.7.5.msi
 
 ### Régler les variables d'environnement ###
-Réf: http://docs.python.org/2/using/windows.html
+[Réf: http://docs.python.org/2/using/windows.html](http://docs.python.org/2/using/windows.html)
 
     path=... C:\Program Files\Python27;C:\Program Files\Python27\scripts
     PYTHONPATH=...
-    proxy=http://direct.proxy.i2:8080
+    http_proxy=http://direct.proxy.i2:8080
+    https_proxy=http://direct.proxy.i2:8080
 
 ### Dépendances en C ou C++ ###
 Pour les dépendances suivantes nécessitant une compilation, il est préférable
-d'utiliser des paquetsfaut déjà construits, disponibles sur Pypi ou
-[ici](http://www.lfd.uci.edu/~gohlke/pythonlibs/)
+d'utiliser des paquets déjà construits, disponibles sur Pypi ou
+[ici](http://www.lfd.uci.edu/~gohlke/pythonlibs/):
 
-    numpy
-    python-dateutil
-    pandas
-    lxml
+    * numpy
+    * python-dateutil
+    * pandas
+    * lxml
 
 ### Installer les setup-tools et pip (optionnel) ###
-Réf: http://www.pip-installer.org/en/latest/installing.html
+[Réf: http://www.pip-installer.org/en/latest/installing.html](http://www.pip-installer.org/en/latest/installing.html)
 
-    get ez_setup.py
-    python ez_setup.py
-    get get-pip.py
-    python get-pip.py (need the proxy !)
-    pip install --upgrade setuptools
+Récupérer le paquet 'ez_setup.py'.
+L'installer avec la commande: python ez_setup.py
+Récupérer le paquet 'get-pip.py'.
+L'installer avec: python get-pip.py (need the proxy !)
+Mettre à jour les setuptools:  pip install --upgrade setuptools
 
 ### Installer libhydro ###
     python setup.py install
 
-### Installer IPython (optionnel) ###
-    pip install ipython
-
 Installation sous Linux
 -------------------------------------------------------------------------------
-### Installer Python avec un gestionnaire de paquets ###
-    yum install python.
+### Installer Python ###
 
-Si yum ne propose pas la bonne version, trouver un rpm ou se compiler sa
-propre version de python.
+#### Soit avec un gestionnaire de paquets ####
 
-### Compiler Python sous Linux (CentOs 6.2) ###
-Réf: [http://toomuchdata.com/2012/06/25/how-to-install-python-2-7-3-on-centos-6-2/]
+Installer python et pip (un installateur de librairies).
 
-La version python 2.4.3 de l'os, nécessaire pour pas mal de programmes, est:
-    /usr/bin/python
+Si yum ou apt ne proposent pas la bonne version de Python, utiliser un dépot
+ou un paquet tiers ou bien passer par une compilation.
 
-Dependances:
+Exemple:
+    yum install python python-pip.noarch
 
-    yum groupinstall "Development tools"
-    #big but needed to enable all features in python
 
-    yum install gcc zlib-devel bzip2-devel openssl-devel ncurses-devel
-    readline-devel sqlite sqlite-devel
+#### Soit en le compilant (ci-dessous procédure pour CentOS 6.2) ####
+[Réf: http://toomuchdata.com/2012/06/25/how-to-install-python-2-7-3-on-centos-6-2/](http://toomuchdata.com/2012/06/25/how-to-install-python-2-7-3-on-centos-6-2/)
 
-Verifier que gcc est installe, sinon:
-    yum install gcc
+La version python 2.4.3 de l'os, nécessaire pour pas mal de programmes, est
+/usr/bin/python.
 
-Readline: yum install readline-devel.x86_64 readline-devel.i386
-Zlib: yum install zlib-devel.x86_64 zlib-devel.i386
-Sqlite (for iPython): yum install sqlite.x86_64 sqlite-devel.x86_64
-Ssl (if needed): yum install openssl-devel.i386 openssl-devel.x86_64
+Installer les dépendances:
 
-Failed to build sqlite3 (need a patch):
+    yum groupinstall "Development tools"  # big but requested to enable all features in python
+    yum install gcc zlib-devel bzip2-devel openssl-devel ncurses-devel readline-devel sqlite sqlite-devel
+    yum install readline-devel.x86_64 readline-devel.i386
+    yum install zlib-devel.x86_64 zlib-devel.i386
+    yum install sqlite.x86_64 sqlite-devel.x86_64  # sqlite is requested by ipython
+    yum install openssl-devel.i386 openssl-devel.x86_64  # optional
+
+If failure when building sqlite3 (need a patch):
+
     wget -O patch_sqlite https://raw.github.com/gist/2727063/
     cat patch_sqlite | patch -p1
 
-wget http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tar.bz2
-Python 2.7.3: "./configure", "make", "su -c 'make (alt)install'" -> /usr/local/bin/python
-Make altinstall if you care overwriting a previous python installation
+Compiler Python:
 
-### Installer les setuptools ###
-Installer de préférence pip qui remplace en mieux easy_install:
-    yum install python-pip.noarch  # Pip installs packages
+    wget http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tar.bz2
+    ./configure
+    make
+    # use 'make altinstall' if you care overwriting a previous python installation
+    su -c 'make install' # installation dans /usr/local/bin/python
 
-Installer et configurer Virtualenv (Linux)
--------------------------------------------------------------------------------
-### Installer et configurer virtualenv ###
-http://sametmax.com/les-environnement-virtuels-python-virtualenv-et-virtualenvwrapper/
+Installer pip: _TODO_
 
-pip install virtualenv
+### Installer et configurer Virtualenv ###
+[Réf: http://sametmax.com/les-environnement-virtuels-python-virtualenv-et-virtualenvwrapper/](http://sametmax.com/les-environnement-virtuels-python-virtualenv-et-virtualenvwrapper/)
 
-Creer un environnement virtuel:
+Installer virtualenv avec pip:
+
+    pip install virtualenv
+
+Créer un environnement virtuel:
+
     mkvirtualenv --system-site-packages --prompt '[libhydro]' ~/.virtualenvs/libhydro
-    OU
+
+ou
+
     virtualenv --system-site-packages (dest_dir)
-On peux utiliser les paquets de l'environnement de base avec --system-site-packages
+
+On peut:
+    * utiliser les paquets de l'environnement de base avec --system-site-packages
 (ces paquets sont surchargés par ceux du virtualenv)
-On peux forcer l'interpréteur à utiliser avec -p (python path)
-On peux spécifier un prompt spécifique avec --prompt=(prompt)
+    * forcer l'interpréteur à utiliser avec -p (python path)
+    * spécifier un prompt spécifique avec --prompt=(prompt)
 
 Pour utiliser l'environnement virtuel:
-    # soit utiliser la commande 'source (virtualenv)/bin/activate' | 'deactivate' pour sortir (!! commande générale)
-    # soit modifier le python PATH
-    # utiliser virtualenvwrapper
+    * soit utiliser la commande 'source (virtualenv)/bin/activate' | 'deactivate' pour sortir (!! commande générale)
+    * soit modifier le python PATH
+    * utiliser virtualenvwrapper
 
-Installer les dépendances dans l'environnement virtuel (Linux)
--------------------------------------------------------------------------------
-Numpy
-    install Numpy first ! (c module, could be tricky)
-    could need: yum install python-devel
+### Installer les dépendances de libhydro dans l'environnement virtuel ###
+Numpy:
+
+Install Numpy first ! (c module, could be tricky).
+Could need the python-devel package.
+
     (virtualenv)/bin/pip install numpy
 
-    !!! Suppress numpy.loadtxt() inappropriate warnings: !!!
-    * vi (python)/lib/python2.7/site-packages/numpy-1.6.2-py2.7-linux-x86_64.egg/numpy/lib/npyio.py
-            OU    /lib/python2.7/site-packages/numpy/lib/npyio.py
+Il inappropriate warnings from numpy.loadtxt():
+   * edit
+       (python)/lib/python2.7/site-packages/numpy-1.6.2-py2.7-linux-x86_64.egg/numpy/lib/npyio.py
+     or
+       /lib/python2.7/site-packages/numpy/lib/npyio.py
     * comment line 773 '''warnings.warn('loadtxt: Empty input file: "%s"' % fname)'''
     * comment line 1311 '''warnings.warn('genfromtxt: Empty input file: "%s"' % fname)'''
 
-Pandas (do not forget the 's' !!)
-    pip install pandas
-    (dependencies python-dateutil, pytz and six)
+Pandas (do not forget the 's' !!):
+
+    pip install pandas  # dependencies python-dateutil, pytz and six
 
 Lxml:
+
     sudo yum install libxslt-devel.x86_64 libxml2-devel.x86_64
     pip install lxml  # 3.2.3
 
 Suds (version suds-jurko):
+
    pip install suds-jurko
 
 Check with pip freeze:
-    pip freeze:
+
+    pip freeze
         numpy==1.7.1
         pandas==0.11.0
         lxml==3.2.3
@@ -182,3 +197,6 @@ Check with pip freeze:
         six==1.3.0
 
     pip install -r (pip_freeze_file)
+
+### Installer libhydro ###
+    python setup.py install
