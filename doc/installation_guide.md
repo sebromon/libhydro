@@ -22,9 +22,10 @@ Les 2 variables à déclarer sont:
     https_proxy=http://direct.proxy.i2:8080
 
 On peut le faire au choix:
+
   * dans les variables d'environnement (clic droit sur le poste de travail,
     propriétés, avancé, variables d'environnement, variables utilisateur)
-  * dans un fichier .condarc ([Réf: http://conda.pydata.org/docs/config.html)(http://conda.pydata.org/docs/config.htm))
+  * dans un fichier .condarc ([Réf: http://conda.pydata.org/docs/config.html](http://conda.pydata.org/docs/config.htm))
 
 ### Installer les pré-requis à libhydro ###
 Installer les pré-requis pour libhydro:
@@ -32,6 +33,7 @@ Installer les pré-requis pour libhydro:
     conda install pandas lxml
 
 En profiter pour installer d'autres paquets utiles:
+
   * _ipython_, un "powerful interactive shell"
   * _spider_, un editeur "for the Python language with advanced editing, interactive testing, debugging and introspection features"
 
@@ -66,6 +68,7 @@ Utiliser python2.7.5.msi
 Pour les dépendances suivantes nécessitant une compilation, il est préférable
 d'utiliser des paquets déjà construits, disponibles sur Pypi ou
 [ici](http://www.lfd.uci.edu/~gohlke/pythonlibs/):
+
   * numpy
   * python-dateutil
   * pandas
@@ -75,12 +78,15 @@ d'utiliser des paquets déjà construits, disponibles sur Pypi ou
 [Réf: http://www.pip-installer.org/en/latest/installing.html](http://www.pip-installer.org/en/latest/installing.html)
 
 Récupérer le paquet 'ez_setup.py' et l'installer avec la commande:
+
     python ez_setup.py
 
 Récupérer le paquet 'get-pip.py' et l'installer avec:
+
     python get-pip.py  # need the proxy !
 
 Mettre à jour les setuptools:
+
     pip install --upgrade setuptools
 
 ### Installer libhydro ###
@@ -148,12 +154,14 @@ ou
     virtualenv --system-site-packages (dest_dir)
 
 On peut:
+
   * utiliser les paquets de l'environnement de base avec --system-site-packages
 (ces paquets sont surchargés par ceux du virtualenv)
   * forcer l'interpréteur à utiliser avec -p (python path)
   * spécifier un prompt spécifique avec --prompt=(prompt)
 
 Pour utiliser l'environnement virtuel:
+
   * soit utiliser la commande 'source (virtualenv)/bin/activate' | 'deactivate' pour sortir (!! commande générale)
   * soit modifier le python PATH
   * utiliser virtualenvwrapper
@@ -167,6 +175,7 @@ Could need the python-devel package.
     (virtualenv)/bin/pip install numpy
 
 Il inappropriate warnings from numpy.loadtxt():
+
  * edit the npyio.py file
     (can be in (python)/lib/python2.7/site-packages/numpy-1.6.2-py2.7-linux-x86_64.egg/numpy/lib/
     or /lib/python2.7/site-packages/numpy/lib/)
@@ -184,7 +193,7 @@ Il inappropriate warnings from numpy.loadtxt():
 
 #### Suds (version suds-jurko) ####
 
-   pip install suds-jurko
+    pip install suds-jurko
 
 #### Check or install with pip freeze ###
 
