@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for xml.xml.
 
 To run all tests just type:
-    './test_conv_xml_xml.py' or 'python test_conv_xml_xml.py'
+    python -m unittest test_conv_xml_xml
 
 To run only a class test:
     python -m unittest test_conv_xml_xml.TestClass
 
 To run only a specific test:
-    python -m unittest test_conv_xml_xml.TestClass
     python -m unittest test_conv_xml_xml.TestClass.test_method
 
 """
@@ -344,8 +342,3 @@ class TestMessage(unittest.TestCase):
             msg.write,
             *((self.tmp_file), )
         )
-
-
-#-- main ----------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()

@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for encoding problems.
 
 To run all tests just type:
-    './test_encoding.py' or 'python test_encoding.py'
+    python -m unittest test_encoding
 
 To run only a class test:
     python -m unittest test_encoding.TestClass
 
 To run only a specific test:
-    python -m unittest test_encoding.TestClass
     python -m unittest test_encoding.TestClass.test_method
 
 """
@@ -100,8 +98,3 @@ class TestWrite2tty(unittest.TestCase):
             self.fname, mode='w', encoding='cp1252', errors='replace'
         ) as f:
             f.write(self.libelle)
-
-
-#-- main ----------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()

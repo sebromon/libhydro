@@ -35,6 +35,7 @@ __date__ = """2014-07-11"""
 
 #-- todos ---------------------------------------------------------------------
 # PROGRESS - Sitemeteo 50% - Grandeurmeteo 10% - Visite 0% - Classequalite 0%
+# TODO - add navigability for Grandeurmeteo => Sitemeteo
 
 
 #-- class Sitemeteo -----------------------------------------------------------
@@ -72,6 +73,8 @@ class Sitemeteo(object):
     #images
     #rolecontact
     #soussecteurhydro
+
+    #visites
 
     def __init__(
         self, code, libelle=None, libelleusuel=None, coord=None, commune=None,
@@ -244,7 +247,8 @@ class Grandeurmeteo(object):
     # pdt
     # dtmaj
 
-    # qualites
+    # classesqualites
+
     # valeursseuils
 
     typegrandeur = _composant.Nomenclatureitem(nomenclature=523)
@@ -285,3 +289,28 @@ class Grandeurmeteo(object):
                 'ascii',
                 'replace'
             )
+
+
+#-- class Visite --------------------------------------------------------------
+# class Visite(object):
+#
+#     raise NotImplementedError
+#
+# Properties:
+#     dt
+#     contact (visiteur)
+#     methode
+#     modop
+#     sitemeteo
+
+
+#-- class Classequalite -------------------------------------------------------
+# class Classequalite(object):
+#
+#     raise NotImplementedError
+
+# Properties:
+#     classe
+#     visite
+#     dtdeb
+#     dtfin

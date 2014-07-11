@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for evenement.
 
 To run all tests just type:
-    './test_core_evenement.py' or 'python test_core_evenement.py'
+    python -m unittest test_core_evenement
 
 To run only a class test:
     python -m unittest test_core_evenement.TestClass
 
 To run only a specific test:
-    python -m unittest test_core_evenement.TestClass
     python -m unittest test_core_evenement.TestClass.test_method
 
 """
@@ -165,8 +163,3 @@ class Testevenement(unittest.TestCase):
             e.__setattr__,
             *('publication', 9999)
         )
-
-
-#-- main ----------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()

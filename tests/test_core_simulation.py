@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for simulation.
 
 To run all tests just type:
-    './test_core_simulation.py' or 'python test_core_simulation.py'
+    python -m unittest test_core_simulation
 
 To run only a class test:
     python -m unittest test_core_simulation.TestClass
 
 To run only a specific test:
-    python -m unittest test_core_simulation.TestClass
     python -m unittest test_core_simulation.TestClass.test_method
 
 """
@@ -441,8 +439,3 @@ class TestSimulation(unittest.TestCase):
             # **{'previsions': prvs}
             **{'previsions': [110, 20, 30]}
         )
-
-
-#-- main ----------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()

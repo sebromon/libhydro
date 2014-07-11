@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for sitehydro.
 
 To run all tests just type:
-    './test_core_sitehydro.py' or 'python test_core_sitehydro.py'
+    python -m unittest test_core_sitehydro
 
 To run only a class test:
     python -m unittest test_core_sitehydro.TestClass
 
 To run only a specific test:
-    python -m unittest test_core_sitehydro.TestClass
     python -m unittest test_core_sitehydro.TestClass.test_method
 
 """
@@ -597,8 +595,3 @@ class TestTronconvigilance(unittest.TestCase):
         libelle = 'Loire amont'
         t = sitehydro.Tronconvigilance(code=code, libelle=libelle)
         self.assertTrue(t.__str__().rfind('Troncon') > -1)
-
-
-#-- main ----------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()

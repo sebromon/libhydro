@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for obshydro.
 
 To run all tests just type:
-    './test_core_obshydro.py' or 'python test_core_obshydro.py'
+    python -m unittest test_core_obshydro
 
 To run only a class test:
     python -m unittest test_core_obshydro.TestClass
 
 To run only a specific test:
-    python -m unittest test_core_obshydro.TestClass
     python -m unittest test_core_obshydro.TestClass.test_method
 
 """
@@ -418,8 +416,3 @@ class TestSerie(unittest.TestCase):
                 'strict': True
             }
         )
-
-
-#-- main ----------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()

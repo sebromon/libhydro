@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for composant.
 
 To run all tests just type:
-    './test_core_composant.py' or 'python test_core_composant.py'
+    python -m unittest test_core_composant
 
 To run only a class test:
     python -m unittest test_core_composant.TestClass
 
 To run only a specific test:
-    python -m unittest test_core_composant.TestClass
     python -m unittest test_core_composant.TestClass.test_method
 
 """
@@ -578,8 +576,3 @@ class TestIsCodeInsee(unittest.TestCase):
             composant.is_code_insee,
             **{'code': '233305', 'length': -1, 'raises': True}
         )
-
-
-#-- main ----------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()

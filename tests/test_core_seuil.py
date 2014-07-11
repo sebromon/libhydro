@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for seuil.
 
 To run all tests just type:
-    './test_core_seuil.py' or 'python test_core_seuil.py'
+    python -m unittest test_core_seuil
 
 To run only a class test:
     python -m unittest test_core_seuil.TestClass
 
 To run only a specific test:
-    python -m unittest test_core_seuil.TestClass
     python -m unittest test_core_seuil.TestClass.test_method
 
 """
@@ -394,7 +392,3 @@ class TestValeurseuil(unittest.TestCase):
             Valeurseuil,
             **{'valeur': 'not a number'}
         )
-
-#-- main ----------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()

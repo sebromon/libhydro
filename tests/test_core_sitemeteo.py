@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for sitemeteo.
 
 To run all tests just type:
-    './test_core_sitemeteo.py' or 'python test_core_sitemeteo.py'
+    python -m unittest test_core_sitemeteo
 
 To run only a class test:
     python -m unittest test_core_sitemeteo.TestClass
 
 To run only a specific test:
-    python -m unittest test_core_sitemeteo.TestClass
     python -m unittest test_core_sitemeteo.TestClass.test_method
 
 """
@@ -279,8 +277,3 @@ class TestGrandeurmeteo(unittest.TestCase):
             g.__setattr__,
             *('typegrandeur', 'xxxx')
         )
-
-
-#-- main ----------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()

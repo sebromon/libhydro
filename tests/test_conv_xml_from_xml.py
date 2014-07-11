@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for xml.from_xml.
 
 To run all tests just type:
-    './test_conv_xml_from_xml.py' or 'python test_conv_xml_from_xml.py'
+    python -m unittest test_conv_xml_from_xml
 
 To run only a class test:
     python -m unittest test_conv_xml_from_xml.TestClass
 
 To run only a specific test:
-    python -m unittest test_conv_xml_from_xml.TestClass
     python -m unittest test_conv_xml_from_xml.TestClass.test_method
 
 """
@@ -666,8 +664,3 @@ class TestFromXmlSimulations(unittest.TestCase):
         self.assertEqual(len(simulation.previsions.index), 4)
         self.assertEqual(len(simulation.previsions.swaplevel(0, 1)[0]), 2)
         self.assertEqual(len(simulation.previsions.swaplevel(0, 1)[100]), 2)
-
-
-#-- main ----------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()

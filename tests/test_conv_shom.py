@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for shom converter.
 
 To run all tests just type:
-    './test_conv_shom.py' or 'python test_conv_shom.py'
+    python -m unittest test_conv_shom
 
 To run only a class test:
     python -m unittest test_conv_shom.TestClass
 
 To run only a specific test:
-    python -m unittest test_conv_shom.TestClass
     python -m unittest test_conv_shom.TestClass.test_method
 
 """
@@ -134,7 +132,10 @@ class TestSerieFromHSF(unittest.TestCase):
         )
         self.assertEqual(len(serie.observations), 144)
         self.assertEqual(
-            (serie.observations.irow(10).item(), serie.observations.irow(10).name),
+            (
+                serie.observations.irow(10).item(),
+                serie.observations.irow(10).name
+            ),
             (3.71, datetime.datetime(2013, 1, 23, 1, 40))
         )
 
@@ -154,7 +155,10 @@ class TestSerieFromHSF(unittest.TestCase):
         )
         self.assertEqual(len(serie.observations), 3)
         self.assertEqual(
-            (serie.observations.irow(1).item(), serie.observations.irow(1).name),
+            (
+                serie.observations.irow(1).item(),
+                serie.observations.irow(1).name
+            ),
             (3.34, datetime.datetime(2013, 1, 23, 12, 10))
         )
 
@@ -172,7 +176,10 @@ class TestSerieFromHSF(unittest.TestCase):
         )
         self.assertEqual(len(serie.observations), 144)
         self.assertEqual(
-            (serie.observations.irow(73).item(), serie.observations.irow(73).name),
+            (
+                serie.observations.irow(73).item(),
+                serie.observations.irow(73).name
+            ),
             (3.34, datetime.datetime(2013, 1, 23, 12, 10))
         )
 
@@ -226,8 +233,3 @@ class TestSerieFromHSF(unittest.TestCase):
             shom.serie_from_hfs,
             **{'src': SRC, 'stationhydro': 33}
         )
-
-
-#-- main ----------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()
