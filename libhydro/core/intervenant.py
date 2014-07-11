@@ -15,6 +15,7 @@ from __future__ import (
 )
 
 import sys as _sys
+import locale as _locale
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 from . import _composant
@@ -23,8 +24,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2a"""
-__date__ = """2014-03-02"""
+__version__ = """0.2b"""
+__date__ = """2014-07-11"""
 
 #HISTORY
 #V0.2 - 2014-03-02
@@ -209,7 +210,12 @@ class Intervenant(object):
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
-            return self.__unicode__().encode(_sys.stdout.encoding)
+            return self.__unicode__().encode(
+                _sys.stdout.encoding or
+                _locale.getpreferredencoding() or
+                'ascii',
+                'replace'
+            )
 
 
 #-- class Contact -------------------------------------------------------------
@@ -330,7 +336,12 @@ class Contact(object):
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
-            return self.__unicode__().encode(_sys.stdout.encoding)
+            return self.__unicode__().encode(
+                _sys.stdout.encoding or
+                _locale.getpreferredencoding() or
+                'ascii',
+                'replace'
+            )
 
 
 # -- Class Adresse ------------------------------------------------------------

@@ -24,6 +24,7 @@ from __future__ import (
 )
 
 import sys as _sys
+import locale as _locale
 import weakref as _weakref
 import numpy as _numpy
 import datetime as _datetime
@@ -34,8 +35,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.8c"""
-__date__ = """2014-07-07"""
+__version__ = """0.8d"""
+__date__ = """2014-07-11"""
 
 #HISTORY
 #V0.8 - 2014-02-01
@@ -258,7 +259,12 @@ class Coord(object):
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
-            return self.__unicode__().encode(_sys.stdout.encoding)
+            return self.__unicode__().encode(
+                _sys.stdout.encoding or
+                _locale.getpreferredencoding() or
+                'ascii',
+                'replace'
+            )
 
 
 #-- functions -----------------------------------------------------------------

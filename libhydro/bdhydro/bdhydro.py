@@ -20,6 +20,7 @@ from __future__ import (
 )
 
 import sys as _sys
+import locale as _locale
 import suds as _suds
 from lxml import etree as _etree
 
@@ -30,8 +31,8 @@ from ..conv.xml import Message as _Message
 __author__ = """Camilo.montes @ Synapse Informatique"""
 __maintainer__ = """Philippe Gouin """ \
                  """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2a"""
-__date__ = """2014-04-22"""
+__version__ = """0.2b"""
+__date__ = """2014-07-11"""
 
 #HISTORY
 #V0.1 - 2013-10-31
@@ -55,7 +56,12 @@ class BdhydroError(Exception):
         if _sys.version[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
-            return self.__unicode__().encode(_sys.stdout.encoding)
+            return self.__unicode__().encode(
+                _sys.stdout.encoding or
+                _locale.getpreferredencoding() or
+                'ascii',
+                'replace'
+            )
 
 
 #-- class Error ---------------------------------------------------------------
@@ -119,7 +125,12 @@ class _Report(object):
         if _sys.version[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
-            return self.__unicode__().encode(_sys.stdout.encoding)
+            return self.__unicode__().encode(
+                _sys.stdout.encoding or
+                _locale.getpreferredencoding() or
+                'ascii',
+                'replace'
+            )
 
     @staticmethod
     def fromxml(xml):

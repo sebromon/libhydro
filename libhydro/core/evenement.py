@@ -14,6 +14,7 @@ from __future__ import (
 )
 
 import sys as _sys
+import locale as _locale
 import datetime as _datetime
 
 from . import _composant
@@ -22,8 +23,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """1.0a"""
-__date__ = """2014-03-02"""
+__version__ = """1.0b"""
+__date__ = """2014-07-11"""
 
 #HISTORY
 #V1.0 - 2014-03-02
@@ -152,4 +153,9 @@ class Evenement(object):
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
-            return self.__unicode__().encode(_sys.stdout.encoding)
+            return self.__unicode__().encode(
+                _sys.stdout.encoding or
+                _locale.getpreferredencoding() or
+                'ascii',
+                'replace'
+            )

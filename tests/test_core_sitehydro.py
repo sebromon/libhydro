@@ -34,8 +34,8 @@ from libhydro.core import _composant as composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1j"""
-__date__ = """2014-03-25"""
+__version__ = """0.1k"""
+__date__ = """2014-07-11"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -181,10 +181,6 @@ class TestSitehydro(unittest.TestCase):
         s = sitehydro.Sitehydro(code=0, strict=False)
         self.assertTrue(s.__str__().rfind('Site') > -1)
 
-    @unittest.skipIf(
-        (sys.stdout.encoding == 'cp850'),
-        "windows console can't deal with these characters"
-    )
     def test_str_02(self):
         """Test __str__ with unicode."""
         s = sitehydro.Sitehydro(code='A0445533')

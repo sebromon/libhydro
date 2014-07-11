@@ -22,6 +22,7 @@ from __future__ import (
 )
 
 import sys as _sys
+import locale as _locale
 import datetime as _datetime
 import collections as _collections
 
@@ -193,7 +194,12 @@ class Scenario(object):
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
-            return self.__unicode__().encode('utf8')
+            return self.__unicode__().encode(
+                _sys.stdout.encoding or
+                _locale.getpreferredencoding() or
+                'ascii',
+                'replace'
+            )
 
 
 # -- tests function -----------------------------------------------------------

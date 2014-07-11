@@ -17,6 +17,7 @@ from __future__ import (
 )
 
 import sys as _sys
+import locale as _locale
 
 from . import _composant
 
@@ -25,8 +26,8 @@ from . import _composant
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.3d"""
-__date__ = """2014-07-07"""
+__version__ = """0.3e"""
+__date__ = """2014-07-11"""
 
 #HISTORY
 #V0.3 - 2014-02-20
@@ -391,7 +392,12 @@ class Sitehydro(_Site_or_station):
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
-            return self.__unicode__().encode(_sys.stdout.encoding)
+            return self.__unicode__().encode(
+                _sys.stdout.encoding or
+                _locale.getpreferredencoding() or
+                'ascii',
+                'replace'
+            )
 
 
 #-- class Stationhydro --------------------------------------------------------
@@ -599,7 +605,12 @@ class Stationhydro(_Site_or_station):
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
-            return self.__unicode__().encode(_sys.stdout.encoding)
+            return self.__unicode__().encode(
+                _sys.stdout.encoding or
+                _locale.getpreferredencoding() or
+                'ascii',
+                'replace'
+            )
 
 
 #-- class Capteur -------------------------------------------------------------
@@ -673,7 +684,12 @@ class Capteur(_Entitehydro):
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
-            return self.__unicode__().encode(_sys.stdout.encoding)
+            return self.__unicode__().encode(
+                _sys.stdout.encoding or
+                _locale.getpreferredencoding() or
+                'ascii',
+                'replace'
+            )
 
 
 #-- class Tronconvigilance ----------------------------------------------------
@@ -727,7 +743,12 @@ class Tronconvigilance(object):
         if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
             return self.__unicode__()
         else:  # Python 2
-            return self.__unicode__().encode(_sys.stdout.encoding)
+            return self.__unicode__().encode(
+                _sys.stdout.encoding or
+                _locale.getpreferredencoding() or
+                'ascii',
+                'replace'
+            )
 
 
 # -- config -------------------------------------------------------------------
