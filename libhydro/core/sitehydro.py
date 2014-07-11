@@ -189,7 +189,7 @@ class _Site_or_station(_Entitehydro):
                         # instanciate with a dict
                         self._coord = _composant.Coord(**coord)
                     except (TypeError, ValueError, AttributeError):
-                        raise TypeError('coord must be a list or a dict')
+                        raise TypeError('coord incorrect')
 
 
 #-- class Sitehydro -----------------------------------------------------------

@@ -25,8 +25,8 @@ from __future__ import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1g"""
-__date__ = """2014-02-10"""
+__version__ = """0.1h"""
+__date__ = """2014-07-11"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -138,16 +138,33 @@ NOMENCLATURE = {
     # Type de mesure du capteur hydro
     520: {'H': 'Hauteur', 'Q': 'Debit'},
 
+    # Grandeur meteorologique
+    523: {
+        'RR': "Cumul de precipitations",
+        'TA': "Temperature de l'air",
+        'PA': "Pression atmospherique",
+        'HN': "Hauteur de neige",
+        'EE': "Equivalent en eau",
+        'VV': "Vitesse du vent",
+        'DV': "Direction du vent",
+        'EP': "Evapotranspiration potentielle",
+        'ER': "Evapotranspiration reelle",
+        'EM': "Evapotranspiration maximale",
+        'RA': "Rayonnement",
+        'HR': "Humidite relative",
+        'HA': "Humidite absolue"
+    },
+
     # Type du modele de prevision
     525: {
-        0: 'Inconnu',
+        0: "Inconnu",
         1: "Prevision d'expert",
-        2: 'Modele hydrologique empirique',
-        3: 'Modele hydrologique a base physique',
-        4: 'Modele hydraulique',
-        5: 'Modele statistique',
-        6: 'Enchainement de modeles',
-        7: 'Modele a propagation empirique'
+        2: "Modele hydrologique empirique",
+        3: "Modele hydrologique a base physique",
+        4: "Modele hydraulique",
+        5: "Modele statistique",
+        6: "Enchainement de modeles",
+        7: "Modele a propagation empirique"
     },
 
     # Type de seuil
@@ -171,16 +188,21 @@ NOMENCLATURE = {
 
     # Type de site hydrometrique
     530: {
-        'REEL': 'Site reel', 'FICTIF': 'Site fictif',
-        'MAREGRAPHE': 'Maregraphe', 'PONCTUEL': 'Site de jaugeage ponctuel',
-        'VIRTUEL': 'Site virtuel',
-        'RECONSTITUE': 'Site a debit moyen mensuel reconstitue',
-        'PLANDEAU': "Plan d'eau", 'SOURCE': 'Source'
+        'REEL': "Site reel",
+        'FICTIF': "Site fictif",
+        'MAREGRAPHE': "Maregraphe",
+        'PONCTUEL': "Site de jaugeage ponctuel",
+        'VIRTUEL': "Site virtuel",
+        'RECONSTITUE': "Site a debit moyen mensuel reconstitue",
+        'PLANDEAU': "Plan d'eau",
+        'SOURCE': "Source"
     },
 
     # Type de station hydrometrique
     531: {
-        'LIMNI': 'Limnimetre', 'DEB': 'Debitmetre', 'HC': 'Hauteur calculee',
+        'LIMNI': 'Limnimetre',
+        'DEB': 'Debitmetre',
+        'HC': 'Hauteur calculee',
         'LIMNIMERE': 'Limnimetre station mere',
         'LIMNIFILLE': 'Limnimetre station fille'
     },

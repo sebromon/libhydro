@@ -3,7 +3,9 @@
 
 Ce module contient les classes:
     # Sitemeteo
-    # Grandeur
+    # Grandeurmeteo
+    # Visite - not implemented
+    # Classequalite - not implemented
 
 """
 #-- imports -------------------------------------------------------------------
@@ -23,7 +25,7 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1b"""
+__version__ = """0.1c"""
 __date__ = """2014-07-11"""
 
 #HISTORY
@@ -32,8 +34,7 @@ __date__ = """2014-07-11"""
 
 
 #-- todos ---------------------------------------------------------------------
-# PROGRESS - Sitemeteo 0% - Grandeurmeteo 0%
-# TODO - classes # Visite and # Qualite
+# PROGRESS - Sitemeteo 50% - Grandeurmeteo 10% - Visite 0% - Classequalite 0%
 
 
 #-- class Sitemeteo -----------------------------------------------------------
@@ -93,6 +94,7 @@ class Sitemeteo(object):
         """
 
         # -- simple properties --
+        self._strict = bool(strict)
         self.libelle = unicode(libelle) \
             if (libelle is not None) else None
         self.libelleusuel = unicode(libelleusuel) \
@@ -133,54 +135,71 @@ class Sitemeteo(object):
         except:
             raise
 
-    # # -- property communes --
-    # @property
-    # def communes(self):
-    #     """Return codes communes."""
-    #     return self._communes
+    # -- property coord --
+    @property
+    def coord(self):
+        """Return coord."""
+        return self._coord
 
-    # @communes.setter
-    # def communes(self, communes):
-    #     """Set code commune."""
-    #     self._communes = []
-    #     # None case
-    #     if communes is None:
-    #         return
-    #     # one commune, we make a list with it
-    #     if _composant.is_code_commune(communes, raises=False):
-    #         communes = [communes]
-    #     # an iterable of communes
-    #     for commune in communes:
-    #         if _composant.is_code_commune(commune):
-    #             self._communes.append(unicode(commune))
+    @coord.setter
+    def coord(self, coord):
+        """Set coord."""
+        self._coord = None
+        if coord is not None:
+            if isinstance(coord, _composant.Coord):
+                self._coord = coord
+            else:
+                try:
+                    # instanciate with a list
+                    self._coord = _composant.Coord(*coord)
+                except (TypeError, ValueError, AttributeError):
+                    try:
+                        # instanciate with a dict
+                        self._coord = _composant.Coord(**coord)
+                    except (TypeError, ValueError, AttributeError):
+                        raise TypeError('coord incorrect')
 
-    # # -- property tronconsvigilance --
-    # @property
-    # def tronconsvigilance(self):
-    #     """Return tronconsvigilance."""
-    #     return self._tronconsvigilance
+    # -- property commune --
+    @property
+    def commune(self):
+        """Return code commune."""
+        return self._commune
 
-    # @tronconsvigilance.setter
-    # def tronconsvigilance(self, tronconsvigilance):
-    #     """Set tronconsvigilance."""
-    #     self._tronconsvigilance = []
-    #     # None case
-    #     if tronconsvigilance is None:
-    #         return
-    #     # one troncon, we make a list with it
-    #     if isinstance(tronconsvigilance, Tronconvigilance):
-    #         tronconsvigilance = [tronconsvigilance]
-    #     # an iterable of tronconsvigilance
-    #     for tronconvigilance in tronconsvigilance:
-    #         # some checks
-    #         if self._strict:
-    #             if not isinstance(tronconvigilance, Tronconvigilance):
-    #                 raise TypeError(
-    #                     'tronconsvigilance must be a Tronconvigilance '
-    #                     'or an iterable of Tronconvigilance'
-    #                 )
-    #         # add station
-    #         self._tronconsvigilance.append(tronconvigilance)
+    @commune.setter
+    def commune(self, commune):
+        """Set code commune."""
+        if commune is not None:
+            commune = unicode(commune)
+            _composant.is_code_insee(commune, length=5)
+        self._commune = commune
+
+    # -- property grandeurs --
+    @property
+    def grandeurs(self):
+        """Return grandeurs."""
+        return self._grandeurs
+
+    @grandeurs.setter
+    def grandeurs(self, grandeurs):
+        """Set grandeurs."""
+        self._grandeurs = []
+        # None case
+        if grandeurs is None:
+            return
+        # one grandeur, we make a list with it
+        if isinstance(grandeurs, Grandeurmeteo):
+            grandeurs = [grandeurs]
+        # an iterable of grandeurs
+        for grandeur in grandeurs:
+            # some checks
+            if self._strict:
+                if not isinstance(grandeur, Grandeurmeteo):
+                    raise TypeError(
+                        'grandeurs must be a Grandeur or an iterable '
+                        'of Grandeur'
+                    )
+            # add capteur
+            self._grandeurs.append(grandeur)
 
     # -- other methods --
     def __unicode__(self):
@@ -191,6 +210,69 @@ class Sitemeteo(object):
             len(self.grandeurs),
             '' if (len(self.grandeurs) < 2) else 's'
         )
+
+    def __str__(self):
+        """Return string representation."""
+        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
+            return self.__unicode__()
+        else:  # Python 2
+            return self.__unicode__().encode(
+                _sys.stdout.encoding or
+                _locale.getpreferredencoding() or
+                'ascii',
+                'replace'
+            )
+
+
+#-- class Grandeurmeteo -------------------------------------------------------
+class Grandeurmeteo(object):
+
+    """Classe Grandeurmeteo.
+
+    Classe pour manipuler des grandeurs meteorologiques.
+
+    Proprietes:
+        typegrandeur (string parmi NOMENCLATURE[523])
+
+    """
+
+    # Grandeurmeteo other properties
+
+    # dtes
+    # dths
+    # essai
+    # pdt
+    # dtmaj
+
+    # qualites
+    # valeursseuils
+
+    typegrandeur = _composant.Nomenclatureitem(nomenclature=523)
+
+    def __init__(self, typegrandeur, strict=True):
+        """Initialisation.
+
+        Arguments:
+            typegrandeur (string parmi NOMENCLATURE[523])
+            strict (bool, defaut True) = le mode permissif permet de lever les
+                controles de validite du type
+
+        """
+
+        # -- simple properties --
+        self._strict = bool(strict)
+
+        # adjust the descriptor
+        vars(self.__class__)['typegrandeur'].strict = self._strict
+        vars(self.__class__)['typegrandeur'].required = self._strict
+
+        # -- descriptors --
+        self.typegrandeur = typegrandeur
+
+    # -- other methods --
+    def __unicode__(self):
+        """Return unicode representation."""
+        return 'Grandeurmeteo {0}'.format(self.typegrandeur or '<sans type>')
 
     def __str__(self):
         """Return string representation."""

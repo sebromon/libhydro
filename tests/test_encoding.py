@@ -54,6 +54,7 @@ class TestWrite2tty(unittest.TestCase):
         self.fname = '~written_test_file_for_encoding_tests.tmp'
 
         # DEBUG - give some context
+        # print('\n%s' % self.libelle)
         # print('sys.stdout.encoding: %s' % sys.stdout.encoding)
         # import locale
         # print(
@@ -69,24 +70,34 @@ class TestWrite2tty(unittest.TestCase):
         except:
             pass
 
-    def test_regular_tty(self):
-        """Print to the TTY."""
-        print('\n%s' % self.libelle)
-
-    def test_redirected_tty(self):
-        """Emulate a print to a file redirected TTY."""
-        #With a shell redirection, sys.stdout.encoding is None.
-        #the __str__ method switch to locale.getpreferredencoding
-        #and if it'd None again to 'ascii'
+    def test_unix_tty(self):
+        """Print to a unix TTY."""
         with codecs.open(
-            self.fname, mode='wt', encoding='ascii', errors='replace'
+            self.fname, mode='w', encoding='utf-8', errors='replace'
         ) as f:
             f.write(self.libelle)
 
-    def test_win_tty(self):
+    def test_windows_tty(self):
         """Print to a windows TTY."""
         with codecs.open(
-            self.fname, mode='wt', encoding='cp850', errors='replace'
+            self.fname, mode='w', encoding='cp852', errors='replace'
+        ) as f:
+            f.write(self.libelle)
+
+    def test_redirected_tty(self):
+        """Emulate a print to a file redirected TTY."""
+        #With a shell redirection, sys.stdout.encoding is None and
+        #the __str__ method switch to locale.getpreferredencoding and
+        #if it's None it switches again to 'ascii'
+        with codecs.open(
+            self.fname, mode='w', encoding='ascii', errors='replace'
+        ) as f:
+            f.write(self.libelle)
+
+    def test_win_gui(self):
+        """Print to a windows gui."""
+        with codecs.open(
+            self.fname, mode='w', encoding='cp1252', errors='replace'
         ) as f:
             f.write(self.libelle)
 

@@ -138,9 +138,9 @@ class Observation(_numpy.ndarray):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
         if (mth != 0) and (mth not in _NOMENCLATURE[507]):
-            raise ValueError('methode incorrecte')
+            raise ValueError('methode incorrect')
         if (qal != 16) and (qal not in _NOMENCLATURE[515]):
-            raise ValueError('qualification incorrecte')
+            raise ValueError('qualification incorrect')
         obj = _numpy.array(
             (dte, res, mth, qal, cnt),
             dtype=Observation.DTYPE
@@ -220,7 +220,7 @@ class Observations(_pandas.DataFrame):
         try:
             for obs in observations:
                 if not isinstance(obs, Observation):
-                    raise TypeError('{} in not an Observation'.format(obs))
+                    raise TypeError('{} is not an Observation'.format(obs))
                 obss.append(obs)
 
         except Exception:

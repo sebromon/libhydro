@@ -124,7 +124,7 @@ class Prevision(_numpy.ndarray):
         try:
             prb = int(prb)
             if (prb < 0) or (prb > 100):
-                raise ValueError('probabilite incorrecte')
+                raise ValueError('probabilite incorrect')
         except Exception:
             raise
         obj = _numpy.array(
@@ -221,7 +221,7 @@ class Previsions(_pandas.Series):
         try:
             for prv in previsions:
                 if not isinstance(prv, Prevision):
-                    raise TypeError('{} in not a Prevision'.format(prv))
+                    raise TypeError('{} is not a Prevision'.format(prv))
                 prvs.append(prv)
 
         except Exception:
