@@ -25,8 +25,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2014-07-11"""
+__version__ = """0.1d"""
+__date__ = """2014-07-15"""
 
 #HISTORY
 #V0.1 - 2014-07-07
@@ -35,7 +35,6 @@ __date__ = """2014-07-11"""
 
 #-- todos ---------------------------------------------------------------------
 # PROGRESS - Sitemeteo 50% - Grandeurmeteo 10% - Visite 0% - Classequalite 0%
-# TODO - add navigability for Grandeurmeteo => Sitemeteo
 
 
 #-- class Sitemeteo -----------------------------------------------------------
@@ -236,6 +235,7 @@ class Grandeurmeteo(object):
 
     Proprietes:
         typegrandeur (string parmi NOMENCLATURE[523])
+        sitemeteo (Sitemeteo)
 
     """
 
@@ -253,13 +253,14 @@ class Grandeurmeteo(object):
 
     typegrandeur = _composant.Nomenclatureitem(nomenclature=523)
 
-    def __init__(self, typegrandeur, strict=True):
+    def __init__(self, typegrandeur, sitemeteo=None, strict=True):
         """Initialisation.
 
         Arguments:
             typegrandeur (string parmi NOMENCLATURE[523])
+            sitemeteo (Sitemeteo)
             strict (bool, defaut True) = le mode permissif permet de lever les
-                controles de validite du type
+                controles de validite du sitemeteo et du type
 
         """
 
@@ -272,6 +273,24 @@ class Grandeurmeteo(object):
 
         # -- descriptors --
         self.typegrandeur = typegrandeur
+
+        # -- full properties --
+        self._sitemeteo = None
+        self._sitemeteo = sitemeteo
+
+    # -- property sitemeteo --
+    @property
+    def sitemeteo(self):
+        """Return sitemeteo."""
+        return self._sitemeteo
+
+    @sitemeteo.setter
+    def sitemeteo(self, sitemeteo):
+        """Set sitemeteo."""
+        if (sitemeteo is not None) and self._strict:
+            if not isinstance(sitemeteo, Sitemeteo):
+                raise TypeError('sitemeteo must be a Sitemeteo')
+        self._sitemeteo = sitemeteo
 
     # -- other methods --
     def __unicode__(self):

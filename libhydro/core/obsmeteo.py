@@ -54,15 +54,15 @@ import numpy as _numpy
 import pandas as _pandas
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
-from . import _composant
-from . import sitemeteo as _sitemeteo
+# from . import _composant
+# from . import sitemeteo as _sitemeteo
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1a"""
-__date__ = """2014-07-11"""
+__version__ = """0.1b"""
+__date__ = """2014-07-15"""
 
 #HISTORY
 #V0.1 - 2014-07-11
@@ -78,13 +78,14 @@ class Observation(_numpy.ndarray):
 
     """Classe observation.
 
-    Classe pour manipuler une observation elementaire.
+    Classe pour manipuler une observation meteorologique elementaire.
 
-    Subclasse de numpy.array('dte', 'res', 'mth', 'qal', 'cnt'), les elements
+    Subclasse de numpy.array('dte', 'res', 'ind', 'mth', 'qal'), les elements
     etant du type DTYPE.
 
     Date et resultat sont obligatoires, les autres elements ont une valeur par
-    defaut.
+    defaut. Pour les observations de pluie, la date est celle de la fin du
+    cumul (et la duree n'est pas indiquee ici, mais dans la Serie).
 
     Proprietes:
         dte (numpy.datetime64) = date UTC de l'observation au format
@@ -96,11 +97,11 @@ class Observation(_numpy.ndarray):
                 ou
                 np.datetime64('2000-01-01 09:28Z')
         res (numpy.float) = resultat
+        qua (int de 0 a 100, defaut 100) = indice de qualite de la mesure
         mth (numpy.int8, defaut 0) = methode d'obtention de la donnees suivant
-            la NOMENCLATURE[507])
+            la NOMENCLATURE[512])
         qal (numpy.int8, defaut 16) = qualification de la donnees suivant la
-            NOMENCLATURE[515]
-        cnt (numpy.bool, defaut True) = continuite
+            NOMENCLATURE[508]
 
     Usage:
         Getter => observation.['x'].item()
@@ -108,145 +109,160 @@ class Observation(_numpy.ndarray):
 
     """
 
-    raise NotImplementedError
+    DTYPE = _numpy.dtype([
+        (str('dte'), _numpy.datetime64(None, str('s'))),
+        (str('res'), _numpy.float),
+        (str('qua'), _numpy.int8),
+        (str('mth'), _numpy.int8),
+        (str('qal'), _numpy.int8)
+    ])
 
-    # DTYPE = _numpy.dtype([
-    #     (str('dte'), _numpy.datetime64(None, str('s'))),
-    #     (str('res'), _numpy.float),
-    #     (str('mth'), _numpy.int8),
-    #     (str('qal'), _numpy.int8),
-    #     (str('cnt'), _numpy.bool)
-    # ])
+    def __new__(cls, dte, res, qua=100, mth=0, qal=16):
+        if not isinstance(dte, _numpy.datetime64):
+            dte = _numpy.datetime64(dte, 's')
+        if not (0 <= qua <= 100):
+            raise ValueError('incorrect quality')
+        if mth not in _NOMENCLATURE[512]:
+            raise ValueError('incorrect method ')
+        if qal not in _NOMENCLATURE[508]:
+            raise ValueError('incorrect qualification')
+        obj = _numpy.array(
+            (dte, res, qua, mth, qal),
+            dtype=Observation.DTYPE
+        ).view(cls)
+        return obj
 
-    # def __new__(cls, dte, res, mth=0, qal=16, cnt=True):
-    #     if not isinstance(dte, _numpy.datetime64):
-    #         dte = _numpy.datetime64(dte, 's')
-    #     if (mth != 0) and (mth not in _NOMENCLATURE[507]):
-    #         raise ValueError('methode incorrect')
-    #     if (qal != 16) and (qal not in _NOMENCLATURE[515]):
-    #         raise ValueError('qualification incorrect')
-    #     obj = _numpy.array(
-    #         (dte, res, mth, qal, cnt),
-    #         dtype=Observation.DTYPE
-    #     ).view(cls)
-    #     return obj
+    # def __array_finalize__(self, obj):
+    #     if obj is None:
+    #         return
 
-    # # def __array_finalize__(self, obj):
-    # #     if obj is None:
-    # #         return
+    def __unicode__(self):
+        """Return unicode representation."""
+        return '''{0} le {4} a {5} UTC ''' \
+               '''(qualite {1}%, valeur obtenue par {2}, {3})'''.format(
+                   self['res'].item(),
+                   self['ind'].item(),
+                   _NOMENCLATURE[512][self['mth'].item()],
+                   _NOMENCLATURE[508][self['qal'].item()],
+                   *self['dte'].item().isoformat().split('T')
+               )
 
-    # def __unicode__(self):
-    #     """Return unicode representation."""
-    #     return '''{0} le {4} a {5} UTC ''' \
-    #            '''(valeur obtenue par {1}, {2} et {3})'''.format(
-    #                self['res'].item(),
-    #                _NOMENCLATURE[507][self['mth'].item()],
-    #                _NOMENCLATURE[515][self['qal'].item()],
-    #                'continue' if self['cnt'].item() else 'discontinue',
-    #                *self['dte'].item().isoformat().split('T')
-    #            )
-
-    # def __str__(self):
-    #     """Return string representation."""
-    #     if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-    #         return self.__unicode__()
-    #     else:  # Python 2
-    #         return self.__unicode__().encode(
-    #             _sys.stdout.encoding or
-    #             _locale.getpreferredencoding() or
-    #             'ascii',
-    #             'replace'
-    #         )
+    def __str__(self):
+        """Return string representation."""
+        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
+            return self.__unicode__()
+        else:  # Python 2
+            return self.__unicode__().encode(
+                _sys.stdout.encoding or
+                _locale.getpreferredencoding() or
+                'ascii',
+                'replace'
+            )
 
 
 #-- class Observations --------------------------------------------------------
-# class Observations(_pandas.DataFrame):
-#
-#     """Classe Observations.
-#
-#     Classe pour manipuler une collection d'observations hydrometriques, sous la
-#     forme d'un pandas.DataFrame (les objets instancies sont des DataFrame).
-#
-#     L'index est un pandas.DatetimeIndex qui represente les dates d'observation.
-#
-#     Les donnees sont contenues dans 4 colonnes du DataFrame (voir Observation).
-#
-#     Un objet Observations peut etre instancie de multiples facons a l'aide des
-#     fonctions proposees par Pandas, sous reserve de respecter le nom des
-#     colonnes et leur typage:
-#         DataFrame.from_records: constructor from tuples, also record arrays
-#         DataFrame.from_dict: from dicts of Series, arrays, or dicts
-#         DataFrame.from_csv: from CSV files
-#         DataFrame.from_items: from sequence of (key, value) pairs
-#         read_csv / read_table / read_clipboard
-#         ...
-#
-#     On peut obtenir une pandas.Series ne contenant que l'index et res avec:
-#         obs = observations.res
-#
-#     """
-#
-#     def __new__(cls, *observations):
-#         """Constructeur.
-#
-#         Arguments:
-#             observations (un nombre quelconque d'Observation)
-#
-#         Exemples:
-#             obs = Observations(obs1)  # une seule Observation
-#             obs = Observations(obs1, obs2, ..., obsn)  # n Observation
-#             obs = Observations(*observations)  #  une liste d'Observation
-#
-#         """
-#
-#         # prepare a list of observations
-#         obss = []
-#         try:
-#             for obs in observations:
-#                 if not isinstance(obs, Observation):
-#                     raise TypeError('{} is not an Observation'.format(obs))
-#                 obss.append(obs)
-#
-#         except Exception:
-#             raise
-#
-#         # prepare a tmp numpy.array
-#         array = _numpy.array(object=obss)
-#
-#         # get the pandas.DataFrame
-#         index = _pandas.Index(array['dte'], name='dte')
-#         obj = _pandas.DataFrame(
-#             data=array[list(array.dtype.names[1:])],
-#             index=index
-#         )
-#         # TODO - can't subclass the DataFRame object
-#         # return obj.view(cls)
-#         return obj
-#
-#     @staticmethod
-#     def concat(observations, others):
-#         """Ajoute (concatene) une ou plusieurs observations.
-#
-#         Arguments:
-#             observations (Observations)
-#             others (Observation ou Observations) = observation(s) a ajouter
-#
-#         Pour agreger 2 Observations, on peut aussi utiliser la methode append
-#         des DataFrame ou bien directement la fonction concat de pandas.
-#
-#         Attention, les DataFrame ne sont JAMAIS modifies, ces fonctions
-#         retournent un nouveau DataFrame.
-#
-#         """
-#
-#         # TODO - can't write a instance method to do that
-#         #        (can't subclass DataFrame !)
-#
-#         try:
-#             return _pandas.concat([observations, others])
-#
-#         except Exception:
-#             return _pandas.concat([observations, Observations(others)])
+class Observations(_pandas.DataFrame):
+
+    """Classe Observations.
+
+    Classe pour manipuler une collection d'observations meteorologiques, sous
+    la forme d'un pandas.DataFrame (les objets instancies sont des DataFrame).
+
+    L'index est un pandas.DatetimeIndex qui represente les dates d'observation
+    (date de fin du cumul pour les donnees de pluie).
+
+    A la difference des observations hydrometriques, les observations
+    meteorologiques devraient etre a pas de temps fixe et les donnes manquantes
+    representees par la valeur 'Nan' (not a number). C'est le comportement par
+    defaut avec le constructeur fournit ici.
+
+    Les donnees sont contenues dans 4 colonnes du DataFrame (voir Observation).
+
+    Un objet Observations peut etre instancie de multiples facons a l'aide des
+    fonctions proposees par Pandas, sous reserve de respecter le nom des
+    colonnes et leur typage:
+        DataFrame.from_records: constructor from tuples, also record arrays
+        DataFrame.from_dict: from dicts of Series, arrays, or dicts
+        DataFrame.from_csv: from CSV files
+        DataFrame.from_items: from sequence of (key, value) pairs
+        read_csv / read_table / read_clipboard
+        ...
+
+    On peut obtenir une pandas.Series ne contenant que l'index et res avec:
+        obs = observations.res
+
+    """
+
+    # NB: les pandas.Period ne conviennent pas pour les observations meteo,
+    # car la frequence ne peux pas etre un multiple des unites elementaires
+    # (heure, minute...). A noter aussi que la date de reference est le debut
+    # de la periode (et non pas la fin)
+
+    # FIXME - this code is actually the same as obshydro
+
+    def __new__(cls, *observations):
+        """Constructeur.
+
+        Arguments:
+            observations (un nombre quelconque d'Observation)
+
+        Exemples:
+            obs = Observations(obs1)  # une seule Observation
+            obs = Observations(obs1, obs2, ..., obsn)  # n Observation
+            obs = Observations(*observations)  #  une liste d'Observation
+
+        """
+
+        # prepare a list of observations
+        obss = []
+        try:
+            for obs in observations:
+                if not isinstance(obs, Observation):
+                    raise TypeError('{} is not an Observation'.format(obs))
+                obss.append(obs)
+
+        except Exception:
+            raise
+
+        # prepare a tmp numpy.array
+        array = _numpy.array(object=obss)
+
+        # get the pandas.DataFrame
+        index = _pandas.Index(array['dte'], name='dte')
+        obj = _pandas.DataFrame(
+            data=array[list(array.dtype.names[1:])],
+            index=index
+        )
+        # TODO - can't subclass the DataFRame object
+        # return obj.view(cls)
+        return obj
+
+    @staticmethod
+    def concat(observations, others):
+        """Ajoute (concatene) une ou plusieurs observations.
+
+        Arguments:
+            observations (Observations)
+            others (Observation ou Observations) = observation(s) a ajouter
+
+        Pour agreger 2 Observations, on peut aussi utiliser la methode append
+        des DataFrame ou bien directement la fonction concat de pandas.
+
+        Attention, les DataFrame ne sont JAMAIS modifies, ces fonctions
+        retournent un nouveau DataFrame.
+
+        """
+
+        # FIXME - this code is actually the same as obshydro
+
+        # TODO - can't write a instance method to do that
+        #        (can't subclass DataFrame !)
+
+        try:
+            return _pandas.concat([observations, others])
+
+        except Exception:
+            return _pandas.concat([observations, Observations(others)])
 
 
 #-- class Serie ---------------------------------------------------------------
@@ -257,28 +273,25 @@ class Observation(_numpy.ndarray):
 #     Classe pour manipuler des series d'observations hydrometriques.
 #
 #     Proprietes:
-#         entite (Sitehydro, Stationhydro ou Capteur)
-#         grandeur (char parmi NOMENCLATURE[509]) = H ou Q
+#         grandeur (Grandeurmeteo)
 #         statut (int parmi NOMENCLATURE[510]) = donnee brute, corrigee...
 #         dtdeb (datetime.datetime)
 #         dtfin (datetime.datetime)
+# duree / pdt
 #         dtprod (datetime.datetime)
 #         observations (Observations)
 #
 #     """
+#
+#     # TODO - Serie others attributes
+#
+#     # contact
 #
 #     dtdeb = _composant.Datefromeverything(required=False)
 #     dtfin = _composant.Datefromeverything(required=False)
 #     dtprod = _composant.Datefromeverything(required=False)
 #     grandeur = _composant.Nomenclatureitem(nomenclature=509)
 #     statut = _composant.Nomenclatureitem(nomenclature=510)
-#
-#     # TODO - Serie others attributes
-#
-#     # sysalti
-#     # perime
-#     # contact
-#     # refalti OU courbetarage
 #
 #     def __init__(
 #         self, entite=None, grandeur=None, statut=0,
@@ -396,7 +409,7 @@ class Observation(_numpy.ndarray):
 #         else:
 #             obs = '{0}\n...\n{1}'.format(
 #                 self.observations[:15].to_string(),
-#                 '\n'.join(self.observations[-15:].to_string().split('\n')[2:])
+#'\n'.join(self.observations[-15:].to_string().split('\n')[2:])
 #             )
 #             obs += '\n%s' % self.observations.__unicode__()
 #

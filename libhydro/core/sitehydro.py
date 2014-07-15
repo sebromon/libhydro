@@ -426,6 +426,8 @@ class Stationhydro(_Site_or_station):
 
     # Stationhydro other properties
 
+    #sitehydro
+
     #descriptif
     #dtmaj
     #pk
@@ -445,7 +447,6 @@ class Stationhydro(_Site_or_station):
     #qualifications
     #finalites
     #loisstat
-    #sitehydro
     #images
     #rolecontact
     #stationattachee
@@ -630,6 +631,8 @@ class Capteur(_Entitehydro):
 
     # Capteur other properties
 
+    #stationhydro
+
     #mnemonique
     #typecapteur
     #surveillance
@@ -638,7 +641,6 @@ class Capteur(_Entitehydro):
     #essai
     #commentaire
 
-    #stationhydro
     #plageutilisation
     #observateur
 

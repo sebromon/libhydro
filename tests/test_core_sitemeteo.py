@@ -32,8 +32,8 @@ from libhydro.core import _composant as composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1a"""
-__date__ = """2014-07-11"""
+__version__ = """0.1b"""
+__date__ = """2014-07-15"""
 
 #HISTORY
 #V0.1 - 2014-07-11
@@ -84,6 +84,8 @@ class TestSitemeteo(unittest.TestCase):
                 [grandeur]
             )
         )
+        grandeur.sitemeteo = m
+        self.assertEqual(grandeur.sitemeteo, m)
 
     def test_base_03(self):
         """Sitemeteo with n grandeurs."""
@@ -246,9 +248,15 @@ class TestGrandeurmeteo(unittest.TestCase):
     def test_base(self):
     # def test_base_01(self):
         """Base case test."""
+        codeinsee = '013008110'
+        s = sitemeteo.Sitemeteo(codeinsee)
         typegrandeur = 'EP'
-        g = sitemeteo.Grandeurmeteo(typegrandeur=typegrandeur)
+        g = sitemeteo.Grandeurmeteo(
+            typegrandeur=typegrandeur,
+            sitemeteo=s
+        )
         self.assertEqual(g.typegrandeur, typegrandeur)
+        self.assertEqual(g.sitemeteo.code, codeinsee)
 
     def test_str(self):
         """Test __str__ method with None values."""
@@ -260,11 +268,16 @@ class TestGrandeurmeteo(unittest.TestCase):
     def test_fuzzy_mode(self):
         """Fuzzy mode test."""
         typegrandeur = 'a fake one'
-        g = sitemeteo.Grandeurmeteo(typegrandeur=typegrandeur, strict=False)
+        site = 'anything can fit in fuzzy mode!'
+        g = sitemeteo.Grandeurmeteo(
+            typegrandeur=typegrandeur,
+            sitemeteo=site,
+            strict=False
+        )
         self.assertEqual(g.typegrandeur, typegrandeur)
+        self.assertEqual(g.sitemeteo, site)
 
-    def test_error(self):
-    # def test_error_01(self):
+    def test_error_01(self):
         """Typegrandeur error."""
         g = sitemeteo.Grandeurmeteo(**{'typegrandeur': 'RR'})
         self.assertRaises(
@@ -276,4 +289,17 @@ class TestGrandeurmeteo(unittest.TestCase):
             ValueError,
             g.__setattr__,
             *('typegrandeur', 'xxxx')
+        )
+
+    def test_error_02(self):
+        """Sitemeteo error."""
+        s = sitemeteo.Sitemeteo('266012001')
+        g = sitemeteo.Grandeurmeteo(**{
+            'typegrandeur': 'RR',
+            'sitemeteo': s
+        })
+        self.assertRaises(
+            TypeError,
+            g.__setattr__,
+            *('sitemeteo', 'junk site !')
         )

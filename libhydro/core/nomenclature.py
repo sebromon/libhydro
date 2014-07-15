@@ -25,8 +25,8 @@ from __future__ import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1h"""
-__date__ = """2014-07-11"""
+__version__ = """0.1i"""
+__date__ = """2014-07-15"""
 
 #HISTORY
 #V0.1 - 2013-07-12
@@ -110,8 +110,16 @@ NOMENCLATURE = {
         62: 'ETRS89 / UTM Nord 32'
     },
 
-    # Methode d'obtention du resultat de l'observation hydro
+    # Methode d'obtention du resultat de l'observation hydrometrique
     507: {0: 'Mesure', 4: 'Reconstitution', 12: 'Interpolation'},
+
+    # Qualification de la donnees de l'observation meteorologique
+    508: {
+        0: 'Inconnu',
+        12: 'Valeur incertaine',
+        16: 'Valeur non qualifiee',
+        20: 'Valeur bonne'
+    },
 
     # Grandeur observee de la serie
     509: {'H': 'Hauteur', 'Q': 'Debit'},
@@ -120,6 +128,12 @@ NOMENCLATURE = {
     510: {
         0: 'Sans validation', 4: 'Brute', 8: 'Corrige',
         12: 'Pre-valide', 16: 'Valide'
+    },
+
+    # Methode d'obtention du resultat de l'observation meteoroloqiue
+    512: {
+        0: 'Mesure', 4: 'Reconstitution', 8: 'Calcul',
+        12: 'Interpolation', 16: 'Forcage'
     },
 
     # Qualification de la donnees de l'observation hydrometrique
@@ -135,7 +149,7 @@ NOMENCLATURE = {
     # Statut de la simulation
     516: {4: 'Brute', 16: 'Critiquee'},
 
-    # Type de mesure du capteur hydro
+    # Type de mesure du capteur hydrometrique
     520: {'H': 'Hauteur', 'Q': 'Debit'},
 
     # Grandeur meteorologique

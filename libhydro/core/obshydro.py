@@ -96,7 +96,7 @@ class Observation(_numpy.ndarray):
 
     """Classe observation.
 
-    Classe pour manipuler une observation elementaire.
+    Classe pour manipuler une observation hydrometrique elementaire.
 
     Subclasse de numpy.array('dte', 'res', 'mth', 'qal', 'cnt'), les elements
     etant du type DTYPE.
@@ -137,10 +137,10 @@ class Observation(_numpy.ndarray):
     def __new__(cls, dte, res, mth=0, qal=16, cnt=True):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
-        if (mth != 0) and (mth not in _NOMENCLATURE[507]):
-            raise ValueError('methode incorrect')
-        if (qal != 16) and (qal not in _NOMENCLATURE[515]):
-            raise ValueError('qualification incorrect')
+        if mth not in _NOMENCLATURE[507]:
+            raise ValueError('incorrect method')
+        if qal not in _NOMENCLATURE[515]:
+            raise ValueError('incorrect qualification')
         obj = _numpy.array(
             (dte, res, mth, qal, cnt),
             dtype=Observation.DTYPE
@@ -283,18 +283,18 @@ class Serie(object):
 
     """
 
-    dtdeb = _composant.Datefromeverything(required=False)
-    dtfin = _composant.Datefromeverything(required=False)
-    dtprod = _composant.Datefromeverything(required=False)
-    grandeur = _composant.Nomenclatureitem(nomenclature=509)
-    statut = _composant.Nomenclatureitem(nomenclature=510)
-
     # TODO - Serie others attributes
 
     # sysalti
     # perime
     # contact
     # refalti OU courbetarage
+
+    dtdeb = _composant.Datefromeverything(required=False)
+    dtfin = _composant.Datefromeverything(required=False)
+    dtprod = _composant.Datefromeverything(required=False)
+    grandeur = _composant.Nomenclatureitem(nomenclature=509)
+    statut = _composant.Nomenclatureitem(nomenclature=510)
 
     def __init__(
         self, entite=None, grandeur=None, statut=0,
