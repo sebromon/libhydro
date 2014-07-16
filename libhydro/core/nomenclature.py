@@ -25,10 +25,12 @@ from __future__ import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1i"""
+__version__ = """0.6a"""
 __date__ = """2014-07-15"""
 
 #HISTORY
+#V0.6 - 2014-07-15
+#    add a bunch of nomenclatures
 #V0.1 - 2013-07-12
 #    first shot
 
@@ -128,6 +130,11 @@ NOMENCLATURE = {
     510: {
         0: 'Sans validation', 4: 'Brute', 8: 'Corrige',
         12: 'Pre-valide', 16: 'Valide'
+    },
+
+    # Statut de l'observation meteorologique
+    511: {
+        0: 'Sans validation', 4: 'Brute', 8: 'Corrige'
     },
 
     # Methode d'obtention du resultat de l'observation meteoroloqiue

@@ -14,9 +14,6 @@ from __future__ import (
     print_function as _print_function
 )
 
-import sys as _sys
-import locale as _locale
-
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 from . import _composant
 
@@ -24,8 +21,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2c"""
-__date__ = """2014-07-11"""
+__version__ = """0.2d"""
+__date__ = """2014-07-16"""
 
 #HISTORY
 #V0.1 - 2014-02-10
@@ -227,16 +224,7 @@ class _Seuil(object):
                )
 
     def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(
-                _sys.stdout.encoding or
-                _locale.getpreferredencoding() or
-                'ascii',
-                'replace'
-            )
+        return _composant.__str__(self)
 
 
 #-- class Seuilhydro ----------------------------------------------------------
@@ -368,25 +356,6 @@ class Seuilhydro(_Seuil):
         """
         return not self.__eq__(other, lazzy=lazzy, cmp_values=cmp_values)
 
-    # def __unicode__(self):
-    #     """Return unicode representation."""
-    #     return '''Seuil hydro {code} de type {typeseuil}'''.format(
-    #         code=self.code,
-    #         typeseuil=self.typeseuil
-    #     )
-
-    # def __str__(self):
-    #     """Return string representation."""
-    #     if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-    #         return self.__unicode__()
-    #    else:  # Python 2
-    #        return self.__unicode__().encode(
-    #            _sys.stdout.encoding or
-    #            _locale.getpreferredencoding() or
-    #            'ascii',
-    #            'replace'
-    #        )
-
 
 #-- class Valeurseuil ---------------------------------------------------------
 class Valeurseuil (object):
@@ -466,13 +435,4 @@ class Valeurseuil (object):
         )
 
     def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(
-                _sys.stdout.encoding or
-                _locale.getpreferredencoding() or
-                'ascii',
-                'replace'
-            )
+        return _composant.__str__(self)

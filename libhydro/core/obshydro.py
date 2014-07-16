@@ -29,14 +29,6 @@ d'un pandas.DataFrame dont l'index est une serie de timestamp.
 #         dtype = None,
 #         name='observations de debit'
 # )
-#
-# Exemple pour instancier un DataFrame, avec plusieurs series (colonnes) de
-# donnees:
-#     hauteurs = pandas.DataFrame({
-#         'H2354310': Series_de_hauteurs_1,
-#         'H4238907': Series_de_hauteurs_2,
-#         ...
-#     })
 
 #-- imports -------------------------------------------------------------------
 from __future__ import (
@@ -46,24 +38,22 @@ from __future__ import (
     print_function as _print_function
 )
 
-import sys as _sys
-import locale as _locale
-
 import numpy as _numpy
-import pandas as _pandas
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
-from . import _composant
+from . import (_composant, _composant_obs)
 from . import sitehydro as _sitehydro
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1m"""
-__date__ = """2014-07-11"""
+__version__ = """0.2a"""
+__date__ = """2014-07-16"""
 
 #HISTORY
+#V0.2 - 2014-07-15
+#    use the composant_obs module
 #V0.1 - 2013-07-18
 #    first shot
 
@@ -163,20 +153,11 @@ class Observation(_numpy.ndarray):
                )
 
     def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(
-                _sys.stdout.encoding or
-                _locale.getpreferredencoding() or
-                'ascii',
-                'replace'
-            )
+        return _composant.__str__(self)
 
 
 #-- class Observations --------------------------------------------------------
-class Observations(_pandas.DataFrame):
+class Observations(_composant_obs.Observations):
 
     """Classe Observations.
 
@@ -214,59 +195,13 @@ class Observations(_pandas.DataFrame):
             obs = Observations(*observations)  #  une liste d'Observation
 
         """
-
-        # prepare a list of observations
-        obss = []
-        try:
-            for obs in observations:
-                if not isinstance(obs, Observation):
-                    raise TypeError('{} is not an Observation'.format(obs))
-                obss.append(obs)
-
-        except Exception:
-            raise
-
-        # prepare a tmp numpy.array
-        array = _numpy.array(object=obss)
-
-        # get the pandas.DataFrame
-        index = _pandas.Index(array['dte'], name='dte')
-        obj = _pandas.DataFrame(
-            data=array[list(array.dtype.names[1:])],
-            index=index
+        return _composant_obs.Observations.__new__(
+            cls, Observation, observations
         )
-        # TODO - can't subclass the DataFRame object
-        # return obj.view(cls)
-        return obj
-
-    @staticmethod
-    def concat(observations, others):
-        """Ajoute (concatene) une ou plusieurs observations.
-
-        Arguments:
-            observations (Observations)
-            others (Observation ou Observations) = observation(s) a ajouter
-
-        Pour agreger 2 Observations, on peut aussi utiliser la methode append
-        des DataFrame ou bien directement la fonction concat de pandas.
-
-        Attention, les DataFrame ne sont JAMAIS modifies, ces fonctions
-        retournent un nouveau DataFrame.
-
-        """
-
-        # TODO - can't write a instance method to do that
-        #        (can't subclass DataFrame !)
-
-        try:
-            return _pandas.concat([observations, others])
-
-        except Exception:
-            return _pandas.concat([observations, Observations(others)])
 
 
 #-- class Serie ---------------------------------------------------------------
-class Serie(object):
+class Serie(_composant_obs.Serie):
 
     """Classe Serie.
 
@@ -285,14 +220,12 @@ class Serie(object):
 
     # TODO - Serie others attributes
 
+    # contact (in the base class)
+
     # sysalti
     # perime
-    # contact
     # refalti OU courbetarage
 
-    dtdeb = _composant.Datefromeverything(required=False)
-    dtfin = _composant.Datefromeverything(required=False)
-    dtprod = _composant.Datefromeverything(required=False)
     grandeur = _composant.Nomenclatureitem(nomenclature=509)
     statut = _composant.Nomenclatureitem(nomenclature=510)
 
@@ -316,8 +249,11 @@ class Serie(object):
 
         """
 
-        # -- simple properties --
-        self._strict = bool(strict)
+        # -- super --
+        super(Serie, self).__init__(
+            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod,
+            observations=observations, strict=strict
+        )
 
         # adjust the descriptor
         vars(self.__class__)['grandeur'].strict = self._strict
@@ -325,16 +261,12 @@ class Serie(object):
         vars(self.__class__)['statut'].strict = self._strict
 
         # -- descriptors --
-        self.dtdeb = dtdeb
-        self.dtfin = dtfin
-        self.dtprod = dtprod
         self.grandeur = grandeur
         self.statut = statut
 
         # -- full properties --
-        self._entite = self._observations = None
+        self._entite = None
         self.entite = entite
-        self.observations = observations
 
     # -- property entite --
     @property
@@ -364,29 +296,6 @@ class Serie(object):
             self._entite = entite
         except:
             raise
-
-    # -- property observations --
-    @property
-    def observations(self):
-        """Return observations."""
-        return self._observations
-
-    @observations.setter
-    def observations(self, observations):
-        """Set observations."""
-        try:
-
-            if (self._strict):
-                # we check we have a res column...
-                # ... and that index contains datetimes
-                observations.res
-                # FIXME - should fail with datetime64 object.
-                #         Use .item().isoformat()
-                observations.index[0].isoformat()
-            self._observations = observations
-
-        except:
-            raise TypeError('observations incorrect')
 
     # -- other methods --
     def __unicode__(self):
@@ -428,15 +337,3 @@ class Serie(object):
                    '-' * 72,
                    obs
                )
-
-    def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(
-                _sys.stdout.encoding or
-                _locale.getpreferredencoding() or
-                'ascii',
-                'replace'
-            )

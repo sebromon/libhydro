@@ -26,14 +26,14 @@ sys.path.append(os.path.join('..', '..'))
 import unittest
 
 from libhydro.core import sitehydro
-from libhydro.core import _composant as composant
+from libhydro.core import _composant_site as composant_site
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1k"""
-__date__ = """2014-07-11"""
+__version__ = """0.1l"""
+__date__ = """2014-07-16"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -86,7 +86,7 @@ class TestSitehydro(unittest.TestCase):
             ),
             (
                 code, codeh2, typesite, libelle, libelleusuel,
-                composant.Coord(*coord), [station], [unicode(commune)],
+                composant_site.Coord(*coord), [station], [unicode(commune)],
                 [tronconvigilance]
             )
         )
@@ -131,7 +131,7 @@ class TestSitehydro(unittest.TestCase):
                 s.stations, s.communes, s.tronconsvigilance
             ),
             (
-                code, typesite, libelle, composant.Coord(**coord),
+                code, typesite, libelle, composant_site.Coord(**coord),
                 [st for st in stations],
                 [unicode(commune) for commune in communes],
                 [tronconvigilance for tronconvigilance in tronconsvigilance]
@@ -143,7 +143,9 @@ class TestSitehydro(unittest.TestCase):
         code = 'A3334550'
         typesite = 'REEL'
         libelle = 'La Saône [apres la crue] a Montelimar [hé oui]'
-        coord = composant.Coord(**{'x': 482000, 'y': 1897556.5, 'proj': 26})
+        coord = composant_site.Coord(
+            **{'x': 482000, 'y': 1897556.5, 'proj': 26}
+        )
         stations = [
             sitehydro.Stationhydro(code='%s01' % code, typestation='DEB')
         ]

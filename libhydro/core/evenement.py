@@ -13,8 +13,6 @@ from __future__ import (
     print_function as _print_function
 )
 
-import sys as _sys
-import locale as _locale
 import datetime as _datetime
 
 from . import _composant
@@ -23,8 +21,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """1.0b"""
-__date__ = """2014-07-11"""
+__version__ = """1.0c"""
+__date__ = """2014-07-16"""
 
 #HISTORY
 #V1.0 - 2014-03-02
@@ -149,13 +147,4 @@ class Evenement(object):
                )
 
     def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(
-                _sys.stdout.encoding or
-                _locale.getpreferredencoding() or
-                'ascii',
-                'replace'
-            )
+        return _composant.__str__(self)

@@ -19,11 +19,10 @@ from __future__ import (
     print_function as _print_function
 )
 
-import sys as _sys
-import locale as _locale
 import suds as _suds
 from lxml import etree as _etree
 
+from libhydro.core import _composant
 from ..conv.xml import Message as _Message
 
 
@@ -52,16 +51,7 @@ class BdhydroError(Exception):
         return self.value
 
     def __str__(self):
-        """String representation."""
-        if _sys.version[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(
-                _sys.stdout.encoding or
-                _locale.getpreferredencoding() or
-                'ascii',
-                'replace'
-            )
+        return _composant.__str__(self)
 
 
 #-- class Error ---------------------------------------------------------------
@@ -121,16 +111,7 @@ class _Report(object):
                )
 
     def __str__(self):
-        """String representation."""
-        if _sys.version[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(
-                _sys.stdout.encoding or
-                _locale.getpreferredencoding() or
-                'ascii',
-                'replace'
-            )
+        return _composant.__str__(self)
 
     @staticmethod
     def fromxml(xml):

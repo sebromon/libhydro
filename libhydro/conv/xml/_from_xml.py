@@ -21,8 +21,6 @@ from __future__ import (
     print_function as _print_function
 )
 
-import sys as _sys
-import locale as _locale
 import datetime as _datetime
 import collections as _collections
 
@@ -30,6 +28,7 @@ import numpy as _numpy
 from lxml import etree as _etree
 
 from libhydro.core import (
+    _composant,
     sitehydro as _sitehydro,
     seuil as _seuil,
     modeleprevision as _modeleprevision,
@@ -44,8 +43,8 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.1l"""
-__date__ = """2014-06-05"""
+__version__ = """0.1m"""
+__date__ = """2014-07-16"""
 
 #HISTORY
 #V0.1 - 2013-08-18
@@ -190,16 +189,7 @@ class Scenario(object):
         )
 
     def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(
-                _sys.stdout.encoding or
-                _locale.getpreferredencoding() or
-                'ascii',
-                'replace'
-            )
+        return _composant.__str__(self)
 
 
 # -- tests function -----------------------------------------------------------

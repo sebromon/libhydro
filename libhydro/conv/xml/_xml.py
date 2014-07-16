@@ -14,13 +14,13 @@ from __future__ import (
 )
 
 import sys as _sys
-import locale as _locale
 import os as _os
 
 from lxml import etree as _etree
 
 from . import (_from_xml, _to_xml)
 from libhydro.core import (
+    _composant,
     # intervenant as _intervenant,  # FIXME
     sitehydro as _sitehydro,
     seuil as _seuil,
@@ -33,8 +33,8 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1k"""
-__date__ = """2014-07-11"""
+__version__ = """0.1l"""
+__date__ = """2014-07-16"""
 
 #HISTORY
 #V0.1 - 2013-08-20
@@ -447,13 +447,4 @@ class Message(object):
                )
 
     def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(
-                _sys.stdout.encoding or
-                _locale.getpreferredencoding() or
-                'ascii',
-                'replace'
-            )
+        return _composant.__str__(self)

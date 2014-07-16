@@ -16,18 +16,15 @@ from __future__ import (
     print_function as _print_function
 )
 
-import sys as _sys
-import locale as _locale
-
-from . import _composant
+from . import (_composant, _composant_site)
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.3e"""
-__date__ = """2014-07-11"""
+__version__ = """0.3f"""
+__date__ = """2014-07-16"""
 
 #HISTORY
 #V0.3 - 2014-02-20
@@ -178,16 +175,16 @@ class _Site_or_station(_Entitehydro):
         """Set coord."""
         self._coord = None
         if coord is not None:
-            if isinstance(coord, _composant.Coord):
+            if isinstance(coord, _composant_site.Coord):
                 self._coord = coord
             else:
                 try:
                     # instanciate with a list
-                    self._coord = _composant.Coord(*coord)
+                    self._coord = _composant_site.Coord(*coord)
                 except (TypeError, ValueError, AttributeError):
                     try:
                         # instanciate with a dict
-                        self._coord = _composant.Coord(**coord)
+                        self._coord = _composant_site.Coord(**coord)
                     except (TypeError, ValueError, AttributeError):
                         raise TypeError('coord incorrect')
 
@@ -388,16 +385,7 @@ class Sitehydro(_Site_or_station):
         )
 
     def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(
-                _sys.stdout.encoding or
-                _locale.getpreferredencoding() or
-                'ascii',
-                'replace'
-            )
+        return _composant.__str__(self)
 
 
 #-- class Stationhydro --------------------------------------------------------
@@ -602,16 +590,7 @@ class Stationhydro(_Site_or_station):
         )
 
     def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(
-                _sys.stdout.encoding or
-                _locale.getpreferredencoding() or
-                'ascii',
-                'replace'
-            )
+        return _composant.__str__(self)
 
 
 #-- class Capteur -------------------------------------------------------------
@@ -682,16 +661,7 @@ class Capteur(_Entitehydro):
         )
 
     def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(
-                _sys.stdout.encoding or
-                _locale.getpreferredencoding() or
-                'ascii',
-                'replace'
-            )
+        return _composant.__str__(self)
 
 
 #-- class Tronconvigilance ----------------------------------------------------
@@ -741,16 +711,7 @@ class Tronconvigilance(object):
         )
 
     def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(
-                _sys.stdout.encoding or
-                _locale.getpreferredencoding() or
-                'ascii',
-                'replace'
-            )
+        return _composant.__str__(self)
 
 
 # -- config -------------------------------------------------------------------

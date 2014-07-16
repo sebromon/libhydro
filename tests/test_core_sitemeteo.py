@@ -26,7 +26,7 @@ sys.path.append(os.path.join('..', '..'))
 import unittest
 
 from libhydro.core import sitemeteo
-from libhydro.core import _composant as composant
+from libhydro.core import _composant_site as composant_site
 
 
 #-- strings -------------------------------------------------------------------
@@ -80,7 +80,7 @@ class TestSitemeteo(unittest.TestCase):
             ),
             (
                 code, libelle, libelleusuel,
-                composant.Coord(*coord), unicode(commune),
+                composant_site.Coord(*coord), unicode(commune),
                 [grandeur]
             )
         )
@@ -113,7 +113,7 @@ class TestSitemeteo(unittest.TestCase):
             ),
             (
                 code, libelle, libelleusuel,
-                composant.Coord(*coord), unicode(commune),
+                composant_site.Coord(*coord), unicode(commune),
                 list(grandeurs)
             )
         )
@@ -144,9 +144,9 @@ class TestSitemeteo(unittest.TestCase):
         self.assertEqual(m.grandeurs, [grandeurs[0]])
         m.grandeurs = grandeurs
         self.assertEqual(m.grandeurs, grandeurs)
-        self.assertEqual(m.coord, composant.Coord(*coord))
+        self.assertEqual(m.coord, composant_site.Coord(*coord))
         m.coord = (10, 20, 25)
-        m.coord = composant.Coord(*coord)
+        m.coord = composant_site.Coord(*coord)
         self.assertEqual(m.commune, unicode(commune))
         m.commune = 32150
         m.commune = None
