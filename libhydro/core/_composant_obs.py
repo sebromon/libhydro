@@ -25,8 +25,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """1.0a"""
-__date__ = """2014-07-16"""
+__version__ = """1.0b"""
+__date__ = """2014-07-17"""
 
 #HISTORY
 #V0.1 - 2014-07-16
@@ -106,22 +106,6 @@ class Observations(_pandas.DataFrame):
         except Exception:
             return _pandas.concat([observations, Observations(others)])
 
-    def __unicode__(self):
-        """Return unicode representation."""
-        # prepare observations
-        # FIXME - factorize
-        if self.observations is None:
-            obs = '<sans observations>'
-        elif len(self.observations) <= 30:
-            obs = self.observations.to_string()
-            obs += '\n%s values' % len(self.observations)
-        else:
-            obs = '{0}\n...\n{1}'.format(
-                self.observations[:15].to_string(),
-                '\n'.join(self.observations[-15:].to_string().split('\n')[2:])
-            )
-            obs += '\n%s' % self.observations.__unicode__()
-
 
 #-- class Serie ---------------------------------------------------------------
 class Serie(object):
@@ -197,12 +181,3 @@ class Serie(object):
 
         except:
             raise TypeError('observations incorrect')
-
-    # -- other methods --
-    def __unicode__(self):
-        """Return unicode representation."""
-        # virtual method to be overwritten
-        return '\n'
-
-    def __str__(self):
-        return _composant.__str__(self)

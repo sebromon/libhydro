@@ -202,8 +202,7 @@ class Intervenant(object):
             '' if (len(self.contacts) < 2) else 's'
         )
 
-    def __str__(self):
-        return _composant.__str__(self)
+    __str__ = _composant.__str__
 
 
 #-- class Contact -------------------------------------------------------------
@@ -319,8 +318,7 @@ class Contact(object):
             self.prenom or '<sans prenom>'
         )
 
-    def __str__(self):
-        return _composant.__str__(self)
+    __str__ = _composant.__str__
 
 
 # -- Class Adresse ------------------------------------------------------------

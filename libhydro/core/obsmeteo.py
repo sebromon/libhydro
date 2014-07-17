@@ -25,7 +25,7 @@ from __future__ import (
 import numpy as _numpy
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
-from . import _composant
+from . import (_composant, _composant_obs)
 from . import sitemeteo as _sitemeteo
 
 
@@ -71,7 +71,7 @@ class Observation(_numpy.ndarray):
             la NOMENCLATURE[512])
         qal (numpy.int8, defaut 16) = qualification de la donnees suivant la
             NOMENCLATURE[508]
-        qua (int de 0 a 100, defaut 100) = indice de qualite de la mesure
+        qua (int de 0 a 100, defaut Nan) = indice de qualite de la mesure
 
     Usage:
         Getter => observation.['x'].item()
@@ -84,18 +84,24 @@ class Observation(_numpy.ndarray):
         (str('res'), _numpy.float),
         (str('mth'), _numpy.int8),
         (str('qal'), _numpy.int8),
-        (str('qua'), _numpy.int8)
+        (str('qua'), _numpy.float)  # required for NaN
     ])
 
-    def __new__(cls, dte, res, mth=0, qal=16, qua=100):
+    def __new__(cls, dte, res, mth=0, qal=16, qua=_numpy.NaN):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
         if mth not in _NOMENCLATURE[512]:
             raise ValueError('incorrect method ')
         if qal not in _NOMENCLATURE[508]:
             raise ValueError('incorrect qualification')
-        if not (0 <= qua <= 100):
-            raise ValueError('incorrect quality')
+        if qua is not _numpy.NaN:
+            try:
+                qua = int(qua)
+                if not (0 <= qua <= 100):
+                    raise ValueError()
+            except Exception:
+                raise ValueError('incorrect quality')
+
         obj = _numpy.array(
             (dte, res, mth, qal, qua),
             dtype=Observation.DTYPE
@@ -117,12 +123,11 @@ class Observation(_numpy.ndarray):
                    *self['dte'].item().isoformat().split('T')
                )
 
-    def __str__(self):
-        return _composant.__str__(self)
+    __str__ = _composant.__str__
 
 
 #-- class Observations --------------------------------------------------------
-class Observations(_composant.Observations):
+class Observations(_composant_obs.Observations):
 
     """Classe Observations.
 
@@ -171,11 +176,13 @@ class Observations(_composant.Observations):
             obs = Observations(*observations)  #  une liste d'Observation
 
         """
-        return _composant.Observations.__new__(cls, Observation, observations)
+        return _composant_obs.Observations.__new__(
+            cls, Observation, observations
+        )
 
 
 #-- class Serie ---------------------------------------------------------------
-class Serie(object):
+class Serie(_composant_obs.Serie):
 
     """Classe Serie.
 
@@ -260,21 +267,6 @@ class Serie(object):
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
-        # prepare observations
-        # FIXME - factorize
-        if self.observations is None:
-            obs = '<sans observations>'
-        elif len(self.observations) <= 30:
-            obs = self.observations.to_string()
-            obs += '\n%s values' % len(self.observations)
-        else:
-            obs = '{0}\n...\n{1}'.format(
-                self.observations[:15].to_string(),
-                '\n'.join(self.observations[-15:].to_string().split('\n')[2:])
-            )
-            obs += '\n%s' % self.observations.__unicode__()
-
-        # action !
         return 'Serie {0} sur le site meteorologique {1}\n'\
                'Statut {2}::{3}\n'\
                '{4}\n'\
@@ -285,5 +277,10 @@ class Serie(object):
                    self.statut,
                    _NOMENCLATURE[511][self.statut].lower(),
                    '-' * 72,
-                   obs
+                   self.observations.to_string(
+                       max_rows=15, show_dimensions=True
+                   ) if self.observations is not None
+                   else '<sans observations>'
                )
+
+    __str__ = _composant.__str__

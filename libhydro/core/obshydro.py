@@ -152,8 +152,7 @@ class Observation(_numpy.ndarray):
                    *self['dte'].item().isoformat().split('T')
                )
 
-    def __str__(self):
-        return _composant.__str__(self)
+    __str__ = _composant.__str__
 
 
 #-- class Observations --------------------------------------------------------
@@ -312,19 +311,6 @@ class Serie(_composant_obs.Serie):
             except (AttributeError, KeyError):
                 entite = self.entite
 
-        # prepare observations
-        if self.observations is None:
-            obs = '<sans observations>'
-        elif len(self.observations) <= 30:
-            obs = self.observations.to_string()
-            obs += '\n%s values' % len(self.observations)
-        else:
-            obs = '{0}\n...\n{1}'.format(
-                self.observations[:15].to_string(),
-                '\n'.join(self.observations[-15:].to_string().split('\n')[2:])
-            )
-            obs += '\n%s' % self.observations.__unicode__()
-
         # action !
         return 'Serie {0} sur {1}\n'\
                'Statut {2}::{3}\n'\
@@ -335,5 +321,10 @@ class Serie(_composant_obs.Serie):
                    self.statut,
                    _NOMENCLATURE[510][self.statut].lower(),
                    '-' * 72,
-                   obs
+                   self.observations.to_string(
+                       max_rows=15, show_dimensions=True
+                   ) if self.observations is not None
+                   else '<sans observations>'
                )
+
+    __str__ = _composant.__str__

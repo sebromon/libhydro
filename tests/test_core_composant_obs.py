@@ -23,8 +23,9 @@ import sys
 import os
 sys.path.append(os.path.join('..', '..'))
 
-import unittest
+# import unittest
 
+# from libhydro.core import _composant_obs as composant_obs
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
@@ -36,14 +37,12 @@ __date__ = """2014-07-16"""
 #V0.1 - 2014-07-16
 #    first shot
 
-
 #-- class TestObservations ----------------------------------------------------
-class TestObservations(unittest.TestCase):
+# class TestObservations(unittest.TestCase):
 
-    raise NotImplementedError
-
+    # pass
 
 #-- class TestSerie -----------------------------------------------------------
-class TestSerie(unittest.TestCase):
+# class TestSerie(unittest.TestCase):
 
-    raise NotImplementedError
+    # pass

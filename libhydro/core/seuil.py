@@ -223,8 +223,7 @@ class _Seuil(object):
                    )
                )
 
-    def __str__(self):
-        return _composant.__str__(self)
+    __str__ = _composant.__str__
 
 
 #-- class Seuilhydro ----------------------------------------------------------
@@ -434,5 +433,4 @@ class Valeurseuil (object):
             tolerance=self.tolerance or '<inconnue>'
         )
 
-    def __str__(self):
-        return _composant.__str__(self)
+    __str__ = _composant.__str__

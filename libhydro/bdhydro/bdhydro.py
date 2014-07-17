@@ -50,8 +50,7 @@ class BdhydroError(Exception):
         """Unicode representation."""
         return self.value
 
-    def __str__(self):
-        return _composant.__str__(self)
+    __str__ = _composant.__str__
 
 
 #-- class Error ---------------------------------------------------------------
@@ -110,8 +109,7 @@ class _Report(object):
                    '\n'.join(warnings)
                )
 
-    def __str__(self):
-        return _composant.__str__(self)
+    __str__ = _composant.__str__
 
     @staticmethod
     def fromxml(xml):

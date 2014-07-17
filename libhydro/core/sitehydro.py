@@ -384,8 +384,7 @@ class Sitehydro(_Site_or_station):
             '' if (len(self.stations) < 2) else 's'
         )
 
-    def __str__(self):
-        return _composant.__str__(self)
+    __str__ = _composant.__str__
 
 
 #-- class Stationhydro --------------------------------------------------------
@@ -589,8 +588,7 @@ class Stationhydro(_Site_or_station):
             '' if (len(self.capteurs) < 2) else 's'
         )
 
-    def __str__(self):
-        return _composant.__str__(self)
+    __str__ = _composant.__str__
 
 
 #-- class Capteur -------------------------------------------------------------
@@ -660,8 +658,7 @@ class Capteur(_Entitehydro):
             self.libelle or '<sans libelle>'
         )
 
-    def __str__(self):
-        return _composant.__str__(self)
+    __str__ = _composant.__str__
 
 
 #-- class Tronconvigilance ----------------------------------------------------
@@ -710,8 +707,7 @@ class Tronconvigilance(object):
             self.libelle or '<sans libelle>'
         )
 
-    def __str__(self):
-        return _composant.__str__(self)
+    __str__ = _composant.__str__
 
 
 # -- config -------------------------------------------------------------------

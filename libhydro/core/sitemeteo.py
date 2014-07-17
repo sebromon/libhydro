@@ -210,8 +210,7 @@ class Sitemeteo(object):
             '' if (len(self.grandeurs) < 2) else 's'
         )
 
-    def __str__(self):
-        return _composant.__str__(self)
+    __str__ = _composant.__str__
 
 
 #-- class Grandeurmeteo -------------------------------------------------------
@@ -285,9 +284,7 @@ class Grandeurmeteo(object):
         """Return unicode representation."""
         return 'Grandeurmeteo {0}'.format(self.typegrandeur or '<sans type>')
 
-    def __str__(self):
-        return _composant.__str__(self)
-
+    __str__ = _composant.__str__
 
 #-- class Visite --------------------------------------------------------------
 # class Visite(object):

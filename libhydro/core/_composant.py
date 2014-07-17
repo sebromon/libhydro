@@ -282,7 +282,7 @@ def is_code_insee(code, length=5, raises=True):
 
 
 def __str__(self):
-    """Return string representation."""
+    """Return string representation from __unicode__ method."""
     if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
         return self.__unicode__()
     else:  # Python 2

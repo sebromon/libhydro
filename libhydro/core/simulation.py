@@ -142,8 +142,7 @@ class Prevision(_numpy.ndarray):
             *self['dte'].item().isoformat().split('T')
         )
 
-    def __str__(self):
-        return _composant.__str__(self)
+    __str__ = _composant.__str__
 
 
 #-- class Previsions ----------------------------------------------------------
@@ -468,5 +467,4 @@ class Simulation(object):
                    prev
                )
 
-    def __str__(self):
-        return _composant.__str__(self)
+    __str__ = _composant.__str__
