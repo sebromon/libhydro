@@ -22,8 +22,8 @@ from . import (_composant, _composant_site)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1e"""
-__date__ = """2014-07-16"""
+__version__ = """0.1f"""
+__date__ = """2014-07-20"""
 
 #HISTORY
 #V0.1 - 2014-07-07
@@ -126,7 +126,7 @@ class Sitemeteo(object):
                 # other cases
                 code = unicode(code)
                 if self._strict:
-                    _composant.is_code_insee(code=code, length=9)
+                    _composant.is_code_insee(code=code, length=9, errors='strict')
 
             # all is well
             self._code = code

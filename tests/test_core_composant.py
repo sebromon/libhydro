@@ -24,6 +24,7 @@ import os
 sys.path.append(os.path.join('..', '..'))
 
 import unittest
+import StringIO
 
 from libhydro.core import _composant as composant
 import datetime
@@ -55,35 +56,32 @@ class TestErrorHandler(unittest.TestCase):
     def test_ignore(self):
         """Ignore error test."""
         error_handler = composant.ERROR_HANDLERS['ignore']
-        self.assertNone(error_handler())
-        self.assertNone(
-            error_handler(msg='a message'.message, error=TypeError)
+        self.assertIsNone(error_handler())
+        self.assertIsNone(
+            error_handler(msg='a message', error=TypeError)
         )
-        self.assertNone(error_handler('egfsksdùkf'))
-
-    def test_logic(self):
-        """Logic error test."""
-        error_handler = composant.ERROR_HANDLERS['logic']
-        self.assertFalse(error_handler())
-        self.assertFalse(
-            error_handler(msg='a message'.message, error=TypeError)
-        )
+        self.assertIsNone(error_handler('egfsksdùkf'))
 
     def test_warn(self):
         """Warn error test."""
+        # we need stderr to be a string
+        f = StringIO.StringIO()
+        sys.stderr = f
         error_handler = composant.ERROR_HANDLERS['warn']
-        self.assertWarn(error_handler('message'))
-        self.assertWarn(
-            error_handler(msg='a message'.message, error=TypeError)
-        )
+        error_handler('message')
+        f.seek(0)
+        message = f.readlines()[0]
+        self.assertTrue(message.rfind('wwwww') == -1)
+        self.assertTrue(message.rfind('message') > -1)
+        self.assertTrue(message.rfind('UserWarning') > -1)
 
     def test_strict(self):
         """Strict error test."""
         error_handler = composant.ERROR_HANDLERS['strict']
         with self.assertRaises(TypeError):
-            error_handler(msg='a message'.message, error=TypeError)
+            error_handler(msg='a message', error=TypeError)
         with self.assertRaises(ValueError):
-            error_handler(msg='a message'.message, error=ValueError)
+            error_handler(msg='a message', error=ValueError)
 
 
 #-- class TestRlist -----------------------------------------------------------
@@ -91,7 +89,27 @@ class TestRlist(unittest.TestCase):
 
     """Rlist class tests."""
 
-    raise NotImplementedError
+    def test_01(self):
+        """Rlist base test."""
+        intl = composant.Rlist(int, [1, 2, 3])
+        intl.append(4)
+        intl.insert(0, 0)
+        self.assertEqual(intl.cls, int)
+        self.assertEqual(len(intl), 5)
+
+    def test_02(self):
+        """Rlist other test."""
+        strl = composant.Rlist(unicode, ['0', '1', '2', '3'])
+        strl.extend(['444'])
+        strl[0:2] = ['000', '111']
+        self.assertEqual(strl.cls, unicode)
+        self.assertEqual(len(strl), 5)
+
+    def test_checkiterable(self):
+        """Test checkiterable."""
+        strl = composant.Rlist(str, [str('aa'), str('bb')])
+        self.assertTrue(strl.checkiterable([str('c'), str('d')]))
+        self.assertFalse(strl.checkiterable(['c', 'd'], errors='ignore'))
 
 
 #-- class TestRlistproperty ---------------------------------------------------
@@ -99,7 +117,8 @@ class TestRlistproperty(unittest.TestCase):
 
     """Rlistproperty class tests."""
 
-    raise NotImplementedError
+    def test_base(self):
+        raise NotImplementedError
 
 
 #-- class TestDatefromeverything ----------------------------------------------
@@ -356,43 +375,43 @@ class TestIsCodeHydro(unittest.TestCase):
 
     def test_bool_true(self):
         """True test."""
-        self.assertTrue(composant.is_code_hydro('A3330510', raises=False))
-        self.assertTrue(composant.is_code_hydro('A3330510', raises=True))
+        self.assertTrue(composant.is_code_hydro('A3330510', errors='ignore'))
+        self.assertTrue(composant.is_code_hydro('A3330510', errors='strict'))
         self.assertTrue(
-            composant.is_code_hydro('A333051002', 10, raises=False)
+            composant.is_code_hydro('A333051002', 10, errors='ignore')
         )
         self.assertTrue(
-            composant.is_code_hydro('A333051002', 10, raises=True)
+            composant.is_code_hydro('A333051002', 10, errors='strict')
         )
         self.assertTrue(
-            composant.is_code_hydro('A33305100101', 12, raises=False)
+            composant.is_code_hydro('A33305100101', 12, errors='ignore')
         )
         self.assertTrue(
-            composant.is_code_hydro('A33305100101', 12, raises=True)
+            composant.is_code_hydro('A33305100101', 12, errors='strict')
         )
         # a bastard code Hydro2 !
-        self.assertTrue(composant.is_code_hydro('A842020C', raises=True))
-        self.assertTrue(composant.is_code_hydro('A842020C', raises=False))
+        self.assertTrue(composant.is_code_hydro('A842020C', errors='strict'))
+        self.assertTrue(composant.is_code_hydro('A842020C', errors='ignore'))
 
     def test_bool_false(self):
         """False test."""
         # TypeError
-        self.assertFalse(composant.is_code_hydro(33, raises=False))
+        self.assertFalse(composant.is_code_hydro(33, errors='ignore'))
         # too short
-        self.assertFalse(composant.is_code_hydro('A330010', raises=False))
+        self.assertFalse(composant.is_code_hydro('A330010', errors='ignore'))
         # too long
         self.assertFalse(
-            composant.is_code_hydro('A2233305100101', 12, raises=False)
+            composant.is_code_hydro('A2233305100101', 12, errors='ignore')
         )
         # wrong chars
         self.assertFalse(
-            composant.is_code_hydro('3330051002', 10, raises=False)
+            composant.is_code_hydro('3330051002', 10, errors='ignore')
         )
         self.assertFalse(
-            composant.is_code_hydro('A330C5100201', 12, raises=False)
+            composant.is_code_hydro('A330C5100201', 12, errors='ignore')
         )
         self.assertFalse(
-            composant.is_code_hydro('A33051CC', raises=False)
+            composant.is_code_hydro('A33051CC', errors='ignore')
         )
 
     def test_raises(self):
@@ -401,37 +420,37 @@ class TestIsCodeHydro(unittest.TestCase):
         self.assertRaises(
             TypeError,
             composant.is_code_hydro,
-            **{'code': 33, 'raises': True}
+            **{'code': 33, 'errors': 'strict'}
         )
         # too short
         self.assertRaises(
             ValueError,
             composant.is_code_hydro,
-            **{'code': 'A330010', 'raises': True}
+            **{'code': 'A330010', 'errors': 'strict'}
         )
         # too long
         self.assertRaises(
             ValueError,
             composant.is_code_hydro,
-            **{'code': 'A2233305100101', 'length': 12, 'raises': True}
+            **{'code': 'A2233305100101', 'length': 12, 'errors': 'strict'}
         )
         # wrong first char
         self.assertRaises(
             ValueError,
             composant.is_code_hydro,
-            **{'code': '33001000', 'raises': True}
+            **{'code': '33001000', 'errors': 'strict'}
         )
         # wrong last char
         self.assertRaises(
             ValueError,
             composant.is_code_hydro,
-            **{'code': 'A333101a', 'raises': True}
+            **{'code': 'A333101a', 'errors': 'strict'}
         )
         # wrong chars
         self.assertRaises(
             ValueError,
             composant.is_code_hydro,
-            **{'code': 'A33001CC', 'raises': True}
+            **{'code': 'A33001CC', 'errors': 'strict'}
         )
 
 
@@ -443,59 +462,59 @@ class TestIsCodeInsee(unittest.TestCase):
     def test_bool_true(self):
         """True test."""
         # commune code
-        self.assertTrue(composant.is_code_insee('32150', raises=False))
-        self.assertTrue(composant.is_code_insee(32150, raises=False))
-        self.assertTrue(composant.is_code_insee('02531', raises=True))
-        self.assertTrue(composant.is_code_insee('2A531', raises=False))
-        self.assertTrue(composant.is_code_insee('2A531', raises=True))
+        self.assertTrue(composant.is_code_insee('32150', errors='ignore'))
+        self.assertTrue(composant.is_code_insee(32150, errors='ignore'))
+        self.assertTrue(composant.is_code_insee('02531', errors='strict'))
+        self.assertTrue(composant.is_code_insee('2A531', errors='ignore'))
+        self.assertTrue(composant.is_code_insee('2A531', errors='strict'))
         self.assertTrue(
-            composant.is_code_insee('2B531', length=5, raises=False)
+            composant.is_code_insee('2B531', length=5, errors='ignore')
         )
         self.assertTrue(
-            composant.is_code_insee('2B531', length=5, raises=True)
+            composant.is_code_insee('2B531', length=5, errors='strict')
         )
         # meteo code
         self.assertTrue(
-            composant.is_code_insee('032150010', length=9, raises=False)
+            composant.is_code_insee('032150010', length=9, errors='ignore')
         )
         self.assertTrue(
-            composant.is_code_insee(211503310, length=9, raises=False)
+            composant.is_code_insee(211503310, length=9, errors='ignore')
         )
         self.assertTrue(
-            composant.is_code_insee('025312113', length=9, raises=True)
+            composant.is_code_insee('025312113', length=9, errors='strict')
         )
         self.assertTrue(
-            composant.is_code_insee('02A531979', length=9, raises=False)
+            composant.is_code_insee('02A531979', length=9, errors='ignore')
         )
         self.assertTrue(
-            composant.is_code_insee('02B531001', length=9, raises=True)
+            composant.is_code_insee('02B531001', length=9, errors='strict')
         )
 
     def test_bool_false(self):
         """False test."""
         # TypeError
-        self.assertFalse(composant.is_code_insee([], raises=False))
+        self.assertFalse(composant.is_code_insee([], errors='ignore'))
         # too short
-        self.assertFalse(composant.is_code_insee('3310', raises=False))
+        self.assertFalse(composant.is_code_insee('3310', errors='ignore'))
         self.assertFalse(
-            composant.is_code_insee('3310', length=5, raises=False)
+            composant.is_code_insee('3310', length=5, errors='ignore')
         )
         self.assertFalse(
-            composant.is_code_insee('03311001', length=9, raises=False)
+            composant.is_code_insee('03311001', length=9, errors='ignore')
         )
         # too long
-        self.assertFalse(composant.is_code_insee('333051', raises=False))
+        self.assertFalse(composant.is_code_insee('333051', errors='ignore'))
         self.assertFalse(
-            composant.is_code_insee('333051', length=5, raises=False)
+            composant.is_code_insee('333051', length=5, errors='ignore')
         )
         self.assertFalse(
-            composant.is_code_insee('0333333333', length=9, raises=False)
+            composant.is_code_insee('0333333333', length=9, errors='ignore')
         )
         # wrong chars
-        self.assertFalse(composant.is_code_insee('3A250', raises=False))
-        self.assertFalse(composant.is_code_insee('2C201', raises=False))
+        self.assertFalse(composant.is_code_insee('3A250', errors='ignore'))
+        self.assertFalse(composant.is_code_insee('2C201', errors='ignore'))
         self.assertFalse(
-            composant.is_code_insee('02C201001', length=9, raises=False)
+            composant.is_code_insee('02C201001', length=9, errors='ignore')
         )
 
     def test_raises(self):
@@ -504,34 +523,34 @@ class TestIsCodeInsee(unittest.TestCase):
         self.assertRaises(
             ValueError,
             composant.is_code_insee,
-            **{'code': [], 'raises': True}
+            **{'code': [], 'errors': 'strict'}
         )
         # too short
         self.assertRaises(
             ValueError,
             composant.is_code_insee,
-            **{'code': '3310', 'raises': True}
+            **{'code': '3310', 'errors': 'strict'}
         )
         # too long
         self.assertRaises(
             ValueError,
             composant.is_code_insee,
-            **{'code': '233305', 'raises': True}
+            **{'code': '233305', 'errors': 'strict'}
         )
         # wrong chars
         self.assertRaises(
             ValueError,
             composant.is_code_insee,
-            **{'code': '2D100', 'raises': True}
+            **{'code': '2D100', 'errors': 'strict'}
         )
         self.assertRaises(
             ValueError,
             composant.is_code_insee,
-            **{'code': '2A10W', 'raises': True}
+            **{'code': '2A10W', 'errors': 'strict'}
         )
         # wrong length
         self.assertRaises(
             ValueError,
             composant.is_code_insee,
-            **{'code': '233305', 'length': -1, 'raises': True}
+            **{'code': '233305', 'length': -1, 'errors': 'strict'}
         )

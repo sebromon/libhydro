@@ -23,8 +23,8 @@ from . import (_composant, _composant_site)
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.3f"""
-__date__ = """2014-07-16"""
+__version__ = """0.3g"""
+__date__ = """2014-07-20"""
 
 #HISTORY
 #V0.3 - 2014-02-20
@@ -101,7 +101,8 @@ class _Entitehydro(object):
                     # check code hydro
                     _composant.is_code_hydro(
                         code=code,
-                        length=_CODE_HYDRO_LENGTH[self.__class__]
+                        length=_CODE_HYDRO_LENGTH[self.__class__],
+                        errors='strict'
                     )
 
             # all is well
@@ -122,7 +123,7 @@ class _Entitehydro(object):
         try:
             if code is not None:
                 code = unicode(code)
-                _composant.is_code_hydro(code, 8)
+                _composant.is_code_hydro(code, 8, errors='strict')
 
             # all is well
             self._codeh2 = code
@@ -338,11 +339,11 @@ class Sitehydro(_Site_or_station):
         if communes is None:
             return
         # one commune, we make a list with it
-        if _composant.is_code_insee(communes, length=5, raises=False):
+        if _composant.is_code_insee(communes, length=5, errors='ignore'):
             communes = [communes]
         # an iterable of communes
         for commune in communes:
-            if _composant.is_code_insee(commune, length=5):
+            if _composant.is_code_insee(commune, length=5, errors='strict'):
                 self._communes.append(unicode(commune))
 
     # -- property tronconsvigilance --
@@ -550,7 +551,7 @@ class Stationhydro(_Site_or_station):
         """Set code commune."""
         if commune is not None:
             commune = unicode(commune)
-            _composant.is_code_insee(commune, length=5)
+            _composant.is_code_insee(commune, length=5, errors='strict')
         self._commune = commune
 
     # -- property ddcs --

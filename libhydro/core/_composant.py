@@ -72,7 +72,6 @@ def _strict_handler(msg, error):
 
 ERROR_HANDLERS = {
     "ignore": lambda *args, **kwargs: None,  # 'ignore' returns None
-    "logic": lambda *args, **kwargs: False,  # 'logic' return False
     "warn": _warn_handler,  # 'warn' emit 'warn(msg)'
     "strict": _strict_handler  # 'strict' raises 'error(msg)'
 }
@@ -147,7 +146,7 @@ class Rlist(list):
 
         Arguments:
             iterable (iterable)
-            errors (str in 'strict' (default), 'ignore', 'logic', 'warn')
+            errors (str in 'strict' (default), 'ignore', 'warn')
 
         """
         # get the error handler
@@ -155,7 +154,6 @@ class Rlist(list):
             error_handler = ERROR_HANDLERS[errors]
         except Exception:
             raise ValueError("unknown error handler name '%s'" % errors)
-
         # check
         for obj in iterable:
             if not isinstance(obj, self.cls):
@@ -163,6 +161,9 @@ class Rlist(list):
                     msg="the object '%s' is not of %s" % (obj, self.cls),
                     error=TypeError
                 )
+                return False
+        # return
+        return True
 
 # reset docstrings to their original 'list' values
 Rlist.append.__func__.__doc__ = list.append.__doc__
@@ -373,13 +374,13 @@ class Nomenclatureitem(object):
 
 
 #-- functions -----------------------------------------------------------------
-def is_code_hydro(code, length=8, errors='logic'):
+def is_code_hydro(code, length=8, errors='ignore'):
     """Return wether or not code is a valid code hydro as a bool.
 
     Arguments:
        code (string)
        length (int, default 8) = code size
-       errors (str in 'logic' (default), 'strict') = 'strict' raises an
+       errors (str in 'ignore' (default), 'strict') = 'strict' raises an
            exception
 
     """
@@ -408,12 +409,12 @@ def is_code_hydro(code, length=8, errors='logic'):
         return True
 
     except Exception as err:
-        if errors not in ('logic', 'strict'):
+        if errors not in ('ignore', 'strict'):
             raise ValueError("unknown error handler name '%s'" % errors)
         ERROR_HANDLERS[errors](msg=err.message, error=type(err))
 
 
-def is_code_insee(code, length=5, errors='logic'):
+def is_code_insee(code, length=5, errors='ignore'):
     """Return whether or not code is a valid INSEE code as a bool.
 
     Un code INSEE de commune est construit sur 5 caracteres. Pour les
@@ -431,7 +432,7 @@ def is_code_insee(code, length=5, errors='logic'):
 
     Arguments:
        code (string(length), default length is 5)
-       errors (str in 'logic' (default), 'strict') = 'strict' raises an
+       errors (str in 'ignore' (default), 'strict') = 'strict' raises an
            exception
 
     """
@@ -460,7 +461,7 @@ def is_code_insee(code, length=5, errors='logic'):
         return True
 
     except Exception as err:
-        if errors not in ('logic', 'strict'):
+        if errors not in ('ignore', 'strict'):
             raise ValueError("unknown error handler name '%s'" % errors)
         ERROR_HANDLERS[errors](msg=err.message, error=type(err))
 

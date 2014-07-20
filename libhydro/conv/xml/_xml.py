@@ -331,7 +331,7 @@ class Message(object):
 #-- class MessageNomenclatureitem ----------------------------------------------------
 # TODO descriptor
 
-descriptor model:
+# descriptor model:
 
 class Nomenclatureitem(object):
 
@@ -406,7 +406,7 @@ class Nomenclatureitem(object):
         self.data[instance] = value
 
 
-property model:
+# property model:
 
     @property
     def siteshydro(self):
