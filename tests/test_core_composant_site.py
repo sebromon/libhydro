@@ -31,8 +31,8 @@ from libhydro.core import _composant_site as composant_site
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.3a"""
-__date__ = """2014-07-16"""
+__version__ = """0.3b"""
+__date__ = """2014-07-18"""
 
 #HISTORY
 #V0.3 - 2014-07-16
@@ -97,6 +97,8 @@ class TestCoord(unittest.TestCase):
         c = composant_site.Coord(x, y, p)
         self.assertTrue(c.__str__().rfind(str(x)) > -1)
         self.assertTrue(c.__str__().rfind(str(y)) > -1)
+        self.assertTrue(c.__str__().rfind('proj') > -1)
+        c = composant_site.Coord(x, y, strict=False)
         self.assertTrue(c.__str__().rfind('proj') > -1)
 
     def test_fuzzy_mode_01(self):

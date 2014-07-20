@@ -21,8 +21,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2c"""
-__date__ = """2014-07-16"""
+__version__ = """0.2d"""
+__date__ = """2014-07-18"""
 
 #HISTORY
 #V0.2 - 2014-03-02
@@ -310,10 +310,16 @@ class Contact(object):
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
+        # init
+        try:
+            civilite = _NOMENCLATURE[538][self.civilite]
+        except Exception:
+            civilite = '<sans civilite>'
+
+        # action !
         return 'Contact {0}::{1} {2} {3}'.format(
             self.code or '<sans code>',
-            _NOMENCLATURE[538][self.civilite] if self.civilite
-            else '<sans civilite>',
+            civilite,
             self.nom or '<sans nom>',
             self.prenom or '<sans prenom>'
         )

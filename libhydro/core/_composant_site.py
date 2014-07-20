@@ -22,8 +22,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """1.0a"""
-__date__ = """2014-07-16"""
+__version__ = """1.0b"""
+__date__ = """2014-07-18"""
 
 #HISTORY
 #V0.1 - 2014-07-16
@@ -58,6 +58,7 @@ class Coord(object):
 
         # -- simple properties --
         self._strict = bool(strict)
+
         # adjust the descriptor
         vars(self.__class__)['proj'].required = self._strict
 
@@ -90,11 +91,17 @@ class Coord(object):
 
     def __unicode__(self):
         """Return unicode representation."""
+        # init
+        try:
+            proj = _NOMENCLATURE[22][self.proj]
+        except Exception:
+            proj = '<projection inconnue>'
+
+        # action !
         return 'Coord (x={0}, y={1}) [proj {2}]'.format(
             self.x,
             self.y,
-            _NOMENCLATURE[22][self.proj] if (self.proj is not None) else
-            '<projection inconnue>'
+            proj
         )
 
     __str__ = _composant.__str__

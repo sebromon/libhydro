@@ -3,7 +3,14 @@
 
 Ce module contient des elements de base de la librairie.
 
-Il integre les descripteurs:
+Il integre:
+    # un gestionnaire d'erreurs (ERROR_HANDLERS)
+
+la classe:
+    # Rlist
+
+les descripteurs:
+    # Rlistproperty
     # Datefromeverything
     # Nomenclatureitem
 
@@ -23,6 +30,7 @@ from __future__ import (
 
 import sys as _sys
 import locale as _locale
+import warnings as _warnings
 
 import weakref as _weakref
 import numpy as _numpy
@@ -34,11 +42,12 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.9e"""
-__date__ = """2014-07-16"""
+__version__ = """0.9f"""
+__date__ = """2014-07-20"""
 
 #HISTORY
 #V0.9 - 2014-07-16
+#    add the error_handler, the Rlist and the Rlistproperty
 #    split the module in 3 parts
 #V0.8 - 2014-02-01
 #    add and use descriptors
@@ -48,6 +57,181 @@ __date__ = """2014-07-16"""
 
 #-- todos ---------------------------------------------------------------------
 # TODO - use regex for codes matching functions
+
+
+#-- a basic errors handler ----------------------------------------------------
+def _warn_handler(msg, *args, **kwargs):
+    """Print msg on stderr."""
+    _warnings.warn(msg)
+
+
+def _strict_handler(msg, error):
+    """Raise error(msg)."""
+    raise error(msg)
+
+
+ERROR_HANDLERS = {
+    "ignore": lambda *args, **kwargs: None,  # 'ignore' returns None
+    "logic": lambda *args, **kwargs: False,  # 'logic' return False
+    "warn": _warn_handler,  # 'warn' emit 'warn(msg)'
+    "strict": _strict_handler  # 'strict' raises 'error(msg)'
+}
+
+
+#-- class Rlist ---------------------------------------------------------------
+class Rlist(list):
+
+    """Class Rlist.
+
+    A class of restricted lists that can only contains items of type 'cls'.
+
+    Read only property:
+        cls (type)
+
+    Methods:
+        all list methods
+        check()
+
+    """
+
+    def __init__(self, cls, iterable=None):
+        """Initialisation.
+
+        Arguments:
+            cls (type) = the class of authorized items
+            iterable (iterable, default None) = the list elements
+
+        """
+        # a read only property
+        self._cls = cls
+
+        # check and init
+        self.checkiterable(iterable)
+        super(Rlist, self).__init__(iterable)
+
+    # -- read only property cls --
+    @property
+    def cls(self):
+        """Get cls."""
+        return self._cls
+
+    # -- list overwritten methods --
+    def append(self, y):
+        """Append method."""
+        self.checkiterable([y])
+        super(Rlist, self).append(y)
+
+    def extend(self, iterable):
+        """Extend method."""
+        self.checkiterable(iterable)
+        super(Rlist, self).extend(iterable)
+
+    def insert(self, i, y):
+        """Insert method."""
+        self.checkiterable([y])
+        super(Rlist, self).insert(i, y)
+
+    def __setitem__(self, i, y):
+        """Setitem method."""
+        self.checkiterable([y])
+        super(Rlist, self).__setitem__(i, y)
+
+    def __setslice__(self, i, j, y):
+        """Setitem method."""
+        self.checkiterable(y)
+        super(Rlist, self).__setslice__(i, j, y)
+
+    # -- other methods --
+    def checkiterable(self, iterable, errors='strict'):
+        """Check iterable items type.
+
+        Arguments:
+            iterable (iterable)
+            errors (str in 'strict' (default), 'ignore', 'logic', 'warn')
+
+        """
+        # get the error handler
+        try:
+            error_handler = ERROR_HANDLERS[errors]
+        except Exception:
+            raise ValueError("unknown error handler name '%s'" % errors)
+
+        # check
+        for obj in iterable:
+            if not isinstance(obj, self.cls):
+                error_handler(
+                    msg="the object '%s' is not of %s" % (obj, self.cls),
+                    error=TypeError
+                )
+
+# reset docstrings to their original 'list' values
+Rlist.append.__func__.__doc__ = list.append.__doc__
+Rlist.extend.__func__.__doc__ = list.extend.__doc__
+Rlist.insert.__func__.__doc__ = list.insert.__doc__
+Rlist.__setitem__.__func__.__doc__ = list.__setitem__.__doc__
+Rlist.__setslice__.__func__.__doc__ = list.__setslice__.__doc__
+
+
+#-- class  RListproperty ------------------------------------------------------
+class RListproperty(object):
+
+    """Class RListproperty
+
+    A descriptor to deal with a list of restricted items.
+
+    Raises a TypeError when value is not allowed.
+
+    Properties:
+        cls (class) = the type of the list items
+        strict (bool, default True) = wether or not the instance value has
+            to be a Rlist or a regular list
+        required (bool, defaut True) = wether or not instance's value can
+            be None
+        default =  a defautl value returned if the instance's value is not
+            in the dictionnary. Should be unused if the property has been
+            initialized.
+        data (weakref.WeakKeyDictionary)
+
+    """
+
+    def __init__(self, cls, strict=True, required=True, default=None):
+        """Initialization.
+
+        Args:
+            nomenclature (int) = the nomenclature ref
+            strict (bool, default True) = wether or not the instance value has
+                to be in the nomenclature items
+            required (bool, defaut True) = wether or not instance's value can
+                be None
+            default =  a defautl value returned if the instance's value is not
+                in the dictionnary. Should be unused if the property has been
+                initialized.
+
+        """
+        self.cls = cls
+        self.strict = bool(strict)
+        self.required = bool(required)
+        self.default = default
+        self.data = _weakref.WeakKeyDictionary()
+
+    def __get__(self, instance, owner):
+        """Return instance value."""
+        return self.data.get(instance, default=self.default)
+
+    def __set__(self, instance, items):
+        """Set the instance list."""
+        # None case
+        if (items is None):
+            if self.required:
+                raise ValueError('a value other than None is required')
+            rlist = Rlist(self.cls) if self.strict else []
+
+        # other cases
+        else:
+            rlist = Rlist(self.cls, items) if self.strict else list(items)
+
+        # all is well
+        self.data[instance] = rlist
 
 
 #-- class Datefromeverything --------------------------------------------------
@@ -189,13 +373,14 @@ class Nomenclatureitem(object):
 
 
 #-- functions -----------------------------------------------------------------
-def is_code_hydro(code, length=8, raises=True):
-    """Return whether or not code is a valid code hydro.
+def is_code_hydro(code, length=8, errors='logic'):
+    """Return wether or not code is a valid code hydro as a bool.
 
     Arguments:
        code (string)
        length (int, default 8) = code size
-       raises (bool, default True) = if False doesn't raise
+       errors (str in 'logic' (default), 'strict') = 'strict' raises an
+           exception
 
     """
     try:
@@ -222,15 +407,14 @@ def is_code_hydro(code, length=8, raises=True):
         # all is well
         return True
 
-    except (ValueError, TypeError):
-        if raises:
-            raise
-        else:
-            return False
+    except Exception as err:
+        if errors not in ('logic', 'strict'):
+            raise ValueError("unknown error handler name '%s'" % errors)
+        ERROR_HANDLERS[errors](msg=err.message, error=type(err))
 
 
-def is_code_insee(code, length=5, raises=True):
-    """Return whether or not code is a valid INSEE code.
+def is_code_insee(code, length=5, errors='logic'):
+    """Return whether or not code is a valid INSEE code as a bool.
 
     Un code INSEE de commune est construit sur 5 caracteres. Pour les
     communes de metropole, les deux premiers caracteres correspondent
@@ -247,7 +431,8 @@ def is_code_insee(code, length=5, raises=True):
 
     Arguments:
        code (string(length), default length is 5)
-       raises (bool, default True) = if False doesn't raise
+       errors (str in 'logic' (default), 'strict') = 'strict' raises an
+           exception
 
     """
     # pre-condition
@@ -274,11 +459,10 @@ def is_code_insee(code, length=5, raises=True):
         # all is well
         return True
 
-    except (ValueError, TypeError):
-        if raises:
-            raise
-        else:
-            return False
+    except Exception as err:
+        if errors not in ('logic', 'strict'):
+            raise ValueError("unknown error handler name '%s'" % errors)
+        ERROR_HANDLERS[errors](msg=err.message, error=type(err))
 
 
 def __str__(self):

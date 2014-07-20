@@ -33,16 +33,73 @@ import numpy
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.3a"""
-__date__ = """2014-07-15"""
+__version__ = """0.4a"""
+__date__ = """2014-07-20"""
 
 #HISTORY
+#V0.4 - 2014-07-20
+#    add the error_handler, Rlist and Rlistpropery tests
 #V0.3 - 2014-07-16
 #    remove the composant_site part
 #V0.2 - 2014-03-01
 #    add the descriptor tests
 #V0.1 - 2013-11-07
 #    first shot
+
+
+#-- class TestErrorHandler ----------------------------------------------------
+class TestErrorHandler(unittest.TestCase):
+
+    """Error handler class tests."""
+
+    def test_ignore(self):
+        """Ignore error test."""
+        error_handler = composant.ERROR_HANDLERS['ignore']
+        self.assertNone(error_handler())
+        self.assertNone(
+            error_handler(msg='a message'.message, error=TypeError)
+        )
+        self.assertNone(error_handler('egfsksdùkf'))
+
+    def test_logic(self):
+        """Logic error test."""
+        error_handler = composant.ERROR_HANDLERS['logic']
+        self.assertFalse(error_handler())
+        self.assertFalse(
+            error_handler(msg='a message'.message, error=TypeError)
+        )
+
+    def test_warn(self):
+        """Warn error test."""
+        error_handler = composant.ERROR_HANDLERS['warn']
+        self.assertWarn(error_handler('message'))
+        self.assertWarn(
+            error_handler(msg='a message'.message, error=TypeError)
+        )
+
+    def test_strict(self):
+        """Strict error test."""
+        error_handler = composant.ERROR_HANDLERS['strict']
+        with self.assertRaises(TypeError):
+            error_handler(msg='a message'.message, error=TypeError)
+        with self.assertRaises(ValueError):
+            error_handler(msg='a message'.message, error=ValueError)
+
+
+#-- class TestRlist -----------------------------------------------------------
+class TestRlist(unittest.TestCase):
+
+    """Rlist class tests."""
+
+    raise NotImplementedError
+
+
+#-- class TestRlistproperty ---------------------------------------------------
+class TestRlistproperty(unittest.TestCase):
+
+    """Rlistproperty class tests."""
+
+    raise NotImplementedError
 
 
 #-- class TestDatefromeverything ----------------------------------------------

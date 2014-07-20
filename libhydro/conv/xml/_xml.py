@@ -21,11 +21,14 @@ from lxml import etree as _etree
 from . import (_from_xml, _to_xml)
 from libhydro.core import (
     _composant,
-    # intervenant as _intervenant,  # FIXME
+    # intervenant as _intervenant,
     sitehydro as _sitehydro,
+    sitemeteo as _sitemeteo,
     seuil as _seuil,
+    # modeleprevision as _modeleprevison,
     evenement as _evenement,
     obshydro as _obshydro,
+    obsmeteo as _obsmeteo,
     simulation as _simulation
 )
 
@@ -33,17 +36,19 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1l"""
-__date__ = """2014-07-16"""
+__version__ = """0.4a"""
+__date__ = """2014-07-18"""
 
 #HISTORY
+#V0.4 - 2014-07-18
+#    add sitemeteo and obsmeteo
+#    use a descriptor for Message components
 #V0.1 - 2013-08-20
 #    first shot
 
 
 #-- todos ---------------------------------------------------------------------
-# TODO - factorize 5 Message properties in a descriptor (except scenario)
-# TODO - implement intervenants and modelesprevision
+# TODO - factorize 7 Message properties in a descriptor (except scenario)
 
 
 # -- class Message ------------------------------------------------------------
@@ -56,9 +61,11 @@ class Message(object):
     Proprietes:
         scenario (xml.Scenario) = un objet Scenario obligatoire
         siteshydro (sitehydro.Sitehydro collection) = iterable ou None
+        sitesmeteo (sitemeteo.Sitemeteo collection) = iterable ou None
         seuilshydro (seuil.Seuilhydro collection) = iterable ou None
         evenements (evenement.Evenement collection) = iterable ou None
-        series (obshydro.Serie collection) = iterable ou None
+        serieshydro (obshydro.Serie collection) = iterable ou None
+        seriesmeteo (obsmeteo.Serie collection) = iterable ou None'
         simulations (simulation.Simulation collection) = iterable ou None
 
     """
@@ -66,28 +73,37 @@ class Message(object):
         # 'intervenants': 'TODO',
         # 'modelesprevision': 'TODO'
 
-        # 'sitesmeteo'
         # 'courbestarage'
         # 'jaugeages'
         # 'courbescorrection'
-        # 'obssmeteo'
         # 'obsselab'
         # 'gradshydro'
         # 'qualifsannee'
         # 'alarmes'
 
+    siteshydro = ListMessage_iterable(cls=siteshydro)  # TODO descriptor
+    sitesmeteo = sitesmeteo  # TODO
+    seuilshydro = seuilshydro  # TODO
+    evenements = evenements  # TODO
+    serieshydro = serieshydro  # TODO
+    seriesmeteo = seriesmeteo  # TODO
+    simulations = simulations  # TODO
+
     def __init__(
-        self, scenario, siteshydro=None, seuilshydro=None, evenements=None,
-        series=None, simulations=None, ordered=False, strict=True
+        self, scenario, siteshydro=None, sitesmeteo=None, seuilshydro=None,
+        evenements=None, serieshydro=None, seriesmeteo=None, simulations=None,
+        ordered=False, strict=True
     ):
         """Initialisation.
 
         Arguments:
             scenario (xml.Scenario) = un objet Scenario obligatoire
             siteshydro (sitehydro.Sitehydro collection) = iterable ou None
+            sitesmeteo (sitemeteo.Sitemeteo collection) = iterable ou None
             seuilshydro (seuil.Seuilhydro collection) = iterable ou None
             evenements (evenement.Evenement collection) = iterable ou None
-            series (obshydro.Serie collection) = iterable ou None
+            serieshydro (obshydro.Serie collection) = iterable ou None
+            seriesmeteo (obsmeteo.Serie collection) = iterable ou None'
             simulations (simulation.Simulation collection) = iterable ou None
             ordered (bool, default False) = if True tries to keep things in
                 order when serialising (slower)
@@ -96,21 +112,22 @@ class Message(object):
 
         """
 
-        # -- super --
-
         # -- simple properties --
         self._ordered = bool(ordered)
         self._strict = bool(strict)
 
-        # -- full properties --
-        self._scenario = self._siteshydro = self._seuilshydro = None
-        self._evenements = self._series = self._simulations = None
-        self.scenario = scenario
+        # -- descriptors --
         self.siteshydro = siteshydro
+        self.sitesmeteo = sitesmeteo
         self.seuilshydro = seuilshydro
         self.evenements = evenements
-        self.series = series
+        self.serieshydro = serieshydro
+        self.seriesmeteo = seriesmeteo
         self.simulations = simulations
+
+        # -- full properties --
+        self._scenario = None
+        self.scenario = scenario
 
     # -- property scenario --
     @property
@@ -136,156 +153,6 @@ class Message(object):
 
             # all is well
             self._scenario = scenario
-
-        except:
-            raise
-
-    # -- property siteshydro --
-    @property
-    def siteshydro(self):
-        """Return siteshydro."""
-        return self._siteshydro
-
-    @siteshydro.setter
-    def siteshydro(self, siteshydro):
-        """Set siteshydro."""
-        try:
-
-            # None case
-            if (siteshydro is None):
-                siteshydro = []
-
-            # other cases
-            if isinstance(siteshydro, _sitehydro.Sitehydro):
-                siteshydro = [siteshydro]
-            elif self._strict:
-                for sitehydro in siteshydro:
-                    if not isinstance(sitehydro, _sitehydro.Sitehydro):
-                        raise TypeError(
-                            'sitehydro {} incorrect'.format(sitehydro)
-                        )
-
-            # all is well
-            self._siteshydro = siteshydro
-
-        except:
-            raise
-
-    # -- property seuilshydro --
-    @property
-    def seuilshydro(self):
-        """Return seuilshydro."""
-        return self._seuilshydro
-
-    @seuilshydro.setter
-    def seuilshydro(self, seuilshydro):
-        """Set seuilshydro."""
-        try:
-
-            # None case
-            if (seuilshydro is None):
-                seuilshydro = []
-
-            # other cases
-            if isinstance(seuilshydro, _seuil.Seuilhydro):
-                seuilshydro = [seuilshydro]
-            elif self._strict:
-                for seuilhydro in seuilshydro:
-                    if not isinstance(seuilhydro, _seuil.Seuilhydro):
-                        raise TypeError(
-                            'seuilhydro {} incorrect'.format(seuilhydro)
-                        )
-
-            # all is well
-            self._seuilshydro = seuilshydro
-
-        except:
-            raise
-
-    # -- property evenements --
-    @property
-    def evenements(self):
-        """Return evenements."""
-        return self._evenements
-
-    @evenements.setter
-    def evenements(self, evenements):
-        """Set evenements."""
-        # None case
-        if (evenements is None):
-            evenements = []
-
-        # other cases
-        if isinstance(evenements, _evenement.Evenement):
-            evenements = [evenements]
-        elif self._strict:
-            for evenement in evenements:
-                if not isinstance(evenement, _evenement.Evenement):
-                    raise TypeError(
-                        'evenement {} incorrect'.format(evenement)
-                    )
-
-        # all is well
-        self._evenements = evenements
-
-    # -- property series --
-    @property
-    def series(self):
-        """Return series."""
-        return self._series
-
-    @series.setter
-    def series(self, series):
-        """Set series."""
-        try:
-
-            # None case
-            if (series is None):
-                series = []
-
-            # other cases
-            if isinstance(series, _obshydro.Serie):
-                series = [series]
-            elif self._strict:
-                for serie in series:
-                    if not isinstance(serie, _obshydro.Serie):
-                        raise TypeError(
-                            'serie {} incorrecte'.format(serie)
-                        )
-
-            # all is well
-            self._series = series
-
-        except:
-            raise
-
-    # -- property simulations --
-    @property
-    def simulations(self):
-        """Return simulations."""
-        return self._simulations
-
-    @simulations.setter
-    def simulations(self, simulations):
-        """Setsimulations."""
-        try:
-
-            # None case
-            if (simulations is None):
-                simulations = []
-
-            # other cases
-            if isinstance(simulations, _simulation.Simulation):
-                simulations = [simulations]
-            elif self._strict:
-                for simulation in simulations:
-                    if not isinstance(simulation, _simulation.Simulation):
-                        raise TypeError(
-                            'simulation {} incorrecte'.format(simulation)
-                        )
-
-            # all is well
-            self._simulations = simulations
 
         except:
             raise
@@ -320,6 +187,9 @@ class Message(object):
             siteshydro=_from_xml._siteshydro_from_element(
                 tree.find('RefHyd/SitesHydro')
             ),
+            sitesmeteo=_from_xml._sitesmeteo_from_element(
+                tree.find('RefHyd/SitesMeteo')
+            ),
             seuilshydro=_from_xml._seuilshydro_from_element(
                 element=tree.find('RefHyd/SitesHydro'),
                 ordered=ordered
@@ -327,8 +197,11 @@ class Message(object):
             evenements=_from_xml._evenements_from_element(
                 tree.find('Donnees/Evenements')
             ),
-            series=_from_xml._series_from_element(
+            serieshydro=_from_xml._serieshydro_from_element(
                 tree.find('Donnees/Series')
+            ),
+            seriesmeteo=_from_xml._seriesmeteo_from_element(
+                tree.find('Donnees/ObssMeteo')
             ),
             simulations=_from_xml._simulations_from_element(
                 tree.find('Donnees/Simuls')
@@ -336,12 +209,10 @@ class Message(object):
         )
 
             # 'intervenants':
-            # 'sitesmeteo'
             # 'modelesprevision': 'TODOS',
             # 'courbestarage'
             # 'jaugeages'
             # 'courbescorrection'
-            # 'obssmeteo'
             # 'obsselab'
             # 'gradshydro'
             # 'qualifsannee'
@@ -357,9 +228,11 @@ class Message(object):
         avec les regles suivantes:
             CLE PARMI   /      VALEUR
             siteshydro  = iterable de sitehydro.Sitehydro
+            sitesmeteo  = iterable de sitemeteo.Sitemeteo
             seuilshydro = iterable de seuil.Seuilhydro
             evenements  = iterable d'evenement.Evenement
-            series      = iterable de obshydro.Serie
+            serieshydro = iterable de obshydro.Serie
+            seriesmeteo = iterable de obsmeteo.Serie
             simulations = iterable de simulation.Simulation
 
         """
@@ -397,9 +270,11 @@ class Message(object):
             _to_xml._to_xml(
                 scenario=self.scenario,
                 siteshydro=self.siteshydro,
+                sitesmeteo=self.sitesmeteo,
                 seuilshydro=self.seuilshydro,
                 evenements=self.evenements,
-                series=self.series,
+                serieshydro=self.serieshydro,
+                seriesmeteo=self.seriesmeteo,
                 simulations=self.simulations,
                 ordered=self._ordered
             )
@@ -419,9 +294,11 @@ class Message(object):
             _to_xml._to_xml(
                 scenario=self.scenario,
                 siteshydro=self.siteshydro,
+                sitesmeteo=self.sitesmeteo,
                 seuilshydro=self.seuilshydro,
                 evenements=self.evenements,
-                series=self.series,
+                serieshydro=self.serieshydro,
+                seriesmeteo=self.seriesmeteo,
                 simulations=self.simulations
             ),
             encoding=_sys.stdout.encoding,
@@ -440,10 +317,123 @@ class Message(object):
                '{} series - {} simulations'.format(
                    scenario,
                    len(self.siteshydro),
+                   len(self.sitesmeteo),
                    len(self.seuilshydro),
                    len(self.evenements),
-                   len(self.series),
+                   len(self.serieshydro),
+                   len(self.seriesmeteo),
                    len(self.simulations)
                )
 
     __str__ = _composant.__str__
+
+
+#-- class MessageNomenclatureitem ----------------------------------------------------
+# TODO descriptor
+
+descriptor model:
+
+class Nomenclatureitem(object):
+
+    """Class Nomenclatureitem.
+
+    A descriptor to deal with 'in nomenclature.NOMENCLATURES' properties.
+
+    Should raise only a ValueError when value is not allowed (even with
+    the None case).
+
+    Properties:
+        nomenclature (int) = the nomenclature ref
+        valuetype (type) = a function to cast values to the nomenclature's
+            items type
+        strict (bool, default True) = wether or not the instance value has
+            to be in the nomenclature items
+        required (bool, defaut True) = wether or not instance's value can
+            be None
+        default =  a defautl value returned if the instance's value is not
+            in the dictionnary. Should be unused if the property has been
+            initialized.
+        data (weakref.WeakKeyDictionary)
+
+    """
+
+    def __init__(self, nomenclature, strict=True, required=True, default=None):
+        """Initialization.
+
+        Args:
+            nomenclature (int) = the nomenclature ref
+            strict (bool, default True) = wether or not the instance value has
+                to be in the nomenclature items
+            required (bool, defaut True) = wether or not instance's value can
+                be None
+            default =  a defautl value returned if the instance's value is not
+                in the dictionnary. Should be unused if the property has been
+                initialized.
+
+        """
+        self.nomenclature = int(nomenclature)
+        if self.nomenclature not in _NOMENCLATURE:
+            raise ValueError('unknown nomenclature')
+        self.valuetype = type(_NOMENCLATURE[self.nomenclature].keys()[0])
+        self.strict = bool(strict)
+        self.required = bool(required)
+        self.default = default
+        self.data = _weakref.WeakKeyDictionary()
+
+    def __get__(self, instance, owner):
+        """Return instance value."""
+        return self.data.get(instance, default=self.default)
+
+    def __set__(self, instance, value):
+        """Set the 'in nomenclature' property."""
+        # None case
+        if (value is None):
+            if self.required:
+                raise ValueError('a value other than None is required')
+
+        # other cases
+        else:
+            value = self.valuetype(value)
+            if (
+                (self.strict) and
+                (value not in _NOMENCLATURE[self.nomenclature])
+            ):
+                raise ValueError(
+                    'value should be in nomenclature %i' % self.nomenclature
+                )
+
+        # all is well
+        self.data[instance] = value
+
+
+property model:
+
+    @property
+    def siteshydro(self):
+        """Return siteshydro."""
+        return self._siteshydro
+
+    @siteshydro.setter
+    def siteshydro(self, siteshydro):
+        """Set siteshydro."""
+        try:
+
+            # None case
+            if (siteshydro is None):
+                siteshydro = []
+
+            # other cases
+            if isinstance(siteshydro, _sitehydro.Sitehydro):
+                siteshydro = [siteshydro]
+            elif self._strict:
+                for sitehydro in siteshydro:
+                    if not isinstance(sitehydro, _sitehydro.Sitehydro):
+                        raise TypeError(
+                            'sitehydro {} incorrect'.format(sitehydro)
+                        )
+
+            # all is well
+            self._siteshydro = siteshydro
+
+        except:
+            raise

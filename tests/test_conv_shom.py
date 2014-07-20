@@ -185,11 +185,8 @@ class TestSerieFromHSF(unittest.TestCase):
 
     def test_error_01(self):
         """Src error."""
-        self.assertRaises(
-            IOError,
-            shom.serie_from_hfs,
-            **{'src': 'LOCMARI'}
-        )
+        with self.assertRaises(IOError):
+            shom.serie_from_hfs(src='LOCMARI')
 
     def test_error_02(self):
         """Check dates format error."""

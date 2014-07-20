@@ -33,8 +33,8 @@ from libhydro.core import sitehydro
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2014-03-25"""
+__version__ = """0.1d"""
+__date__ = """2014-07-18"""
 
 #HISTORY
 #V0.1 - 2014-02-12
@@ -121,18 +121,17 @@ class TestSeuilhydro(unittest.TestCase):
         )
         self.assertTrue(seuil.__str__().rfind(str(code)) > -1)
 
-    # def test_fuzzy_mode_01(self):
-    #     """Fuzzy mode."""
-    #     entite = sitehydro.Stationhydro('R533010110')
-    #     descriptif = 'some texte here'
-    #     publication = 9999
-    #     e = seuil.seuil(
-    #         entite=entite, contact=None, descriptif=descriptif,
-    #         publication=publication, strict=False
-    #     )
-    #     self.assertEqual(
-    #         (e.contact, e.publication), (None, publication)
-    #     )
+    def test_fuzzy_mode_01(self):
+        """Fuzzy mode."""
+        code = 175896
+        typeseuil = None
+        duree = None
+        seuil = Seuilhydro(
+            sitehydro='site', code=code, typeseuil=typeseuil, duree=duree,
+            strict=False
+        )
+        self.assertTrue(seuil.__str__().rfind(str(code)) > -1)
+        self.assertTrue(seuil.__str__().rfind(str('sans duree')) > -1)
 
     def test_equality_01(self):
         """Test equality and inequality with metadata only."""

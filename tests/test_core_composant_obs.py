@@ -40,9 +40,11 @@ __date__ = """2014-07-16"""
 #-- class TestObservations ----------------------------------------------------
 # class TestObservations(unittest.TestCase):
 
-    # pass
+    # pass - we don't need to test the composant_obs module which is already
+    #        tested with the derived obshydro and obdmeteo classes
 
 #-- class TestSerie -----------------------------------------------------------
 # class TestSerie(unittest.TestCase):
 
-    # pass
+    # pass - we don't need to test the composant_obs module which is already
+    #        tested with the derived obshydro and obdmeteo classes

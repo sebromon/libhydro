@@ -48,8 +48,8 @@ from . import sitehydro as _sitehydro
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2a"""
-__date__ = """2014-07-16"""
+__version__ = """0.2b"""
+__date__ = """2014-07-18"""
 
 #HISTORY
 #V0.2 - 2014-07-15
@@ -299,17 +299,20 @@ class Serie(_composant_obs.Serie):
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
-        # compute entite name
-        if self.entite is None:
+        # init
+        try:
+            entite = '{} {}'.format(
+                _sitehydro._ARTICLE[self.entite.__class__],
+                self.entite.__unicode__()
+            )
+        except Exception:
             entite = '<une entite inconnue>'
-        else:
-            try:
-                entite = '{} {}'.format(
-                    _sitehydro._ARTICLE[self.entite.__class__],
-                    self.entite.__unicode__()
-                )
-            except (AttributeError, KeyError):
-                entite = self.entite
+        try:
+            obs = self.observations.to_string(
+                max_rows=15, show_dimensions=True
+            )
+        except Exception:
+            obs = '<sans observations>'
 
         # action !
         return 'Serie {0} sur {1}\n'\
@@ -321,10 +324,7 @@ class Serie(_composant_obs.Serie):
                    self.statut,
                    _NOMENCLATURE[510][self.statut].lower(),
                    '-' * 72,
-                   self.observations.to_string(
-                       max_rows=15, show_dimensions=True
-                   ) if self.observations is not None
-                   else '<sans observations>'
+                   obs
                )
 
     __str__ = _composant.__str__

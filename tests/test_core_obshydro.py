@@ -33,8 +33,8 @@ from libhydro.core import (sitehydro, obshydro)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1f"""
-__date__ = """2014-03-09"""
+__version__ = """0.1g"""
+__date__ = """2014-07-18"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -303,7 +303,7 @@ class TestSerie(unittest.TestCase):
         self.assertTrue(serie.__str__().rfind('Observations') > -1)
         # a junk entite
         serie = obshydro.Serie(entite='station 33', strict=False)
-        self.assertTrue(serie.__str__().rfind('station 33') > -1)
+        self.assertTrue(serie.__str__().rfind('entite inconnue') > -1)
 
     def test_str_02(self):
         """Test __str__ method with a small Observations."""

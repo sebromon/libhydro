@@ -53,8 +53,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.7d"""
-__date__ = """2014-07-16"""
+__version__ = """0.7e"""
+__date__ = """2014-07-18"""
 
 #HISTORY
 #V0.7 - 2014-03-02
@@ -427,23 +427,30 @@ class Simulation(object):
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
-        # compute entite name
-        if self.entite is None:
+        # init
+        try:
+            statut = _NOMENCLATURE[516][self.statut].lower()
+        except Exception:
+            statut = '<sans statut>'
+        try:
+            entite = '{} {}'.format(
+                _sitehydro._ARTICLE[self.entite.__class__],
+                self.entite.__unicode__()
+            )
+        except (AttributeError, KeyError):
             entite = '<une entite inconnue>'
-        else:
-            try:
-                entite = '{} {}'.format(
-                    _sitehydro._ARTICLE[self.entite.__class__],
-                    self.entite.__unicode__()
-                )
-            except (AttributeError, KeyError):
-                entite = self.entite
-
-        # prepare previsions
-        if self.previsions is None:
-            prev = '<sans previsions>'
-        else:
+        try:
             prev = self.previsions.__unicode__()
+        except Exception:
+            prev = '<sans previsions>'
+        try:
+            dtprod = self.dtprod.isoformat(),
+        except Exception:
+            dtprod = '<inconnue>'
+        try:
+            qualite = '%i%%' % self.qualite
+        except Exception:
+            qualite = '<inconnue>'
 
         # action !
         return '''Simulation {0} de {1} sur {2}\n''' \
@@ -453,13 +460,11 @@ class Simulation(object):
                '''{7}\n''' \
                '''{8}\n''' \
                '''Previsions:\n {9}'''.format(
-                   '<sans statut>' if (self.statut is None)
-                   else _NOMENCLATURE[516][self.statut].lower(),
+                   statut,
                    self.grandeur or '<sans grandeur>',
                    entite,
-                   '<inconnue>' if not self.dtprod
-                   else self.dtprod.isoformat(),
-                   '<inconnue>' if not self.qualite else '%i%%' % self.qualite,
+                   dtprod,
+                   qualite,
                    self.commentaire or '<sans>',
                    '-' * 72,
                    self.modeleprevision or '<modele inconnu>',

@@ -21,8 +21,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2d"""
-__date__ = """2014-07-16"""
+__version__ = """0.2e"""
+__date__ = """2014-07-18"""
 
 #HISTORY
 #V0.1 - 2014-02-10
@@ -193,6 +193,29 @@ class _Seuil(object):
 
     def __unicode__(self):
         """Return unicode representation."""
+        # init
+        try:
+            typeseuil = _NOMENCLATURE[528][self.typeseuil]
+        except Exception:
+            typeseuil = '<sans type>'
+        try:
+            if self.duree is None:
+                raise TypeError
+            duree = '%s mn' % self.duree
+        except Exception:
+            duree = '<sans duree>'
+        try:
+            nature = _NOMENCLATURE[529][self.nature]
+        except Exception:
+            nature = '<nature inconnue>'
+        try:
+            valeurs = '\n'.join(
+                ['  %s' % unicode(v) for v in self.valeurs]
+            )
+        except Exception:
+            valeurs = '%s<sans valeurs>' % (' ' * 4)
+
+        # action !
         return '''Seuil {code} de type {typeseuil} ''' \
                '''et de duree {duree}\n''' \
                '''{nature}\n''' \
@@ -200,27 +223,12 @@ class _Seuil(object):
                '''Gravite: {gravite}\n''' \
                '''Valeurs:\n{valeurs}\n'''.format(
                    code=self.code,
-                   typeseuil=(
-                       _NOMENCLATURE[528][self.typeseuil]
-                       if self.typeseuil is not None else '<sans type>'
-                   ),
-                   duree=(
-                       '%s mn' % self.duree if self.duree is not None
-                       else '<sans duree>'
-                   ),
-                   nature=(
-                       _NOMENCLATURE[529][self.nature]
-                       if self.nature is not None
-                       else '<nature inconnue>'
-                   ),
+                   typeseuil=typeseuil,
+                   duree=duree,
+                   nature=nature,
                    intitule=self.libelle or self.mnemo or '<sans intitule>',
                    gravite=self.gravite or '<gravite inconnue>',
-                   valeurs=(
-                       '\n'.join(
-                           ['  %s' % unicode(v) for v in self.valeurs]
-                       ) if (self.valeurs not in (None, []))
-                       else '%s<sans valeurs>' % (' ' * 4)
-                   )
+                   valeurs=valeurs
                )
 
     __str__ = _composant.__str__

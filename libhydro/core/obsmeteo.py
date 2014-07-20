@@ -214,8 +214,8 @@ class Serie(_composant_obs.Serie):
 
         Arguments:
             grandeurmeteo (Grandeurmeteo)
-            duree (int, defaut 0) = duree des cumuls, 0 pour les donnees
-                instantanees
+            duree (int, defaut 0) = duree des cumuls en minutes,
+                0 pour les donnees instantanees
             statut (int parmi NOMENCLATURE[511], defaut 0) = donnee brute,
                 corrigee...
             dtdeb (numpy.datetime64)
@@ -241,7 +241,9 @@ class Serie(_composant_obs.Serie):
 
         # -- full properties --
         self._grandeurmeteo = None
+        self._duree = 0
         self.grandeurmeteo = grandeurmeteo
+        self.duree = duree
 
     # -- property grandeurmeteo --
     @property
@@ -264,23 +266,54 @@ class Serie(_composant_obs.Serie):
         except:
             raise
 
+    # -- property duree --
+    @property
+    def duree(self):
+        """Return duree."""
+        return self._duree
+
+    @duree.setter
+    def duree(self, duree):
+        """Set duree."""
+        try:
+            self._duree = int(duree)
+            if duree < 0:
+                raise ValueError('duree must be a positive integer')
+        except:
+            raise
+
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
+        # init
+        try:
+            grandeur = self.grandeurmeteo.typegrandeur
+        except Exception:
+            grandeur = '<grandeurmeteo inconnue>',
+        try:
+            code = self.grandeurmeteo.sitemeteo.code
+        except Exception:
+            code = '<sans code>'
+        try:
+            obs = self.observations.to_string(
+                max_rows=15, show_dimensions=True
+            )
+        except Exception:
+            obs = '<sans observations>'
+
+        # action
         return 'Serie {0} sur le site meteorologique {1}\n'\
                'Statut {2}::{3}\n'\
-               '{4}\n'\
-               'Observations:\n{5}'.format(
-                   self.grandeurmeteo.typegrandeur or
-                   '<grandeurmeteo inconnue>',
-                   self.grandeurmeteo.sitemeteo.code or '<sans code>',
+               'Duree {4} mn\n'\
+               '{5}\n'\
+               'Observations:\n{6}'.format(
+                   grandeur,
+                   code,
                    self.statut,
                    _NOMENCLATURE[511][self.statut].lower(),
+                   self.duree,
                    '-' * 72,
-                   self.observations.to_string(
-                       max_rows=15, show_dimensions=True
-                   ) if self.observations is not None
-                   else '<sans observations>'
+                   obs
                )
 
     __str__ = _composant.__str__
