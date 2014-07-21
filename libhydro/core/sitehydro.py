@@ -275,7 +275,8 @@ class Sitehydro(_Site_or_station):
             code=code, codeh2=codeh2, libelle=libelle,
             coord=coord, strict=strict
         )
-        # adjust the descriptor
+
+        # -- adjust the descriptor --
         vars(self.__class__)['typesite'].strict = self._strict
 
         # -- simple properties --
@@ -473,7 +474,8 @@ class Stationhydro(_Site_or_station):
             code=code, codeh2=codeh2, libelle=libelle,
             coord=coord, strict=strict
         )
-        # adjust the descriptor
+
+        # -- adjust the descriptor --
         vars(self.__class__)['typestation'].strict = self._strict
 
         # -- simple properties --
@@ -644,7 +646,8 @@ class Capteur(_Entitehydro):
         super(Capteur, self).__init__(
             code=code, codeh2=codeh2, libelle=libelle, strict=strict
         )
-        # adjust the descriptor
+
+        # -- adjust the descriptor --
         vars(self.__class__)['typemesure'].strict = self._strict
 
         # -- descriptors --

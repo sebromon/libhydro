@@ -126,7 +126,9 @@ class Sitemeteo(object):
                 # other cases
                 code = unicode(code)
                 if self._strict:
-                    _composant.is_code_insee(code=code, length=9, errors='strict')
+                    _composant.is_code_insee(
+                        code=code, length=9, errors='strict'
+                    )
 
             # all is well
             self._code = code
@@ -169,7 +171,7 @@ class Sitemeteo(object):
         """Set code commune."""
         if commune is not None:
             commune = unicode(commune)
-            _composant.is_code_insee(commune, length=5)
+            _composant.is_code_insee(commune, length=5, errors='strict')
         self._commune = commune
 
     # -- property grandeurs --
@@ -254,7 +256,7 @@ class Grandeurmeteo(object):
         # -- simple properties --
         self._strict = bool(strict)
 
-        # adjust the descriptor
+        # -- adjust the descriptor --
         vars(self.__class__)['typegrandeur'].strict = self._strict
         vars(self.__class__)['typegrandeur'].required = self._strict
 

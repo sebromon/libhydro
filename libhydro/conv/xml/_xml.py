@@ -37,7 +37,7 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.4a"""
-__date__ = """2014-07-18"""
+__date__ = """2014-07-21"""
 
 #HISTORY
 #V0.4 - 2014-07-18
@@ -45,10 +45,6 @@ __date__ = """2014-07-18"""
 #    use a descriptor for Message components
 #V0.1 - 2013-08-20
 #    first shot
-
-
-#-- todos ---------------------------------------------------------------------
-# TODO - factorize 7 Message properties in a descriptor (except scenario)
 
 
 # -- class Message ------------------------------------------------------------
@@ -60,13 +56,13 @@ class Message(object):
 
     Proprietes:
         scenario (xml.Scenario) = un objet Scenario obligatoire
-        siteshydro (sitehydro.Sitehydro collection) = iterable ou None
-        sitesmeteo (sitemeteo.Sitemeteo collection) = iterable ou None
-        seuilshydro (seuil.Seuilhydro collection) = iterable ou None
-        evenements (evenement.Evenement collection) = iterable ou None
-        serieshydro (obshydro.Serie collection) = iterable ou None
-        seriesmeteo (obsmeteo.Serie collection) = iterable ou None'
-        simulations (simulation.Simulation collection) = iterable ou None
+        siteshydro (sitehydro.Sitehydro collection) ou None
+        sitesmeteo (sitemeteo.Sitemeteo collection) ou None
+        seuilshydro (seuil.Seuilhydro collection) ou None
+        evenements (evenement.Evenement collection) ou None
+        serieshydro (obshydro.Serie collection) ou None
+        seriesmeteo (obsmeteo.Serie collection) ou None
+        simulations (simulation.Simulation collection) ou None
 
     """
 
@@ -81,13 +77,13 @@ class Message(object):
         # 'qualifsannee'
         # 'alarmes'
 
-    siteshydro = ListMessage_iterable(cls=siteshydro)  # TODO descriptor
-    sitesmeteo = sitesmeteo  # TODO
-    seuilshydro = seuilshydro  # TODO
-    evenements = evenements  # TODO
-    serieshydro = serieshydro  # TODO
-    seriesmeteo = seriesmeteo  # TODO
-    simulations = simulations  # TODO
+    siteshydro = _composant.Rlistproperty(cls=_sitehydro.Sitehydro)
+    sitesmeteo = _composant.Rlistproperty(cls=_sitemeteo.Sitemeteo)
+    seuilshydro = _composant.Rlistproperty(cls=_seuil.Seuilhydro)
+    evenements = _composant.Rlistproperty(cls=_evenement.Evenement)
+    serieshydro = _composant.Rlistproperty(cls=_obshydro.Serie)
+    seriesmeteo = _composant.Rlistproperty(cls=_obsmeteo.Serie)
+    simulations = _composant.Rlistproperty(cls=_simulation.Simulation)
 
     def __init__(
         self, scenario, siteshydro=None, sitesmeteo=None, seuilshydro=None,
@@ -116,14 +112,19 @@ class Message(object):
         self._ordered = bool(ordered)
         self._strict = bool(strict)
 
+        # -- adjust the descriptor --
+        for key in _to_xml.ORDERED_ACCEPTED_KEYS[1:]:
+            vars(self.__class__)[key].strict = self._strict  # Rlist or []
+            vars(self.__class__)[key].required = self._strict  # [] or None
+
         # -- descriptors --
-        self.siteshydro = siteshydro
-        self.sitesmeteo = sitesmeteo
-        self.seuilshydro = seuilshydro
-        self.evenements = evenements
-        self.serieshydro = serieshydro
-        self.seriesmeteo = seriesmeteo
-        self.simulations = simulations
+        self.siteshydro = siteshydro or []
+        self.sitesmeteo = sitesmeteo or []
+        self.seuilshydro = seuilshydro or []
+        self.evenements = evenements or []
+        self.serieshydro = serieshydro or []
+        self.seriesmeteo = seriesmeteo or []
+        self.simulations = simulations or []
 
         # -- full properties --
         self._scenario = None
@@ -312,128 +313,31 @@ class Message(object):
             scenario = self.scenario.__unicode__()
         except AttributeError:
             scenario = 'Message <sans scenario>'
-        return '{}\nContenu: {} siteshydro - {} seuilshydro - ' \
-               '{} evenements - ' \
-               '{} series - {} simulations'.format(
-                   scenario,
-                   len(self.siteshydro),
-                   len(self.sitesmeteo),
-                   len(self.seuilshydro),
-                   len(self.evenements),
-                   len(self.serieshydro),
-                   len(self.seriesmeteo),
-                   len(self.simulations)
+        return '{scenario}\n' \
+               'Contenu:\n' \
+               '{space}{siteshydro} siteshydro\n' \
+               '{space}{sitesmeteo} sitesmeteo\n' \
+               '{space}{seuilshydro} seuilshydro\n' \
+               '{space}{evenements} evenements\n' \
+               '{space}{serieshydro} serieshydro\n' \
+               '{space}{seriesmeteo} seriesmeteo\n' \
+               '{space}{simulations} simulations'.format(
+                   space=' ' * 4,
+                   scenario=scenario,
+                   siteshydro=0 if self.siteshydro is None
+                   else len(self.siteshydro),
+                   sitesmeteo=0 if self.sitesmeteo is None
+                   else len(self.sitesmeteo),
+                   seuilshydro=0 if self.seuilshydro is None
+                   else len(self.seuilshydro),
+                   evenements=0 if self.evenements is None
+                   else len(self.evenements),
+                   serieshydro=0 if self.serieshydro is None
+                   else len(self.serieshydro),
+                   seriesmeteo=0 if self.seriesmeteo is None
+                   else len(self.seriesmeteo),
+                   simulations=0 if self.simulations is None
+                   else len(self.simulations)
                )
 
     __str__ = _composant.__str__
-
-
-#-- class MessageNomenclatureitem ----------------------------------------------------
-# TODO descriptor
-
-# descriptor model:
-
-class Nomenclatureitem(object):
-
-    """Class Nomenclatureitem.
-
-    A descriptor to deal with 'in nomenclature.NOMENCLATURES' properties.
-
-    Should raise only a ValueError when value is not allowed (even with
-    the None case).
-
-    Properties:
-        nomenclature (int) = the nomenclature ref
-        valuetype (type) = a function to cast values to the nomenclature's
-            items type
-        strict (bool, default True) = wether or not the instance value has
-            to be in the nomenclature items
-        required (bool, defaut True) = wether or not instance's value can
-            be None
-        default =  a defautl value returned if the instance's value is not
-            in the dictionnary. Should be unused if the property has been
-            initialized.
-        data (weakref.WeakKeyDictionary)
-
-    """
-
-    def __init__(self, nomenclature, strict=True, required=True, default=None):
-        """Initialization.
-
-        Args:
-            nomenclature (int) = the nomenclature ref
-            strict (bool, default True) = wether or not the instance value has
-                to be in the nomenclature items
-            required (bool, defaut True) = wether or not instance's value can
-                be None
-            default =  a defautl value returned if the instance's value is not
-                in the dictionnary. Should be unused if the property has been
-                initialized.
-
-        """
-        self.nomenclature = int(nomenclature)
-        if self.nomenclature not in _NOMENCLATURE:
-            raise ValueError('unknown nomenclature')
-        self.valuetype = type(_NOMENCLATURE[self.nomenclature].keys()[0])
-        self.strict = bool(strict)
-        self.required = bool(required)
-        self.default = default
-        self.data = _weakref.WeakKeyDictionary()
-
-    def __get__(self, instance, owner):
-        """Return instance value."""
-        return self.data.get(instance, default=self.default)
-
-    def __set__(self, instance, value):
-        """Set the 'in nomenclature' property."""
-        # None case
-        if (value is None):
-            if self.required:
-                raise ValueError('a value other than None is required')
-
-        # other cases
-        else:
-            value = self.valuetype(value)
-            if (
-                (self.strict) and
-                (value not in _NOMENCLATURE[self.nomenclature])
-            ):
-                raise ValueError(
-                    'value should be in nomenclature %i' % self.nomenclature
-                )
-
-        # all is well
-        self.data[instance] = value
-
-
-# property model:
-
-    @property
-    def siteshydro(self):
-        """Return siteshydro."""
-        return self._siteshydro
-
-    @siteshydro.setter
-    def siteshydro(self, siteshydro):
-        """Set siteshydro."""
-        try:
-
-            # None case
-            if (siteshydro is None):
-                siteshydro = []
-
-            # other cases
-            if isinstance(siteshydro, _sitehydro.Sitehydro):
-                siteshydro = [siteshydro]
-            elif self._strict:
-                for sitehydro in siteshydro:
-                    if not isinstance(sitehydro, _sitehydro.Sitehydro):
-                        raise TypeError(
-                            'sitehydro {} incorrect'.format(sitehydro)
-                        )
-
-            # all is well
-            self._siteshydro = siteshydro
-
-        except:
-            raise

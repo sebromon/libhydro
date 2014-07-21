@@ -59,7 +59,7 @@ class Coord(object):
         # -- simple properties --
         self._strict = bool(strict)
 
-        # adjust the descriptor
+        # -- adjust the descriptor --
         vars(self.__class__)['proj'].required = self._strict
 
         for crd in ('x', 'y'):

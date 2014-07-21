@@ -254,7 +254,7 @@ class Serie(_composant_obs.Serie):
             observations=observations, strict=strict
         )
 
-        # adjust the descriptor
+        # -- adjust the descriptor --
         vars(self.__class__)['grandeur'].strict = self._strict
         vars(self.__class__)['grandeur'].required = self._strict
         vars(self.__class__)['statut'].strict = self._strict

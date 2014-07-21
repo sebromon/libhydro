@@ -32,8 +32,8 @@ from libhydro.conv.xml import (_from_xml as from_xml)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1k"""
-__date__ = """2014-06-05"""
+__version__ = """0.1l"""
+__date__ = """2014-07-21"""
 
 #HISTORY
 #V0.1 - 2013-08-24
@@ -55,15 +55,15 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         """Check Keys test."""
         self.assertEqual(
             set(self.data.keys()),
-            set(('scenario', 'siteshydro', 'seuilshydro', 'evenements',
-                'series', 'simulations'))
+            set(('scenario', 'siteshydro', 'sitesmeteo', 'seuilshydro',
+                 'evenements', 'serieshydro', 'seriesmeteo', 'simulations'))
         )
-        self.assertIsNotNone(self.data['scenario'])
-        self.assertIsNotNone(self.data['siteshydro'])
-        self.assertIsNone(self.data['seuilshydro'])
-        self.assertIsNone(self.data['evenements'])
-        self.assertIsNone(self.data['series'])
-        self.assertIsNone(self.data['simulations'])
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertNotEqual(self.data['siteshydro'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['simulations'], [])
 
     def test_scenario(self):
         """Scenario test."""
@@ -185,15 +185,15 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         """Check Keys test."""
         self.assertEqual(
             set(self.data.keys()),
-            set(('scenario', 'siteshydro', 'seuilshydro', 'evenements',
-                'series', 'simulations'))
+            set(('scenario', 'siteshydro', 'sitesmeteo', 'seuilshydro',
+                 'evenements', 'serieshydro', 'seriesmeteo', 'simulations'))
         )
-        self.assertIsNotNone(self.data['scenario'])
-        self.assertIsNotNone(self.data['siteshydro'])
-        self.assertIsNotNone(self.data['seuilshydro'])
-        self.assertIsNone(self.data['evenements'])
-        self.assertIsNone(self.data['series'])
-        self.assertIsNone(self.data['simulations'])
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertNotEqual(self.data['siteshydro'], [])
+        self.assertNotEqual(self.data['seuilshydro'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['simulations'], [])
 
     def test_seuils_sitehydro_0(self):
         """Test seuils sitehydro 0."""
@@ -400,15 +400,15 @@ class TestFromXmlEvenements(unittest.TestCase):
         """Check Keys test."""
         self.assertEqual(
             set(self.data.keys()),
-            set(('scenario', 'siteshydro', 'seuilshydro', 'evenements',
-                'series', 'simulations'))
+            set(('scenario', 'siteshydro', 'sitesmeteo', 'seuilshydro',
+                 'evenements', 'serieshydro', 'seriesmeteo', 'simulations'))
         )
-        self.assertIsNotNone(self.data['scenario'])
-        self.assertIsNone(self.data['siteshydro'])
-        self.assertIsNone(self.data['seuilshydro'])
-        self.assertIsNotNone(self.data['evenements'])
-        self.assertIsNone(self.data['series'])
-        self.assertIsNone(self.data['simulations'])
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertEqual(self.data['siteshydro'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertNotEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['simulations'], [])
 
     def test_scenario(self):
         """Scenario test."""
@@ -452,30 +452,30 @@ class TestFromXmlEvenements(unittest.TestCase):
         )
 
 
-#-- class TestFromXmlSeries ---------------------------------------------------
-class TestFromXmlSeries(unittest.TestCase):
+#-- class TestFromXmlserieshydro ----------------------------------------------
+class TestFromXmlserieshydro(unittest.TestCase):
 
-    """FromXmlSeries class tests."""
+    """FromXmlserieshydro class tests."""
 
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
         self.data = from_xml._parse(
-            os.path.join('data', 'xml', '1.1', 'series.xml')
+            os.path.join('data', 'xml', '1.1', 'serieshydro.xml')
         )
 
     def test_base(self):
         """Check keys test."""
         self.assertEqual(
             set(self.data.keys()),
-            set(('scenario', 'siteshydro', 'seuilshydro', 'evenements',
-                 'series', 'simulations'))
+            set(('scenario', 'siteshydro', 'sitesmeteo', 'seuilshydro',
+                 'evenements', 'serieshydro', 'seriesmeteo', 'simulations'))
         )
-        self.assertIsNotNone(self.data['scenario'])
-        self.assertIsNone(self.data['siteshydro'])
-        self.assertIsNone(self.data['seuilshydro'])
-        self.assertIsNone(self.data['evenements'])
-        self.assertIsNotNone(self.data['series'])
-        self.assertIsNone(self.data['simulations'])
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertEqual(self.data['siteshydro'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertNotEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['simulations'], [])
 
     def test_scenario(self):
         """Scenario test."""
@@ -492,7 +492,7 @@ class TestFromXmlSeries(unittest.TestCase):
 
     def test_serie_0(self):
         """Serie 0 test."""
-        serie = self.data['series'][0]
+        serie = self.data['serieshydro'][0]
         self.assertEqual(serie.entite.code, 'V7144010')
         self.assertEqual(serie.grandeur, 'Q')
         self.assertEqual(serie.statut, 4)
@@ -506,7 +506,7 @@ class TestFromXmlSeries(unittest.TestCase):
 
     def test_serie_1(self):
         """Serie 1 test."""
-        serie = self.data['series'][1]
+        serie = self.data['serieshydro'][1]
         self.assertEqual(serie.entite.code, 'V714401001')
         self.assertEqual(serie.grandeur, 'Q')
         self.assertEqual(serie.statut, 4)
@@ -520,7 +520,7 @@ class TestFromXmlSeries(unittest.TestCase):
 
     def test_serie_2(self):
         """Serie 2 test."""
-        serie = self.data['series'][2]
+        serie = self.data['serieshydro'][2]
         self.assertEqual(serie.entite.code, 'V71440100103')
         self.assertEqual(serie.grandeur, 'H')
         self.assertEqual(serie.statut, 4)
@@ -557,15 +557,15 @@ class TestFromXmlSimulations(unittest.TestCase):
         """Check keys test."""
         self.assertEqual(
             set(self.data.keys()),
-            set(('scenario', 'siteshydro', 'seuilshydro', 'evenements',
-                 'series', 'simulations'))
+            set(('scenario', 'siteshydro', 'sitesmeteo', 'seuilshydro',
+                 'evenements', 'serieshydro', 'seriesmeteo', 'simulations'))
         )
-        self.assertIsNotNone(self.data['scenario'])
-        self.assertIsNone(self.data['siteshydro'])
-        self.assertIsNone(self.data['seuilshydro'])
-        self.assertIsNone(self.data['evenements'])
-        self.assertIsNone(self.data['series'])
-        self.assertIsNotNone(self.data['simulations'])
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertEqual(self.data['siteshydro'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertNotEqual(self.data['simulations'], [])
 
     def test_scenario(self):
         """Scenario test."""

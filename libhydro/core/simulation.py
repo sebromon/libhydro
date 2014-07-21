@@ -294,7 +294,8 @@ class Simulation(object):
 
         # -- simple properties --
         self._strict = bool(strict)
-        # adjust the descriptors
+
+        # -- adjust the descriptors --
         vars(self.__class__)['grandeur'].strict = self._strict
         vars(self.__class__)['statut'].strict = self._strict
         self.public = bool(public)

@@ -155,13 +155,14 @@ class Rlist(list):
         except Exception:
             raise ValueError("unknown error handler name '%s'" % errors)
         # check
-        for obj in iterable:
-            if not isinstance(obj, self.cls):
-                error_handler(
-                    msg="the object '%s' is not of %s" % (obj, self.cls),
-                    error=TypeError
-                )
-                return False
+        if iterable is not None:
+            for obj in iterable:
+                if not isinstance(obj, self.cls):
+                    error_handler(
+                        msg="the object '%s' is not of %s" % (obj, self.cls),
+                        error=TypeError
+                    )
+                    return False
         # return
         return True
 
@@ -173,10 +174,10 @@ Rlist.__setitem__.__func__.__doc__ = list.__setitem__.__doc__
 Rlist.__setslice__.__func__.__doc__ = list.__setslice__.__doc__
 
 
-#-- class  RListproperty ------------------------------------------------------
-class RListproperty(object):
+#-- class  Rlistproperty ------------------------------------------------------
+class Rlistproperty(object):
 
-    """Class RListproperty
+    """Class Rlistproperty
 
     A descriptor to deal with a list of restricted items.
 

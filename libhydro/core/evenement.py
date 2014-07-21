@@ -81,7 +81,8 @@ class Evenement(object):
 
         # -- simple properties --
         self._strict = bool(strict)
-        # adjust the descriptor
+
+        # -- adjust the descriptor --
         vars(self.__class__)['publication'].strict = self._strict
 
         # -- descriptors --

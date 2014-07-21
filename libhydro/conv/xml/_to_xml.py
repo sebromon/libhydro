@@ -48,8 +48,8 @@ __date__ = """2014-06-06"""
 # -- config -------------------------------------------------------------------
 # order matters in Xml, we must have the keys list !
 ORDERED_ACCEPTED_KEYS = (
-    'scenario', 'siteshydro', 'seuilshydro',
-    'evenements', 'series', 'simulations'
+    'scenario', 'siteshydro', 'sitesmeteo', 'seuilshydro',
+    'evenements', 'serieshydro', 'seriesmeteo', 'simulations'
 )
 
 PREV_PROBABILITY = {
@@ -61,8 +61,8 @@ PREV_PROBABILITY = {
 
 # -- testsfunction ------------------------------------------------------------
 def _to_xml(
-    scenario=None, siteshydro=None, seuilshydro=None,
-    evenements=None, series=None, simulations=None,
+    scenario=None, siteshydro=None, sitesmeteo=None, seuilshydro=None,
+    evenements=None, serieshydro=None, seriesmeteo=None, simulations=None,
     ordered=False
 ):
     """Return a etree.Element a partir des donnees passes en argument.
@@ -72,10 +72,12 @@ def _to_xml(
 
     Arguments:
         scenario (xml.Scenario) = 1 element
-        sitesydro (sitehydro.Sitehydro collection) = iterable or None
+        siteshydro (sitehydro.Sitehydro collection) = iterable or None
+        sitesmeteo (sitemeteo.Sitemeteo collection) = iterable or None
         seuilshydro (seuil.Seuilhydro collection) = iterable or None
         evenements (evenement.Evenement collection) = iterable ou None
-        series (obshydro.Serie collection) = iterable or None
+        serieshydro (obshydro.Serie collection) = iterable or None
+        seriesmeteo (obsmeteo.Serie collection) = iterable or None
         simulations (simulation.Simulation collection) = iterable or None
         ordered (bool)
 
@@ -115,11 +117,11 @@ def _to_xml(
     # add the donnees
     if (
         (args['evenements'] is not None)
-        or (args['series'] is not None)
+        or (args['serieshydro'] is not None)
         or (args['simulations'] is not None)
     ):
         sub = _etree.SubElement(tree, 'Donnees')
-        for k in ('evenements', 'series', 'simulations'):
+        for k in ('evenements', 'serieshydro', 'simulations'):
             if args[k] is not None:
                 sub.append(
                     eval('_{}_to_element(args[k])'.format(k))
@@ -205,12 +207,12 @@ def _evenements_to_element(evenements):
         return element
 
 
-def _series_to_element(series):
+def _serieshydro_to_element(serieshydro):
     """Return a <Series> element from a list of obshydro.Serie."""
-    if series is not None:
+    if serieshydro is not None:
         element = _etree.Element('Series')
-        for serie in series:
-            element.append(_serie_to_element(serie))
+        for serie in serieshydro:
+            element.append(_seriehydro_to_element(serie))
         return element
 
 
@@ -454,7 +456,7 @@ def _valeurseuilstationhydro_to_element(valeurseuil):
 
         # prerequisite
         if not _composant.is_code_hydro(
-            code=valeurseuil.entite.code, length=10, raises=False
+            code=valeurseuil.entite.code, length=10, errors='ignore'
         ):
             raise TypeError(
                 'valeurseuil.entite is not a sitehydro.Stationhydro'
@@ -586,29 +588,29 @@ def _evenement_to_element(evenement):
         return _factory(root=_etree.Element('Evenement'), story=story)
 
 
-def _serie_to_element(serie):
+def _seriehydro_to_element(seriehydro):
     """Return a <Serie> element from a obshydro.Serie."""
 
-    if serie is not None:
+    if seriehydro is not None:
 
-        # template for serie simple elements
+        # template for seriehydro simple elements
         story = _collections.OrderedDict()
         # entite can be a Sitehydro, a Stationhydro or a Capteur
-        story['Cd%s' % serie.entite.__class__.__name__.replace(
-            'hydro', 'Hydro')] = {'value': serie.entite.code}
+        story['Cd%s' % seriehydro.entite.__class__.__name__.replace(
+            'hydro', 'Hydro')] = {'value': seriehydro.entite.code}
         # suite
-        story['GrdSerie'] = {'value': serie.grandeur}
-        story['DtDebSerie'] = {'value': serie.dtdeb.isoformat()}
-        story['DtFinSerie'] = {'value': serie.dtfin.isoformat()}
-        story['StatutSerie'] = {'value': unicode(serie.statut)}
-        story['DtProdSerie'] = {'value': serie.dtprod.isoformat()}
+        story['GrdSerie'] = {'value': seriehydro.grandeur}
+        story['DtDebSerie'] = {'value': seriehydro.dtdeb.isoformat()}
+        story['DtFinSerie'] = {'value': seriehydro.dtfin.isoformat()}
+        story['StatutSerie'] = {'value': unicode(seriehydro.statut)}
+        story['DtProdSerie'] = {'value': seriehydro.dtprod.isoformat()}
 
         # make element <Serie>
         element = _factory(root=_etree.Element('Serie'), story=story)
 
         # add the observations
-        if serie.observations is not None:
-            element.append(_observations_to_element(serie.observations))
+        if seriehydro.observations is not None:
+            element.append(_observations_to_element(seriehydro.observations))
 
         # return
         return element

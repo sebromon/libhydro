@@ -233,7 +233,7 @@ class TestAllXmlBaseTests(unittest.TestCase):
     # TODO sitesmeteo, obssmeteo, modelesprevision
     suite = unittest.TestSuite()
     for unit in (
-        'siteshydro', 'seuilshydro', 'evenements', 'series', 'simulations'
+        'siteshydro', 'seuilshydro', 'evenements', 'serieshydro', 'simulations'
     ):
         suite.addTest(
             ParametrizedTestCase.parametrize(ToXmlBaseTest, param=unit)

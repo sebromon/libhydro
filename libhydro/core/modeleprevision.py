@@ -73,7 +73,8 @@ class Modeleprevision(object):
 
         # -- simple properties --
         self._strict = bool(strict)
-        # adjust the descriptor
+
+        # -- adjust the descriptor --
         vars(self.__class__)['typemodele'].strict = self._strict
         self.libelle = unicode(libelle) if (libelle is not None) else None
         self.description = unicode(description) if \
