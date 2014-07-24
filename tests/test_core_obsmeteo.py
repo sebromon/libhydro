@@ -34,7 +34,7 @@ from libhydro.core import (sitemeteo, obsmeteo)
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1b"""
-__date__ = """2014-07-18"""
+__date__ = """2014-07-24"""
 
 #HISTORY
 #V0.1 - 2014-07-16
@@ -251,8 +251,8 @@ class TestSerie(unittest.TestCase):
 
     def test_base_01(self):
         """Base case test."""
-        g = sitemeteo.Grandeurmeteo('RR')
-        d = 60
+        g = sitemeteo.Grandeur('RR')
+        d = datetime.timedelta(days=1)
         t = 4
         o = obsmeteo.Observations(
             obsmeteo.Observation('2012-10-03 06:00', 33),
@@ -264,12 +264,12 @@ class TestSerie(unittest.TestCase):
         dtprod = '2012-10-03 10:00+00'
         i = True
         serie = obsmeteo.Serie(
-            grandeurmeteo=g, duree=d, statut=t, observations=o, strict=i,
+            grandeur=g, duree=d, statut=t, observations=o, strict=i,
             dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod
         )
         self.assertEqual(
             (
-                serie.grandeurmeteo, serie.duree, serie.statut,
+                serie.grandeur, serie.duree, serie.statut,
                 serie.observations, serie._strict
             ),
             (g, d, t, o, i)
@@ -285,19 +285,19 @@ class TestSerie(unittest.TestCase):
 
     def test_base_02(self):
         """Minimum serie."""
-        g = sitemeteo.Grandeurmeteo('EP')
+        g = sitemeteo.Grandeur('EP')
         o = obsmeteo.Observations(
             obsmeteo.Observation('2012-10-03 06:00', 33),
         )
         serie = obsmeteo.Serie(
-            grandeurmeteo=g, observations=o,
+            grandeur=g, observations=o,
         )
         self.assertEqual(
             (
-                serie.grandeurmeteo, serie.duree, serie.statut, serie._strict,
+                serie.grandeur, serie.duree, serie.statut, serie._strict,
                 serie.dtdeb, serie.dtfin, serie.dtprod, serie.observations
             ),
-            (g, 0, 0, True, None, None, None, o)
+            (g, datetime.timedelta(0), 0, True, None, None, None, o)
         )
 
     def test_str_01(self):
@@ -308,29 +308,29 @@ class TestSerie(unittest.TestCase):
         self.assertTrue(serie.__str__().rfind('Statut') > -1)
         self.assertTrue(serie.__str__().rfind('Observations') > -1)
         # a junk entite
-        serie = obsmeteo.Serie(grandeurmeteo='XL', strict=False)
-        self.assertTrue(serie.__str__().rfind('grandeurmeteo inconnue') > -1)
+        serie = obsmeteo.Serie(grandeur='XL', strict=False)
+        self.assertTrue(serie.__str__().rfind('grandeur inconnue') > -1)
 
     def test_str_02(self):
         """Test __str__ method with a small Observations."""
-        g = sitemeteo.Grandeurmeteo('ER')
+        g = sitemeteo.Grandeur('ER')
         o = obsmeteo.Observations(
             obsmeteo.Observation('2012-10-03 06:00', 33),
             obsmeteo.Observation('2012-10-03 08:00', 42)
         )
-        serie = obsmeteo.Serie(grandeurmeteo=g, observations=o)
+        serie = obsmeteo.Serie(grandeur=g, observations=o)
         self.assertTrue(serie.__str__().rfind('Serie') > -1)
         self.assertTrue(serie.__str__().rfind('Statut') > -1)
         self.assertTrue(serie.__str__().rfind('Observations') > -1)
 
     def test_str_03(self):
         """Test __str__ method with a big Observations."""
-        g = sitemeteo.Grandeurmeteo('ER')
+        g = sitemeteo.Grandeur('ER')
         o = obsmeteo.Observations(
             *[obsmeteo.Observation('20%i-01-01 00:00' % x, x)
               for x in xrange(10, 50)]
         )
-        serie = obsmeteo.Serie(grandeurmeteo=g, observations=o)
+        serie = obsmeteo.Serie(grandeur=g, observations=o)
         self.assertTrue(serie.__str__().rfind('Serie') > -1)
         self.assertTrue(serie.__str__().rfind('Statut') > -1)
         self.assertTrue(serie.__str__().rfind('Observations') > -1)
@@ -341,89 +341,89 @@ class TestSerie(unittest.TestCase):
         t = 123
         o = [10, 13, 25, 8]
         serie = obsmeteo.Serie(
-            grandeurmeteo=g, statut=t, observations=o, strict=False
+            grandeur=g, statut=t, observations=o, strict=False
         )
         self.assertEqual(
             (
-                serie.grandeurmeteo, serie.duree, serie.statut,
+                serie.grandeur, serie.duree, serie.statut,
                 serie.observations, serie._strict
             ),
-            (g, 0, t, o, False)
+            (g, datetime.timedelta(0), t, o, False)
         )
         serie = obsmeteo.Serie(strict=False)
         self.assertEqual(
             (
-                serie.grandeurmeteo, serie.duree, serie.statut,
+                serie.grandeur, serie.duree, serie.statut,
                 serie.observations, serie._strict
             ),
-            (None, 0, 0, None, False)
+            (None, datetime.timedelta(0), 0, None, False)
         )
 
     def test_error_01(self):
-        """Grandeurmeteo error."""
-        g = sitemeteo.Grandeurmeteo('RR', strict=False)
+        """Grandeur error."""
+        g = sitemeteo.Grandeur('RR', strict=False)
         o = obsmeteo.Observations(obsmeteo.Observation('2012-10-03 06:00', 33))
-        obsmeteo.Serie(**{'grandeurmeteo': g, 'observations': o})
+        obsmeteo.Serie(**{'grandeur': g, 'observations': o})
         self.assertRaises(
             TypeError,
             obsmeteo.Serie,
-            **{'grandeurmeteo': None, 'observations': o}
+            **{'grandeur': None, 'observations': o}
         )
         obsmeteo.Serie(**{
-            'grandeurmeteo': 'X', 'observations': o, 'strict': False
+            'grandeur': 'X', 'observations': o, 'strict': False
         })
         self.assertRaises(
             TypeError,
             obsmeteo.Serie,
-            **{'grandeurmeteo': 'X', 'observations': o}
+            **{'grandeur': 'X', 'observations': o}
         )
 
     def test_error_02(self):
         """Duree error."""
-        g = sitemeteo.Grandeurmeteo('RR')
+        g = sitemeteo.Grandeur('RR')
         o = obsmeteo.Observations(obsmeteo.Observation('2012-10-03 06:00', 33))
-        obsmeteo.Serie(**{'grandeurmeteo': g, 'duree': 10, 'observations': o})
+        obsmeteo.Serie(**{'grandeur': g, 'duree': 10, 'observations': o})
         self.assertRaises(
             ValueError,
             obsmeteo.Serie,
-            **{'grandeurmeteo': g, 'duree': -1, 'observations': o}
+            **{'grandeur': g, 'duree': -1, 'observations': o}
         )
         self.assertRaises(
             ValueError,
             obsmeteo.Serie,
-            **{'grandeurmeteo': g, 'duree': 'hex', 'observations': o}
+            **{'grandeur': g, 'duree': 'hex', 'observations': o}
         )
 
     def test_error_03(self):
         """Statut error."""
-        g = sitemeteo.Grandeurmeteo('XX', strict=False)
+        g = sitemeteo.Grandeur('XX', strict=False)
         o = obsmeteo.Observations(obsmeteo.Observation('2012-10-03 06:00', 33))
         obsmeteo.Serie(
-            **{'grandeurmeteo': g, 'statut': 8, 'observations': o}
+            **{'grandeur': g, 'statut': 8, 'observations': o}
         )
         self.assertRaises(
             ValueError,
             obsmeteo.Serie,
-            **{'grandeurmeteo': g, 'statut': None, 'observations': o}
+            **{'grandeur': g, 'statut': None, 'observations': o}
         )
         self.assertRaises(
             ValueError,
             obsmeteo.Serie,
-            **{'grandeurmeteo': g, 'statut': 124, 'observations': o}
+            **{'grandeur': g, 'statut': 124, 'observations': o}
         )
 
     def test_error_04(self):
         """Observations error."""
-        g = sitemeteo.Grandeurmeteo('XX', strict=False)
+        g = sitemeteo.Grandeur('XX', strict=False)
         obsmeteo.Serie(
             **{
-                'grandeurmeteo': g, 'observations': 12, 'strict': False
+                'grandeur': g, 'observations': 12, 'strict': False
             }
         )
         self.assertRaises(
             TypeError,
             obsmeteo.Serie,
             **{
-                'grandeurmeteo': g, 'observations': 12, 'strict': True
+                'grandeur': g, 'observations': 12, 'strict': True
             }
         )

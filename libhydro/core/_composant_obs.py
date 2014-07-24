@@ -26,7 +26,7 @@ from . import _composant
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """1.0b"""
-__date__ = """2014-07-17"""
+__date__ = """2014-07-24"""
 
 #HISTORY
 #V0.1 - 2014-07-16
@@ -53,6 +53,11 @@ class Observations(_pandas.DataFrame):
 
         # FIXME - awfully slow process :-/
 
+        # None case
+        if observations is None:
+            return
+
+        # other cases
         # prepare a list of observations
         obss = []
         try:
@@ -170,13 +175,13 @@ class Serie(object):
         """Set observations."""
         try:
 
-            if (self._strict):
+            if (self._strict) and (observations is not None):
                 # we check we have a res column...
                 # ... and that index contains datetimes
-                observations.res
+                assert hasattr(observations, 'res')
                 # FIXME - should fail with datetime64 object.
                 #         Use .item().isoformat()
-                observations.index[0].isoformat()
+                assert hasattr(observations.index[0], 'isoformat')
             self._observations = observations
 
         except:

@@ -25,6 +25,7 @@ sys.path.append(os.path.join('..', '..'))
 
 import unittest
 import datetime
+import math
 
 from libhydro.conv.xml import (_from_xml as from_xml)
 
@@ -32,8 +33,8 @@ from libhydro.conv.xml import (_from_xml as from_xml)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1l"""
-__date__ = """2014-07-21"""
+__version__ = """0.1m"""
+__date__ = """2014-07-24"""
 
 #HISTORY
 #V0.1 - 2013-08-24
@@ -194,6 +195,8 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         self.assertEqual(self.data['evenements'], [])
         self.assertEqual(self.data['serieshydro'], [])
         self.assertEqual(self.data['simulations'], [])
+        self.assertEqual(len(self.data['siteshydro']), 5)
+        self.assertEqual(len(self.data['seuilshydro']), 9)
 
     def test_seuils_sitehydro_0(self):
         """Test seuils sitehydro 0."""
@@ -382,7 +385,65 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
 
 
 #-- class TestFromXmlSitesMeteo -----------------------------------------------
-# TODO
+class TestFromXmlSitesMeteo(unittest.TestCase):
+
+    """FromXmlSitesMeteo class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '1.1', 'sitesmeteo.xml')
+        )
+
+    def test_base(self):
+        """Check Keys test."""
+        self.assertEqual(
+            set(self.data.keys()),
+            set(('scenario', 'siteshydro', 'sitesmeteo', 'seuilshydro',
+                 'evenements', 'serieshydro', 'seriesmeteo', 'simulations'))
+        )
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertEqual(self.data['siteshydro'], [])
+        self.assertNotEqual(self.data['sitesmeteo'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['seriesmeteo'], [])
+        self.assertEqual(self.data['simulations'], [])
+        # len
+        self.assertEqual(len(self.data['sitesmeteo']), 1)
+
+    def test_scenario(self):
+        """Scenario test."""
+        scenario = self.data['scenario']
+        self.assertEqual(scenario.code, 'hydrometrie')
+        self.assertEqual(scenario.version, '1.1')
+        self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
+        self.assertEqual(
+            scenario.dtprod, datetime.datetime(2010, 2, 26, 8, 5, 56)
+        )
+        self.assertEqual(scenario.emetteur.code, 26)
+        self.assertEqual(scenario.emetteur.intervenant.code, 1520)
+        self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
+        self.assertEqual(scenario.destinataire.code, 1537)
+        self.assertEqual(scenario.destinataire.origine, 'SANDRE')
+
+    def test_sitemeteo_0(self):
+        """Sitemeteo 0 test."""
+        sitemeteo = self.data['sitesmeteo'][0]
+        self.assertEqual(sitemeteo.code, '001072001')
+        self.assertEqual(sitemeteo.libelle, 'CEYZERIAT_PTC')
+        self.assertEqual(sitemeteo.libelleusuel, 'CEYZERIAT')
+        self.assertEqual(sitemeteo.coord.x, 827652)
+        self.assertEqual(sitemeteo.coord.y, 2112880)
+        self.assertEqual(sitemeteo.coord.proj, 26)
+        self.assertEqual(sitemeteo.commune, '35281')
+        self.assertEqual(sitemeteo._strict, True)
+        self.assertEqual(len(sitemeteo.grandeurs), 2)
+        for grandeur in sitemeteo.grandeurs:
+            self.assertEqual(grandeur.sitemeteo, sitemeteo)
+        self.assertEqual(sitemeteo.grandeurs[0].typemesure, 'RR')
+        self.assertEqual(sitemeteo.grandeurs[1].typemesure, 'VV')
 
 
 #-- class TestFromXmlEvenements -----------------------------------------------
@@ -452,10 +513,10 @@ class TestFromXmlEvenements(unittest.TestCase):
         )
 
 
-#-- class TestFromXmlserieshydro ----------------------------------------------
-class TestFromXmlserieshydro(unittest.TestCase):
+#-- class TestFromXmlSeriesHydro ----------------------------------------------
+class TestFromXmlSeriesHydro(unittest.TestCase):
 
-    """FromXmlserieshydro class tests."""
+    """FromXmlSeriesHydro class tests."""
 
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
@@ -538,8 +599,97 @@ class TestFromXmlserieshydro(unittest.TestCase):
         )
 
 
-#-- class TestFromXmlObssMeteo -----------------------------------------------
-#TODO
+#-- class TestFromXmlSeriesMeteo ----------------------------------------------
+class TestFromXmlSeriesMeteo(unittest.TestCase):
+
+    """FromXmlSeriesMeteo class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '1.1', 'seriesmeteo.xml')
+        )
+
+    def test_base(self):
+        """Check keys test."""
+        self.assertEqual(
+            set(self.data.keys()),
+            set(('scenario', 'siteshydro', 'sitesmeteo', 'seuilshydro',
+                 'evenements', 'serieshydro', 'seriesmeteo', 'simulations'))
+        )
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertEqual(self.data['siteshydro'], [])
+        self.assertEqual(self.data['sitesmeteo'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertNotEqual(self.data['seriesmeteo'], [])
+        self.assertEqual(self.data['simulations'], [])
+        # self.assertEqual(len(self.data['sitesmeteo']), 1)
+        self.assertEqual(len(self.data['seriesmeteo']), 2)
+
+    def test_scenario(self):
+        """Scenario test."""
+        scenario = self.data['scenario']
+        self.assertEqual(scenario.code, 'hydrometrie')
+        self.assertEqual(scenario.version, '1.1')
+        self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
+        self.assertEqual(
+            scenario.dtprod, datetime.datetime(2010, 2, 26, 23, 55, 30)
+        )
+        self.assertEqual(scenario.emetteur.code, 1)
+        self.assertEqual(scenario.emetteur.intervenant.code, 1537)
+        self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
+        self.assertEqual(scenario.destinataire.code, 1537)
+        self.assertEqual(scenario.destinataire.origine, 'SANDRE')
+
+    def test_serie_RR(self):
+        """Serie RR test."""
+        for serie in self.data['seriesmeteo']:
+            if serie.grandeur.typemesure == 'RR':
+                break
+        self.assertEqual(serie.grandeur.sitemeteo.code, '001033002')
+        self.assertEqual(serie.duree, datetime.timedelta(minutes=60))
+        self.assertEqual(serie.statut, 4)
+        self.assertEqual(serie.dtdeb, datetime.datetime(2010, 2, 26, 12))
+        self.assertEqual(serie.dtfin, datetime.datetime(2010, 2, 26, 13))
+        self.assertEqual(
+            serie.dtprod, datetime.datetime(2010, 2, 26, 15, 13, 37)
+        )
+        self.assertEqual(
+            # (dte) res mth qal qua
+            serie.observations.iloc[0].tolist(), [2, 0, 16, 100]
+        )
+        self.assertEqual(
+            serie.observations.loc['2010-02-26 13:00'].tolist(),
+            [8, 0, 16, 75]
+        )
+
+    def test_serie_TA(self):
+        """Serie TA test."""
+        for serie in self.data['seriesmeteo']:
+            if serie.grandeur.typemesure == 'TA':
+                break
+        self.assertEqual(serie.grandeur.sitemeteo.code, '02B033002')
+        self.assertEqual(serie.duree, datetime.timedelta(minutes=0))
+        self.assertEqual(serie.statut, 4)
+        self.assertEqual(serie.dtdeb, datetime.datetime(2010, 2, 26, 14))
+        self.assertEqual(serie.dtfin, datetime.datetime(2010, 2, 26, 14))
+        self.assertEqual(
+            serie.dtprod, datetime.datetime(2010, 2, 26, 15, 13, 37)
+        )
+        self.assertEqual(
+            # (dte) res mth qal qua
+            serie.observations.iloc[0].tolist()[:3], [4, 0, 16]
+        )
+        self.assertTrue(
+            math.isnan(serie.observations.iloc[0]['qua'].item())
+        )
+
+        # self.assertEqual(
+        #     serie.observations.loc['2010-02-26 13:00'].tolist(),
+        #     [8, 0, 16, 75]
+        # )
 
 
 #-- class TestFromXmlSimulations ---------------------------------------------

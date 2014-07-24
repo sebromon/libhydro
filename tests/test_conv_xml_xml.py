@@ -37,8 +37,8 @@ from libhydro.conv.xml import (Scenario, Message)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1f"""
-__date__ = """2014-03-25"""
+__version__ = """0.1g"""
+__date__ = """2014-07-24"""
 
 #HISTORY
 #V0.1 - 2013-08-22
@@ -162,10 +162,12 @@ class TestMessage(unittest.TestCase):
 
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
-        self.file_sit = os.path.join(FILES_PATH, 'siteshydro.xml')
+        self.file_sith = os.path.join(FILES_PATH, 'siteshydro.xml')
+        self.file_sitm = os.path.join(FILES_PATH, 'sitesmeteo.xml')
         self.file_seu = os.path.join(FILES_PATH, 'seuilshydro.xml')
         self.file_eve = os.path.join(FILES_PATH, 'evenements.xml')
-        self.file_obs = os.path.join(FILES_PATH, 'serieshydro.xml')
+        self.file_serh = os.path.join(FILES_PATH, 'serieshydro.xml')
+        self.file_serm = os.path.join(FILES_PATH, 'seriesmeteo.xml')
         self.file_sim = os.path.join(FILES_PATH, 'simulations.xml')
         self.tmp_dir = tempfile.mkdtemp(prefix='test_xml_')
         self.tmp_file = tempfile.mktemp(dir=self.tmp_dir)
@@ -184,12 +186,19 @@ class TestMessage(unittest.TestCase):
 
     def test_base_02(self):
         """Message from file siteshydro."""
-        msg = Message.from_file(self.file_sit)
+        msg = Message.from_file(self.file_sith)
         msg.show()
         msg.write(self.tmp_file, force=True)
         msg.siteshydro = [msg.siteshydro[0]]
 
     def test_base_03(self):
+        """Message from file sitesmeteo."""
+        msg = Message.from_file(self.file_sitm)
+        msg.show()
+        msg.write(self.tmp_file, force=True)
+        msg.sitesmeteo = [msg.sitesmeteo[0]]
+
+    def test_base_04(self):
         """Message from file seuilshydro."""
         msg = Message.from_file(self.file_seu)
         msg.show()
@@ -197,26 +206,32 @@ class TestMessage(unittest.TestCase):
         msg.seuilshydro.append(msg.seuilshydro[0])
         msg.seuilshydro[1] = msg.seuilshydro[0]
 
-    def test_base_04(self):
+    def test_base_05(self):
         """Message from file evenements."""
         msg = Message.from_file(self.file_eve)
         msg.show()
         msg.write(self.tmp_file, force=True)
         msg.evenements.extend([msg.evenements[0]])
 
-    def test_base_05(self):
+    def test_base_06(self):
         """Message from file serieshydro."""
-        msg = Message.from_file(self.file_obs)
+        msg = Message.from_file(self.file_serh)
         msg.write(self.tmp_file, force=True)
         msg.serieshydro[:] = (msg.serieshydro[0],)
 
-    def test_base_06(self):
+    def test_base_07(self):
+        """Message from file seriesmeteo."""
+        msg = Message.from_file(self.file_serm)
+        msg.write(self.tmp_file, force=True)
+        msg.seriesmeteo[:] = (msg.seriesmeteo[0],)
+
+    def test_base_08(self):
         """Message from file simulations."""
         msg = Message.from_file(self.file_sim)
         msg.write(self.tmp_file, force=True)
         msg.simulations.insert(0, msg.simulations[0])
 
-    def test_base_07(self):
+    def test_base_09(self):
         """Message from file with namespaces."""
         self.assertRaises(
             ValueError,
@@ -313,8 +328,8 @@ class TestMessage(unittest.TestCase):
 
     def test_add_01(self):
         """Add elements to message."""
-        msg = Message.from_file(self.file_sit)
-        msg2 = Message.from_file(self.file_obs)
+        msg = Message.from_file(self.file_sith)
+        msg2 = Message.from_file(self.file_serh)
         msg3 = Message.from_file(self.file_sim)
         msg.add(serieshydro=msg2.serieshydro, simulations=msg3.simulations)
         self.assertEqual(msg.serieshydro, msg2.serieshydro)
@@ -322,7 +337,7 @@ class TestMessage(unittest.TestCase):
 
     def test_add_error_01(self):
         """Add error."""
-        msg = Message.from_file(self.file_sit)
+        msg = Message.from_file(self.file_sith)
         self.assertRaises(
             TypeError,
             msg.add,
@@ -336,7 +351,7 @@ class TestMessage(unittest.TestCase):
 
     def test_write_error_01(self):
         """Write existing file."""
-        msg = Message.from_file(self.file_sit)
+        msg = Message.from_file(self.file_sith)
         msg.write(self.tmp_file, force=True)
         self.assertRaises(
             IOError,

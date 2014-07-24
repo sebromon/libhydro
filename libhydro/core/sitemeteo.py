@@ -3,7 +3,7 @@
 
 Ce module contient les classes:
     # Sitemeteo
-    # Grandeurmeteo
+    # Grandeur
     # Visite - not implemented
     # Classequalite - not implemented
 
@@ -22,8 +22,8 @@ from . import (_composant, _composant_site)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1f"""
-__date__ = """2014-07-20"""
+__version__ = """0.1g"""
+__date__ = """2014-07-24"""
 
 #HISTORY
 #V0.1 - 2014-07-07
@@ -31,7 +31,7 @@ __date__ = """2014-07-20"""
 
 
 #-- todos ---------------------------------------------------------------------
-# PROGRESS - Sitemeteo 50% - Grandeurmeteo 10% - Visite 0% - Classequalite 0%
+# PROGRESS - Sitemeteo 50% - Grandeur 10% - Visite 0% - Classequalite 0%
 
 
 #-- class Sitemeteo -----------------------------------------------------------
@@ -79,7 +79,8 @@ class Sitemeteo(object):
         """Initialisation.
 
         Arguments:
-            code (string(9)) = code INSEE
+            code (string(9)) = code INSEE. Un code de 8 caracteres est prefixe
+                d'un zero
             libelle (string)
             libelleusuel (string)
             coord (list ou dict) =
@@ -126,6 +127,8 @@ class Sitemeteo(object):
                 # other cases
                 code = unicode(code)
                 if self._strict:
+                    if len(code) == 8:
+                        code = '0{}'.format(code)
                     _composant.is_code_insee(
                         code=code, length=9, errors='strict'
                     )
@@ -188,13 +191,13 @@ class Sitemeteo(object):
         if grandeurs is None:
             return
         # one grandeur, we make a list with it
-        if isinstance(grandeurs, Grandeurmeteo):
+        if isinstance(grandeurs, Grandeur):
             grandeurs = [grandeurs]
         # an iterable of grandeurs
         for grandeur in grandeurs:
             # some checks
             if self._strict:
-                if not isinstance(grandeur, Grandeurmeteo):
+                if not isinstance(grandeur, Grandeur):
                     raise TypeError(
                         'grandeurs must be a Grandeur or an iterable '
                         'of Grandeur'
@@ -203,11 +206,24 @@ class Sitemeteo(object):
             self._grandeurs.append(grandeur)
 
     # -- other methods --
+    def __eq__(self, other):
+        """Return True ou False."""
+        if self is other:
+            return True
+        for attr in ('code', ):
+            if getattr(self, attr, True) != getattr(other, attr, False):
+                return False
+        return True
+
+    def __ne__(self, other):
+        """Return True ou False."""
+        return not self.__eq__(other)
+
     def __unicode__(self):
         """Return unicode representation."""
         return 'Sitemeteo {0}::{1} [{2} grandeur{3}]'.format(
-            self.code or '<sans code>',
-            self.libelle or '<sans libelle>',
+            self.code if self.code is not None else '<sans code>',
+            self.libelle if self.libelle is not None else '<sans libelle>',
             len(self.grandeurs),
             '' if (len(self.grandeurs) < 2) else 's'
         )
@@ -215,20 +231,20 @@ class Sitemeteo(object):
     __str__ = _composant.__str__
 
 
-#-- class Grandeurmeteo -------------------------------------------------------
-class Grandeurmeteo(object):
+#-- class Grandeur ------------------------------------------------------------
+class Grandeur(object):
 
-    """Classe Grandeurmeteo.
+    """Classe Grandeur.
 
     Classe pour manipuler des grandeurs meteorologiques.
 
     Proprietes:
-        typegrandeur (string parmi NOMENCLATURE[523])
+        typemesure (string parmi NOMENCLATURE[523])
         sitemeteo (Sitemeteo)
 
     """
 
-    # Grandeurmeteo other properties
+    # Grandeur other properties
 
     # dtes
     # dths
@@ -240,9 +256,9 @@ class Grandeurmeteo(object):
 
     # valeursseuils
 
-    typegrandeur = _composant.Nomenclatureitem(nomenclature=523)
+    typemesure = _composant.Nomenclatureitem(nomenclature=523)
 
-    def __init__(self, typegrandeur, sitemeteo=None, strict=True):
+    def __init__(self, typemesure, sitemeteo=None, strict=True):
         """Initialisation.
 
         Arguments:
@@ -257,11 +273,11 @@ class Grandeurmeteo(object):
         self._strict = bool(strict)
 
         # -- adjust the descriptor --
-        vars(self.__class__)['typegrandeur'].strict = self._strict
-        vars(self.__class__)['typegrandeur'].required = self._strict
+        vars(self.__class__)['typemesure'].strict = self._strict
+        vars(self.__class__)['typemesure'].required = self._strict
 
         # -- descriptors --
-        self.typegrandeur = typegrandeur
+        self.typemesure = typemesure
 
         # -- full properties --
         self._sitemeteo = None
@@ -282,9 +298,29 @@ class Grandeurmeteo(object):
         self._sitemeteo = sitemeteo
 
     # -- other methods --
+    def __eq__(self, other):
+        """Return True ou False."""
+        if self is other:
+            return True
+        for attr in ('typemesure', 'sitemeteo'):
+            if getattr(self, attr, True) != getattr(other, attr, False):
+                return False
+        return True
+
+    def __ne__(self, other):
+        """Return True ou False."""
+        return not self.__eq__(other)
+
     def __unicode__(self):
         """Return unicode representation."""
-        return 'Grandeurmeteo {0}'.format(self.typegrandeur or '<sans type>')
+        return 'Grandeur {0} sur le site meteo {1}'.format(
+            self.typemesure if self.typemesure is not None
+            else '<sans type de mesure>',
+            self.sitemeteo.code if (
+                (self.sitemeteo is not None) and
+                (self.sitemeteo.code is not None)
+            ) else '<inconnu>'
+        )
 
     __str__ = _composant.__str__
 

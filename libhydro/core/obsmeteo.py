@@ -23,6 +23,8 @@ from __future__ import (
 )
 
 import numpy as _numpy
+import datetime as _datetime
+import math as _math
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 from . import (_composant, _composant_obs)
@@ -32,8 +34,8 @@ from . import sitemeteo as _sitemeteo
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2014-07-16"""
+__version__ = """0.1d"""
+__date__ = """2014-07-24"""
 
 #HISTORY
 #V0.1 - 2014-07-11
@@ -50,7 +52,7 @@ class Observation(_numpy.ndarray):
 
     Classe pour manipuler une observation meteorologique elementaire.
 
-    Subclasse de numpy.array('dte', 'res', 'ind', 'mth', 'qal'), les elements
+    Subclasse de numpy.array('dte', 'res', 'mth', 'qal', 'qua'), les elements
     etant du type DTYPE.
 
     Date et resultat sont obligatoires, les autres elements ont une valeur par
@@ -94,13 +96,13 @@ class Observation(_numpy.ndarray):
             raise ValueError('incorrect method ')
         if qal not in _NOMENCLATURE[508]:
             raise ValueError('incorrect qualification')
-        if qua is not _numpy.NaN:
-            try:
+        try:
+            if not _math.isnan(qua):
                 qua = int(qua)
                 if not (0 <= qua <= 100):
                     raise ValueError()
-            except Exception:
-                raise ValueError('incorrect quality')
+        except Exception:
+            raise ValueError('incorrect quality')
 
         obj = _numpy.array(
             (dte, res, mth, qal, qua),
@@ -114,12 +116,14 @@ class Observation(_numpy.ndarray):
 
     def __unicode__(self):
         """Return unicode representation."""
+        qualite = '%s%%' % self['qua'].item() \
+            if not _math.isnan(self['qua'].item()) else '<inconnue>'
         return '''{0} le {4} a {5} UTC ''' \
-               '''(valeur obtenue par {1}, {2}, qualite {3}%)'''.format(
+               '''(valeur obtenue par {1}, {2}, qualite {3})'''.format(
                    self['res'].item(),
                    _NOMENCLATURE[512][self['mth'].item()],
                    _NOMENCLATURE[508][self['qal'].item()],
-                   self['qua'].item(),
+                   qualite,
                    *self['dte'].item().isoformat().split('T')
                )
 
@@ -189,7 +193,7 @@ class Serie(_composant_obs.Serie):
     Classe pour manipuler des series d'observations meteorologiques.
 
     Proprietes:
-        grandeurmeteo (Grandeurmeteo)
+        grandeur (Grandeur)
         duree (int, defaut 0) =
             duree des cumuls, 0 pour les donnees instantanees
         statut (int parmi NOMENCLATURE[511]) = donnee brute, corrigee...
@@ -207,15 +211,15 @@ class Serie(_composant_obs.Serie):
     statut = _composant.Nomenclatureitem(nomenclature=511)
 
     def __init__(
-        self, grandeurmeteo=None, duree=0, statut=0,
+        self, grandeur=None, duree=0, statut=0,
         dtdeb=None, dtfin=None, dtprod=None, observations=None, strict=True
     ):
         """Initialisation.
 
         Arguments:
-            grandeurmeteo (Grandeurmeteo)
-            duree (int, defaut 0) = duree des cumuls en minutes,
-                0 pour les donnees instantanees
+            grandeur (Grandeur)
+            duree (datetime.timedelta ou secondes, defaut 0) = duree des
+                cumuls, 0 pour les donnees instantanees
             statut (int parmi NOMENCLATURE[511], defaut 0) = donnee brute,
                 corrigee...
             dtdeb (numpy.datetime64)
@@ -240,29 +244,29 @@ class Serie(_composant_obs.Serie):
         self.statut = statut
 
         # -- full properties --
-        self._grandeurmeteo = None
-        self._duree = 0
-        self.grandeurmeteo = grandeurmeteo
+        self._grandeur = None
+        self._duree = _datetime.timedelta(0)
+        self.grandeur = grandeur
         self.duree = duree
 
-    # -- property grandeurmeteo --
+    # -- property grandeur --
     @property
-    def grandeurmeteo(self):
-        """Return grandeurmeteo."""
-        return self._grandeurmeteo
+    def grandeur(self):
+        """Return grandeur."""
+        return self._grandeur
 
-    @grandeurmeteo.setter
-    def grandeurmeteo(self, grandeurmeteo):
-        """Set grandeurmeteo."""
+    @grandeur.setter
+    def grandeur(self, grandeur):
+        """Set grandeur."""
         try:
             if (
                 (self._strict) and
-                not isinstance(grandeurmeteo, _sitemeteo.Grandeurmeteo)
+                not isinstance(grandeur, _sitemeteo.Grandeur)
             ):
                 raise TypeError(
-                    'grandeurmeteo must be a Grandeurmeteo'
+                    'grandeur must be a Grandeur'
                 )
-            self._grandeurmeteo = grandeurmeteo
+            self._grandeur = grandeur
         except:
             raise
 
@@ -276,22 +280,42 @@ class Serie(_composant_obs.Serie):
     def duree(self, duree):
         """Set duree."""
         try:
-            self._duree = int(duree)
-            if duree < 0:
-                raise ValueError('duree must be a positive integer')
+            if not isinstance(duree, _datetime.timedelta):
+                duree = int(duree)
+                if duree < 0:
+                    raise ValueError(
+                        'duree must be a timedelta or a positive integer'
+                    )
+                duree = _datetime.timedelta(seconds=duree)
         except:
             raise
+        self._duree = duree
 
     # -- other methods --
+    def __eq__(self, other):
+        """Return True ou False."""
+        if self is other:
+            return True
+        for attr in (
+            'grandeur', 'duree', 'statut'  # , 'dtprod'
+        ):
+            if getattr(self, attr, True) != getattr(other, attr, False):
+                return False
+        return True
+
+    def __ne__(self, other):
+        """Return True ou False."""
+        return not self.__eq__(other)
+
     def __unicode__(self):
         """Return unicode representation."""
         # init
         try:
-            grandeur = self.grandeurmeteo.typegrandeur
+            grandeur = self.grandeur.typemesure
         except Exception:
-            grandeur = '<grandeurmeteo inconnue>',
+            grandeur = '<grandeur inconnue>',
         try:
-            code = self.grandeurmeteo.sitemeteo.code
+            code = self.grandeur.sitemeteo.code
         except Exception:
             code = '<sans code>'
         try:
@@ -311,7 +335,7 @@ class Serie(_composant_obs.Serie):
                    code,
                    self.statut,
                    _NOMENCLATURE[511][self.statut].lower(),
-                   self.duree,
+                   self.duree.total_seconds() / 60,
                    '-' * 72,
                    obs
                )

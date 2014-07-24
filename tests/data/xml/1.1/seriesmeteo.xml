@@ -38,21 +38,21 @@
         <StatutObsMeteo>4</StatutObsMeteo>
         <ResObsMeteo>8</ResObsMeteo>
         <DureeObsMeteo>60</DureeObsMeteo>
-        <IndiceQualObsMeteo>100</IndiceQualObsMeteo>
+        <IndiceQualObsMeteo>75</IndiceQualObsMeteo>
         <QualifObsMeteo>16</QualifObsMeteo>
         <MethObsMeteo>0</MethObsMeteo>
         <CdContact schemeAgencyID="SANDRE">1</CdContact>
       </ObsMeteo>
       <ObsMeteo>
         <CdGrdMeteo>TA</CdGrdMeteo>
-        <CdSiteMeteo>01033002</CdSiteMeteo>
+        <CdSiteMeteo>2B033002</CdSiteMeteo>
         <DtProdObsMeteo>2010-02-26T15:13:37</DtProdObsMeteo>
         <DtObsMeteo>2010-02-26T14:00:00</DtObsMeteo>
         <StatutObsMeteo>4</StatutObsMeteo>
         <ResObsMeteo>4</ResObsMeteo>
-        <DureeObsMeteo>60</DureeObsMeteo>
-        <IndiceQualObsMeteo>100</IndiceQualObsMeteo>
-        <QualifObsMeteo>16</QualifObsMeteo>
+        <!-- <DureeObsMeteo>0</DureeObsMeteo> -->
+        <!-- <IndiceQualObsMeteo>100</IndiceQualObsMeteo> -->
+        <!-- <QualifObsMeteo>16</QualifObsMeteo> -->
         <MethObsMeteo>0</MethObsMeteo>
         <CdContact schemeAgencyID="SANDRE">1</CdContact>
       </ObsMeteo>

@@ -34,7 +34,7 @@ from libhydro.core import (
     seuil as _seuil,
     modeleprevision as _modeleprevision,
     obshydro as _obshydro,
-    # obsmeteo as _obsmeteo,
+    obsmeteo as _obsmeteo,
     simulation as _simulation,
     intervenant as _intervenant,
     evenement as _evenement
@@ -45,8 +45,8 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.2a"""
-__date__ = """2014-07-21"""
+__version__ = """0.2b"""
+__date__ = """2014-07-24"""
 
 #HISTORY
 #V0.2 - 2014-07-21
@@ -285,7 +285,9 @@ def _seuilshydro_from_element(element, ordered=False):
     When ordered is True, we use an OrderedDict to keep the XML initial order.
 
     """
-    # None case
+    # -------------
+    # no seuil case
+    # -------------
     if (
         (element is None) or
         element.find(
@@ -294,11 +296,12 @@ def _seuilshydro_from_element(element, ordered=False):
     ):
         return []
 
-    # others cases
-    # FIXME - we have to group some seuil here
-    # get all seuils
-    # we put them in a {(cdsitehydro, cdseuil): seuil.Seuilhydro,...}
-    # dictionnary to group similar seuils (bdhydro output is awful!)
+    # -------------
+    # other cases
+    # -------------
+    # here we get all the seuils and put them in a dictionnary:
+    #     {(cdsitehydro, cdseuil): seuil.Seuilhydro,...}
+    # grouping similar seuils (bdhydro output is awful!)
     seuilshydro = _collections.OrderedDict() if ordered else {}
     for elementsitehydro in element.findall('./SiteHydro'):
         # FIXME - we should/could use the already build sitehydro
@@ -338,8 +341,8 @@ def _seuilshydro_from_element(element, ordered=False):
                     (sitehydro.code, seuilhydro.code)
                 ] = seuilhydro
 
-        # return a list of seuils
-        return seuilshydro.values()
+    # return a list of seuils
+    return seuilshydro.values()
 
 
 def _evenements_from_element(element):
@@ -362,10 +365,37 @@ def _serieshydro_from_element(element):
 
 def _seriesmeteo_from_element(element):
     """Return a list of obsmeteo.Serie from a <ObssMeteo> element."""
-    seriesmeteo = []
+    seriesmeteo = {}
     if element is not None:
-        raise NotImplementedError  # TODO - group osbmeteo in series
-    return seriesmeteo
+
+        # painful because the XML does not contain series:
+        #     get a bunch pf series and obsmeteo
+        #     regroup obs by same series
+        #     build obss from obs
+        #     get detdeb and dtfin
+
+        # browse all xml ObsMeteo and put them in a dict
+        for obsmeteo in element.findall('./ObsMeteo'):
+            serie = _seriemeteo_from_element(obsmeteo)
+            obs = _obsmeteo_from_element(obsmeteo)
+            for s in seriesmeteo.keys():
+                if s == serie:
+                    seriesmeteo[s].observations = \
+                        _obsmeteo.Observations.concat(
+                            seriesmeteo[s].observations,
+                            _obsmeteo.Observations(obs)
+                        )
+                    break
+            else:
+                serie.observations = _obsmeteo.Observations(obs)
+                seriesmeteo[serie] = serie
+
+        # update serie
+        for serie in seriesmeteo:
+            serie.dtdeb = min(serie.observations.index)
+            serie.dtfin = max(serie.observations.index)
+
+    return seriesmeteo.keys()
 
 
 def _simulations_from_element(element):
@@ -437,14 +467,14 @@ def _sitemeteo_from_element(element):
         args['libelle'] = _value(element, 'LbSiteMeteo')
         args['libelleusuel'] = _value(element, 'LbUsuelSiteMeteo')
         args['coord'] = _coord_from_element(
-            element.find('CoordSitemeteo'), 'Sitemeteo'
+            element.find('CoordSiteMeteo'), 'SiteMeteo'
         )
         args['commune'] = _value(element, 'CdCommune')
         # build a Sitemeteo
         sitemeteo = _sitemeteo.Sitemeteo(**args)
         # add the grandeurs
         sitemeteo.grandeurs.extend([
-            _grandeurmeteo_from_element(e, sitemeteo)
+            _grandeur_from_element(e, sitemeteo)
             for e in element.findall('GrdsMeteo/GrdMeteo')
         ])
         # return
@@ -527,16 +557,16 @@ def _capteur_from_element(element):
         return _sitehydro.Capteur(**args)
 
 
-def _grandeurmeteo_from_element(element, sitemeteo=None):
-    """Return a sitemeteo.Grandeurmeteo from a <GrdMeteo> element."""
+def _grandeur_from_element(element, sitemeteo=None):
+    """Return a sitemeteo.Grandeur from a <GrdMeteo> element."""
     if element is not None:
         # prepare args
         args = {}
-        args['typegrandeur'] = _value(element, 'CdGrdMeteo')
+        args['typemesure'] = _value(element, 'CdGrdMeteo')
         if sitemeteo is not None:
             args['sitemeteo'] = sitemeteo
-        # build Grandeurmeteo
-        return _sitehydro.grandeurmeteo(**args)
+        # build Grandeur
+        return _sitemeteo.Grandeur(**args)
 
 
 def _seuilhydro_from_element(element, sitehydro):
@@ -686,11 +716,38 @@ def _seriehydro_from_element(element):
             dtdeb=_value(element, 'DtDebSerie', _UTC),
             dtfin=_value(element, 'DtFinSerie', _UTC),
             dtprod=_value(element, 'DtProdSerie', _UTC),
-            observations=_observations_from_element(element.find('ObssHydro'))
+            observations=_obsshydro_from_element(element.find('ObssHydro'))
         )
 
 
-def _observations_from_element(element):
+def _seriemeteo_from_element(element):
+    """Return a obsmeteo.Serie from a <ObsMeteo> element.
+
+    Warning, the serie here does not contains observations, dtdeb or dtfin.
+
+    """
+    if element is not None:
+
+        # compute grandeur
+        grandeur = _sitemeteo.Grandeur(
+            typemesure=_value(element, 'CdGrdMeteo'),
+            sitemeteo=_sitemeteo.Sitemeteo(_value(element, 'CdSiteMeteo'))
+        )
+
+        # compute duree
+        duree = _value(element, 'DureeObsMeteo', int) or 0
+        duree *= 60
+
+        # make the Serie without the observations
+        return _obsmeteo.Serie(
+            grandeur=grandeur,
+            duree=duree,
+            statut=_value(element, 'StatutObsMeteo', int),
+            dtprod=_value(element, 'DtProdObsMeteo', _UTC)
+        )
+
+
+def _obsshydro_from_element(element):
     """Return a obshydro.Observations from a <ObssHydro> element."""
     if element is not None:
 
@@ -713,6 +770,26 @@ def _observations_from_element(element):
 
         # build Observations
         return _obshydro.Observations(*observations)
+
+
+def _obsmeteo_from_element(element):
+    """Return a obsmeteo.Observation from a <ObssHydro> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['dte'] = _value(element, 'DtObsMeteo', _UTC)
+        args['res'] = _value(element, 'ResObsMeteo')
+        mth = _value(element, 'MethObsMeteo', int)
+        if mth is not None:
+            args['mth'] = mth
+        qal = _value(element, 'QualifObsMeteo', int)
+        if qal is not None:
+            args['qal'] = qal
+        qua = _value(element, 'IndiceQualObsMeteo', int)
+        if qua is not None:
+            args['qua'] = qua
+        # build Observation
+        return _obsmeteo.Observation(**args)
 
 
 def _simulation_from_element(element):
