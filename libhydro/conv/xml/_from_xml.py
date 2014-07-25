@@ -21,7 +21,6 @@ from __future__ import (
     print_function as _print_function
 )
 
-import sys as _sys
 import datetime as _datetime
 import collections as _collections
 
@@ -29,10 +28,13 @@ import numpy as _numpy
 from lxml import etree as _etree
 
 from libhydro.core import (
+    _composant,
     sitehydro as _sitehydro,
+    sitemeteo as _sitemeteo,
     seuil as _seuil,
     modeleprevision as _modeleprevision,
     obshydro as _obshydro,
+    obsmeteo as _obsmeteo,
     simulation as _simulation,
     intervenant as _intervenant,
     evenement as _evenement
@@ -43,15 +45,18 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.1l"""
-__date__ = """2014-06-05"""
+__version__ = """0.2c"""
+__date__ = """2014-07-25"""
 
 #HISTORY
+#V0.2 - 2014-07-21
+#    add sitesmeteo and seriesmeteo
 #V0.1 - 2013-08-18
 #    first shot
 
 
 #-- todos ---------------------------------------------------------------------
+# TODO - move the Scenario class in the _xml module
 # TODO - if xpath is too slow to acess elements, use indexing
 #        code=element[0].text,
 #        but xpath is more readable and do not care of xml order
@@ -188,12 +193,7 @@ class Scenario(object):
             self.destinataire
         )
 
-    def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode('utf8')
+    __str__ = _composant.__str__
 
 
 # -- tests function -----------------------------------------------------------
@@ -211,9 +211,11 @@ def _parse(src):
     Retourne un dictionnaire avec les cles:
             # scenario: xml.Scenario
             # siteshydro: liste de sitehydro.Siteshydro ou None
+            # sitesmeteo: liste de sitehydro.Siteshydro ou None
             # seuilshydro: liste de seuil.Seuilhydro ou None
             # evenements: liste d'evenements ou None
-            # series: liste de obshydro.Serie ou None
+            # serieshydro: liste de obshydro.Serie ou None
+            # seriesmeteo: liste de obsmeteo.Serie ou None
             # simulations: liste de simulation.Simulation ou None
 
     """
@@ -232,11 +234,11 @@ def _parse(src):
         'scenario': _scenario_from_element(tree.find('Scenario')),
         # 'intervenants':
         'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro')),
+        'sitesmeteo': _sitesmeteo_from_element(tree.find('RefHyd/SitesMeteo')),
         'seuilshydro': _seuilshydro_from_element(
             element=tree.find('RefHyd/SitesHydro'),
             ordered=True
         ),
-        # 'sitesmeteo'
         # 'modelesprevision': '',
         'evenements': _evenements_from_element(
             tree.find('Donnees/Evenements')
@@ -244,8 +246,10 @@ def _parse(src):
         # 'courbestarage'
         # 'jaugeages'
         # 'courbescorrection'
-        'series': _series_from_element(tree.find('Donnees/Series')),
-        # 'obssmeteo'
+        'serieshydro': _serieshydro_from_element(tree.find('Donnees/Series')),
+        'seriesmeteo': _seriesmeteo_from_element(
+            tree.find('Donnees/ObssMeteo')
+        ),
         # 'obsselab'
         # 'gradshydro'
         # 'qualifsannee'
@@ -256,15 +260,24 @@ def _parse(src):
 
 # -- global functions ---------------------------------------------------------
 
-# TODO - these functions can be factorised
+# TODO - some functions could be factorised
 
 def _siteshydro_from_element(element):
     """Return a list of sitehydro.Sitehydro from a <SitesHydro> element."""
+    siteshydro = []
     if element is not None:
-        siteshydro = []
         for sitehydro in element.findall('./SiteHydro'):
             siteshydro.append(_sitehydro_from_element(sitehydro))
-        return siteshydro
+    return siteshydro
+
+
+def _sitesmeteo_from_element(element):
+    """Return a list of sitemeteo.Sitemeteo from a <SitesMeteo> element."""
+    sitesmeteo = []
+    if element is not None:
+        for sitemeteo in element.findall('./SiteMeteo'):
+            sitesmeteo.append(_sitemeteo_from_element(sitemeteo))
+    return sitesmeteo
 
 
 def _seuilshydro_from_element(element, ordered=False):
@@ -273,84 +286,130 @@ def _seuilshydro_from_element(element, ordered=False):
     When ordered is True, we use an OrderedDict to keep the XML initial order.
 
     """
-    # FIXME - we have to group some seuil here
+    # -------------
+    # no seuil case
+    # -------------
     if (
-        (element is not None) and
+        (element is None) or
         element.find(
             './SiteHydro/ValeursSeuilsSiteHydro/ValeursSeuilSiteHydro'
-        ) is not None
+        ) is None
     ):
-        # get all seuils
-        # we put them in a {(cdsitehydro, cdseuil): seuil.Seuilhydro,...}
-        # dictionnary to group similar seuils (bdhydro output is awful!)
-        seuilshydro = _collections.OrderedDict() if ordered else {}
-        for elementsitehydro in element.findall('./SiteHydro'):
-            # FIXME - we should/could use the already build sitehydro
-            sitehydro = _sitehydro_from_element(elementsitehydro)
-            for elementseuilhydro in elementsitehydro.findall(
-                './ValeursSeuilsSiteHydro/ValeursSeuilSiteHydro'
-            ):
-                seuilhydro = _seuilhydro_from_element(
-                    elementseuilhydro, sitehydro
-                )
-                if (sitehydro.code, seuilhydro.code) in seuilshydro:
-                    # check that the seuil complies with it predecessors
-                    if not seuilhydro.__eq__(
-                        other=seuilshydro[(sitehydro.code, seuilhydro.code)],
-                        lazzy=True,
-                        cmp_values=False
-                    ):
-                        raise ValueError(
-                            'seuilhydro %s from sitehydro %s '
-                            'has inconsistent metadatas' % (
-                                seuilhydro.code, sitehydro.code
-                            )
-                        )
-                    # change the seuil object in the new seuil values
-                    # to assure the navigability
-                    for valeur in seuilhydro.valeurs:
-                        valeur.seuil = seuilshydro[
-                            (sitehydro.code, seuilhydro.code)
-                        ]
-                    # add the valeurs to an existing entry
-                    seuilshydro[
-                        (sitehydro.code, seuilhydro.code)
-                    ].valeurs.extend(seuilhydro.valeurs)
-                else:
-                    # new entry
-                    seuilshydro[
-                        (sitehydro.code, seuilhydro.code)
-                    ] = seuilhydro
+        return []
 
-        # return a list of seuils
-        return seuilshydro.values()
+    # -------------
+    # other cases
+    # -------------
+    # here we get all the seuils and put them in a dictionnary:
+    #     {(cdsitehydro, cdseuil): seuil.Seuilhydro,...}
+    # grouping similar seuils (bdhydro output is awful!)
+    seuilshydro = _collections.OrderedDict() if ordered else {}
+    for elementsitehydro in element.findall('./SiteHydro'):
+        # FIXME - we should/could use the already build sitehydro
+        sitehydro = _sitehydro_from_element(elementsitehydro)
+        for elementseuilhydro in elementsitehydro.findall(
+            './ValeursSeuilsSiteHydro/ValeursSeuilSiteHydro'
+        ):
+            seuilhydro = _seuilhydro_from_element(
+                elementseuilhydro, sitehydro
+            )
+            if (sitehydro.code, seuilhydro.code) in seuilshydro:
+                # check that the seuil complies with it predecessors
+                if not seuilhydro.__eq__(
+                    other=seuilshydro[(sitehydro.code, seuilhydro.code)],
+                    lazzy=True,
+                    cmp_values=False
+                ):
+                    raise ValueError(
+                        'seuilhydro %s from sitehydro %s '
+                        'has inconsistent metadatas' % (
+                            seuilhydro.code, sitehydro.code
+                        )
+                    )
+                # change the seuil object in the new seuil values
+                # to assure the navigability
+                for valeur in seuilhydro.valeurs:
+                    valeur.seuil = seuilshydro[
+                        (sitehydro.code, seuilhydro.code)
+                    ]
+                # add the valeurs to an existing entry
+                seuilshydro[
+                    (sitehydro.code, seuilhydro.code)
+                ].valeurs.extend(seuilhydro.valeurs)
+            else:
+                # new entry
+                seuilshydro[
+                    (sitehydro.code, seuilhydro.code)
+                ] = seuilhydro
+
+    # return a list of seuils
+    return seuilshydro.values()
 
 
 def _evenements_from_element(element):
     """Return a list of evenement.Evenement from a <Evenements> element."""
+    evenements = []
     if element is not None:
-        evenements = []
         for evenement in element.findall('./Evenement'):
             evenements.append(_evenement_from_element(evenement))
-        return evenements
+    return evenements
 
 
-def _series_from_element(element):
+def _serieshydro_from_element(element):
     """Return a list of obshydro.Serie from a <Series> element."""
+    serieshydro = []
     if element is not None:
-        series = []
-        for serie in element.findall('./Serie'):
-            series.append(_serie_from_element(serie))
-        return series
+        for seriehydro in element.findall('./Serie'):
+            serieshydro.append(_seriehydro_from_element(seriehydro))
+    return serieshydro
+
+
+def _seriesmeteo_from_element(element):
+    """Return a list of obsmeteo.Serie from a <ObssMeteo> element.
+
+    Painful because the XML does not contain series:
+        # for each <ObsMeteo> we build a serie and obs
+        # then we group obs by identical series in a set
+        # at last we update the series detdeb and dtfin
+
+    """
+    seriesmeteo = set()
+    if element is not None:
+
+        # for each xml ObsMeteo
+        for obsmeteo in element.findall('./ObsMeteo'):
+            ser = _seriemeteo_from_element(obsmeteo)
+            obs = _obsmeteo_from_element(obsmeteo)
+
+            for serie in seriesmeteo:
+                if serie == ser:
+                    # add obs to an exisitng serie
+                    serie.observations = \
+                        _obsmeteo.Observations.concat(
+                            serie.observations,
+                            _obsmeteo.Observations(obs)
+                        )
+                    break
+            else:
+                # new serie
+                ser.observations = _obsmeteo.Observations(obs)
+                seriesmeteo.add(ser)
+
+        # update the serie
+        for serie in seriesmeteo:
+            serie.dtdeb = min(serie.observations.index)
+            serie.dtfin = max(serie.observations.index)
+
+    return list(seriesmeteo)
 
 
 def _simulations_from_element(element):
     """Return a list of simulation.Simulation from a <Simuls> element."""
+    simuls = []
     if element is not None:
-        simuls = []
         for simul in element.findall('./Simul'):
             simuls.append(_simulation_from_element(simul))
-        return simuls
+    return simuls
 
 
 # -- atomic functions ---------------------------------------------------------
@@ -400,8 +459,31 @@ def _sitehydro_from_element(element):
             )
         ]
 
-        # build Site
+        # build Sitehydro
         return _sitehydro.Sitehydro(**args)
+
+
+def _sitemeteo_from_element(element):
+    """Return a sitemeteo.Sitemeteo from a <SiteMeteo> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['code'] = _value(element, 'CdSiteMeteo')
+        args['libelle'] = _value(element, 'LbSiteMeteo')
+        args['libelleusuel'] = _value(element, 'LbUsuelSiteMeteo')
+        args['coord'] = _coord_from_element(
+            element.find('CoordSiteMeteo'), 'SiteMeteo'
+        )
+        args['commune'] = _value(element, 'CdCommune')
+        # build a Sitemeteo
+        sitemeteo = _sitemeteo.Sitemeteo(**args)
+        # add the grandeurs
+        sitemeteo.grandeurs.extend([
+            _grandeur_from_element(e, sitemeteo)
+            for e in element.findall('GrdsMeteo/GrdMeteo')
+        ])
+        # return
+        return sitemeteo
 
 
 def _tronconvigilance_from_element(element):
@@ -480,6 +562,18 @@ def _capteur_from_element(element):
         return _sitehydro.Capteur(**args)
 
 
+def _grandeur_from_element(element, sitemeteo=None):
+    """Return a sitemeteo.Grandeur from a <GrdMeteo> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['typemesure'] = _value(element, 'CdGrdMeteo')
+        if sitemeteo is not None:
+            args['sitemeteo'] = sitemeteo
+        # build Grandeur
+        return _sitemeteo.Grandeur(**args)
+
+
 def _seuilhydro_from_element(element, sitehydro):
     """Return a seuil.Seuilhydro from a <ValeursSeuilSiteHydro> element."""
     if element is not None:
@@ -517,7 +611,8 @@ def _seuilhydro_from_element(element, sitehydro):
                 './ValeursSeuilsStationHydro/ValeursSeuilStationHydro'
             )
         ])
-        # build Capteur
+        # build Seuilhydro
+        # FIXME - why do we use a second Seuilhydro ????
         return _seuil.Seuilhydro(**args)
 
 
@@ -599,7 +694,7 @@ def _evenement_from_element(element):
         )
 
 
-def _serie_from_element(element):
+def _seriehydro_from_element(element):
     """Return a obshydro.Serie from a <Serie> element."""
     if element is not None:
 
@@ -618,6 +713,9 @@ def _serie_from_element(element):
                 code=_value(element, 'CdCapteur')
             )
 
+        # get the contact
+        contact = _intervenant.Contact(code=_value(element, 'CdContact'))
+
         # make the Serie
         return _obshydro.Serie(
             entite=entite,
@@ -626,11 +724,42 @@ def _serie_from_element(element):
             dtdeb=_value(element, 'DtDebSerie', _UTC),
             dtfin=_value(element, 'DtFinSerie', _UTC),
             dtprod=_value(element, 'DtProdSerie', _UTC),
-            observations=_observations_from_element(element.find('ObssHydro'))
+            contact=contact,
+            observations=_obsshydro_from_element(element.find('ObssHydro'))
         )
 
 
-def _observations_from_element(element):
+def _seriemeteo_from_element(element):
+    """Return a obsmeteo.Serie from a <ObsMeteo> element.
+
+    Warning, the serie here does not contains observations, dtdeb or dtfin.
+
+    """
+    if element is not None:
+
+        # compute grandeur
+        grandeur = _sitemeteo.Grandeur(
+            typemesure=_value(element, 'CdGrdMeteo'),
+            sitemeteo=_sitemeteo.Sitemeteo(_value(element, 'CdSiteMeteo'))
+        )
+
+        # get duree in minutes
+        duree = _value(element, 'DureeObsMeteo', int) or 0
+
+        # get the contact
+        contact = _intervenant.Contact(code=_value(element, 'CdContact'))
+
+        # make the Serie without the observations
+        return _obsmeteo.Serie(
+            grandeur=grandeur,
+            duree=duree * 60,
+            statut=_value(element, 'StatutObsMeteo', int),
+            dtprod=_value(element, 'DtProdObsMeteo', _UTC),
+            contact=contact
+        )
+
+
+def _obsshydro_from_element(element):
     """Return a obshydro.Observations from a <ObssHydro> element."""
     if element is not None:
 
@@ -653,6 +782,26 @@ def _observations_from_element(element):
 
         # build Observations
         return _obshydro.Observations(*observations)
+
+
+def _obsmeteo_from_element(element):
+    """Return a obsmeteo.Observation from a <ObssHydro> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['dte'] = _value(element, 'DtObsMeteo', _UTC)
+        args['res'] = _value(element, 'ResObsMeteo')
+        mth = _value(element, 'MethObsMeteo', int)
+        if mth is not None:
+            args['mth'] = mth
+        qal = _value(element, 'QualifObsMeteo', int)
+        if qal is not None:
+            args['qal'] = qal
+        qua = _value(element, 'IndiceQualObsMeteo', int)
+        if qua is not None:
+            args['qua'] = qua
+        # build Observation
+        return _obsmeteo.Observation(**args)
 
 
 def _simulation_from_element(element):

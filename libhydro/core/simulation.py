@@ -12,7 +12,7 @@ d'une pandas.Series a double index, un timestamp et une probabilite.
 
 """
 
-# On peux aussi utiliser directement les classes de la librairie Pandas, les
+# On peut aussi utiliser directement les classes de la librairie Pandas, les
 # Series ou les DataFrame.
 #
 # Exemple pour instancier une Series:
@@ -42,8 +42,6 @@ from __future__ import (
     print_function as _print_function
 )
 
-import sys as _sys
-
 import numpy as _numpy
 import pandas as _pandas
 
@@ -55,8 +53,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.7b"""
-__date__ = """2014-03-25"""
+__version__ = """0.7e"""
+__date__ = """2014-07-18"""
 
 #HISTORY
 #V0.7 - 2014-03-02
@@ -123,7 +121,7 @@ class Prevision(_numpy.ndarray):
         try:
             prb = int(prb)
             if (prb < 0) or (prb > 100):
-                raise ValueError('probabilite incorrecte')
+                raise ValueError('probabilite incorrect')
         except Exception:
             raise
         obj = _numpy.array(
@@ -144,12 +142,7 @@ class Prevision(_numpy.ndarray):
             *self['dte'].item().isoformat().split('T')
         )
 
-    def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(_sys.stdout.encoding)
+    __str__ = _composant.__str__
 
 
 #-- class Previsions ----------------------------------------------------------
@@ -181,7 +174,7 @@ class Previsions(_pandas.Series):
     ou a une date precise:
         previsions['2013-01-23 01:00'][50]
 
-    On peux slicer une serie mais il faut que l'index soit ordonne par la
+    On peut slicer une serie mais il faut que l'index soit ordonne par la
     colonne utilisee:
         # trier par la date
         ordered_prev = previsions.sortlevel(0)
@@ -215,7 +208,7 @@ class Previsions(_pandas.Series):
         try:
             for prv in previsions:
                 if not isinstance(prv, Prevision):
-                    raise TypeError('{} in not a Prevision'.format(prv))
+                    raise TypeError('{} is not a Prevision'.format(prv))
                 prvs.append(prv)
 
         except Exception:
@@ -301,7 +294,8 @@ class Simulation(object):
 
         # -- simple properties --
         self._strict = bool(strict)
-        # adjust the descriptors
+
+        # -- adjust the descriptors --
         vars(self.__class__)['grandeur'].strict = self._strict
         vars(self.__class__)['statut'].strict = self._strict
         self.public = bool(public)
@@ -434,23 +428,30 @@ class Simulation(object):
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
-        # compute entite name
-        if self.entite is None:
+        # init
+        try:
+            statut = _NOMENCLATURE[516][self.statut].lower()
+        except Exception:
+            statut = '<sans statut>'
+        try:
+            entite = '{} {}'.format(
+                _sitehydro._ARTICLE[self.entite.__class__],
+                self.entite.__unicode__()
+            )
+        except (AttributeError, KeyError):
             entite = '<une entite inconnue>'
-        else:
-            try:
-                entite = '{} {}'.format(
-                    _sitehydro._ARTICLE[self.entite.__class__],
-                    self.entite.__unicode__()
-                )
-            except (AttributeError, KeyError):
-                entite = self.entite
-
-        # prepare previsions
-        if self.previsions is None:
-            prev = '<sans previsions>'
-        else:
+        try:
             prev = self.previsions.__unicode__()
+        except Exception:
+            prev = '<sans previsions>'
+        try:
+            dtprod = self.dtprod.isoformat(),
+        except Exception:
+            dtprod = '<inconnue>'
+        try:
+            qualite = '%i%%' % self.qualite
+        except Exception:
+            qualite = '<inconnue>'
 
         # action !
         return '''Simulation {0} de {1} sur {2}\n''' \
@@ -460,13 +461,11 @@ class Simulation(object):
                '''{7}\n''' \
                '''{8}\n''' \
                '''Previsions:\n {9}'''.format(
-                   '<sans statut>' if (self.statut is None)
-                   else _NOMENCLATURE[516][self.statut].lower(),
+                   statut,
                    self.grandeur or '<sans grandeur>',
                    entite,
-                   '<inconnue>' if not self.dtprod
-                   else self.dtprod.isoformat(),
-                   '<inconnue>' if not self.qualite else '%i%%' % self.qualite,
+                   dtprod,
+                   qualite,
                    self.commentaire or '<sans>',
                    '-' * 72,
                    self.modeleprevision or '<modele inconnu>',
@@ -474,9 +473,4 @@ class Simulation(object):
                    prev
                )
 
-    def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(_sys.stdout.encoding)
+    __str__ = _composant.__str__

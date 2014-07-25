@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for modeleprevision.
 
 To run all tests just type:
-    './test_core_modeleprevision.py' or 'python test_core_modeleprevision.py'
+    python -m unittest test_core_modeleprevision
 
 To run only a class test:
     python -m unittest test_core_modeleprevision.TestClass
 
 To run only a specific test:
-    python -m unittest test_core_modeleprevision.TestClass
     python -m unittest test_core_modeleprevision.TestClass.test_method
 
 """
@@ -31,7 +29,8 @@ from libhydro.core import modeleprevision
 
 
 #-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
+__author__ = """Philippe Gouin \
+             <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1b"""
 __date__ = """2013-08-20"""
 
@@ -43,14 +42,6 @@ __date__ = """2013-08-20"""
 #-- class TestModeleprevision -------------------------------------------------
 class TestModeleprevision(unittest.TestCase):
     """Modeleprevision class tests."""
-
-    # def setUp(self):
-    #     """Hook method for setting up the test fixture before exercising it."""
-    #     pass
-
-    # def tearDown(self):
-    #     """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
 
     def test_base_01(self):
         """Empty Modeleprevision."""
@@ -126,8 +117,3 @@ class TestModeleprevision(unittest.TestCase):
             modeleprevision.Modeleprevision,
             **{'typemodele': 1000}
         )
-
-
-#-- main ----------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()

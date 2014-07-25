@@ -15,7 +15,7 @@ d'un pandas.DataFrame dont l'index est une serie de timestamp.
 
 """
 
-# On peux aussi utiliser directement les classes de la librairie Pandas, les
+# On peut aussi utiliser directement les classes de la librairie Pandas, les
 # Series ou les DataFrame.
 #
 # Exemple pour instancier une Series:
@@ -29,14 +29,6 @@ d'un pandas.DataFrame dont l'index est une serie de timestamp.
 #         dtype = None,
 #         name='observations de debit'
 # )
-#
-# Exemple pour instancier un DataFrame, avec plusieurs series (colonnes) de
-# donnees:
-#     hauteurs = pandas.DataFrame({
-#         'H2354310': Series_de_hauteurs_1,
-#         'H4238907': Series_de_hauteurs_2,
-#         ...
-#     })
 
 #-- imports -------------------------------------------------------------------
 from __future__ import (
@@ -46,29 +38,28 @@ from __future__ import (
     print_function as _print_function
 )
 
-import sys as _sys
-
 import numpy as _numpy
-import pandas as _pandas
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
-from . import _composant
+from . import (_composant, _composant_obs)
 from . import sitehydro as _sitehydro
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1l"""
-__date__ = """2014-03-09"""
+__version__ = """0.2c"""
+__date__ = """2014-07-25"""
 
 #HISTORY
+#V0.2 - 2014-07-15
+#    use the composant_obs module
 #V0.1 - 2013-07-18
 #    first shot
 
 
 #-- todos ---------------------------------------------------------------------
-# PROGRESS - Serie 60% - Observations 100% - Observation 100%
+# PROGRESS - Serie 70% - Observations 100% - Observation 100%
 # FIXME - integriey checks entity / grandeur /statut
 # ADMIT_SERIE = {
 #     Sitehydro: 'Q',
@@ -95,7 +86,7 @@ class Observation(_numpy.ndarray):
 
     """Classe observation.
 
-    Classe pour manipuler une observation elementaire.
+    Classe pour manipuler une observation hydrometrique elementaire.
 
     Subclasse de numpy.array('dte', 'res', 'mth', 'qal', 'cnt'), les elements
     etant du type DTYPE.
@@ -136,10 +127,10 @@ class Observation(_numpy.ndarray):
     def __new__(cls, dte, res, mth=0, qal=16, cnt=True):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
-        if (mth != 0) and (mth not in _NOMENCLATURE[507]):
-            raise ValueError('methode incorrecte')
-        if (qal != 16) and (qal not in _NOMENCLATURE[515]):
-            raise ValueError('qualification incorrecte')
+        if mth not in _NOMENCLATURE[507]:
+            raise ValueError('incorrect method')
+        if qal not in _NOMENCLATURE[515]:
+            raise ValueError('incorrect qualification')
         obj = _numpy.array(
             (dte, res, mth, qal, cnt),
             dtype=Observation.DTYPE
@@ -161,16 +152,11 @@ class Observation(_numpy.ndarray):
                    *self['dte'].item().isoformat().split('T')
                )
 
-    def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(_sys.stdout.encoding)
+    __str__ = _composant.__str__
 
 
 #-- class Observations --------------------------------------------------------
-class Observations(_pandas.DataFrame):
+class Observations(_composant_obs.Observations):
 
     """Classe Observations.
 
@@ -181,7 +167,7 @@ class Observations(_pandas.DataFrame):
 
     Les donnees sont contenues dans 4 colonnes du DataFrame (voir Observation).
 
-    Un objet Observations peux etre instancie de multiples facons a l'aide des
+    Un objet Observations peut etre instancie de multiples facons a l'aide des
     fonctions proposees par Pandas, sous reserve de respecter le nom des
     colonnes et leur typage:
         DataFrame.from_records: constructor from tuples, also record arrays
@@ -191,8 +177,10 @@ class Observations(_pandas.DataFrame):
         read_csv / read_table / read_clipboard
         ...
 
-    On peux obtenir une pandas.Series ne contenant que l'index et res avec:
+    On peut obtenir une pandas.Series ne contenant que l'index et res avec:
         obs = observations.res
+
+    On peut iterer dans le DataFrame avec la fonction iterrows().
 
     """
 
@@ -208,59 +196,13 @@ class Observations(_pandas.DataFrame):
             obs = Observations(*observations)  #  une liste d'Observation
 
         """
-
-        # prepare a list of observations
-        obss = []
-        try:
-            for obs in observations:
-                if not isinstance(obs, Observation):
-                    raise TypeError('{} in not an Observation'.format(obs))
-                obss.append(obs)
-
-        except Exception:
-            raise
-
-        # prepare a tmp numpy.array
-        array = _numpy.array(object=obss)
-
-        # get the pandas.DataFrame
-        index = _pandas.Index(array['dte'], name='dte')
-        obj = _pandas.DataFrame(
-            data=array[list(array.dtype.names[1:])],
-            index=index
+        return _composant_obs.Observations.__new__(
+            cls, Observation, observations
         )
-        # TODO - can't subclass the DataFRame object
-        # return obj.view(cls)
-        return obj
-
-    @staticmethod
-    def concat(observations, others):
-        """Ajoute (concatene) une ou plusieurs observations.
-
-        Arguments:
-            observations (Observations)
-            others (Observation ou Observations) = observation(s) a ajouter
-
-        Pour agreger 2 Observations, on peux aussi utiliser la methode append
-        des DataFrame ou bien directement la fonction concat de pandas.
-
-        Attention, les DataFrame ne sont JAMAIS modifies, ces fonctions
-        retournent un nouveau DataFrame.
-
-        """
-
-        # TODO - can't write a instance method to do that
-        #        (can't subclass DataFrame !)
-
-        try:
-            return _pandas.concat([observations, others])
-
-        except Exception:
-            return _pandas.concat([observations, Observations(others)])
 
 
 #-- class Serie ---------------------------------------------------------------
-class Serie(object):
+class Serie(_composant_obs.Serie):
 
     """Classe Serie.
 
@@ -268,67 +210,65 @@ class Serie(object):
 
     Proprietes:
         entite (Sitehydro, Stationhydro ou Capteur)
-        grandeur (char in NOMENCLATURE[509]) = H ou Q
-        statut (int in NOMENCLATURE[510]) = donnee brute, corrigee...
+        grandeur (char parmi NOMENCLATURE[509]) = H ou Q
+        statut (int parmi NOMENCLATURE[510]) = donnee brute, corrigee...
         dtdeb (datetime.datetime)
         dtfin (datetime.datetime)
         dtprod (datetime.datetime)
+        contact (intervenant.Contact)
         observations (Observations)
 
     """
-
-    dtdeb = _composant.Datefromeverything(required=False)
-    dtfin = _composant.Datefromeverything(required=False)
-    dtprod = _composant.Datefromeverything(required=False)
-    grandeur = _composant.Nomenclatureitem(nomenclature=509)
-    statut = _composant.Nomenclatureitem(nomenclature=510)
 
     # TODO - Serie others attributes
 
     # sysalti
     # perime
-    # contact
     # refalti OU courbetarage
+
+    grandeur = _composant.Nomenclatureitem(nomenclature=509)
+    statut = _composant.Nomenclatureitem(nomenclature=510)
 
     def __init__(
         self, entite=None, grandeur=None, statut=0,
-        dtdeb=None, dtfin=None, dtprod=None, observations=None, strict=True
+        dtdeb=None, dtfin=None, dtprod=None, contact=None,
+        observations=None, strict=True
     ):
         """Initialisation.
 
         Arguments:
             entite (Sitehydro, Stationhydro ou Capteur)
-            grandeur (char in NOMENCLATURE[509]) = H ou Q
-            statut (int in NOMENCLATURE[510], defaut 0) = donnee brute,
+            grandeur (char parmi NOMENCLATURE[509]) = H ou Q
+            statut (int parmi NOMENCLATURE[510], defaut 0) = donnee brute,
                 corrigee...
             dtdeb (numpy.datetime64)
             dtfin (numpy.datetime64)
             dtprod (numpy.datetime64)
+            contact (intervenant.Contact)
             observations (Observations)
             strict (bool, defaut True) = en mode permissif il n'y a pas de
                 controles de validite des parametres
 
         """
 
-        # -- simple properties --
-        self._strict = bool(strict)
+        # -- super --
+        super(Serie, self).__init__(
+            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, contact=contact,
+            observations=observations, strict=strict
+        )
 
-        # adjust the descriptor
+        # -- adjust the descriptor --
         vars(self.__class__)['grandeur'].strict = self._strict
         vars(self.__class__)['grandeur'].required = self._strict
         vars(self.__class__)['statut'].strict = self._strict
 
         # -- descriptors --
-        self.dtdeb = dtdeb
-        self.dtfin = dtfin
-        self.dtprod = dtprod
         self.grandeur = grandeur
         self.statut = statut
 
         # -- full properties --
-        self._entite = self._observations = None
+        self._entite = None
         self.entite = entite
-        self.observations = observations
 
     # -- property entite --
     @property
@@ -359,56 +299,23 @@ class Serie(object):
         except:
             raise
 
-    # -- property observations --
-    @property
-    def observations(self):
-        """Return observations."""
-        return self._observations
-
-    @observations.setter
-    def observations(self, observations):
-        """Set observations."""
-        try:
-
-            if (self._strict):
-                # we check we have a res column...
-                # ... and that index contains datetimes
-                observations.res
-                # FIXME - should fail with datetime64 object.
-                #         Use .item().isoformat()
-                observations.index[0].isoformat()
-            self._observations = observations
-
-        except:
-            raise TypeError('observations incorrect')
-
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
-        # compute entite name
-        if self.entite is None:
-            entite = '<une entite inconnue>'
-        else:
-            try:
-                entite = '{} {}'.format(
-                    _sitehydro._ARTICLE[self.entite.__class__],
-                    self.entite.__unicode__()
-                )
-            except (AttributeError, KeyError):
-                entite = self.entite
-
-        # prepare observations
-        if self.observations is None:
-            obs = '<sans observations>'
-        elif len(self.observations) <= 30:
-            obs = self.observations.to_string()
-            obs += '\n%s values' % len(self.observations)
-        else:
-            obs = '{0}\n...\n{1}'.format(
-                self.observations[:15].to_string(),
-                '\n'.join(self.observations[-15:].to_string().split('\n')[2:])
+        # init
+        try:
+            entite = '{} {}'.format(
+                _sitehydro._ARTICLE[self.entite.__class__],
+                self.entite.__unicode__()
             )
-            obs += '\n%s' % self.observations.__unicode__()
+        except Exception:
+            entite = '<une entite inconnue>'
+        try:
+            obs = self.observations.to_string(
+                max_rows=15, show_dimensions=True
+            )
+        except Exception:
+            obs = '<sans observations>'
 
         # action !
         return 'Serie {0} sur {1}\n'\
@@ -423,9 +330,4 @@ class Serie(object):
                    obs
                )
 
-    def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(_sys.stdout.encoding)
+    __str__ = _composant.__str__

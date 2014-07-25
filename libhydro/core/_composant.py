@@ -1,18 +1,23 @@
 # -*- coding: utf-8 -*-
-"""Module composants.
+"""Module composant.
 
-Ce module contient les elements communs a plusieurs modules.
+Ce module contient des elements de base de la librairie.
 
-Il integre les classes:
-    # Coord
+Il integre:
+    # un gestionnaire d'erreurs (ERROR_HANDLERS)
+
+la classe:
+    # Rlist
 
 les descripteurs:
+    # Rlistproperty
     # Datefromeverything
     # Nomenclatureitem
 
 et les fonctions:
     # is_code_hydro()
-    # is_code_commune()
+    # is_code_insee()
+    # __str__()
 
 """
 #-- imports -------------------------------------------------------------------
@@ -24,6 +29,9 @@ from __future__ import (
 )
 
 import sys as _sys
+import locale as _locale
+import warnings as _warnings
+
 import weakref as _weakref
 import numpy as _numpy
 import datetime as _datetime
@@ -34,10 +42,13 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.8c"""
-__date__ = """2014-03-25"""
+__version__ = """0.9f"""
+__date__ = """2014-07-20"""
 
 #HISTORY
+#V0.9 - 2014-07-16
+#    add the error_handler, the Rlist and the Rlistproperty
+#    split the module in 3 parts
 #V0.8 - 2014-02-01
 #    add and use descriptors
 #V0.1 - 2013-11-06
@@ -46,6 +57,181 @@ __date__ = """2014-03-25"""
 
 #-- todos ---------------------------------------------------------------------
 # TODO - use regex for codes matching functions
+
+
+#-- a basic errors handler ----------------------------------------------------
+def _warn_handler(msg, *args, **kwargs):
+    """Print msg on stderr."""
+    _warnings.warn(msg)
+
+
+def _strict_handler(msg, error):
+    """Raise error(msg)."""
+    raise error(msg)
+
+
+ERROR_HANDLERS = {
+    "ignore": lambda *args, **kwargs: None,  # 'ignore' returns None
+    "warn": _warn_handler,  # 'warn' emit 'warn(msg)'
+    "strict": _strict_handler  # 'strict' raises 'error(msg)'
+}
+
+
+#-- class Rlist ---------------------------------------------------------------
+class Rlist(list):
+
+    """Class Rlist.
+
+    A class of restricted lists that can only contains items of type 'cls'.
+
+    Read only property:
+        cls (type)
+
+    Methods:
+        all list methods
+        check()
+
+    """
+
+    def __init__(self, cls, iterable=None):
+        """Initialisation.
+
+        Arguments:
+            cls (type) = the class of authorized items
+            iterable (iterable, default None) = the list elements
+
+        """
+        # a read only property
+        self._cls = cls
+
+        # check and init
+        if iterable is None:
+            super(Rlist, self).__init__()
+        else:
+            self.checkiterable(iterable)
+            super(Rlist, self).__init__(iterable)
+
+    # -- read only property cls --
+    @property
+    def cls(self):
+        """Get cls."""
+        return self._cls
+
+    # -- list overwritten methods --
+    def append(self, y):
+        """Append method."""
+        self.checkiterable([y])
+        super(Rlist, self).append(y)
+
+    def extend(self, iterable):
+        """Extend method."""
+        self.checkiterable(iterable)
+        super(Rlist, self).extend(iterable)
+
+    def insert(self, i, y):
+        """Insert method."""
+        self.checkiterable([y])
+        super(Rlist, self).insert(i, y)
+
+    def __setitem__(self, i, y):
+        """Setitem method."""
+        self.checkiterable([y])
+        super(Rlist, self).__setitem__(i, y)
+
+    def __setslice__(self, i, j, y):
+        """Setitem method."""
+        self.checkiterable(y)
+        super(Rlist, self).__setslice__(i, j, y)
+
+    # -- other methods --
+    def checkiterable(self, iterable, errors='strict'):
+        """Check iterable items type.
+
+        Arguments:
+            iterable (iterable)
+            errors (str in 'strict' (default), 'ignore', 'warn')
+
+        """
+        # get the error handler
+        try:
+            error_handler = ERROR_HANDLERS[errors]
+        except Exception:
+            raise ValueError("unknown error handler name '%s'" % errors)
+        # check
+        if iterable is not None:
+            for obj in iterable:
+                if not isinstance(obj, self.cls):
+                    error_handler(
+                        msg="the object '%s' is not of %s" % (obj, self.cls),
+                        error=TypeError
+                    )
+                    return False
+        # return
+        return True
+
+# reset docstrings to their original 'list' values
+Rlist.append.__func__.__doc__ = list.append.__doc__
+Rlist.extend.__func__.__doc__ = list.extend.__doc__
+Rlist.insert.__func__.__doc__ = list.insert.__doc__
+Rlist.__setitem__.__func__.__doc__ = list.__setitem__.__doc__
+Rlist.__setslice__.__func__.__doc__ = list.__setslice__.__doc__
+
+
+#-- class  Rlistproperty ------------------------------------------------------
+class Rlistproperty(object):
+
+    """Class Rlistproperty
+
+    A descriptor to deal with a list of restricted items.
+
+    Raises a TypeError when value is not allowed.
+
+    Properties:
+        cls (class) = the type of the list items
+        required (bool, defaut True) = wether or not instance's value can
+            be None
+        default =  a defautl value returned if the instance's value is not
+            in the dictionnary. Should be unused if the property has been
+            initialized.
+        data (weakref.WeakKeyDictionary)
+
+    """
+
+    def __init__(self, cls, required=True, default=None):
+        """Initialization.
+
+        Args:
+            nomenclature (int) = the nomenclature ref
+            required (bool, defaut True) = wether or not instance's value can
+                be None
+            default =  a defautl value returned if the instance's value is not
+                in the dictionnary. Should be unused if the property has been
+                initialized.
+
+        """
+        self.cls = cls
+        self.required = bool(required)
+        self.default = default
+        self.data = _weakref.WeakKeyDictionary()
+
+    def __get__(self, instance, owner):
+        """Return instance value."""
+        return self.data.get(instance, default=self.default)
+
+    def __set__(self, instance, items):
+        """Set the instance list."""
+        # None case
+        if (items is None):
+            if self.required:
+                raise ValueError('a value other than None is required')
+            rlist = Rlist(self.cls)
+
+        # other cases
+        else:
+            rlist = Rlist(self.cls, items)
+
+        # all is well
+        self.data[instance] = rlist
 
 
 #-- class Datefromeverything --------------------------------------------------
@@ -186,89 +372,15 @@ class Nomenclatureitem(object):
         self.data[instance] = value
 
 
-#-- class Coord ---------------------------------------------------------------
-class Coord(object):
-
-    """Classe Coord.
-
-    Classe pour manipuler des coordonnees.
-
-    Proprietes:
-        x, y (numerique)
-        proj (caractere parmi NOMENCLATURE[22]) = systeme de projection
-
-    """
-
-    proj = Nomenclatureitem(nomenclature=22)
-
-    def __init__(self, x, y, proj=None, strict=True):
-        """Initialisation.
-
-        Arguments:
-            x, y (numeriques)
-            proj (caractere parmi NOMENCLATURE[22]) = systeme de projection
-            strict (bool, defaut True) = le mode permissif permet de rendre
-                facultatif le parametre proj
-
-        """
-
-        # -- simple properties --
-        self._strict = bool(strict)
-        # adjust the descriptor
-        vars(self.__class__)['proj'].required = self._strict
-
-        for crd in ('x', 'y'):
-            try:
-                self.__setattr__(crd, float(locals()[crd]))
-            except Exception:
-                raise TypeError('{} must be a number'.format(crd))
-
-        # -- descriptors --
-        self.proj = proj
-
-    # -- other methods --
-    def __eq__(self, other):
-        """Return True ou False."""
-        return (
-            # strictly required by the use of a descriptor
-            (self is other)
-            or
-            (
-                (self.x == other.x) and
-                (self.y == other.y) and
-                (self.proj == other.proj)
-            )
-        )
-
-    def __ne__(self, other):
-        """Return True ou False."""
-        return not self.__eq__(other)
-
-    def __unicode__(self):
-        """Return unicode representation."""
-        return 'Coord (x={0}, y={1}) [proj {2}]'.format(
-            self.x,
-            self.y,
-            _NOMENCLATURE[22][self.proj] if (self.proj is not None) else
-            '<projection inconnue>'
-        )
-
-    def __str__(self):
-        """Return string representation."""
-        if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
-            return self.__unicode__()
-        else:  # Python 2
-            return self.__unicode__().encode(_sys.stdout.encoding)
-
-
 #-- functions -----------------------------------------------------------------
-def is_code_hydro(code, length=8, raises=True):
-    """Return whether or not code is a valid code hydro.
+def is_code_hydro(code, length=8, errors='ignore'):
+    """Return wether or not code is a valid code hydro as a bool.
 
     Arguments:
-       code (char)
+       code (string)
        length (int, default 8) = code size
-       raises (bool, default True) = if False doesn't raise
+       errors (str in 'ignore' (default), 'strict') = 'strict' raises an
+           exception
 
     """
     try:
@@ -295,46 +407,72 @@ def is_code_hydro(code, length=8, raises=True):
         # all is well
         return True
 
-    except (ValueError, TypeError):
-        if raises:
-            raise
-        else:
-            return False
+    except Exception as err:
+        if errors not in ('ignore', 'strict'):
+            raise ValueError("unknown error handler name '%s'" % errors)
+        ERROR_HANDLERS[errors](msg=err.message, error=type(err))
 
 
-def is_code_commune(code, raises=True):
-    """Return whether or not code is a valid INSEE commune code.
+def is_code_insee(code, length=5, errors='ignore'):
+    """Return whether or not code is a valid INSEE code as a bool.
 
-    Le numero de la commune est le numero INSEE de la commune base sur 5
-    caracteres. Pour les communes de metropoles, les deux premiers caracteres
-    correspondent au numero du departement auquel la commune appartient. Pour
-    les DOM, les trois premiers caracteres correspondent au code du departement
-    auquel la commune appartient.  Il est a noter que ce numero de la commune
-    est au format caractere afin de gerer les communes de la Corse (2A et 2B).
+    Un code INSEE de commune est construit sur 5 caracteres. Pour les
+    communes de metropole, les deux premiers caracteres correspondent
+    au numero du departement de la commune. Pour les DOM, les trois
+    premiers caracteres correspondent au numero du departement de la
+    commune. Il est a noter que ce code est au format caractere afin de
+    gerer les communes de la Corse (2A et 2B).
+
+    Un code INSEE de site meteorologique est construit sur 9 caracteres.
+    Les 6 premiers forment le code INSEE de la commune de localisation,
+    prefixe d'un zero significatif, ou bien un code de pays pour les
+    postes hors du territoire national. Les 3 derniers caracteres sont
+    un numero d'ordre du site meteorologique.
 
     Arguments:
-       code (char)
-       raises (bool, default True) = if False doesn't raise
+       code (string(length), default length is 5)
+       errors (str in 'ignore' (default), 'strict') = 'strict' raises an
+           exception
 
     """
+    # pre-condition
+    if length not in (5, 9):
+        raise ValueError('length must be 5 or 9')
+
     try:
         # prepare
         code = unicode(code)
 
-        # 5 chars length
-        if len(code) != 5:
-            raise ValueError('code must be 5 chars long')
+        # chars length
+        if len(code) != length:
+            raise ValueError('INSEE code must be %i chars long' % length)
 
         # code commune must be all digit or 2(A|B)xxx
         if not code.isdigit():
-            if not ((code[:2] in ('2A', '2B')) and (code[2:].isdigit())):
-                raise ValueError('illegal char in code')
+            start = length is 9  # 0 or 1
+            if not (
+                (code[start:start + 2] in ('2A', '2B')) and
+                (code[start + 2:].isdigit())
+            ):
+                raise ValueError('illegal char in INSEE code')
 
         # all is well
         return True
 
-    except (ValueError, TypeError):
-        if raises:
-            raise
-        else:
-            return False
+    except Exception as err:
+        if errors not in ('ignore', 'strict'):
+            raise ValueError("unknown error handler name '%s'" % errors)
+        ERROR_HANDLERS[errors](msg=err.message, error=type(err))
+
+
+def __str__(self):
+    """Return string representation from __unicode__ method."""
+    if _sys.version_info[0] >= 3:  # pragma: no cover - Python 3
+        return self.__unicode__()
+    else:  # Python 2
+        return self.__unicode__().encode(
+            _sys.stdout.encoding or
+            _locale.getpreferredencoding() or
+            'ascii',
+            'replace'
+        )

@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for simulation.
 
 To run all tests just type:
-    './test_core_simulation.py' or 'python test_core_simulation.py'
+    python -m unittest test_core_simulation
 
 To run only a class test:
     python -m unittest test_core_simulation.TestClass
 
 To run only a specific test:
-    python -m unittest test_core_simulation.TestClass
     python -m unittest test_core_simulation.TestClass.test_method
 
 """
@@ -34,8 +32,8 @@ from libhydro.core import (simulation, modeleprevision, sitehydro)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1f"""
-__date__ = """2014-03-25"""
+__version__ = """0.1g"""
+__date__ = """2014-07-18"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -267,7 +265,10 @@ class TestSimulation(unittest.TestCase):
         self.assertTrue(sim.__str__().rfind('Previsions') > -1)
         # a junk entite
         sim = simulation.Simulation(entite='station 33', strict=False)
-        self.assertTrue(sim.__str__().rfind('station 33') > -1)
+        self.assertTrue(sim.__str__().rfind('entite inconnue') > -1)
+        # a junk statut
+        sim = simulation.Simulation(statut=999, strict=False)
+        self.assertTrue(sim.__str__().rfind('sans statut') > -1)
 
     def test_str_02(self):
         """Test __str__ method with basic values."""
@@ -441,8 +442,3 @@ class TestSimulation(unittest.TestCase):
             # **{'previsions': prvs}
             **{'previsions': [110, 20, 30]}
         )
-
-
-#-- main ----------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()

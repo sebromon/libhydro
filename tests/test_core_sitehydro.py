@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for sitehydro.
 
 To run all tests just type:
-    './test_core_sitehydro.py' or 'python test_core_sitehydro.py'
+    python -m unittest test_core_sitehydro
 
 To run only a class test:
     python -m unittest test_core_sitehydro.TestClass
 
 To run only a specific test:
-    python -m unittest test_core_sitehydro.TestClass
     python -m unittest test_core_sitehydro.TestClass.test_method
 
 """
@@ -28,14 +26,14 @@ sys.path.append(os.path.join('..', '..'))
 import unittest
 
 from libhydro.core import sitehydro
-from libhydro.core import _composant as composant
+from libhydro.core import _composant_site as composant_site
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1j"""
-__date__ = """2014-03-25"""
+__version__ = """0.1l"""
+__date__ = """2014-07-16"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -88,7 +86,7 @@ class TestSitehydro(unittest.TestCase):
             ),
             (
                 code, codeh2, typesite, libelle, libelleusuel,
-                composant.Coord(*coord), [station], [unicode(commune)],
+                composant_site.Coord(*coord), [station], [unicode(commune)],
                 [tronconvigilance]
             )
         )
@@ -133,7 +131,7 @@ class TestSitehydro(unittest.TestCase):
                 s.stations, s.communes, s.tronconsvigilance
             ),
             (
-                code, typesite, libelle, composant.Coord(**coord),
+                code, typesite, libelle, composant_site.Coord(**coord),
                 [st for st in stations],
                 [unicode(commune) for commune in communes],
                 [tronconvigilance for tronconvigilance in tronconsvigilance]
@@ -145,7 +143,9 @@ class TestSitehydro(unittest.TestCase):
         code = 'A3334550'
         typesite = 'REEL'
         libelle = 'La Saône [apres la crue] a Montelimar [hé oui]'
-        coord = composant.Coord(**{'x': 482000, 'y': 1897556.5, 'proj': 26})
+        coord = composant_site.Coord(
+            **{'x': 482000, 'y': 1897556.5, 'proj': 26}
+        )
         stations = [
             sitehydro.Stationhydro(code='%s01' % code, typestation='DEB')
         ]
@@ -181,10 +181,6 @@ class TestSitehydro(unittest.TestCase):
         s = sitehydro.Sitehydro(code=0, strict=False)
         self.assertTrue(s.__str__().rfind('Site') > -1)
 
-    @unittest.skipIf(
-        (sys.stdout.encoding == 'cp850'),
-        "windows console can't deal with these characters"
-    )
     def test_str_02(self):
         """Test __str__ with unicode."""
         s = sitehydro.Sitehydro(code='A0445533')
@@ -601,8 +597,3 @@ class TestTronconvigilance(unittest.TestCase):
         libelle = 'Loire amont'
         t = sitehydro.Tronconvigilance(code=code, libelle=libelle)
         self.assertTrue(t.__str__().rfind('Troncon') > -1)
-
-
-#-- main ----------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()

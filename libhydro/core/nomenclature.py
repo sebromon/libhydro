@@ -25,10 +25,12 @@ from __future__ import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1g"""
-__date__ = """2014-02-10"""
+__version__ = """0.6a"""
+__date__ = """2014-07-15"""
 
 #HISTORY
+#V0.6 - 2014-07-15
+#    add a bunch of nomenclatures
 #V0.1 - 2013-07-12
 #    first shot
 
@@ -110,8 +112,16 @@ NOMENCLATURE = {
         62: 'ETRS89 / UTM Nord 32'
     },
 
-    # Methode d'obtention du resultat de l'observation hydro
+    # Methode d'obtention du resultat de l'observation hydrometrique
     507: {0: 'Mesure', 4: 'Reconstitution', 12: 'Interpolation'},
+
+    # Qualification de la donnees de l'observation meteorologique
+    508: {
+        0: 'Inconnu',
+        12: 'Valeur incertaine',
+        16: 'Valeur non qualifiee',
+        20: 'Valeur bonne'
+    },
 
     # Grandeur observee de la serie
     509: {'H': 'Hauteur', 'Q': 'Debit'},
@@ -120,6 +130,17 @@ NOMENCLATURE = {
     510: {
         0: 'Sans validation', 4: 'Brute', 8: 'Corrige',
         12: 'Pre-valide', 16: 'Valide'
+    },
+
+    # Statut de l'observation meteorologique
+    511: {
+        0: 'Sans validation', 4: 'Brute', 8: 'Corrige'
+    },
+
+    # Methode d'obtention du resultat de l'observation meteoroloqiue
+    512: {
+        0: 'Mesure', 4: 'Reconstitution', 8: 'Calcul',
+        12: 'Interpolation', 16: 'Forcage'
     },
 
     # Qualification de la donnees de l'observation hydrometrique
@@ -135,19 +156,36 @@ NOMENCLATURE = {
     # Statut de la simulation
     516: {4: 'Brute', 16: 'Critiquee'},
 
-    # Type de mesure du capteur hydro
+    # Type de mesure du capteur hydrometrique
     520: {'H': 'Hauteur', 'Q': 'Debit'},
+
+    # Grandeur meteorologique
+    523: {
+        'RR': "Cumul de precipitations",
+        'TA': "Temperature de l'air",
+        'PA': "Pression atmospherique",
+        'HN': "Hauteur de neige",
+        'EE': "Equivalent en eau",
+        'VV': "Vitesse du vent",
+        'DV': "Direction du vent",
+        'EP': "Evapotranspiration potentielle",
+        'ER': "Evapotranspiration reelle",
+        'EM': "Evapotranspiration maximale",
+        'RA': "Rayonnement",
+        'HR': "Humidite relative",
+        'HA': "Humidite absolue"
+    },
 
     # Type du modele de prevision
     525: {
-        0: 'Inconnu',
+        0: "Inconnu",
         1: "Prevision d'expert",
-        2: 'Modele hydrologique empirique',
-        3: 'Modele hydrologique a base physique',
-        4: 'Modele hydraulique',
-        5: 'Modele statistique',
-        6: 'Enchainement de modeles',
-        7: 'Modele a propagation empirique'
+        2: "Modele hydrologique empirique",
+        3: "Modele hydrologique a base physique",
+        4: "Modele hydraulique",
+        5: "Modele statistique",
+        6: "Enchainement de modeles",
+        7: "Modele a propagation empirique"
     },
 
     # Type de seuil
@@ -171,16 +209,21 @@ NOMENCLATURE = {
 
     # Type de site hydrometrique
     530: {
-        'REEL': 'Site reel', 'FICTIF': 'Site fictif',
-        'MAREGRAPHE': 'Maregraphe', 'PONCTUEL': 'Site de jaugeage ponctuel',
-        'VIRTUEL': 'Site virtuel',
-        'RECONSTITUE': 'Site a debit moyen mensuel reconstitue',
-        'PLANDEAU': "Plan d'eau", 'SOURCE': 'Source'
+        'REEL': "Site reel",
+        'FICTIF': "Site fictif",
+        'MAREGRAPHE': "Maregraphe",
+        'PONCTUEL': "Site de jaugeage ponctuel",
+        'VIRTUEL': "Site virtuel",
+        'RECONSTITUE': "Site a debit moyen mensuel reconstitue",
+        'PLANDEAU': "Plan d'eau",
+        'SOURCE': "Source"
     },
 
     # Type de station hydrometrique
     531: {
-        'LIMNI': 'Limnimetre', 'DEB': 'Debitmetre', 'HC': 'Hauteur calculee',
+        'LIMNI': 'Limnimetre',
+        'DEB': 'Debitmetre',
+        'HC': 'Hauteur calculee',
         'LIMNIMERE': 'Limnimetre station mere',
         'LIMNIFILLE': 'Limnimetre station fille'
     },

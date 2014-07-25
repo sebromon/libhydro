@@ -10,8 +10,8 @@ import codecs
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2014-02-26"""
+__version__ = """0.1d"""
+__date__ = """2014-07-08"""
 
 #HISTORY
 #V0.1 - 2014-01-28
@@ -111,6 +111,7 @@ setup(
         'python >= 2.7, <3',
         'numpy >= 1.7.1',
         'pandas >= 0.11.0',
-        'lxml >= 3.2.3'
+        'lxml >= 3.2.3',
+        'suds-jurko >= 0.6'
     ),
 )

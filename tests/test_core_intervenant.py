@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for intervenant.
 
 To run all tests just type:
-    './test_core_intervenant.py' or 'python test_core_intervenant.py'
+    python -m unittest test_core_intervenant
 
 To run only a class test:
     python -m unittest test_core_intervenant.TestClass
 
 To run only a specific test:
-    python -m unittest test_core_intervenant.TestClass
     python -m unittest test_core_intervenant.TestClass.test_method
 
 """
@@ -269,7 +267,3 @@ class TestContact(unittest.TestCase):
             intervenant.Contact,
             **{'intervenant': 5}
         )
-
-#-- main ----------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()

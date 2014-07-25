@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Test program for xml.to_xml.
 
 To run all tests just type:
-    './test_conv_xml_to_xml.py' or 'python test_conv_xml_to_xml.py'
+    python -m unittest test_conv_xml_to_xml
 
 To run only a class test:
     python -m unittest test_conv_xml_to_xml.TestClass
 
 To run only a specific test:
-    python -m unittest test_conv_xml_to_xml.TestClass
     python -m unittest test_conv_xml_to_xml.TestClass.test_method
 
 """
@@ -142,6 +140,7 @@ class TestToXmlSeuilsHydro(unittest.TestCase):
             valeurseuil
         )
 
+
 # -- class ParametrizedTestCase -----------------------------------------------
 class ParametrizedTestCase(unittest.TestCase):
 
@@ -231,10 +230,11 @@ class TestAllXmlBaseTests(unittest.TestCase):
     Required by unittest.discover.
 
     """
-    # TODO sitesmeteo, obssmeteo, modelesprevision
+    # TODO intervenant, modelesprevision
     suite = unittest.TestSuite()
     for unit in (
-        'siteshydro', 'seuilshydro', 'evenements', 'series', 'simulations'
+        'siteshydro', 'sitesmeteo', 'seuilshydro', 'evenements',
+        'serieshydro', 'seriesmeteo', 'simulations'
     ):
         suite.addTest(
             ParametrizedTestCase.parametrize(ToXmlBaseTest, param=unit)
@@ -333,8 +333,3 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(element.tag, args[0])
         self.assertEqual(element.text, args[1])
         self.assertEqual(element.attrib, args[2])
-
-
-#-- main ----------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()
