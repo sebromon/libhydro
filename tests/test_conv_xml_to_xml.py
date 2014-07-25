@@ -230,10 +230,11 @@ class TestAllXmlBaseTests(unittest.TestCase):
     Required by unittest.discover.
 
     """
-    # TODO sitesmeteo, obssmeteo, modelesprevision
+    # TODO intervenant, modelesprevision
     suite = unittest.TestSuite()
     for unit in (
-        'siteshydro', 'seuilshydro', 'evenements', 'serieshydro', 'simulations'
+        'siteshydro', 'sitesmeteo', 'seuilshydro', 'evenements',
+        'serieshydro', 'seriesmeteo', 'simulations'
     ):
         suite.addTest(
             ParametrizedTestCase.parametrize(ToXmlBaseTest, param=unit)

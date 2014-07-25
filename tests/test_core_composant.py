@@ -34,8 +34,8 @@ import numpy
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.4a"""
-__date__ = """2014-07-20"""
+__version__ = """0.4b"""
+__date__ = """2014-07-25"""
 
 #HISTORY
 #V0.4 - 2014-07-20
@@ -111,14 +111,50 @@ class TestRlist(unittest.TestCase):
         self.assertTrue(strl.checkiterable([str('c'), str('d')]))
         self.assertFalse(strl.checkiterable(['c', 'd'], errors='ignore'))
 
+    def test_error_01(self):
+        """Error handler test."""
+        strl = composant.Rlist(str, [str('aa'), str('bb')])
+        with self.assertRaises(ValueError):
+            strl.checkiterable([], errors='gloups!')
+
 
 #-- class TestRlistproperty ---------------------------------------------------
 class TestRlistproperty(unittest.TestCase):
 
     """Rlistproperty class tests."""
 
-    def test_base(self):
-        raise NotImplementedError
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        # define a class with int datas
+        class List_of_int_required(object):
+            data = composant.Rlistproperty(int, required=True)
+
+            def __init__(self, data=None):
+                self.data = data
+
+        self.LOIR = List_of_int_required
+
+        # define a class with int datas
+        class List_of_int_not_required(object):
+            data = composant.Rlistproperty(int, required=False)
+
+            def __init__(self, data=None):
+                self.data = data
+
+        self.LOINR = List_of_int_not_required
+
+    def test_list_of_int_required(self):
+        """List_of_int_required test."""
+        l = self.LOIR([1, 2, 3])
+        self.assertEqual(len(l.data), 3)
+        with self.assertRaises(ValueError):
+            self.LOIR(None)
+
+    def test_list_of_int_not_required(self):
+        """List_of_int_not_required test."""
+        l = self.LOINR(None)
+        l = self.LOINR([1, 2, 3])
+        self.assertEqual(len(l.data), 3)
 
 
 #-- class TestDatefromeverything ----------------------------------------------
@@ -166,26 +202,14 @@ class TestDatefromeverything(unittest.TestCase):
 
     def test_value_required_error(self):
         """The value required error."""
-        self.assertRaises(
-            TypeError,
-            self.VR,
-            None
-        )
-        self.assertRaises(
-            ValueError,
-            self.VR,
-            '2014-10-08'
-        )
-        self.assertRaises(
-            ValueError,
-            self.VR,
-            2014
-        )
-        self.assertRaises(
-            ValueError,
-            self.VR,
-            [2014]
-        )
+        with self.assertRaises(TypeError):
+            self.VR(None)
+        with self.assertRaises(ValueError):
+            self.VR('2014-10-08')
+        with self.assertRaises(ValueError):
+            self.VR(2014)
+        with self.assertRaises(ValueError):
+            self.VR([2014])
 
     def test_value_not_required_init(self):
         """Test the setters and getters when value is not required."""
@@ -265,27 +289,15 @@ class TestNomenclatureitem(unittest.TestCase):
 
     def test_NI_strict_required_error(self):
         """NI_strict_required error."""
-        self.assertRaises(
-            ValueError,
-            self.NI_strict_required,
-            None
-        )
-        self.assertRaises(
-            ValueError,
-            self.NI_strict_required,
-            'Z'
-        )
+        with self.assertRaises(ValueError):
+            self.NI_strict_required(None)
+        with self.assertRaises(ValueError):
+            self.NI_strict_required('Z')
         ni = self.NI_strict_required('H')
-        self.assertRaises(
-            ValueError,
-            ni.__setattr__,
-            *('ni', 'Z')
-        )
-        self.assertRaises(
-            ValueError,
-            ni.__setattr__,
-            *('ni', None)
-        )
+        with self.assertRaises(ValueError):
+            ni.__setattr__(*('ni', 'Z'))
+        with self.assertRaises(ValueError):
+            ni.__setattr__(*('ni', None))
 
     def test_NI_required(self):
         """NI_required test.
@@ -308,17 +320,11 @@ class TestNomenclatureitem(unittest.TestCase):
 
     def test_NI_required_error(self):
         """NI_required error."""
-        self.assertRaises(
-            ValueError,
-            self.NI_required,
-            None
-        )
+        with self.assertRaises(ValueError):
+            self.NI_required(None)
         ni = self.NI_required('H')
-        self.assertRaises(
-            ValueError,
-            ni.__setattr__,
-            *('ni', None)
-        )
+        with self.assertRaises(ValueError):
+            ni.__setattr__(*('ni', None))
 
     def test_NI_strict(self):
         """NI_strict test.
@@ -342,30 +348,18 @@ class TestNomenclatureitem(unittest.TestCase):
 
     def test_NI_strict_error(self):
         """NI_strict error."""
-        self.assertRaises(
-            ValueError,
-            self.NI_strict,
-            3
-        )
-        self.assertRaises(
-            ValueError,
-            self.NI_strict,
-            'Z'
-        )
+        with self.assertRaises(ValueError):
+            self.NI_strict(3)
+        with self.assertRaises(ValueError):
+            self.NI_strict('Z')
         ni = self.NI_strict('H')
-        self.assertRaises(
-            ValueError,
-            ni.__setattr__,
-            *('ni', '333')
-        )
+        with self.assertRaises(ValueError):
+            ni.__setattr__(*('ni', '333'))
 
     def test_error_01(self):
         """Nomenclature error."""
-        self.assertRaises(
-            ValueError,
-            composant.Nomenclatureitem,
-            **{'nomenclature': 0}
-        )
+        with self.assertRaises(ValueError):
+            composant.Nomenclatureitem(**{'nomenclature': 0})
 
 
 #-- class TestIsCodeHydro -----------------------------------------------------
@@ -414,44 +408,33 @@ class TestIsCodeHydro(unittest.TestCase):
             composant.is_code_hydro('A33051CC', errors='ignore')
         )
 
-    def test_raises(self):
-        """Error test."""
+    def test_errors_01(self):
+        """Error code test."""
         # TypeError
-        self.assertRaises(
-            TypeError,
-            composant.is_code_hydro,
-            **{'code': 33, 'errors': 'strict'}
-        )
+        with self.assertRaises(TypeError):
+            composant.is_code_hydro(**{'code': 33, 'errors': 'strict'})
         # too short
-        self.assertRaises(
-            ValueError,
-            composant.is_code_hydro,
-            **{'code': 'A330010', 'errors': 'strict'}
-        )
+        with self.assertRaises(ValueError):
+            composant.is_code_hydro(**{'code': 'A330010', 'errors': 'strict'})
         # too long
-        self.assertRaises(
-            ValueError,
-            composant.is_code_hydro,
-            **{'code': 'A2233305100101', 'length': 12, 'errors': 'strict'}
-        )
+        with self.assertRaises(ValueError):
+            composant.is_code_hydro(
+                **{'code': 'A2233305100101', 'length': 12, 'errors': 'strict'}
+            )
         # wrong first char
-        self.assertRaises(
-            ValueError,
-            composant.is_code_hydro,
-            **{'code': '33001000', 'errors': 'strict'}
-        )
+        with self.assertRaises(ValueError):
+            composant.is_code_hydro(**{'code': '33001000', 'errors': 'strict'})
         # wrong last char
-        self.assertRaises(
-            ValueError,
-            composant.is_code_hydro,
-            **{'code': 'A333101a', 'errors': 'strict'}
-        )
+        with self.assertRaises(ValueError):
+            composant.is_code_hydro(**{'code': 'A333101a', 'errors': 'strict'})
         # wrong chars
-        self.assertRaises(
-            ValueError,
-            composant.is_code_hydro,
-            **{'code': 'A33001CC', 'errors': 'strict'}
-        )
+        with self.assertRaises(ValueError):
+            composant.is_code_hydro(**{'code': 'A33001CC', 'errors': 'strict'})
+
+    def test_errors_02(self):
+        """Error handler test."""
+        with self.assertRaises(ValueError):
+            composant.is_code_hydro('wrong code', errors='houps!')
 
 
 #-- class TestIsCodeInsee -----------------------------------------------------
@@ -517,40 +500,29 @@ class TestIsCodeInsee(unittest.TestCase):
             composant.is_code_insee('02C201001', length=9, errors='ignore')
         )
 
-    def test_raises(self):
-        """Error test."""
+    def test_errors_01(self):
+        """Error code test."""
         # TypeError (ValueError because code is cast in unicode)
-        self.assertRaises(
-            ValueError,
-            composant.is_code_insee,
-            **{'code': [], 'errors': 'strict'}
-        )
+        with self.assertRaises(ValueError):
+            composant.is_code_insee(**{'code': [], 'errors': 'strict'})
         # too short
-        self.assertRaises(
-            ValueError,
-            composant.is_code_insee,
-            **{'code': '3310', 'errors': 'strict'}
-        )
+        with self.assertRaises(ValueError):
+            composant.is_code_insee(**{'code': '3310', 'errors': 'strict'})
         # too long
-        self.assertRaises(
-            ValueError,
-            composant.is_code_insee,
-            **{'code': '233305', 'errors': 'strict'}
-        )
+        with self.assertRaises(ValueError):
+            composant.is_code_insee(**{'code': '233305', 'errors': 'strict'})
         # wrong chars
-        self.assertRaises(
-            ValueError,
-            composant.is_code_insee,
-            **{'code': '2D100', 'errors': 'strict'}
-        )
-        self.assertRaises(
-            ValueError,
-            composant.is_code_insee,
-            **{'code': '2A10W', 'errors': 'strict'}
-        )
+        with self.assertRaises(ValueError):
+            composant.is_code_insee(**{'code': '2D100', 'errors': 'strict'})
+        with self.assertRaises(ValueError):
+            composant.is_code_insee(**{'code': '2A10W', 'errors': 'strict'})
         # wrong length
-        self.assertRaises(
-            ValueError,
-            composant.is_code_insee,
-            **{'code': '233305', 'length': -1, 'errors': 'strict'}
-        )
+        with self.assertRaises(ValueError):
+            composant.is_code_insee(
+                **{'code': '233305', 'length': -1, 'errors': 'strict'}
+            )
+
+    def test_errors_02(self):
+        """Error handler test."""
+        with self.assertRaises(ValueError):
+            composant.is_code_insee('wrong code', errors='houps!')

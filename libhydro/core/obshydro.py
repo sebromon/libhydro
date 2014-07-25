@@ -48,8 +48,8 @@ from . import sitehydro as _sitehydro
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2b"""
-__date__ = """2014-07-18"""
+__version__ = """0.2c"""
+__date__ = """2014-07-25"""
 
 #HISTORY
 #V0.2 - 2014-07-15
@@ -59,7 +59,7 @@ __date__ = """2014-07-18"""
 
 
 #-- todos ---------------------------------------------------------------------
-# PROGRESS - Serie 60% - Observations 100% - Observation 100%
+# PROGRESS - Serie 70% - Observations 100% - Observation 100%
 # FIXME - integriey checks entity / grandeur /statut
 # ADMIT_SERIE = {
 #     Sitehydro: 'Q',
@@ -180,6 +180,8 @@ class Observations(_composant_obs.Observations):
     On peut obtenir une pandas.Series ne contenant que l'index et res avec:
         obs = observations.res
 
+    On peut iterer dans le DataFrame avec la fonction iterrows().
+
     """
 
     def __new__(cls, *observations):
@@ -213,13 +215,12 @@ class Serie(_composant_obs.Serie):
         dtdeb (datetime.datetime)
         dtfin (datetime.datetime)
         dtprod (datetime.datetime)
+        contact (intervenant.Contact)
         observations (Observations)
 
     """
 
     # TODO - Serie others attributes
-
-    # contact (in the base class)
 
     # sysalti
     # perime
@@ -230,7 +231,8 @@ class Serie(_composant_obs.Serie):
 
     def __init__(
         self, entite=None, grandeur=None, statut=0,
-        dtdeb=None, dtfin=None, dtprod=None, observations=None, strict=True
+        dtdeb=None, dtfin=None, dtprod=None, contact=None,
+        observations=None, strict=True
     ):
         """Initialisation.
 
@@ -242,6 +244,7 @@ class Serie(_composant_obs.Serie):
             dtdeb (numpy.datetime64)
             dtfin (numpy.datetime64)
             dtprod (numpy.datetime64)
+            contact (intervenant.Contact)
             observations (Observations)
             strict (bool, defaut True) = en mode permissif il n'y a pas de
                 controles de validite des parametres
@@ -250,7 +253,7 @@ class Serie(_composant_obs.Serie):
 
         # -- super --
         super(Serie, self).__init__(
-            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod,
+            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, contact=contact,
             observations=observations, strict=strict
         )
 

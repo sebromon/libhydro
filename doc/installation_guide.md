@@ -3,7 +3,7 @@ INSTALLATION DETAILLEE D'UN ENVIRONNEMENT PYTHON POUR LIBHYDRO
 
 * Auteur: philippe.gouin@developpement-durable.gouv.fr
 * Version: 0.2b
-* Mise à jour: 2014-07-09
+* Mise à jour: 2014-07-25
 
 Installation packagée sous Windows (conseillé)
 -------------------------------------------------------------------------------
@@ -35,7 +35,7 @@ Installer les pré-requis pour libhydro:
 En profiter pour installer d'autres paquets utiles:
 
   * _ipython_, un "powerful interactive shell"
-  * _spider_, un editeur "for the Python language with advanced editing, interactive testing, debugging and introspection features"
+  * _spyder_, un editeur "for the Python language with advanced editing, interactive testing, debugging and introspection features"
 
 Si problème avec pip autour d'une erreur d'encodage ligne 249 du fichier
 mimetypes.py, remplacer la ligne 250:

@@ -105,8 +105,11 @@ class Rlist(list):
         self._cls = cls
 
         # check and init
-        self.checkiterable(iterable)
-        super(Rlist, self).__init__(iterable)
+        if iterable is None:
+            super(Rlist, self).__init__()
+        else:
+            self.checkiterable(iterable)
+            super(Rlist, self).__init__(iterable)
 
     # -- read only property cls --
     @property
@@ -185,8 +188,6 @@ class Rlistproperty(object):
 
     Properties:
         cls (class) = the type of the list items
-        strict (bool, default True) = wether or not the instance value has
-            to be a Rlist or a regular list
         required (bool, defaut True) = wether or not instance's value can
             be None
         default =  a defautl value returned if the instance's value is not
@@ -196,13 +197,11 @@ class Rlistproperty(object):
 
     """
 
-    def __init__(self, cls, strict=True, required=True, default=None):
+    def __init__(self, cls, required=True, default=None):
         """Initialization.
 
         Args:
             nomenclature (int) = the nomenclature ref
-            strict (bool, default True) = wether or not the instance value has
-                to be in the nomenclature items
             required (bool, defaut True) = wether or not instance's value can
                 be None
             default =  a defautl value returned if the instance's value is not
@@ -211,7 +210,6 @@ class Rlistproperty(object):
 
         """
         self.cls = cls
-        self.strict = bool(strict)
         self.required = bool(required)
         self.default = default
         self.data = _weakref.WeakKeyDictionary()
@@ -226,11 +224,11 @@ class Rlistproperty(object):
         if (items is None):
             if self.required:
                 raise ValueError('a value other than None is required')
-            rlist = Rlist(self.cls) if self.strict else []
+            rlist = Rlist(self.cls)
 
         # other cases
         else:
-            rlist = Rlist(self.cls, items) if self.strict else list(items)
+            rlist = Rlist(self.cls, items)
 
         # all is well
         self.data[instance] = rlist

@@ -19,14 +19,14 @@ from __future__ import (
 import numpy as _numpy
 import pandas as _pandas
 
-from . import _composant
+from . import (_composant, intervenant as _intervenant)
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """1.0b"""
-__date__ = """2014-07-24"""
+__version__ = """1.0c"""
+__date__ = """2014-07-25"""
 
 #HISTORY
 #V0.1 - 2014-07-16
@@ -124,6 +124,7 @@ class Serie(object):
         dtdeb (datetime.datetime)
         dtfin (datetime.datetime)
         dtprod (datetime.datetime)
+        contact (intervenant.Contact)
         observations (Observations)
 
     """
@@ -137,8 +138,8 @@ class Serie(object):
     dtprod = _composant.Datefromeverything(required=False)
 
     def __init__(
-        self, dtdeb=None, dtfin=None, dtprod=None, observations=None,
-        strict=True
+        self, dtdeb=None, dtfin=None, dtprod=None, contact=None,
+        observations=None, strict=True
     ):
         """Initialisation.
 
@@ -147,6 +148,7 @@ class Serie(object):
             dtfin (numpy.datetime64)
             dtprod (numpy.datetime64)
             observations (Observations)
+            contact (intervenant.Contact)
             strict (bool, defaut True) = en mode permissif il n'y a pas de
                 controles de validite des parametres
 
@@ -161,8 +163,26 @@ class Serie(object):
         self.dtprod = dtprod
 
         # -- full properties --
-        self._observations = None
+        self._contact = self._observations = None
+        self.contact = contact
         self.observations = observations
+
+    # -- property contact --
+    @property
+    def contact(self):
+        """Return contact."""
+        return self._contact
+
+    @contact.setter
+    def contact(self, contact):
+        """Set contact."""
+        if (
+            (self._strict) and
+            (contact is not None) and
+            (not isinstance(contact, _intervenant.Contact))
+        ):
+            raise TypeError('contact incorrect')
+        self._contact = contact
 
     # -- property observations --
     @property

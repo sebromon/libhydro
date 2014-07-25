@@ -23,28 +23,38 @@ import sys
 import os
 sys.path.append(os.path.join('..', '..'))
 
-# import unittest
+import unittest
 
-# from libhydro.core import _composant_obs as composant_obs
+from libhydro.core import _composant_obs as composant_obs
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1a"""
-__date__ = """2014-07-16"""
+__date__ = """2014-07-25"""
 
 #HISTORY
 #V0.1 - 2014-07-16
 #    first shot
 
-#-- class TestObservations ----------------------------------------------------
-# class TestObservations(unittest.TestCase):
 
-    # pass - we don't need to test the composant_obs module which is already
-    #        tested with the derived obshydro and obdmeteo classes
+#-- class TestObservations ----------------------------------------------------
+class TestObservations(unittest.TestCase):
+
+    """Observations class tests."""
+
+    def test_none(self):
+        """None test."""
+        obs = composant_obs.Observations(int, None)
+        self.assertEqual(obs, None)
+
 
 #-- class TestSerie -----------------------------------------------------------
-# class TestSerie(unittest.TestCase):
+class TestSerie(unittest.TestCase):
 
-    # pass - we don't need to test the composant_obs module which is already
-    #        tested with the derived obshydro and obdmeteo classes
+    """Serie class tests."""
+
+    def test_base(self):
+        """Base test."""
+        with self.assertRaises(TypeError):
+            composant_obs.Serie(contact='my')

@@ -45,8 +45,8 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.2b"""
-__date__ = """2014-07-24"""
+__version__ = """0.2c"""
+__date__ = """2014-07-25"""
 
 #HISTORY
 #V0.2 - 2014-07-21
@@ -56,6 +56,7 @@ __date__ = """2014-07-24"""
 
 
 #-- todos ---------------------------------------------------------------------
+# TODO - move the Scenario class in the _xml module
 # TODO - if xpath is too slow to acess elements, use indexing
 #        code=element[0].text,
 #        but xpath is more readable and do not care of xml order
@@ -259,7 +260,7 @@ def _parse(src):
 
 # -- global functions ---------------------------------------------------------
 
-# TODO - these functions can be factorised
+# TODO - some functions could be factorised
 
 def _siteshydro_from_element(element):
     """Return a list of sitehydro.Sitehydro from a <SitesHydro> element."""
@@ -364,38 +365,42 @@ def _serieshydro_from_element(element):
 
 
 def _seriesmeteo_from_element(element):
-    """Return a list of obsmeteo.Serie from a <ObssMeteo> element."""
-    seriesmeteo = {}
+    """Return a list of obsmeteo.Serie from a <ObssMeteo> element.
+
+    Painful because the XML does not contain series:
+        # for each <ObsMeteo> we build a serie and obs
+        # then we group obs by identical series in a set
+        # at last we update the series detdeb and dtfin
+
+    """
+    seriesmeteo = set()
     if element is not None:
 
-        # painful because the XML does not contain series:
-        #     get a bunch pf series and obsmeteo
-        #     regroup obs by same series
-        #     build obss from obs
-        #     get detdeb and dtfin
-
-        # browse all xml ObsMeteo and put them in a dict
+        # for each xml ObsMeteo
         for obsmeteo in element.findall('./ObsMeteo'):
-            serie = _seriemeteo_from_element(obsmeteo)
+            ser = _seriemeteo_from_element(obsmeteo)
             obs = _obsmeteo_from_element(obsmeteo)
-            for s in seriesmeteo.keys():
-                if s == serie:
-                    seriesmeteo[s].observations = \
+
+            for serie in seriesmeteo:
+                if serie == ser:
+                    # add obs to an exisitng serie
+                    serie.observations = \
                         _obsmeteo.Observations.concat(
-                            seriesmeteo[s].observations,
+                            serie.observations,
                             _obsmeteo.Observations(obs)
                         )
                     break
             else:
-                serie.observations = _obsmeteo.Observations(obs)
-                seriesmeteo[serie] = serie
+                # new serie
+                ser.observations = _obsmeteo.Observations(obs)
+                seriesmeteo.add(ser)
 
-        # update serie
+        # update the serie
         for serie in seriesmeteo:
             serie.dtdeb = min(serie.observations.index)
             serie.dtfin = max(serie.observations.index)
 
-    return seriesmeteo.keys()
+    return list(seriesmeteo)
 
 
 def _simulations_from_element(element):
@@ -708,6 +713,9 @@ def _seriehydro_from_element(element):
                 code=_value(element, 'CdCapteur')
             )
 
+        # get the contact
+        contact = _intervenant.Contact(code=_value(element, 'CdContact'))
+
         # make the Serie
         return _obshydro.Serie(
             entite=entite,
@@ -716,6 +724,7 @@ def _seriehydro_from_element(element):
             dtdeb=_value(element, 'DtDebSerie', _UTC),
             dtfin=_value(element, 'DtFinSerie', _UTC),
             dtprod=_value(element, 'DtProdSerie', _UTC),
+            contact=contact,
             observations=_obsshydro_from_element(element.find('ObssHydro'))
         )
 
@@ -734,16 +743,19 @@ def _seriemeteo_from_element(element):
             sitemeteo=_sitemeteo.Sitemeteo(_value(element, 'CdSiteMeteo'))
         )
 
-        # compute duree
+        # get duree in minutes
         duree = _value(element, 'DureeObsMeteo', int) or 0
-        duree *= 60
+
+        # get the contact
+        contact = _intervenant.Contact(code=_value(element, 'CdContact'))
 
         # make the Serie without the observations
         return _obsmeteo.Serie(
             grandeur=grandeur,
-            duree=duree,
+            duree=duree * 60,
             statut=_value(element, 'StatutObsMeteo', int),
-            dtprod=_value(element, 'DtProdObsMeteo', _UTC)
+            dtprod=_value(element, 'DtProdObsMeteo', _UTC),
+            contact=contact
         )
 
 

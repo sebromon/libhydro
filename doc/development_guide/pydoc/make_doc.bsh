@@ -5,7 +5,7 @@
 # purpose = build html pydoc for the entire library
 # author = """Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>"""
 # version = """version 0.1c"""
-# date = """2014-03-25"""
+# date = """2014-07-25"""
 #
 #HISTORY
 #V0.1 - 2013-08-31
@@ -40,12 +40,12 @@ python -m pydoc -w libhydro.core.modeleprevision
 python -m pydoc -w libhydro.core.nomenclature
 # python -m pydoc -w libhydro.core.obselaboreehydro
 python -m pydoc -w libhydro.core.obshydro
-# core/obsmeteo
+python -m pydoc -w libhydro.core.obsmeteo
 # core/qualifannee
 python -m pydoc -w libhydro.core.seuil
 python -m pydoc -w libhydro.core.simulation
 python -m pydoc -w libhydro.core.sitehydro
-# core/sitemeteo
+python -m pydoc -w libhydro.core.sitemeteo
 
 # -- conv --
 python -m pydoc -w libhydro.conv

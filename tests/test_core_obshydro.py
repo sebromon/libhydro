@@ -27,14 +27,14 @@ import unittest
 import datetime
 import numpy
 
-from libhydro.core import (sitehydro, obshydro)
+from libhydro.core import (sitehydro, obshydro, intervenant)
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1g"""
-__date__ = """2014-07-18"""
+__version__ = """0.1h"""
+__date__ = """2014-07-25"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -250,9 +250,9 @@ class TestSerie(unittest.TestCase):
         self.assertEqual(
             (
                 serie.entite, serie.grandeur, serie.statut,
-                serie.observations, serie._strict
+                serie.observations, serie._strict, serie.contact
             ),
-            (s, g, t, o, i)
+            (s, g, t, o, i, None)
         )
         self.assertEqual(
             (serie.dtdeb, serie.dtfin, serie.dtprod),
@@ -274,16 +274,17 @@ class TestSerie(unittest.TestCase):
         dtdeb = datetime.datetime(2012, 10, 3, 5)
         dtfin = datetime.datetime(2012, 10, 3, 9)
         dtprod = datetime.datetime(2012, 10, 3, 10)
+        c = intervenant.Contact()
         serie = obshydro.Serie(
             entite=s, grandeur=g, observations=o,
-            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod
+            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, contact=c
         )
         self.assertEqual(
             (
                 serie.entite, serie.grandeur, serie.statut,
-                serie.observations, serie._strict
+                serie.observations, serie._strict, serie.contact
             ),
-            (s, g, 0, o, True)
+            (s, g, 0, o, True, c)
         )
         self.assertEqual(
             (serie.dtdeb, serie.dtfin, serie.dtprod),

@@ -27,14 +27,14 @@ import unittest
 import datetime
 import numpy
 
-from libhydro.core import (sitemeteo, obsmeteo)
+from libhydro.core import (sitemeteo, obsmeteo, intervenant)
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1b"""
-__date__ = """2014-07-24"""
+__version__ = """0.1c"""
+__date__ = """2014-07-25"""
 
 #HISTORY
 #V0.1 - 2014-07-16
@@ -262,17 +262,18 @@ class TestSerie(unittest.TestCase):
         dtdeb = '2012-10-03 05:00+00'
         dtfin = '2012-10-03 09:00+00'
         dtprod = '2012-10-03 10:00+00'
+        c = intervenant.Contact(999)
         i = True
         serie = obsmeteo.Serie(
             grandeur=g, duree=d, statut=t, observations=o, strict=i,
-            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod
+            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, contact=c
         )
         self.assertEqual(
             (
                 serie.grandeur, serie.duree, serie.statut,
-                serie.observations, serie._strict
+                serie.observations, serie._strict, serie.contact
             ),
-            (g, d, t, o, i)
+            (g, d, t, o, i, c)
         )
         self.assertEqual(
             (serie.dtdeb, serie.dtfin, serie.dtprod),
@@ -295,10 +296,47 @@ class TestSerie(unittest.TestCase):
         self.assertEqual(
             (
                 serie.grandeur, serie.duree, serie.statut, serie._strict,
-                serie.dtdeb, serie.dtfin, serie.dtprod, serie.observations
+                serie.dtdeb, serie.dtfin, serie.dtprod, serie.observations,
+                serie.contact
             ),
-            (g, datetime.timedelta(0), 0, True, None, None, None, o)
+            (g, datetime.timedelta(0), 0, True, None, None, None, o, None)
         )
+
+    def test_equal_01(self):
+        """Test __eq__ method."""
+        g1 = sitemeteo.Grandeur('EP')
+        o1 = obsmeteo.Observations(
+            obsmeteo.Observation('2012-10-03 06:00', 33),
+        )
+        serie1 = obsmeteo.Serie(
+            grandeur=g1, observations=o1,
+        )
+        g2 = sitemeteo.Grandeur('EP')
+        o2 = obsmeteo.Observations(
+            obsmeteo.Observation('2012-10-03 06:00', 33),
+        )
+        serie2 = obsmeteo.Serie(
+            grandeur=g2, observations=o2,
+        )
+        self.assertEqual(serie1, serie2)
+
+    def test_non_equal_01(self):
+        """Test __ne__ method."""
+        g1 = sitemeteo.Grandeur('EP')
+        o1 = obsmeteo.Observations(
+            obsmeteo.Observation('2012-10-03 06:00', 33),
+        )
+        serie1 = obsmeteo.Serie(
+            grandeur=g1, observations=o1,
+        )
+        g2 = sitemeteo.Grandeur('RR')
+        o2 = obsmeteo.Observations(
+            obsmeteo.Observation('2012-10-03 06:00', 33),
+        )
+        serie2 = obsmeteo.Serie(
+            grandeur=g2, observations=o2,
+        )
+        self.assertNotEqual(serie1, serie2)
 
     def test_str_01(self):
         """Test __str__ method with minimum values."""

@@ -33,8 +33,8 @@ from libhydro.conv.xml import (_from_xml as from_xml)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1m"""
-__date__ = """2014-07-24"""
+__version__ = """0.1n"""
+__date__ = """2014-07-25"""
 
 #HISTORY
 #V0.1 - 2013-08-24
@@ -690,6 +690,16 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
         #     serie.observations.loc['2010-02-26 13:00'].tolist(),
         #     [8, 0, 16, 75]
         # )
+
+    def test_POM(self):
+        """Serie POM test."""
+        pom = from_xml._parse(
+            os.path.join('data', 'xml', '1.1', 'seriesmeteo_POM.xml')
+        )['seriesmeteo']
+        # 280 observations
+        self.assertEqual(sum([len(s.observations) for s in pom]), 280)
+        # 4 sitesmeteo and therefore 4 series
+        self.assertEqual(len(pom), 4)
 
 
 #-- class TestFromXmlSimulations ---------------------------------------------
