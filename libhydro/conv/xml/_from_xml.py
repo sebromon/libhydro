@@ -45,8 +45,8 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.2c"""
-__date__ = """2014-07-25"""
+__version__ = """0.2d"""
+__date__ = """2014-07-28"""
 
 #HISTORY
 #V0.2 - 2014-07-21
@@ -370,7 +370,7 @@ def _seriesmeteo_from_element(element):
     Painful because the XML does not contain series:
         # for each <ObsMeteo> we build a serie and obs
         # then we group obs by identical series in a set
-        # at last we update the series detdeb and dtfin
+        # at last we sort the series and update dtdeb and dtfin
 
     """
     seriesmeteo = set()
@@ -397,6 +397,7 @@ def _seriesmeteo_from_element(element):
 
         # update the serie
         for serie in seriesmeteo:
+            serie.observations = serie.observations.sort()
             serie.dtdeb = min(serie.observations.index)
             serie.dtfin = max(serie.observations.index)
 
@@ -760,7 +761,7 @@ def _seriemeteo_from_element(element):
 
 
 def _obsshydro_from_element(element):
-    """Return a obshydro.Observations from a <ObssHydro> element."""
+    """Return a sorted obshydro.Observations from a <ObssHydro> element."""
     if element is not None:
 
         # prepare a list of Observation
@@ -781,7 +782,7 @@ def _obsshydro_from_element(element):
             observations.append(_obshydro.Observation(**args))
 
         # build Observations
-        return _obshydro.Observations(*observations)
+        return _obshydro.Observations(*observations).sort()
 
 
 def _obsmeteo_from_element(element):
