@@ -33,8 +33,8 @@ from libhydro.conv.xml import (_from_xml as from_xml)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1n"""
-__date__ = """2014-07-25"""
+__version__ = """0.1o"""
+__date__ = """2014-07-28"""
 
 #HISTORY
 #V0.1 - 2013-08-24
@@ -597,6 +597,15 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
             serie.observations.loc['2010-02-26 14:55'].tolist(),
             [670, 12, 20, True]
         )
+
+    def test_seriehydro_without_observation(self):
+        """Test a unconventionnal seriehydro from bdhydro."""
+        data = from_xml._parse(
+            os.path.join(
+                'data', 'xml', '1.1', 'serieshydro_without_observations.xml'
+            )
+        )
+        self.assertEqual(len(data['serieshydro']), 34)
 
 
 #-- class TestFromXmlSeriesMeteo ----------------------------------------------
