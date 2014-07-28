@@ -196,7 +196,7 @@ class Serie(_composant_obs.Serie):
 
     Proprietes:
         grandeur (Grandeur)
-        duree (int, defaut 0) =
+        duree (datetime.timedelta) =
             duree des cumuls, 0 pour les donnees instantanees
         statut (int parmi NOMENCLATURE[511]) = donnee brute, corrigee...
         dtdeb (datetime.datetime)
