@@ -1,0 +1,107 @@
+#------------------------------------------------------------------------------
+# LIBHYDRO - documentation makefile
+#------------------------------------------------------------------------------
+# Documentation is build in a local ./$(release) directory, compressed and
+# moved to ../dist
+#------------------------------------------------------------------------------
+# Author: Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>
+# Version: 0.1a - 2014-07-29
+# History:
+#   V0.1 - 2014-07-29
+#     first shot
+#------------------------------------------------------------------------------
+# TODO - the pdf files are not very pretty...
+#------------------------------------------------------------------------------
+SHELL = /bin/sh
+
+RELEASE := $(shell grep 'version' '../libhydro/__init__.py'|cut -c 16-20)
+DST := libhydro-${RELEASE}_documentation
+
+default: all
+
+doc: all
+
+.PHONY: all
+all: pdf html
+	@echo
+	@echo '-----------------------'
+	@echo 'Compress and distribute'
+	@echo '-----------------------'
+	@echo
+	tar czf ${DST}.tar.gz ${DST}
+	mv -i ${DST}.tar.gz ../dist
+	rm -rf ${DST}
+
+.PHONY: pdf
+pdf: subdir installation_guide.md development_guide/notebooks/tutorial.ipynb
+	@echo
+	@echo '---------------------------'
+	@echo 'Build the PDF documentation'
+	@echo '---------------------------'
+	@echo
+	@# installation guide
+	rm -rf ${DST}/installation_guide.pdf ${DST}/tutorial.pdf
+	@pandoc installation_guide.md -o ${DST}/installation_guide.pdf
+	@# tutorial
+	@ipython2 nbconvert --to markdown development_guide/notebooks/tutorial.ipynb
+	@pandoc tutorial.md -o ${DST}/tutorial.pdf --latex-engine=xelatex
+	@rm -rf tutorial.md tutorial_files
+
+.PHONY: html
+.ONESHELL:
+html: subdir
+	@echo
+	@echo '---------------------------'
+	@echo 'Build the API documentation'
+	@echo '---------------------------'
+	@echo
+	@mkdir -p ${DST}/api
+	@cd ${DST}/api
+	@rm -f *.html
+	@# -- index --
+	@python -m pydoc -w libhydro
+	@mv libhydro.html index.html
+	@# -- core --
+	@python -m pydoc -w libhydro.core
+	@# core/alarm
+	@# core/courbecorrection
+	@# core/courbetarage
+	@python -m pydoc -w libhydro.core.evenement
+	@# core/gradienthydro
+	@python -m pydoc -w libhydro.core.intervenant
+	@#core/jaugeage
+	@python -m pydoc -w libhydro.core.modeleprevision
+	@python -m pydoc -w libhydro.core.nomenclature
+	@# python -m pydoc -w libhydro.core.obselaboreehydro
+	@python -m pydoc -w libhydro.core.obshydro
+	@python -m pydoc -w libhydro.core.obsmeteo
+	@# core/qualifannee
+	@python -m pydoc -w libhydro.core.seuil
+	@python -m pydoc -w libhydro.core.simulation
+	@python -m pydoc -w libhydro.core.sitehydro
+	@python -m pydoc -w libhydro.core.sitemeteo
+	@# -- conv --
+	@python -m pydoc -w libhydro.conv
+	@python -m pydoc -w libhydro.conv.shom
+	@python -m pydoc -w libhydro.conv.xml
+
+.PHONY: clean
+clean:
+	@rm -rf ${DST}
+	@rm -rf ${DST}.tar.gz
+
+.PHONY: subdir
+subdir:
+	@mkdir -p ${DST}
+
+.PHONY: help
+help:
+	@echo
+	@echo '------------------'
+	@echo 'Available commands'
+	@echo '------------------'
+	@echo
+	@echo 'make [all|doc]'
+	@echo 'make pdf'
+	@echo 'make html'
+	@echo 'make clean'
