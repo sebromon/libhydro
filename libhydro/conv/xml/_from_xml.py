@@ -45,8 +45,8 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.2d"""
-__date__ = """2014-07-28"""
+__version__ = """0.2e"""
+__date__ = """2014-07-30"""
 
 #HISTORY
 #V0.2 - 2014-07-21
@@ -376,10 +376,12 @@ def _seriesmeteo_from_element(element):
     seriesmeteo = set()
     if element is not None:
 
-        # for each xml ObsMeteo
         for obsmeteo in element.findall('./ObsMeteo'):
+
             ser = _seriemeteo_from_element(obsmeteo)
             obs = _obsmeteo_from_element(obsmeteo)
+            if obs is None:
+                continue
 
             for serie in seriesmeteo:
                 if serie == ser:
@@ -770,6 +772,8 @@ def _obsshydro_from_element(element):
             args = {}
             args['dte'] = _value(o, 'DtObsHydro', _UTC)
             args['res'] = _value(o, 'ResObsHydro')
+            if args['res'] is None:
+                return
             mth = _value(o, 'MethObsHydro', int)
             if mth is not None:
                 args['mth'] = mth
@@ -792,6 +796,8 @@ def _obsmeteo_from_element(element):
         args = {}
         args['dte'] = _value(element, 'DtObsMeteo', _UTC)
         args['res'] = _value(element, 'ResObsMeteo')
+        if args['res'] is None:
+            return
         mth = _value(element, 'MethObsMeteo', int)
         if mth is not None:
             args['mth'] = mth
@@ -897,7 +903,8 @@ def _UTC(dte):
 
 def _value(element, tag, cast=unicode):
     """Return cast(element/tag.text) or None."""
-    e = element.find(tag)
-    if e is not None:
-        return cast(e.text)
-    return e
+    if element is not None:
+        e = element.find(tag)
+        if (e is not None) and (e.text is not None):
+            return cast(e.text)
+    #return None

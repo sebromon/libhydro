@@ -34,8 +34,8 @@ from . import sitemeteo as _sitemeteo
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1e"""
-__date__ = """2014-07-25"""
+__version__ = """0.1f"""
+__date__ = """2014-07-30"""
 
 #HISTORY
 #V0.1 - 2014-07-11
@@ -43,6 +43,9 @@ __date__ = """2014-07-25"""
 
 #-- todos ---------------------------------------------------------------------
 # PROGRESS - Serie 100% - Observations 100% - Observation 100%
+# TODO - as for obshydro, serie.dtdeb, dtend and duree are not related to the
+#        observations property (one can change an attribute without changing
+#        the other leading to incoherent datas)
 
 
 #-- class Observation ---------------------------------------------------------
@@ -144,7 +147,8 @@ class Observations(_composant_obs.Observations):
 
     A la difference des observations hydrometriques, les observations
     meteorologiques devraient etre a pas de temps fixe et les donnes manquantes
-    representees par la valeur 'Nan' (not a number).
+    representees par la valeur 'Nan' (not a number). ATENTION, ce conteneur ne
+    garanti pas que l'index du DataFrame soit continu.
 
     Les donnees sont contenues dans 4 colonnes du DataFrame (voir Observation).
 
@@ -293,6 +297,32 @@ class Serie(_composant_obs.Serie):
         self._duree = duree
 
     # -- other methods --
+    def resample(self, pdt):
+        """Methode resample.
+
+        Un raccourci vers la methode 'resample' des DataFrame pour
+        rechantillonner l'attribut 'observations' de la serie. Permet notamment
+        d'obtenir un index continu (sans trous), par exemple en utilisant comme
+        pas de temps 'serie.duree'.
+
+        Arguments:
+            pdt (datetime.timedelta) = pas de temps du rechantillonage
+
+        """
+        # TODO - we could have a full_resample method which took care of
+        #        the starting and ending times
+        # _pandas.DatetimeIndex(
+        #     start=s.dtdeb,
+        #     end=s.dtfin,
+        #     freq='{:0.0f}S'.format(s.duree.total_seconds())
+        # )
+        try:
+            self.observations = self.observations.resample(
+                '{:0.0f}S'.format(pdt.total_seconds())
+            )
+        except Exception as err:
+            raise ValueError('resampling error, %s' % err)
+
     def __eq__(self, other):
         """Return True ou False."""
         if self is other:

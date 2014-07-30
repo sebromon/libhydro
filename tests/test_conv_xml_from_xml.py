@@ -33,8 +33,8 @@ from libhydro.conv.xml import (_from_xml as from_xml)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1o"""
-__date__ = """2014-07-28"""
+__version__ = """0.1p"""
+__date__ = """2014-07-30"""
 
 #HISTORY
 #V0.1 - 2013-08-24
@@ -161,14 +161,13 @@ class TestFromXmlSitesHydros(unittest.TestCase):
 
     def test_error_1(self):
         """Xml file with namespace error test."""
-        self.assertRaises(
-            ValueError,
-            from_xml._parse,
-            # *([os.path.join('data', 'xml', '1.1', 'siteshydro.xml')])
-            *([os.path.join(
-                'data', 'xml', '1.1', 'siteshydro_with_namespace.xml'
-            )])
-        )
+        with self.assertRaises(ValueError):
+            from_xml._parse(
+                # *([os.path.join('data', 'xml', '1.1', 'siteshydro.xml')])
+                *([os.path.join(
+                    'data', 'xml', '1.1', 'siteshydro_with_namespace.xml'
+                )])
+            )
 
 
 #-- class TestFromXmlSeuilsHydro ----------------------------------------------
@@ -377,11 +376,12 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
 
     def test_seuils_sitehydro_5(self):
         """Test seuils with a bad xml."""
-        self.assertRaises(
-            ValueError,
-            from_xml._parse,
-            os.path.join('data', 'xml', '1.1', 'seuilshydro_inconsistent.xml')
-        )
+        with self.assertRaises(ValueError):
+            from_xml._parse(
+                os.path.join(
+                    'data', 'xml', '1.1', 'seuilshydro_inconsistent.xml'
+                )
+            )
 
 
 #-- class TestFromXmlSitesMeteo -----------------------------------------------
@@ -709,6 +709,26 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
         self.assertEqual(sum([len(s.observations) for s in pom]), 280)
         # 4 sitesmeteo and therefore 4 series
         self.assertEqual(len(pom), 4)
+
+    def test_without_obs(self):
+        """Serie without obs test."""
+        serie = from_xml._parse(
+            os.path.join(
+                'data', 'xml', '1.1', 'seriesmeteo_without_observations.xml'
+            )
+        )['seriesmeteo'][0]
+        self.assertEqual(
+            serie.observations['res'].values.tolist(),
+            [5.8, 23.0, 45.8]
+        )
+        serie.resample(datetime.timedelta(hours=1))
+        l = serie.observations['res'].values.tolist()
+        self.assertTrue(math.isnan(l[2]))
+        l.pop(2)
+        self.assertEqual(
+            l,
+            [5.8, 23.0, 45.8]
+        )
 
 
 #-- class TestFromXmlSimulations ---------------------------------------------

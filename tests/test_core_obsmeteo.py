@@ -33,8 +33,8 @@ from libhydro.core import (sitemeteo, obsmeteo, intervenant)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2014-07-25"""
+__version__ = """0.1d"""
+__date__ = """2014-07-30"""
 
 #HISTORY
 #V0.1 - 2014-07-16
@@ -84,63 +84,52 @@ class TestObservation(unittest.TestCase):
     def test_error_01(self):
         """Date error."""
         obsmeteo.Observation(**{'dte': '2000-10-10 10:00', 'res': 10})
-        self.assertRaises(
-            TypeError,
-            obsmeteo.Observation,
-            **{'dte': '2000-10', 'res': 10}
-        )
+        with self.assertRaises(TypeError):
+            obsmeteo.Observation(**{'dte': '2000-10', 'res': 10})
 
     def test_error_02(self):
         """Test Res error."""
         obsmeteo.Observation(**{'dte': '2000-10-05 10:00', 'res': 10})
-        self.assertRaises(
-            ValueError,
-            obsmeteo.Observation,
-            **{'dte': '2000-10-05 10:00', 'res': 'aaa'}
-        )
+        with self.assertRaises(ValueError):
+            obsmeteo.Observation(**{'dte': '2000-10-05 10:00', 'res': 'aaa'})
 
     def test_error_03(self):
         """Mth error."""
         obsmeteo.Observation(
             **{'dte': '2000-10-05 10:00', 'res': 20, 'mth': 4}
         )
-        self.assertRaises(
-            ValueError,
-            obsmeteo.Observation,
-            **{'dte': '2000-10-05 10:00', 'res': 20, 'mth': 1000}
-        )
+        with self.assertRaises(ValueError):
+            obsmeteo.Observation(
+                **{'dte': '2000-10-05 10:00', 'res': 20, 'mth': 1000}
+            )
 
     def test_error_04(self):
         """Qal error."""
         obsmeteo.Observation(
             **{'dte': '2000-10-05 10:00', 'res': 20, 'qal': 16}
         )
-        self.assertRaises(
-            ValueError,
-            obsmeteo.Observation,
-            **{'dte': '2000-10-05 10:00', 'res': 20, 'qal': 1000}
-        )
+        with self.assertRaises(ValueError):
+            obsmeteo.Observation(
+                **{'dte': '2000-10-05 10:00', 'res': 20, 'qal': 1000}
+            )
 
     def test_error_05(self):
         """Qua error."""
         obsmeteo.Observation(
             **{'dte': '2000-10-05 10:00', 'res': 20, 'qua': 95.8}
         )
-        self.assertRaises(
-            ValueError,
-            obsmeteo.Observation,
-            **{'dte': '2000-10-05 10:00', 'res': 20, 'qua': '95.aaa'}
-        )
-        self.assertRaises(
-            ValueError,
-            obsmeteo.Observation,
-            **{'dte': '2000-10-05 10:00', 'res': 20, 'qua': -1}
-        )
-        self.assertRaises(
-            ValueError,
-            obsmeteo.Observation,
-            **{'dte': '2000-10-05 10:00', 'res': 20, 'qua': 101}
-        )
+        with self.assertRaises(ValueError):
+            obsmeteo.Observation(
+                **{'dte': '2000-10-05 10:00', 'res': 20, 'qua': '95.aaa'}
+            )
+        with self.assertRaises(ValueError):
+            obsmeteo.Observation(
+                **{'dte': '2000-10-05 10:00', 'res': 20, 'qua': -1}
+            )
+        with self.assertRaises(ValueError):
+            obsmeteo.Observation(
+                **{'dte': '2000-10-05 10:00', 'res': 20, 'qua': 101}
+            )
 
 
 #-- class TestObservations ----------------------------------------------------
@@ -194,12 +183,9 @@ class TestObservations(unittest.TestCase):
         )
         obsmeteo.Observations(*[o, o])
         # ...and fails otherwise
-        self.assertRaises(
-            TypeError,
-            obsmeteo.Observations,
+        with self.assertRaises(TypeError):
             # *[o, o]  # is good !
-            *[o, 33]  # is wrong !!
-        )
+            obsmeteo.Observations(*[o, 33])  # is wrong !!
 
 
 #-- class TestObservationsConcat ----------------------------------------------
@@ -237,11 +223,8 @@ class TestObservationsConcat(unittest.TestCase):
             obsmeteo.Observation('2012-10-03 07:00', 37),
             obsmeteo.Observation('2012-10-03 08:00', 42)
         )
-        self.assertRaises(
-            TypeError,
-            obsmeteo.Observations.concat,
-            *(obs1, '33')
-        )
+        with self.assertRaises(TypeError):
+            obsmeteo.Observations.concat(*(obs1, '33'))
 
 
 #-- class TestSerie -----------------------------------------------------------
@@ -301,6 +284,28 @@ class TestSerie(unittest.TestCase):
             ),
             (g, datetime.timedelta(0), 0, True, None, None, None, o, None)
         )
+
+    def test_resample(self):
+        """Resample method test."""
+        g = sitemeteo.Grandeur('RR')
+        o = obsmeteo.Observations(
+            obsmeteo.Observation('2012-10-03 06:00', 6),
+            obsmeteo.Observation('2012-10-03 07:00', 7),
+            obsmeteo.Observation('2012-10-03 09:00', 9)
+        )
+        serie = obsmeteo.Serie(
+            grandeur=g,
+            observations=o,
+            duree=datetime.timedelta(hours=1)
+        )
+        self.assertEqual(len(serie.observations), 3)
+        serie.resample(serie.duree)
+        self.assertEqual(len(serie.observations), 4)
+        self.assertTrue(
+            numpy.isnan(serie.observations.iloc[2]['res'])
+        )
+        with self.assertRaises(ValueError):
+            serie.resample('1H')
 
     def test_equal_01(self):
         """Test __eq__ method."""
@@ -402,35 +407,25 @@ class TestSerie(unittest.TestCase):
         g = sitemeteo.Grandeur('RR', strict=False)
         o = obsmeteo.Observations(obsmeteo.Observation('2012-10-03 06:00', 33))
         obsmeteo.Serie(**{'grandeur': g, 'observations': o})
-        self.assertRaises(
-            TypeError,
-            obsmeteo.Serie,
-            **{'grandeur': None, 'observations': o}
-        )
+        with self.assertRaises(TypeError):
+            obsmeteo.Serie(**{'grandeur': None, 'observations': o})
         obsmeteo.Serie(**{
             'grandeur': 'X', 'observations': o, 'strict': False
         })
-        self.assertRaises(
-            TypeError,
-            obsmeteo.Serie,
-            **{'grandeur': 'X', 'observations': o}
-        )
+        with self.assertRaises(TypeError):
+            obsmeteo.Serie(**{'grandeur': 'X', 'observations': o})
 
     def test_error_02(self):
         """Duree error."""
         g = sitemeteo.Grandeur('RR')
         o = obsmeteo.Observations(obsmeteo.Observation('2012-10-03 06:00', 33))
         obsmeteo.Serie(**{'grandeur': g, 'duree': 10, 'observations': o})
-        self.assertRaises(
-            ValueError,
-            obsmeteo.Serie,
-            **{'grandeur': g, 'duree': -1, 'observations': o}
-        )
-        self.assertRaises(
-            ValueError,
-            obsmeteo.Serie,
-            **{'grandeur': g, 'duree': 'hex', 'observations': o}
-        )
+        with self.assertRaises(ValueError):
+            obsmeteo.Serie(**{'grandeur': g, 'duree': -1, 'observations': o})
+        with self.assertRaises(ValueError):
+            obsmeteo.Serie(
+                **{'grandeur': g, 'duree': 'hex', 'observations': o}
+            )
 
     def test_error_03(self):
         """Statut error."""
@@ -439,16 +434,12 @@ class TestSerie(unittest.TestCase):
         obsmeteo.Serie(
             **{'grandeur': g, 'statut': 8, 'observations': o}
         )
-        self.assertRaises(
-            ValueError,
-            obsmeteo.Serie,
-            **{'grandeur': g, 'statut': None, 'observations': o}
-        )
-        self.assertRaises(
-            ValueError,
-            obsmeteo.Serie,
-            **{'grandeur': g, 'statut': 124, 'observations': o}
-        )
+        with self.assertRaises(ValueError):
+            obsmeteo.Serie(
+                **{'grandeur': g, 'statut': None, 'observations': o}
+            )
+        with self.assertRaises(ValueError):
+            obsmeteo.Serie(**{'grandeur': g, 'statut': 124, 'observations': o})
 
     def test_error_04(self):
         """Observations error."""
@@ -458,10 +449,7 @@ class TestSerie(unittest.TestCase):
                 'grandeur': g, 'observations': 12, 'strict': False
             }
         )
-        self.assertRaises(
-            TypeError,
-            obsmeteo.Serie,
-            **{
-                'grandeur': g, 'observations': 12, 'strict': True
-            }
-        )
+        with self.assertRaises(TypeError):
+            obsmeteo.Serie(
+                **{'grandeur': g, 'observations': 12, 'strict': True}
+            )

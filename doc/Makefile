@@ -1,8 +1,11 @@
 #------------------------------------------------------------------------------
 # LIBHYDRO - documentation makefile
 #------------------------------------------------------------------------------
-# Documentation is build in a local ./$(release) directory, compressed and
-# moved to ../dist
+# Documentation is build in a local directory, compressed and moved to ../dist
+# Pandoc to pdf should need the xelatex engine:
+#     yum install texlive texlive-latex texlive-xetex texlive-collection-latex
+#                 texlive-collection-latexrecommended texlive-xetex-def
+#                 texlive-collection-xetex#
 #------------------------------------------------------------------------------
 # Author: Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>
 # Version: 0.1a - 2014-07-29
