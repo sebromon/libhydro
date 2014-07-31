@@ -55,20 +55,30 @@ class TestScenario(unittest.TestCase):
 
     def test_base_01(self):
         """Base case scenario."""
-        emetteur = intervenant.Contact()
-        destinataire = intervenant.Intervenant()
+        destinataire = intervenant.Intervenant(
+            contacts=[intervenant.Contact()]
+        )
+        emetteur = intervenant.Contact(intervenant=intervenant.Intervenant())
         sce = Scenario(emetteur=emetteur, destinataire=destinataire)
         self.assertEqual(
-            (sce.code, sce.version, sce.nom,
-             sce.emetteur, sce.destinataire),
-            ('hydrometrie', '1.1', 'Echange de données hydrométriques',
-             emetteur, destinataire)
+            (
+                sce.code, sce.version, sce.nom,
+                sce.emetteur.intervenant, sce.emetteur.contact,
+                sce.destinataire.intervenant, sce.destinataire.contact),
+            (
+                'hydrometrie', '1.1', 'Echange de données hydrométriques',
+                emetteur.intervenant, emetteur,
+                destinataire, destinataire.contacts[0]
+            )
         )
 
     def test_base_02(self):
         """Dtprod tests."""
-        emetteur = intervenant.Contact()
-        destinataire = intervenant.Intervenant()
+        emetteur = intervenant.Intervenant()
+        destinataire = intervenant.Contact(
+            code=55,
+            intervenant=intervenant.Intervenant(code=1537)
+        )
         # default dtprod is utcnow()
         sce = Scenario(emetteur=emetteur, destinataire=destinataire)
         self.assertTrue(isinstance(sce.dtprod, datetime.datetime))
@@ -94,15 +104,15 @@ class TestScenario(unittest.TestCase):
 
     def test_str_01(self):
         """Test __str__ method."""
-        emetteur = intervenant.Contact()
+        emetteur = intervenant.Intervenant()
         destinataire = intervenant.Intervenant()
         sce = Scenario(emetteur=emetteur, destinataire=destinataire)
         self.assertTrue(sce.__str__().rfind('Message') > -1)
 
     def test_error_01(self):
         """Emetteur error."""
-        emetteur = intervenant.Contact()
         destinataire = intervenant.Intervenant()
+        emetteur = intervenant.Contact(intervenant=intervenant.Intervenant())
         Scenario(emetteur=emetteur, destinataire=destinataire)
         self.assertRaises(
             TypeError,
@@ -117,8 +127,8 @@ class TestScenario(unittest.TestCase):
 
     def test_error_02(self):
         """Destinataire error."""
-        emetteur = intervenant.Contact()
         destinataire = intervenant.Intervenant()
+        emetteur = intervenant.Intervenant()
         Scenario(emetteur=emetteur, destinataire=destinataire)
         self.assertRaises(
             TypeError,
@@ -133,8 +143,8 @@ class TestScenario(unittest.TestCase):
 
     def test_error_03(self):
         """Dtprod error."""
-        emetteur = intervenant.Contact()
-        destinataire = intervenant.Intervenant()
+        emetteur = intervenant.Intervenant(code=5)
+        destinataire = intervenant.Intervenant(code=8, nom='toto')
         Scenario(emetteur=emetteur, destinataire=destinataire, dtprod=None)
         self.assertRaises(
             TypeError,
@@ -178,11 +188,23 @@ class TestMessage(unittest.TestCase):
 
     def test_base_01(self):
         """Simple message."""
-        emetteur = intervenant.Contact()
+        emetteur = intervenant.Contact(10)
+        emetteur.intervenant = intervenant.Intervenant(1537, mnemo='SCHAPI')
         destinataire = intervenant.Intervenant()
+        destinataire.contacts = [
+            intervenant.Contact(5),
+            intervenant.Contact(15),
+            intervenant.Contact(555)
+        ]
         scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
         msg = Message(scenario=scenario, strict=False)
         self.assertEqual(msg.scenario, scenario)
+        self.assertEqual(scenario.emetteur.intervenant, emetteur.intervenant)
+        self.assertEqual(scenario.emetteur.contact, emetteur)
+        self.assertEqual(scenario.destinataire.intervenant, destinataire)
+        self.assertEqual(
+            scenario.destinataire.contact, destinataire.contacts[0]
+        )
 
     def test_base_02(self):
         """Message from file siteshydro."""
@@ -241,7 +263,10 @@ class TestMessage(unittest.TestCase):
 
     def test_str_01(self):
         """Test __str__ method with basic values."""
-        emetteur = intervenant.Contact()
+        emetteur = intervenant.Contact(
+            5,
+            intervenant=intervenant.Intervenant(1537)
+        )
         destinataire = intervenant.Intervenant()
         scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
         msg = Message(scenario=scenario, strict=False)
@@ -273,7 +298,7 @@ class TestMessage(unittest.TestCase):
 
     def test_error_02(self):
         """Siteshydro error."""
-        emetteur = intervenant.Contact()
+        emetteur = intervenant.Intervenant()
         destinataire = intervenant.Intervenant()
         scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
         self.assertRaises(
@@ -284,8 +309,14 @@ class TestMessage(unittest.TestCase):
 
     def test_error_03(self):
         """Seuilshydro error."""
-        emetteur = intervenant.Contact()
+        emetteur = intervenant.Intervenant()
         destinataire = intervenant.Intervenant()
+        destinataire.contacts = [
+            intervenant.Contact(),
+            intervenant.Contact(),
+            intervenant.Contact(),
+            intervenant.Contact()
+        ]
         scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
         self.assertRaises(
             TypeError,
@@ -295,7 +326,7 @@ class TestMessage(unittest.TestCase):
 
     def test_error_04(self):
         """Evenements error."""
-        emetteur = intervenant.Contact()
+        emetteur = intervenant.Intervenant()
         destinataire = intervenant.Intervenant()
         scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
         self.assertRaises(
@@ -307,6 +338,7 @@ class TestMessage(unittest.TestCase):
     def test_error_05(self):
         """Series error."""
         emetteur = intervenant.Contact()
+        emetteur.intervenant = intervenant.Intervenant(1845)
         destinataire = intervenant.Intervenant()
         scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
         self.assertRaises(
@@ -317,8 +349,8 @@ class TestMessage(unittest.TestCase):
 
     def test_error_06(self):
         """Simulations error."""
-        emetteur = intervenant.Contact()
-        destinataire = intervenant.Intervenant()
+        emetteur = intervenant.Intervenant(1623, nom='GAD')
+        destinataire = intervenant.Intervenant(mnemo='nemo')
         scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
         self.assertRaises(
             TypeError,

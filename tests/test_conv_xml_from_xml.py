@@ -33,8 +33,8 @@ from libhydro.conv.xml import (_from_xml as from_xml)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1p"""
-__date__ = """2014-07-30"""
+__version__ = """0.1q"""
+__date__ = """2014-07-31"""
 
 #HISTORY
 #V0.1 - 2013-08-24
@@ -75,11 +75,11 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(
             scenario.dtprod, datetime.datetime(2010, 2, 26, 12, 53, 10)
         )
-        self.assertEqual(scenario.emetteur.code, 1069)
+        self.assertEqual(scenario.emetteur.contact.code, 1069)
         self.assertEqual(scenario.emetteur.intervenant.code, 25)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.destinataire.code, 1537)
-        self.assertEqual(scenario.destinataire.origine, 'SANDRE')
+        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
 
     def test_sitehydro_0(self):
         """Sitehydro 0 test."""
@@ -422,11 +422,11 @@ class TestFromXmlSitesMeteo(unittest.TestCase):
         self.assertEqual(
             scenario.dtprod, datetime.datetime(2010, 2, 26, 8, 5, 56)
         )
-        self.assertEqual(scenario.emetteur.code, 26)
+        self.assertEqual(scenario.emetteur.contact.code, 26)
         self.assertEqual(scenario.emetteur.intervenant.code, 1520)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.destinataire.code, 1537)
-        self.assertEqual(scenario.destinataire.origine, 'SANDRE')
+        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
 
     def test_sitemeteo_0(self):
         """Sitemeteo 0 test."""
@@ -480,11 +480,11 @@ class TestFromXmlEvenements(unittest.TestCase):
         self.assertEqual(
             scenario.dtprod, datetime.datetime(2010, 2, 26, 7, 5)
         )
-        self.assertEqual(scenario.emetteur.code, 26)
+        self.assertEqual(scenario.emetteur.contact.code, 26)
         self.assertEqual(scenario.emetteur.intervenant.code, 1520)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.destinataire.code, 1537)
-        self.assertEqual(scenario.destinataire.origine, 'SANDRE')
+        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
 
     def test_evenement_0(self):
         """Evenement 0 test."""
@@ -545,11 +545,11 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
         self.assertEqual(scenario.version, '1.1')
         self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
         self.assertEqual(scenario.dtprod, datetime.datetime(2010, 2, 26, 7, 5))
-        self.assertEqual(scenario.emetteur.code, 26)
+        self.assertEqual(scenario.emetteur.contact.code, 26)
         self.assertEqual(scenario.emetteur.intervenant.code, 1520)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.destinataire.code, 1537)
-        self.assertEqual(scenario.destinataire.origine, 'SANDRE')
+        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
 
     def test_serie_0(self):
         """Serie 0 test."""
@@ -646,11 +646,11 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
         self.assertEqual(
             scenario.dtprod, datetime.datetime(2010, 2, 26, 23, 55, 30)
         )
-        self.assertEqual(scenario.emetteur.code, 1)
+        self.assertEqual(scenario.emetteur.contact.code, 1)
         self.assertEqual(scenario.emetteur.intervenant.code, 1537)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.destinataire.code, 1537)
-        self.assertEqual(scenario.destinataire.origine, 'SANDRE')
+        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
 
     def test_serie_RR(self):
         """Serie RR test."""
@@ -765,11 +765,11 @@ class TestFromXmlSimulations(unittest.TestCase):
         self.assertEqual(
             scenario.dtprod, datetime.datetime(2010, 2, 26, 9, 30)
         )
-        self.assertEqual(scenario.emetteur.code, 41)
+        self.assertEqual(scenario.emetteur.contact.code, 41)
         self.assertEqual(scenario.emetteur.intervenant.code, 1537)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.destinataire.code, 14)
-        self.assertEqual(scenario.destinataire.origine, 'SANDRE')
+        self.assertEqual(scenario.destinataire.intervenant.code, 14)
+        self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
 
     def test_simulation_0(self):
         """Simulation 0 test."""

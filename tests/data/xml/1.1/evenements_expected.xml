@@ -9,7 +9,7 @@
     <!-- <RefFichier>20100226160756_donnees_sac30-2010-02-26-15-05.xml</RefFichier> -->
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">1520</CdIntervenant>
-      <!-- <NomIntervenant>Service de Prévision des Crues (S.P.C.) Grand Delta</NomIntervenant> -->
+      <NomIntervenant>Service de Prévision des Crues (S.P.C.) Grand Delta</NomIntervenant>
       <CdContact>26</CdContact>
     </Emetteur>
     <Destinataire>

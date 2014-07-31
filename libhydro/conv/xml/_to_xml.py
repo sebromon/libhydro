@@ -34,10 +34,12 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.3a"""
-__date__ = """2014-07-25"""
+__version__ = """0.4a"""
+__date__ = """2014-07-31"""
 
 #HISTORY
+#V0.4 - 2014-07-31
+#    add the required function
 #V0.3 - 2014-07-25
 #    add the meteo part
 #V0.1 - 2013-08-20
@@ -265,6 +267,9 @@ def _scenario_to_element(scenario):
 
     if scenario is not None:
 
+        # prerequisites
+        _required(scenario, ['dtprod', 'emetteur', 'destinataire'])
+
         # template for scenario simple element
         story = _collections.OrderedDict((
             ('CodeScenario', {'value': scenario.code}),
@@ -273,29 +278,28 @@ def _scenario_to_element(scenario):
             ('DateHeureCreationFichier',
                 {'value': scenario.dtprod.isoformat()})
         ))
-        # template for scenario sub-element <Emetteur>
-        story['Emetteur'] = {
-            'sub': _collections.OrderedDict((
-                ('CdIntervenant', {
-                    'value': unicode(scenario.emetteur.intervenant.code),
-                    'attr': {"schemeAgencyID":
-                             scenario.emetteur.intervenant.origine}
-                }),
-                ('CdContact', {
-                    'value': unicode(scenario.emetteur.code)
-                })
-            ))
-        }
-        # template for scenario sub-element <Destinataire>
-        story['Destinataire'] = {
-            'sub': {
-                'CdIntervenant': {
-                    'value': unicode(scenario.destinataire.code),
-                    'attr': {"schemeAgencyID":
-                             scenario.emetteur.intervenant.origine}
-                }
+        # template for scenario sub-elements <Emetteur> and <Destinataire>
+        for tag in ('Emetteur', 'Destinataire'):
+            item = getattr(scenario, tag.lower())
+            story[tag] = {
+                'sub': _collections.OrderedDict((
+                    ('CdIntervenant', {
+                        'value': unicode(item.intervenant.code),
+                        'attr': {"schemeAgencyID": item.intervenant.origine}
+                    }),
+                    ('NomIntervenant', {
+                        'value': unicode(item.intervenant.nom)
+                        if item.intervenant.nom is not None else None
+                    }),
+                    ('CdContact', {
+                        'value': unicode(item.contact.code)
+                        if (
+                            (item.contact is not None) and
+                            (item.contact.code is not None)
+                        ) else None
+                    })
+                ))
             }
-        }
 
         # action !
         return _factory(root=_etree.Element('Scenario'), story=story)
@@ -668,6 +672,9 @@ def _evenement_to_element(evenement):
 
     if evenement is not None:
 
+        #prerequisite
+        _required(evenement, ['contact', 'entite', 'dt'])
+
         # template for serie simple elements
         story = _collections.OrderedDict()
         story['CdContact'] = {'value': evenement.contact.code}
@@ -679,7 +686,10 @@ def _evenement_to_element(evenement):
         story['DtEvenement'] = {'value': evenement.dt.isoformat()}
         story['DescEvenement'] = {'value': evenement.descriptif}
         story['TypPublicationEvenement'] = {'value': evenement.publication}
-        story['DtMajEvenement'] = {'value': evenement.dtmaj.isoformat()}
+        story['DtMajEvenement'] = {
+            'value': None if evenement.dtmaj is None
+            else evenement.dtmaj.isoformat()
+        }
 
         # action !
         return _factory(root=_etree.Element('Evenement'), story=story)
@@ -689,6 +699,9 @@ def _seriehydro_to_element(seriehydro):
     """Return a <Serie> element from a obshydro.Serie."""
 
     if seriehydro is not None:
+
+        #prerequisite
+        _required(seriehydro, ['entite', 'dtdeb', 'dtfin', 'dtprod'])
 
         # template for seriehydro simple elements
         story = _collections.OrderedDict()
@@ -754,7 +767,11 @@ def _observations_to_element(observations):
 def _obsmeteo_to_element(seriemeteo, index, obs):
     """Return a <ObsMeteo> element from a obsmeteo.serie and a observation."""
 
-    if seriemeteo is not None:
+    if (seriemeteo is not None) and (index is not None) and (obs is not None):
+
+        #prerequisite
+        _required(seriemeteo, ['grandeur', 'dtprod', 'duree'])
+        _required(seriemeteo.grandeur, ['sitemeteo'])
 
         # template for seriehydro simple elements
         story = _collections.OrderedDict()
@@ -792,6 +809,9 @@ def _simulation_to_element(simulation):
     """Return a <Simul> element from a simulation.Simulation."""
 
     if simulation is not None:
+
+        #prerequisite
+        _required(simulation, ['dtprod', 'entite', 'intervenant'])
 
         # template for simulation simple element
         story = _collections.OrderedDict((
@@ -977,3 +997,21 @@ def _make_element(tag_name, text, tag_attrib=None):
     if text is not None:
         element.text = unicode(text)
     return element
+
+
+def _required(obj, attrs):
+    """Check that the object has expected attributes.
+
+    Arguments:
+        obj = the object to test
+        attrs (list of strings) = the list of attributes
+
+    """
+    for attr in attrs:
+        if not hasattr(obj, attr):
+            raise ValueError(
+                'attribute {attr} is requested for object {obj}'.format(
+                    attr=attr,
+                    obj=unicode(obj)
+                )
+            )

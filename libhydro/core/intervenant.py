@@ -21,8 +21,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2d"""
-__date__ = """2014-07-18"""
+__version__ = """0.2e"""
+__date__ = """2014-07-31"""
 
 #HISTORY
 #V0.2 - 2014-03-02
@@ -194,10 +194,18 @@ class Intervenant(object):
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
+        # init nom
+        if self.nom is not None:
+            nom = self.nom
+        elif self.mnemo is not None:
+            nom = self.mnemo
+        else:
+            nom = '<sans nom>'
+        # action !
         return 'Intervenant {0} {1}::{2} [{3} contact{4}]'.format(
-            self.origine or '<sans origine>',
-            self.code or '<sans code>',
-            self.mnemo or '<sans mnemo>',
+            self.origine if self.origine is not None else '<sans origine>',
+            self.code if self.code is not None else '<sans code>',
+            nom,
             len(self.contacts),
             '' if (len(self.contacts) < 2) else 's'
         )
@@ -310,18 +318,23 @@ class Contact(object):
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
-        # init
+        # init civilite
         try:
             civilite = _NOMENCLATURE[538][self.civilite]
         except Exception:
             civilite = '<sans civilite>'
-
+        # init intervenant
+        if (self.intervenant is None) or (self.intervenant.code is None):
+            intervenant = '<sans intervenant>'
+        else:
+            intervenant = 'intervenant %s' % self.intervenant.code
         # action !
-        return 'Contact {0}::{1} {2} {3}'.format(
-            self.code or '<sans code>',
+        return 'Contact {0}::{1} {2} {3} [{4}]'.format(
+            self.code if self.code is not None else '<sans code>',
             civilite,
-            self.nom or '<sans nom>',
-            self.prenom or '<sans prenom>'
+            self.nom if self.nom is not None else '<sans nom>',
+            self.prenom if self.prenom is not None else '<sans prenom>',
+            intervenant
         )
 
     __str__ = _composant.__str__

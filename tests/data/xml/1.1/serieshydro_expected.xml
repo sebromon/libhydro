@@ -8,6 +8,7 @@
     <DateHeureCreationFichier>2010-02-26T07:05:00</DateHeureCreationFichier>
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">1520</CdIntervenant>
+      <NomIntervenant>Service de Prévision des Crues (S.P.C.) Grand Delta</NomIntervenant>
       <CdContact>26</CdContact>
     </Emetteur>
     <Destinataire>

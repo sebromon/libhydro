@@ -45,10 +45,12 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.2e"""
-__date__ = """2014-07-30"""
+__version__ = """0.3a"""
+__date__ = """2014-07-31"""
 
 #HISTORY
+#V0.3 - 2014-07-31
+#    change the Scenario.emetteur and destinataire properties
 #V0.2 - 2014-07-21
 #    add sitesmeteo and seriesmeteo
 #V0.1 - 2013-08-18
@@ -56,11 +58,11 @@ __date__ = """2014-07-30"""
 
 
 #-- todos ---------------------------------------------------------------------
-# TODO - move the Scenario class in the _xml module
+# TODO - move the Scenario class and the named tuples in the _xml module
+# TODO - factorize Scenario.emetteur and destinaire properties
 # TODO - if xpath is too slow to acess elements, use indexing
 #        code=element[0].text,
 #        but xpath is more readable and do not care of xml order
-
 # TODO - XSD validation
 
 
@@ -70,6 +72,15 @@ PREV_PROBABILITY = {
     'ResMinPrev': 0,
     'ResMaxPrev': 100
 }
+
+
+# -- Emetteur and Destinataire named tuples -----------------------------------
+Emetteur = _collections.namedtuple(
+    'Emetteur', ['intervenant', 'contact']
+)
+Destinataire = _collections.namedtuple(
+    'Destinataire', ['intervenant', 'contact']
+)
 
 
 # -- class Scenario -----------------------------------------------------------
@@ -84,8 +95,13 @@ class Scenario(object):
         version = 1.1
         nom = 'Echange de donnees hydrometriques'
         dtprod (datetime.datetime)
-        emetteur (intervenant.Contact)
-        destinataire (intervenant.Intervenant)
+        emetteur.intervenant (intervenant.Intervenant)
+        emetteur.contact (Intervenant.Contact ou None)
+        destinataire.intervenant (intervenant.Intervenant)
+        destinataire.contact (Intervenant.Contact ou None)
+
+    Emetteur et destinataire sont des collections.namedtuple et ne peuvent
+    etre modifies que via la methode _replace().
 
     """
 
@@ -104,14 +120,18 @@ class Scenario(object):
         """Constructeur.
 
         Arguments:
-            emetteur (intervenant.Contact)
-            destinataire (intervenant.Intervenant)
+            emetteur (intervenant.Intervenant ou Contact) = si un contact
+                est utilise, sa propriete Intervenant doit etre renseignee
+            destinataire (intervenant.Intervenant ou Contact) = si un contact
+                est utilise, sa propriete Intervenant doit etre renseignee
             dtprod (datetime ou isoformat, defaut utcnow())
 
         """
 
         # -- full properties --
-        self._emetteur = self._destinataire = self._dtprod = None
+        self._emetteur = Emetteur(None, None)
+        self._destinataire = Destinataire(None, None)
+        self._dtprod = None
         self.emetteur = emetteur
         self.destinataire = destinataire
         self.dtprod = dtprod
@@ -125,16 +145,25 @@ class Scenario(object):
     @emetteur.setter
     def emetteur(self, emetteur):
         """Set message emetteur."""
-        try:
-            # None case
-            if emetteur is None:
-                raise TypeError('emetteur is required')
-            # other cases
-            if not isinstance(emetteur, _intervenant.Contact):
-                raise TypeError('emetteur incorrect')
-            self._emetteur = emetteur
-        except:
-            raise
+        if emetteur is None:
+            raise TypeError('emetteur is required')
+        elif isinstance(emetteur, _intervenant.Intervenant):
+            try:
+                # we try to use the first contact
+                self._emetteur = Emetteur(
+                    emetteur, emetteur.contacts[0]
+                )
+            except Exception:
+                self._emetteur = Emetteur(emetteur, None)
+        elif isinstance(emetteur, _intervenant.Contact):
+            if not isinstance(emetteur.intervenant, _intervenant.Intervenant):
+                raise TypeError(
+                    'using a Contact without intervenant for an emetteur '
+                    'is forbidden'
+                )
+            self._emetteur = Emetteur(emetteur.intervenant, emetteur)
+        else:
+            raise TypeError('emetteur must be an Intervenant or a Contact')
 
     # -- property destinataire --
     @property
@@ -145,16 +174,29 @@ class Scenario(object):
     @destinataire.setter
     def destinataire(self, destinataire):
         """Set message destinataire."""
-        try:
-            # None case
-            if destinataire is None:
-                raise TypeError('destinataire is required')
-            # other cases
-            if not isinstance(destinataire, _intervenant.Intervenant):
-                raise TypeError('destinataire incorrect')
-            self._destinataire = destinataire
-        except:
-            raise
+        if destinataire is None:
+            raise TypeError('destinataire is required')
+        elif isinstance(destinataire, _intervenant.Intervenant):
+            try:
+                # we try to use the first contact
+                self._destinataire = Destinataire(
+                    destinataire, destinataire.contacts[0]
+                )
+            except Exception:
+                self._destinataire = Destinataire(destinataire, None)
+        elif isinstance(destinataire, _intervenant.Contact):
+            if not isinstance(
+                destinataire.intervenant, _intervenant.Intervenant
+            ):
+                raise TypeError(
+                    'using a Contact without intervenant for an destinataire '
+                    'is forbidden'
+                )
+            self._destinataire = Destinataire(
+                destinataire.intervenant, destinataire
+            )
+        else:
+            raise TypeError('destinataire must be an Intervenant or a Contact')
 
     # -- property dtprod --
     @property
@@ -187,11 +229,15 @@ class Scenario(object):
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
-        return "Message du {0}\nEmis par le {1} pour l'{2}".format(
-            self.dtprod,
-            self.emetteur,
-            self.destinataire
-        )
+        return 'Message du {dt}\n' \
+               'Emetteur: {ei} [{ec}]\n' \
+               'Destinataire: {di} [{dc}]'.format(
+                   dt=self.dtprod,
+                   ei=unicode(self.emetteur.intervenant),
+                   ec=unicode(self.emetteur.contact) or '<sans contact>',
+                   di=unicode(self.destinataire.intervenant),
+                   dc=unicode(self.destinataire.contact) or '<sans contact>'
+               )
 
     __str__ = _composant.__str__
 
@@ -420,14 +466,19 @@ def _scenario_from_element(element):
     """Return a xml.Scenario from a <Scenario> element."""
     if element is not None:
         return Scenario(
-            emetteur=_intervenant.Contact(
-                code=_value(element.find('Emetteur'), 'CdContact'),
-                intervenant=_intervenant.Intervenant(
-                    _value(element.find('Emetteur'), 'CdIntervenant')
-                )
+            emetteur=_intervenant.Intervenant(
+                code=_value(element.find('Emetteur'), 'CdIntervenant'),
+                nom=_value(element.find('Emetteur'), 'NomIntervenant'),
+                contacts=_intervenant.Contact(
+                    _value(element.find('Emetteur'), 'CdContact')
+                ),
             ),
             destinataire=_intervenant.Intervenant(
                 code=_value(element.find('Destinataire'), 'CdIntervenant'),
+                nom=_value(element.find('Destinataire'), 'NomIntervenant'),
+                contacts=_intervenant.Contact(
+                    _value(element.find('Destinataire'), 'CdContact')
+                ),
             ),
             dtprod=_value(element, 'DateHeureCreationFichier', _UTC)
         )

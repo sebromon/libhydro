@@ -9,6 +9,7 @@
     <!-- <RefFichier>11_sophie.xml</RefFichier> -->
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <NomIntervenant>Service Central d'Hydrométéorologie et d'Appui à la Prévision des Inondations (S.C.H.A.P.I.)</NomIntervenant>
       <CdContact>41</CdContact>
     </Emetteur>
     <Destinataire>
