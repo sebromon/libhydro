@@ -16,9 +16,36 @@
     </Destinataire>
   </Scenario>
   <RefHyd>
+      <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+      <!-- As the XML is awful for the seuils, when we read some seuils -->
+      <!-- we have to instantiate the seuils and the sites-->
+      <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <SitesHydro>
-      <!-- 1 SEUIL - 1 site hydro simple -->
       <SiteHydro>
+        <CdSiteHydro>U2655010</CdSiteHydro>
+        <TypSiteHydro>REEL</TypSiteHydro>
+      </SiteHydro>
+      <SiteHydro>
+        <CdSiteHydro>O2000040</CdSiteHydro>
+        <TypSiteHydro>SOURCE</TypSiteHydro>
+      </SiteHydro>
+      <SiteHydro>
+        <CdSiteHydro>O0144020</CdSiteHydro>
+        <TypSiteHydro>PLANDEAU</TypSiteHydro>
+      </SiteHydro>
+      <SiteHydro>
+        <CdSiteHydro>O6793330</CdSiteHydro>
+        <TypSiteHydro>REEL</TypSiteHydro>
+      </SiteHydro>
+      <SiteHydro>
+        <CdSiteHydro>O3334020</CdSiteHydro>
+        <TypSiteHydro>VIRTUEL</TypSiteHydro>
+      </SiteHydro>
+      <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+      <!-- from here we have the seuils read from the original file -->
+      <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+      <SiteHydro>
+        <!-- 1 SEUIL - 1 site hydro simple -->
         <CdSiteHydro>U2655010</CdSiteHydro>
         <TypSiteHydro>REEL</TypSiteHydro>
         <ValeursSeuilsSiteHydro>
@@ -41,8 +68,8 @@
           </ValeursSeuilSiteHydro>
         </ValeursSeuilsSiteHydro>
       </SiteHydro>
-      <!-- 1 SEUIL - seuil de gradient pour 1 site et 3 stations-->
       <SiteHydro>
+        <!-- 1 SEUIL - seuil de gradient pour 1 site et 3 stations-->
         <CdSiteHydro>O2000040</CdSiteHydro>
         <TypSiteHydro>SOURCE</TypSiteHydro>
         <ValeursSeuilsSiteHydro>
@@ -79,8 +106,8 @@
           </ValeursSeuilSiteHydro>
         </ValeursSeuilsSiteHydro>
       </SiteHydro>
-      <!-- 4 SEUILS without values -->
       <SiteHydro>
+        <!-- 4 SEUILS without values -->
         <CdSiteHydro>O0144020</CdSiteHydro>
         <TypSiteHydro>PLANDEAU</TypSiteHydro>
         <ValeursSeuilsSiteHydro>
@@ -125,8 +152,8 @@
           </ValeursSeuilSiteHydro>
         </ValeursSeuilsSiteHydro>
       </SiteHydro>
-      <!-- 2 SEUILS - with a group by-->
       <SiteHydro>
+        <!-- 2 SEUILS - with a group by-->
         <CdSiteHydro>O6793330</CdSiteHydro>
         <TypSiteHydro>REEL</TypSiteHydro>
         <ValeursSeuilsSiteHydro>
@@ -169,8 +196,8 @@
           </ValeursSeuilSiteHydro>
         </ValeursSeuilsSiteHydro>
       </SiteHydro>
-      <!-- 1 SEUIL with 4 Q values, only the last is active -->
       <SiteHydro>
+        <!-- 1 SEUIL with 4 Q values, only the last is active -->
         <CdSiteHydro>O3334020</CdSiteHydro>
         <TypSiteHydro>VIRTUEL</TypSiteHydro>
         <ValeursSeuilsSiteHydro>

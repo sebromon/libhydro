@@ -111,9 +111,16 @@ class TestIntervenant(unittest.TestCase):
 
     def test_str_01(self):
         """Test __str__ method with None values."""
+        i = intervenant.Intervenant(nom='toto')
+        self.assertTrue(i.__str__().rfind('Intervenant') > -1)
+        self.assertTrue(i.__str__().rfind('contact') > -1)
+        i = intervenant.Intervenant(33, mnemo='toto')
+        self.assertTrue(i.__str__().rfind('Intervenant') > -1)
+        self.assertTrue(i.__str__().rfind('contact') > -1)
         i = intervenant.Intervenant()
         self.assertTrue(i.__str__().rfind('Intervenant') > -1)
         self.assertTrue(i.__str__().rfind('contact') > -1)
+        self.assertTrue(i.__str__().rfind('<sans nom>') > -1)
 
     def test_error_01(self):
         """Code error."""

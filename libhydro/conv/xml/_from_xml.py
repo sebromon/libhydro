@@ -265,6 +265,14 @@ def _parse(src):
             # simulations: liste de simulation.Simulation ou None
 
     """
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # WARNING: the XML is awful for the seuils, which should be first order
+    #          classes. When we read a file containing seuils which are
+    #          included in a Site element, we have to instantiate the site AND
+    #          the seuils
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
     # read the file
     parser = _etree.XMLParser(
         remove_blank_text=True, remove_comments=True, ns_clean=True

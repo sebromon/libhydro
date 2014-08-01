@@ -34,8 +34,8 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.4a"""
-__date__ = """2014-07-31"""
+__version__ = """0.4b"""
+__date__ = """2014-08-01"""
 
 #HISTORY
 #V0.4 - 2014-07-31
@@ -48,7 +48,7 @@ __date__ = """2014-07-31"""
 
 #-- todos ---------------------------------------------------------------------
 # FIXME - check strict = TRUE when requested
-# FIXME - better messages when fails for requested items
+# TODO - required could be a decorator
 
 
 # -- config -------------------------------------------------------------------
@@ -92,7 +92,12 @@ def _to_xml(
 
     """
     # make a deep copy of locals() which is a dict {arg_name: arg_value, ...}
-    args = locals()
+    # keep only Message items
+    # and replace default empty lists with None
+    args = {
+        k: (v if v != [] else None) for k, v in locals().iteritems()
+        if k in ORDERED_ACCEPTED_KEYS
+    }
 
     # init the tree
     tree = _etree.Element('hydrometrie')
@@ -111,7 +116,7 @@ def _to_xml(
     if choice:
         sub = _etree.SubElement(tree, 'RefHyd')
 
-        # sitehydro ans seuilshydro
+        # siteshydro and seuilshydro
         if (args['siteshydro'], args['seuilshydro']) != (None, None):
             # we add the common SitesHydro tag and we remove it from
             # each element because seuilshydro are childs of siteshydro
@@ -131,7 +136,7 @@ def _to_xml(
         if args['sitesmeteo'] is not None:
             sub.append(_sitesmeteo_to_element(args['sitesmeteo']))
 
-    # add the donnees
+    # add the datas
     items = ORDERED_ACCEPTED_KEYS[4:]
     choice = len(
         [args[i] for i in items if args[i] is not None]
@@ -1000,7 +1005,7 @@ def _make_element(tag_name, text, tag_attrib=None):
 
 
 def _required(obj, attrs):
-    """Check that the object has expected attributes.
+    """Raise an exception if object hasn't all attributes.
 
     Arguments:
         obj = the object to test
@@ -1015,3 +1020,4 @@ def _required(obj, attrs):
                     obj=unicode(obj)
                 )
             )
+    return True

@@ -37,10 +37,12 @@ from libhydro.core import (sitehydro, seuil)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2b"""
-__date__ = """2014-03-25"""
+__version__ = """0.3a"""
+__date__ = """2014-08-01"""
 
 #HISTORY
+#V0.3 - 2014-08-01
+#    update the ToXmlBaseTest to write all tags
 #V0.2 - 2014-03-22
 #    factorize all the base tests in a suite
 #V0.1 - 2013-08-30
@@ -119,11 +121,8 @@ class TestToXmlSeuilsHydro(unittest.TestCase):
             seuil.Valeurseuil(2, entite=site),
             seuil.Valeurseuil(5, entite=site)
         ]
-        self.assertRaises(
-            ValueError,
-            to_xml._seuilhydro_to_element,
-            seuilhydro
-        )
+        with self.assertRaises(ValueError):
+            to_xml._seuilhydro_to_element(seuilhydro)
 
     def test_error_02(self):
         """Valeurseuil entite is not a stationhydro."""
@@ -134,11 +133,8 @@ class TestToXmlSeuilsHydro(unittest.TestCase):
             seuil=seuilhydro,
             entite=site
         )
-        self.assertRaises(
-            TypeError,
-            to_xml._valeurseuilstationhydro_to_element,
-            valeurseuil
-        )
+        with self.assertRaises(TypeError):
+            to_xml._valeurseuilstationhydro_to_element(valeurseuil)
 
 
 # -- class ParametrizedTestCase -----------------------------------------------
@@ -205,13 +201,10 @@ class ToXmlBaseTest(ParametrizedTestCase):
         data = from_xml._parse(
             os.path.join('data', 'xml', '1.1', '%s.xml' % self.param)
         )
+        data['ordered'] = True
         # build xml string from objects
         xml = etree.tostring(
-            to_xml._to_xml(**{
-                'scenario': data['scenario'],
-                self.param: data[self.param],
-                'ordered': True
-            }),
+            to_xml._to_xml(**data),
             encoding='utf-8'
         ).decode('utf-8')
         # test
@@ -333,3 +326,10 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(element.tag, args[0])
         self.assertEqual(element.text, args[1])
         self.assertEqual(element.attrib, args[2])
+
+    def test_required(self):
+        """Required test."""
+        obj_str = 'aaa'
+        assert to_xml._required(obj_str, ['lower', 'join', 'split'])
+        with self.assertRaises(ValueError):
+            to_xml._required(obj_str, ['xxx'])

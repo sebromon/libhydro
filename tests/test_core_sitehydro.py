@@ -32,8 +32,8 @@ from libhydro.core import _composant_site as composant_site
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1l"""
-__date__ = """2014-07-16"""
+__version__ = """0.1m"""
+__date__ = """2014-08-01"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -144,7 +144,7 @@ class TestSitehydro(unittest.TestCase):
         typesite = 'REEL'
         libelle = 'La Saône [apres la crue] a Montelimar [hé oui]'
         coord = composant_site.Coord(
-            **{'x': 482000, 'y': 1897556.5, 'proj': 26}
+            x=482000, y=1897556.5, proj=26
         )
         stations = [
             sitehydro.Stationhydro(code='%s01' % code, typestation='DEB')
@@ -217,47 +217,29 @@ class TestSitehydro(unittest.TestCase):
     def test_error_01(self):
         """Typesite error."""
         code = 'H0001010'
-        s = sitehydro.Sitehydro(**{'code': code, 'typesite': 'REEL'})
-        self.assertRaises(
-            ValueError,
-            s.__setattr__,
-            *('typesite', None)
-        )
-        self.assertRaises(
-            ValueError,
-            sitehydro.Sitehydro,
-            **{'code': code, 'typesite': 'REEEL'}
-        )
+        s = sitehydro.Sitehydro(code=code, typesite='REEL')
+        with self.assertRaises(ValueError):
+            s.__setattr__('typesite', None)
+        with self.assertRaises(ValueError):
+            sitehydro.Sitehydro(code=code, typesite='REEEL')
 
     def test_error_02(self):
         """Code error."""
         code = 'B4401122'
-        sitehydro.Sitehydro(**{'code': code})
-        self.assertRaises(
-            TypeError,
-            sitehydro.Sitehydro,
-            **{'code': None}
-        )
-        self.assertRaises(
-            ValueError,
-            sitehydro.Sitehydro,
-            **{'code': '%s01' % code}
-        )
-        self.assertRaises(
-            ValueError,
-            sitehydro.Sitehydro,
-            **{'code': code[:-1]}
-        )
+        sitehydro.Sitehydro(code=code)
+        with self.assertRaises(TypeError):
+            sitehydro.Sitehydro(code=None)
+        with self.assertRaises(ValueError):
+            sitehydro.Sitehydro(code='%s01' % code)
+        with self.assertRaises(ValueError):
+            sitehydro.Sitehydro(code=code[:-1])
 
     def test_error_03(self):
         """Code hydro2 error."""
         code = 'B4401122'
-        sitehydro.Sitehydro(**{'code': code, 'codeh2': code})
-        self.assertRaises(
-            ValueError,
-            sitehydro.Sitehydro,
-            **{'code': code, 'codeh2': '{}01'.format(code)}
-        )
+        sitehydro.Sitehydro(code=code, codeh2=code)
+        with self.assertRaises(ValueError):
+            sitehydro.Sitehydro(code=code, codeh2='{}01'.format(code))
 
     def test_error_04(self):
         """Station error."""
@@ -266,53 +248,41 @@ class TestSitehydro(unittest.TestCase):
             sitehydro.Stationhydro(code='%s01' % code),
             sitehydro.Stationhydro(code='%s02' % code)
         )
-        sitehydro.Sitehydro(**{'code': code, 'stations': stations})
-        self.assertRaises(
-            TypeError,
-            sitehydro.Sitehydro,
-            **{'code': code, 'stations': ['station']}
-        )
-        self.assertRaises(
-            ValueError,
-            sitehydro.Sitehydro,
-            **{'code': code, 'typesite': 'PONCTUEL', 'stations': stations}
-        )
-        self.assertRaises(
-            ValueError,
-            sitehydro.Sitehydro,
-            **{'code': code, 'typesite': 'FICTIF', 'stations': stations}
-        )
-        self.assertRaises(
-            ValueError,
-            sitehydro.Sitehydro,
-            **{'code': code, 'typesite': 'VIRTUEL', 'stations': stations}
-        )
+        sitehydro.Sitehydro(code=code, stations=stations)
+        with self.assertRaises(TypeError):
+            sitehydro.Sitehydro(code=code, stations=['station'])
+        with self.assertRaises(ValueError):
+            sitehydro.Sitehydro(
+                code=code, typesite='PONCTUEL', stations=stations
+            )
+        with self.assertRaises(ValueError):
+            sitehydro.Sitehydro(
+                code=code, typesite='FICTIF', stations=stations
+            )
+        with self.assertRaises(ValueError):
+            sitehydro.Sitehydro(
+                code=code, typesite='VIRTUEL', stations=stations
+            )
 
     def test_error_05(self):
         """Coord error."""
         code = 'B4401122'
         coord = (33022, 5846, 26)
-        sitehydro.Sitehydro(**{'code': code, 'coord': coord})
-        self.assertRaises(
-            TypeError,
-            sitehydro.Sitehydro,
-            **{'code': code, 'coord': coord[0]}
-        )
+        sitehydro.Sitehydro(code=code, coord=coord)
+        with self.assertRaises(TypeError):
+            sitehydro.Sitehydro(code=code, coord=coord[0])
 
     def test_error_06(self):
         """Tronconsvigilance error."""
         code = 'A2351010'
         sitehydro.Sitehydro(
-            **{
-                'code': code,
-                'tronconsvigilance': sitehydro.Tronconvigilance()
-            }
+            code=code,
+            tronconsvigilance=sitehydro.Tronconvigilance()
         )
-        self.assertRaises(
-            TypeError,
-            sitehydro.Sitehydro,
-            **{'code': code, 'tronconsvigilance': 'I am not a troncon'}
-        )
+        with self.assertRaises(TypeError):
+            sitehydro.Sitehydro(
+                code=code, tronconsvigilance='I am not a troncon'
+            )
 
 
 #-- class TestStationhydro ----------------------------------------------------
@@ -400,37 +370,22 @@ class TestStationhydro(unittest.TestCase):
     def test_error_01(self):
         """Typestation error."""
         code = 'A033465001'
-        s = sitehydro.Stationhydro(**{'code': code, 'typestation': 'LIMNI'})
-        self.assertRaises(
-            ValueError,
-            s.__setattr__,
-            *('typestation', None)
-        )
-        self.assertRaises(
-            TypeError,
-            sitehydro.Stationhydro,
-            **{'code': None}
-        )
-        self.assertRaises(
-            ValueError,
-            sitehydro.Stationhydro,
-            **{'code': code, 'typestation': 'LIMMMMNI'}
-        )
+        s = sitehydro.Stationhydro(code=code, typestation='LIMNI')
+        with self.assertRaises(ValueError):
+            s.__setattr__('typestation', None)
+        with self.assertRaises(TypeError):
+            sitehydro.Stationhydro(code=None)
+        with self.assertRaises(ValueError):
+            sitehydro.Stationhydro(code=code, typestation='LIMMMMNI')
 
     def test_error_02(self):
         """Code error."""
         code = 'B440112201'
-        sitehydro.Stationhydro(**{'code': code})
-        self.assertRaises(
-            ValueError,
-            sitehydro.Stationhydro,
-            **{'code': code[:-1]}
-        )
-        self.assertRaises(
-            ValueError,
-            sitehydro.Stationhydro,
-            **{'code': '%s0' % code}
-        )
+        sitehydro.Stationhydro(code=code)
+        with self.assertRaises(ValueError):
+            sitehydro.Stationhydro(code=code[:-1])
+        with self.assertRaises(ValueError):
+            sitehydro.Stationhydro(code='%s0' % code)
 
     def test_error_03(self):
         """Capteur error."""
@@ -439,40 +394,29 @@ class TestStationhydro(unittest.TestCase):
             sitehydro.Capteur(code='%s01' % code, typemesure='Q'),
             sitehydro.Capteur(code='%s02' % code, typemesure='H'),
         )
-        sitehydro.Stationhydro(**{
-            'code': code, 'typestation': 'DEB', 'capteurs': capteurs
-        })
-        self.assertRaises(
-            TypeError,
-            sitehydro.Stationhydro,
-            **{'code': code, 'capteurs': 'c'}
+        sitehydro.Stationhydro(
+            code=code, typestation='DEB', capteurs=capteurs
         )
-        self.assertRaises(
-            ValueError,
-            sitehydro.Stationhydro,
-            **{'code': code, 'capteurs': capteurs}
-        )
-        self.assertRaises(
-            ValueError,
-            sitehydro.Stationhydro,
-            **{'code': code, 'typestation': 'LIMNI', 'capteurs': capteurs}
-        )
-        self.assertRaises(
-            ValueError,
-            sitehydro.Stationhydro,
-            **{'code': code, 'typestation': 'HC', 'capteurs': capteurs}
-        )
+        with self.assertRaises(TypeError):
+            sitehydro.Stationhydro(code=code, capteurs='c')
+        with self.assertRaises(ValueError):
+            sitehydro.Stationhydro(code=code, capteurs=capteurs)
+        with self.assertRaises(ValueError):
+            sitehydro.Stationhydro(
+                code=code, typestation='LIMNI', capteurs=capteurs
+            )
+        with self.assertRaises(ValueError):
+            sitehydro.Stationhydro(
+                code=code, typestation='HC', capteurs=capteurs
+            )
 
     def test_error_05(self):
         """Disceau error."""
         code = 'B440112201'
         ddcs = 'code rezo'
-        sitehydro.Stationhydro(**{'code': code, 'ddcs': ddcs})
-        self.assertRaises(
-            ValueError,
-            sitehydro.Stationhydro,
-            **{'code': code, 'ddcs': ddcs * 2}
-        )
+        sitehydro.Stationhydro(code=code, ddcs=ddcs)
+        with self.assertRaises(ValueError):
+            sitehydro.Stationhydro(code=code, ddcs=ddcs * 2)
 
 
 #-- class TestCapteur ----------------------------------------------------
@@ -521,36 +465,21 @@ class TestCapteur(unittest.TestCase):
 
     def test_error_01(self):
         """Typemesure error."""
-        c = sitehydro.Capteur(**{'code': 'A14410010201', 'typemesure': 'H'})
-        self.assertRaises(
-            ValueError,
-            c.__setattr__,
-            *('typemesure', None)
-        )
-        self.assertRaises(
-            ValueError,
-            sitehydro.Capteur,
-            **{'code': 'A14410010201', 'typemesure': 'RR'}
-        )
+        c = sitehydro.Capteur(code='A14410010201', typemesure='H')
+        with self.assertRaises(ValueError):
+            c.__setattr__('typemesure', None)
+        with self.assertRaises(ValueError):
+            sitehydro.Capteur(code='A14410010201', typemesure='RR')
 
     def test_error_02(self):
         """Code error."""
-        sitehydro.Capteur(**{'code': 'B44011220101'})
-        self.assertRaises(
-            TypeError,
-            sitehydro.Capteur,
-            **{'code': None}
-        )
-        self.assertRaises(
-            ValueError,
-            sitehydro.Capteur,
-            **{'code': 'B440112201'}
-        )
-        self.assertRaises(
-            ValueError,
-            sitehydro.Capteur,
-            **{'code': 'B4401122010133'}
-        )
+        sitehydro.Capteur(code='B44011220101')
+        with self.assertRaises(TypeError):
+            sitehydro.Capteur(code=None)
+        with self.assertRaises(ValueError):
+            sitehydro.Capteur(code='B440112201')
+        with self.assertRaises(ValueError):
+            sitehydro.Capteur(code='B4401122010133')
 
 
 #-- class TestTronconvigilance ------------------------------------------------

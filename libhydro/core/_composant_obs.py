@@ -197,8 +197,8 @@ class Serie(object):
 
             if (self._strict) and (observations is not None):
                 # we check we have a res column...
-                # ... and that index contains datetimes
                 assert hasattr(observations, 'res')
+                # ... and that index contains datetimes
                 # FIXME - should fail with datetime64 object.
                 #         Use .item().isoformat()
                 assert hasattr(observations.index[0], 'isoformat')

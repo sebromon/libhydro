@@ -32,8 +32,8 @@ from libhydro.core import _composant_site as composant_site
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2014-07-24"""
+__version__ = """0.1d"""
+__date__ = """2014-08-01"""
 
 #HISTORY
 #V0.1 - 2014-07-11
@@ -180,49 +180,31 @@ class TestSitemeteo(unittest.TestCase):
     def test_error_01(self):
         """Code error."""
         code = '044011221'
-        sitemeteo.Sitemeteo(**{'code': code})
-        self.assertRaises(
-            TypeError,
-            sitemeteo.Sitemeteo,
-            **{'code': None}
-        )
-        self.assertRaises(
-            ValueError,
-            sitemeteo.Sitemeteo,
-            **{'code': '%s1' % code}
-        )
-        self.assertRaises(
-            ValueError,
-            sitemeteo.Sitemeteo,
-            **{'code': code[:-2]}
-        )
+        sitemeteo.Sitemeteo(code=code)
+        with self.assertRaises(TypeError):
+            sitemeteo.Sitemeteo(code=None)
+        with self.assertRaises(ValueError):
+            sitemeteo.Sitemeteo(code='%s1' % code)
+        with self.assertRaises(ValueError):
+            sitemeteo.Sitemeteo(code=code[:-2])
 
     def test_error_02(self):
         """Coord error."""
         code = '044011221'
         coord = (33022, 5846, 26)
-        sitemeteo.Sitemeteo(**{'code': code, 'coord': coord})
-        self.assertRaises(
-            TypeError,
-            sitemeteo.Sitemeteo,
-            **{'code': code, 'coord': coord[0]}
-        )
+        sitemeteo.Sitemeteo(code=code, coord=coord)
+        with self.assertRaises(TypeError):
+            sitemeteo.Sitemeteo(code=code, coord=coord[0])
 
     def test_error_03(self):
         """Commune error."""
         code = '044011221'
         commune = '33022'
-        sitemeteo.Sitemeteo(**{'code': code, 'commune': commune})
-        self.assertRaises(
-            ValueError,
-            sitemeteo.Sitemeteo,
-            **{'code': code, 'commune': commune[:-1]}
-        )
-        self.assertRaises(
-            ValueError,
-            sitemeteo.Sitemeteo,
-            **{'code': code, 'commune': '%s1' % commune}
-        )
+        sitemeteo.Sitemeteo(code=code, commune=commune)
+        with self.assertRaises(ValueError):
+            sitemeteo.Sitemeteo(code=code, commune=commune[:-1])
+        with self.assertRaises(ValueError):
+            sitemeteo.Sitemeteo(code=code, commune='%s1' % commune)
 
     def test_error_04(self):
         """Grandeurs error."""
@@ -232,16 +214,11 @@ class TestSitemeteo(unittest.TestCase):
             sitemeteo.Grandeur('EP'),
         )
         sitemeteo.Sitemeteo(
-            **{
-                'code': code,
-                'grandeurs': grandeurs
-            }
+            code=code,
+            grandeurs=grandeurs
         )
-        self.assertRaises(
-            TypeError,
-            sitemeteo.Sitemeteo,
-            **{'code': code, 'grandeurs': ['I am not a troncon']}
-        )
+        with self.assertRaises(TypeError):
+            sitemeteo.Sitemeteo(code=code, grandeurs=['I am not a troncon'])
 
 
 #-- class TestGrandeur ---------------------------------------------------
@@ -283,27 +260,18 @@ class TestGrandeur(unittest.TestCase):
 
     def test_error_01(self):
         """typemesure error."""
-        g = sitemeteo.Grandeur(**{'typemesure': 'RR'})
-        self.assertRaises(
-            ValueError,
-            g.__setattr__,
-            *('typemesure', None)
-        )
-        self.assertRaises(
-            ValueError,
-            g.__setattr__,
-            *('typemesure', 'xxxx')
-        )
+        g = sitemeteo.Grandeur(typemesure='RR')
+        with self.assertRaises(ValueError):
+            g.__setattr__('typemesure', None)
+        with self.assertRaises(ValueError):
+            g.__setattr__('typemesure', 'xxxx')
 
     def test_error_02(self):
         """Sitemeteo error."""
         s = sitemeteo.Sitemeteo('266012001')
-        g = sitemeteo.Grandeur(**{
-            'typemesure': 'RR',
-            'sitemeteo': s
-        })
-        self.assertRaises(
-            TypeError,
-            g.__setattr__,
-            *('sitemeteo', 'junk site !')
+        g = sitemeteo.Grandeur(
+            typemesure='RR',
+            sitemeteo=s
         )
+        with self.assertRaises(TypeError):
+            g.__setattr__('sitemeteo', 'junk site !')
