@@ -56,13 +56,13 @@ class Message(object):
 
     Proprietes:
         scenario (xml.Scenario) = un objet Scenario obligatoire
-        siteshydro (sitehydro.Sitehydro collection) ou None
-        sitesmeteo (sitemeteo.Sitemeteo collection) ou None
-        seuilshydro (seuil.Seuilhydro collection) ou None
-        evenements (evenement.Evenement collection) ou None
-        serieshydro (obshydro.Serie collection) ou None
-        seriesmeteo (obsmeteo.Serie collection) ou None
-        simulations (simulation.Simulation collection) ou None
+        siteshydro (sitehydro.Sitehydro collection)
+        sitesmeteo (sitemeteo.Sitemeteo collection)
+        seuilshydro (seuil.Seuilhydro collection)
+        evenements (evenement.Evenement collection)
+        serieshydro (obshydro.Serie collection)
+        seriesmeteo (obsmeteo.Serie collection)
+        simulations (simulation.Simulation collection)
 
     """
 
