@@ -8,7 +8,7 @@
 #                 texlive-collection-xetex#
 #------------------------------------------------------------------------------
 # Author: Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>
-# Version: 0.1a - 2014-08-02
+# Version: 0.1b - 2014-08-02
 # History:
 #   V0.1 - 2014-07-29
 #     first shot
@@ -17,7 +17,7 @@
 #------------------------------------------------------------------------------
 SHELL = /bin/sh
 
-RELEASE := $(shell grep 'version' '../libhydro/__init__.py'|cut -c 16-20)
+RELEASE := $(shell unset GREP_OPTIONS; grep 'version' '../libhydro/__init__.py'|cut -c 16-20)
 DST := libhydro-${RELEASE}_documentation
 
 default: all
@@ -108,4 +108,4 @@ help:
 	@echo 'make pdf'
 	@echo 'make html'
 	@echo 'make clean'
-	@echo 'make help'
+	@echo 'make clean'
