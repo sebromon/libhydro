@@ -72,3 +72,4 @@ help:
 	@echo 'make d[iscover]'
 	@echo 'make c[overage]'
 	@echo 'make clean'
+	@echo 'make help'

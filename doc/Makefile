@@ -8,7 +8,7 @@
 #                 texlive-collection-xetex#
 #------------------------------------------------------------------------------
 # Author: Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>
-# Version: 0.1a - 2014-07-29
+# Version: 0.1a - 2014-08-02
 # History:
 #   V0.1 - 2014-07-29
 #     first shot
@@ -36,7 +36,7 @@ all: pdf html
 	rm -rf ${DST}
 
 .PHONY: pdf
-pdf: subdir installation_guide.md development_guide/notebooks/tutorial.ipynb
+pdf: _subdir installation_guide.md development_guide/notebooks/tutorial.ipynb
 	@echo
 	@echo '---------------------------'
 	@echo 'Build the PDF documentation'
@@ -52,7 +52,7 @@ pdf: subdir installation_guide.md development_guide/notebooks/tutorial.ipynb
 
 .PHONY: html
 .ONESHELL:
-html: subdir
+html: _subdir
 	@echo
 	@echo '---------------------------'
 	@echo 'Build the API documentation'
@@ -93,8 +93,8 @@ clean:
 	@rm -rf ${DST}
 	@rm -rf ${DST}.tar.gz
 
-.PHONY: subdir
-subdir:
+.PHONY: _subdir
+_subdir:
 	@mkdir -p ${DST}
 
 .PHONY: help
@@ -108,3 +108,4 @@ help:
 	@echo 'make pdf'
 	@echo 'make html'
 	@echo 'make clean'
+	@echo 'make help'
