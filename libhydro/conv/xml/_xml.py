@@ -25,7 +25,7 @@ from libhydro.core import (
     sitehydro as _sitehydro,
     sitemeteo as _sitemeteo,
     seuil as _seuil,
-    # modeleprevision as _modeleprevison,
+    modeleprevision as _modeleprevision,
     evenement as _evenement,
     obshydro as _obshydro,
     obsmeteo as _obsmeteo,
@@ -36,12 +36,13 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.4a"""
-__date__ = """2014-07-21"""
+__version__ = """0.4b"""
+__date__ = """2014-08-03"""
 
 #HISTORY
 #V0.4 - 2014-07-18
-#    add sitemeteo and obsmeteo
+#    add the modelesprevision element
+#    add the sitesmeteo and seriesmeteo element
 #    use a descriptor for Message components
 #V0.1 - 2013-08-20
 #    first shot
@@ -56,18 +57,18 @@ class Message(object):
 
     Proprietes:
         scenario (xml.Scenario) = un objet Scenario obligatoire
-        siteshydro (sitehydro.Sitehydro collection)
-        sitesmeteo (sitemeteo.Sitemeteo collection)
-        seuilshydro (seuil.Seuilhydro collection)
-        evenements (evenement.Evenement collection)
-        serieshydro (obshydro.Serie collection)
-        seriesmeteo (obsmeteo.Serie collection)
-        simulations (simulation.Simulation collection)
+        siteshydro (liste de sitehydro.Sitehydro)
+        sitesmeteo (liste de sitemeteo.Sitemeteo)
+        seuilshydro (liste de seuil.Seuilhydro)
+        modelesprevision (liste de modeleprevision.Modeleprevision)
+        evenements (liste de evenement.Evenement)
+        serieshydro (liste de obshydro.Serie)
+        seriesmeteo (liste de obsmeteo.Serie)
+        simulations (liste de simulation.Simulation)
 
     """
 
         # 'intervenants': 'TODO',
-        # 'modelesprevision': 'TODO'
 
         # 'courbestarage'
         # 'jaugeages'
@@ -80,6 +81,9 @@ class Message(object):
     siteshydro = _composant.Rlistproperty(cls=_sitehydro.Sitehydro)
     sitesmeteo = _composant.Rlistproperty(cls=_sitemeteo.Sitemeteo)
     seuilshydro = _composant.Rlistproperty(cls=_seuil.Seuilhydro)
+    modelesprevision = _composant.Rlistproperty(
+        cls=_modeleprevision.Modeleprevision
+    )
     evenements = _composant.Rlistproperty(cls=_evenement.Evenement)
     serieshydro = _composant.Rlistproperty(cls=_obshydro.Serie)
     seriesmeteo = _composant.Rlistproperty(cls=_obsmeteo.Serie)
@@ -87,20 +91,22 @@ class Message(object):
 
     def __init__(
         self, scenario, siteshydro=None, sitesmeteo=None, seuilshydro=None,
-        evenements=None, serieshydro=None, seriesmeteo=None, simulations=None,
+        modelesprevision=None, evenements=None,
+        serieshydro=None, seriesmeteo=None, simulations=None,
         ordered=False, strict=True
     ):
         """Initialisation.
 
         Arguments:
             scenario (xml.Scenario) = un objet Scenario obligatoire
-            siteshydro (sitehydro.Sitehydro collection) = iterable ou None
-            sitesmeteo (sitemeteo.Sitemeteo collection) = iterable ou None
-            seuilshydro (seuil.Seuilhydro collection) = iterable ou None
-            evenements (evenement.Evenement collection) = iterable ou None
-            serieshydro (obshydro.Serie collection) = iterable ou None
-            seriesmeteo (obsmeteo.Serie collection) = iterable ou None'
-            simulations (simulation.Simulation collection) = iterable ou None
+            siteshydro (sitehydro.Sitehydro iterable ou None)
+            sitesmeteo (sitemeteo.Sitemeteo iterable ou None)
+            seuilshydro (seuil.Seuilhydro iterable ou None)
+            modelesprevision (modeleprevision.Modeleprevision iterable ou None)
+            evenements (evenement.Evenement iterable ou None)
+            serieshydro (obshydro.Serie iterable ou None)
+            seriesmeteo (obsmeteo.Serie iterable ou None)
+            simulations (simulation.Simulation iterable ou None)
             ordered (bool, default False) = if True tries to keep things in
                 order when serialising (slower)
             strict (bool, defaut True) = le mode permissif permet de lever les
@@ -121,6 +127,7 @@ class Message(object):
         self.siteshydro = siteshydro or []
         self.sitesmeteo = sitesmeteo or []
         self.seuilshydro = seuilshydro or []
+        self.modelesprevision = modelesprevision or []
         self.evenements = evenements or []
         self.serieshydro = serieshydro or []
         self.seriesmeteo = seriesmeteo or []
@@ -195,6 +202,9 @@ class Message(object):
                 element=tree.find('RefHyd/SitesHydro'),
                 ordered=ordered
             ),
+            modelesprevision=_from_xml._modelesprevision_from_element(
+                tree.find('RefHyd/ModelesPrevision')
+            ),
             evenements=_from_xml._evenements_from_element(
                 tree.find('Donnees/Evenements')
             ),
@@ -209,8 +219,7 @@ class Message(object):
             )
         )
 
-            # 'intervenants':
-            # 'modelesprevision': 'TODOS',
+            # 'intervenants': TODO
             # 'courbestarage'
             # 'jaugeages'
             # 'courbescorrection'
@@ -231,6 +240,7 @@ class Message(object):
             siteshydro  = iterable de sitehydro.Sitehydro
             sitesmeteo  = iterable de sitemeteo.Sitemeteo
             seuilshydro = iterable de seuil.Seuilhydro
+            modelesprevision = iterable de modeleprevision.Modeleprevision
             evenements  = iterable d'evenement.Evenement
             serieshydro = iterable de obshydro.Serie
             seriesmeteo = iterable de obsmeteo.Serie
@@ -273,11 +283,13 @@ class Message(object):
                 siteshydro=self.siteshydro,
                 sitesmeteo=self.sitesmeteo,
                 seuilshydro=self.seuilshydro,
+                modelesprevision=self.modelesprevision,
                 evenements=self.evenements,
                 serieshydro=self.serieshydro,
                 seriesmeteo=self.seriesmeteo,
                 simulations=self.simulations,
-                ordered=self._ordered
+                ordered=self._ordered,
+                strict=self._strict
             )
         )
         tree.write(
@@ -297,10 +309,13 @@ class Message(object):
                 siteshydro=self.siteshydro,
                 sitesmeteo=self.sitesmeteo,
                 seuilshydro=self.seuilshydro,
+                modelesprevision=self.modelesprevision,
                 evenements=self.evenements,
                 serieshydro=self.serieshydro,
                 seriesmeteo=self.seriesmeteo,
-                simulations=self.simulations
+                simulations=self.simulations,
+                ordered=self._ordered,
+                strict=self._strict
             ),
             encoding=_sys.stdout.encoding,
             xml_declaration=1,
@@ -318,6 +333,7 @@ class Message(object):
                '{space}{siteshydro} siteshydro\n' \
                '{space}{sitesmeteo} sitesmeteo\n' \
                '{space}{seuilshydro} seuilshydro\n' \
+               '{space}{modelesprevision} modelesprevision\n' \
                '{space}{evenements} evenements\n' \
                '{space}{serieshydro} serieshydro\n' \
                '{space}{seriesmeteo} seriesmeteo\n' \
@@ -330,6 +346,8 @@ class Message(object):
                    else len(self.sitesmeteo),
                    seuilshydro=0 if self.seuilshydro is None
                    else len(self.seuilshydro),
+                   modelesprevision=0 if self.modelesprevision is None
+                   else len(self.modelesprevision),
                    evenements=0 if self.evenements is None
                    else len(self.evenements),
                    serieshydro=0 if self.serieshydro is None

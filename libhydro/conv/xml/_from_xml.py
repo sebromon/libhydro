@@ -45,14 +45,15 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.3a"""
-__date__ = """2014-07-31"""
+__version__ = """0.3b"""
+__date__ = """2014-08-03"""
 
 #HISTORY
 #V0.3 - 2014-07-31
+#    add the modelesprevision element
 #    change the Scenario.emetteur and destinataire properties
 #V0.2 - 2014-07-21
-#    add sitesmeteo and seriesmeteo
+#    add the sitesmeteo and seriesmeteo elements
 #V0.1 - 2013-08-18
 #    first shot
 
@@ -256,13 +257,14 @@ def _parse(src):
 
     Retourne un dictionnaire avec les cles:
             # scenario: xml.Scenario
-            # siteshydro: liste de sitehydro.Siteshydro ou None
-            # sitesmeteo: liste de sitehydro.Siteshydro ou None
-            # seuilshydro: liste de seuil.Seuilhydro ou None
-            # evenements: liste d'evenements ou None
-            # serieshydro: liste de obshydro.Serie ou None
-            # seriesmeteo: liste de obsmeteo.Serie ou None
-            # simulations: liste de simulation.Simulation ou None
+            # siteshydro: liste de sitehydro.Siteshydro
+            # sitesmeteo: liste de sitehydro.Siteshydro
+            # seuilshydro: liste de seuil.Seuilhydro
+            # modelesprevision: liste de modelesprevision.Modeleprevision
+            # evenements: liste d'evenements
+            # serieshydro: liste de obshydro.Serie
+            # seriesmeteo: liste de obsmeteo.Serie
+            # simulations: liste de simulation.Simulation
 
     """
 
@@ -293,7 +295,9 @@ def _parse(src):
             element=tree.find('RefHyd/SitesHydro'),
             ordered=True
         ),
-        # 'modelesprevision': '',
+        'modelesprevision': _modelesprevision_from_element(
+            tree.find('RefHyd/ModelesPrevision')
+        ),
         'evenements': _evenements_from_element(
             tree.find('Donnees/Evenements')
         ),
@@ -398,6 +402,16 @@ def _seuilshydro_from_element(element, ordered=False):
 
     # return a list of seuils
     return seuilshydro.values()
+
+
+def _modelesprevision_from_element(element):
+    """Return a list of modeleprevision.Modeleprevision from a """
+    """<ModelesPrevision> element."""
+    modelesprevision = []
+    if element is not None:
+        for modele in element.findall('./ModelePrevision'):
+            modelesprevision.append(_modeleprevision_from_element(modele))
+    return modelesprevision
 
 
 def _evenements_from_element(element):
@@ -723,6 +737,20 @@ def _valeurseuilstationhydro_from_element(element, seuil):
         return _seuil.Valeurseuil(**args)
 
 
+def _modeleprevision_from_element(element):
+    """Return a modeleprevision.Modeleprevision from a """
+    """<ModelePrevision> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['code'] = _value(element, 'CdModelePrevision')
+        args['libelle'] = _value(element, 'LbModelePrevision')
+        args['typemodele'] = _value(element, 'TypModelePrevision', int)
+        args['description'] = _value(element, 'DescModelePrevision')
+        # build a modeleprevision and return
+        return _modeleprevision.Modeleprevision(**args)
+
+
 def _evenement_from_element(element):
     """Return a evenement.Evenement from a <Evenement> element."""
     if element is not None:
@@ -738,10 +766,9 @@ def _evenement_from_element(element):
                 code=_value(element, 'CdStationHydro')
             )
         elif element.find('CdSiteMeteo') is not None:
-            raise NotImplementedError('Sitemeteo is not already implemented')
-        #     entite = _sitemeteo.Sitemeteo(
-        #         code=_value(element, 'CdSiteMeteo')
-        #     )
+            entite = _sitemeteo.Sitemeteo(
+                code=_value(element, 'CdSiteMeteo')
+            )
 
         # make the Evenement
         return _evenement.Evenement(

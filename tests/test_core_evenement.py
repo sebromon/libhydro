@@ -34,8 +34,8 @@ from libhydro.core import intervenant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1b"""
-__date__ = """2014-03-25"""
+__version__ = """0.1c"""
+__date__ = """2014-08-03"""
 
 #HISTORY
 #V0.1 - 2013-11-26
@@ -112,6 +112,11 @@ class Testevenement(unittest.TestCase):
             TypeError,
             evenement.Evenement,
             **{'entite': None, 'contact': contact, 'descriptif': descriptif}
+        )
+        self.assertRaises(
+            TypeError,
+            evenement.Evenement,
+            **{'entite': 3, 'contact': contact, 'descriptif': descriptif}
         )
 
     def test_error_02(self):

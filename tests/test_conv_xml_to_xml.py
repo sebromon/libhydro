@@ -37,8 +37,8 @@ from libhydro.core import (sitehydro, seuil)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.3a"""
-__date__ = """2014-08-01"""
+__version__ = """0.3b"""
+__date__ = """2014-08-03"""
 
 #HISTORY
 #V0.3 - 2014-08-01
@@ -223,10 +223,10 @@ class TestAllXmlBaseTests(unittest.TestCase):
     Required by unittest.discover.
 
     """
-    # TODO intervenant, modelesprevision
     suite = unittest.TestSuite()
     for unit in (
-        'siteshydro', 'sitesmeteo', 'seuilshydro', 'evenements',
+        'siteshydro', 'sitesmeteo', 'seuilshydro',  # TODO intervenant
+        'modelesprevision', 'evenements',
         'serieshydro', 'seriesmeteo', 'simulations'
     ):
         suite.addTest(

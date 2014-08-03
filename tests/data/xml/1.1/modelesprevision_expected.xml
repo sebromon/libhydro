@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<hydrometrie>
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>1.1</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2001-12-17T04:30:47</DateHeureCreationFichier>
+    <!-- <RefFichier>modele.xml</RefFichier> -->
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact>2</CdContact>
+    </Destinataire>
+  </Scenario>
+  <RefHyd>
+    <ModelesPrevision>
+      <ModelePrevision>
+        <!-- <CdContact>token</CdContact> -->
+        <CdModelePrevision>token</CdModelePrevision>
+        <LbModelePrevision>String</LbModelePrevision>
+        <TypModelePrevision>0</TypModelePrevision>
+        <DescModelePrevision>String</DescModelePrevision>
+        <!-- <DtMajModelePrevision>2001-12-17T04:30:47</DtMajModelePrevision> -->
+      </ModelePrevision>
+      <ModelePrevision>
+        <!-- <CdContact>token</CdContact> -->
+        <CdModelePrevision>token</CdModelePrevision>
+        <LbModelePrevision>String</LbModelePrevision>
+        <TypModelePrevision>0</TypModelePrevision>
+        <DescModelePrevision>String</DescModelePrevision>
+        <!-- <DtMajModelePrevision>2001-12-17T04:30:47</DtMajModelePrevision> -->
+      </ModelePrevision>
+    </ModelesPrevision>
+  </RefHyd>
+</hydrometrie>
