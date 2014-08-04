@@ -8,7 +8,7 @@ Le meta-package libhydro est constitue des packages:
 
 """
 # bdhydro pour l'utilisation des services web d'Hydro3
-__version__ = '0.5.1'
+__version__ = '0.5.2'
 __all__ = ['core', 'conv']
  # __all__ = ['core', 'conv', 'bdhydro']
 

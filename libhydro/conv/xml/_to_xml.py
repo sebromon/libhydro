@@ -2,12 +2,12 @@
 """Module xml._to_xml.
 
 Ce module contient les fonctions de generation des fichiers au format
-Xml Hydrometrie (version 1.1 exclusivement).
+XML Hydrometrie (version 1.1 exclusivement).
 
 Toutes les heures sont considerees UTC si le fuseau horaire n'est pas precise.
 
 Les fonctions de ce module sont a usage prive, il est recommande d'utiliser la
-classe xml.Message comme interface aux fichiers Xml Hydrometrie.
+classe xml.Message comme interface aux fichiers XML Hydrometrie.
 
 """
 #-- imports -------------------------------------------------------------------
@@ -34,11 +34,13 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.4c"""
-__date__ = """2014-08-03"""
+__version__ = """0.4d"""
+__date__ = """2014-08-04"""
 
 #HISTORY
 #V0.4 - 2014-07-31
+#    replace isoformat() by strftime()
+#    add the to_xml.bdhydro argument
 #    add the modelesprevision element
 #    add the required function
 #V0.3 - 2014-07-25
@@ -52,7 +54,7 @@ __date__ = """2014-08-03"""
 
 
 # -- config -------------------------------------------------------------------
-# order matters in Xml, we must have the keys list !
+# order matters in XML, we must have the keys list !
 ORDERED_ACCEPTED_KEYS = [
     'scenario',
     # line 115: [1:5]
@@ -67,18 +69,30 @@ PREV_PROBABILITY = {
     100: 'ResMaxPrev'
 }
 
+# sandre hydrometrie namespaces
+NS = (
+    'http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1',
+    'http://www.w3.org/2001/XMLSchema-instance'
+)
+NS_ATTR = {
+    'xmlns': NS[0],
+    '{%s}schemaLocation' % NS[1]: '%s %s/sandre_sc_hydrometrie.xsd' % (
+        NS[0], NS[0]
+    )
+}
+
 
 # -- testsfunction ------------------------------------------------------------
 def _to_xml(
     scenario=None, siteshydro=None, sitesmeteo=None, seuilshydro=None,
     modelesprevision=None, evenements=None,
     serieshydro=None, seriesmeteo=None, simulations=None,
-    ordered=False, strict=True
+    bdhydro=False, strict=True, ordered=False
 ):
     """Return a etree.Element a partir des donnees passes en argument.
 
     Cette fonction est privee et les utilisateurs sont invites a utiliser la
-    classe xml.Message comme interface d'ecriture des fichiers Xml Hydrometrie.
+    classe xml.Message comme interface d'ecriture des fichiers XML Hydrometrie.
 
     Arguments:
         scenario (xml.Scenario) = 1 element
@@ -91,8 +105,10 @@ def _to_xml(
         serieshydro (obshydro.Serie collection) = iterable or None
         seriesmeteo (obsmeteo.Serie collection) = iterable or None
         simulations (simulation.Simulation collection) = iterable or None
-        ordered (bool)
-        strict (bool) = assure all the XML requested tags are there
+        bdhydro (bool, defaut False) = controle de conformite bdhydro
+        strict (bool, defaut True) = controle de conformite XML Hydrometrie
+        ordered (bool, default False) = essaie de conserver l'ordre de certains
+            elements
 
     """
     # make a deep copy of locals() which is a dict {arg_name: arg_value, ...}
@@ -104,13 +120,20 @@ def _to_xml(
     }
 
     # init the tree
-    tree = _etree.Element('hydrometrie')
+    if bdhydro:
+        tree = _etree.Element('hydrometrie')
+    else:
+        tree = _etree.Element('hydrometrie', attrib=NS_ATTR)
 
     # TODO - this is awful :/ we should factorize those lines
 
     # add the scenario
     if args['scenario'] is not None:
-        tree.append(_scenario_to_element(args['scenario'], strict=strict))
+        tree.append(
+            _scenario_to_element(
+                args['scenario'], bdhydro=bdhydro, strict=strict
+            )
+        )
 
     # add the referentiel
     items = ORDERED_ACCEPTED_KEYS[1:5]
@@ -127,7 +150,7 @@ def _to_xml(
             subsiteshydro = _etree.SubElement(sub, 'SitesHydro')
             if args['siteshydro'] is not None:
                 element = _siteshydro_to_element(
-                    args['siteshydro'], strict=strict
+                    args['siteshydro'], bdhydro=bdhydro, strict=strict
                 )
                 for elementsitehydro in element.findall('./SiteHydro'):
                     subsiteshydro.append(elementsitehydro)
@@ -162,8 +185,11 @@ def _to_xml(
         for k in items:
             if args[k] is not None:
                 sub.append(
-                    eval('_{}_to_element(args[k], strict={})'.format(
-                        k, strict)
+                    eval(
+                        '_{0}_to_element(args[k], '
+                        'bdhydro={1}, strict={2})'.format(
+                            k, bdhydro, strict
+                        )
                     )
                 )
 
@@ -179,18 +205,20 @@ def _to_xml(
 
 
 # -- global functions ---------------------------------------------------------
-def _siteshydro_to_element(siteshydro, strict=True):
+def _siteshydro_to_element(siteshydro, bdhydro=False, strict=True):
     """Return a <SitesHydro> element from a list of sitehydro.Sitehydro."""
     if siteshydro is not None:
         element = _etree.Element('SitesHydro')
         for sitehydro in siteshydro:
             element.append(
-                _sitehydro_to_element(sitehydro=sitehydro, strict=strict)
+                _sitehydro_to_element(
+                    sitehydro=sitehydro, bdhydro=bdhydro, strict=strict
+                )
             )
         return element
 
 
-def _sitesmeteo_to_element(sitesmeteo, strict=True):
+def _sitesmeteo_to_element(sitesmeteo, bdhydro=False, strict=True):
     """Return a <SitesMeteo> element from a list of sitemeteo.Sitemeteo."""
     if sitesmeteo is not None:
         element = _etree.Element('SitesMeteo')
@@ -201,7 +229,9 @@ def _sitesmeteo_to_element(sitesmeteo, strict=True):
         return element
 
 
-def _seuilshydro_to_element(seuilshydro, ordered=False, strict=True):
+def _seuilshydro_to_element(
+    seuilshydro, ordered=False, bdhydro=False, strict=True
+):
     """Return a <SitesHydro> element from a list of seuil.Seuilhydro."""
     if seuilshydro is not None:
         # the ugly XML doesn't support many Q values within a seuil
@@ -252,7 +282,7 @@ def _seuilshydro_to_element(seuilshydro, ordered=False, strict=True):
 
 # TODO - these 4 functions can be factorised
 
-def _modelesprevision_to_element(modelesprevision, strict=True):
+def _modelesprevision_to_element(modelesprevision, bdhydro=False, strict=True):
     """Return a <ModelesPrevision> element from a list of """
     """modeleprevision.Modeleprevision."""
     if modelesprevision is not None:
@@ -264,49 +294,57 @@ def _modelesprevision_to_element(modelesprevision, strict=True):
         return element
 
 
-def _evenements_to_element(evenements, strict=True):
+def _evenements_to_element(evenements, bdhydro=False, strict=True):
     """Return a <Evenements> element from a list of evenement.Evenement."""
     if evenements is not None:
         element = _etree.Element('Evenements')
         for evenement in evenements:
             element.append(
-                _evenement_to_element(evenement, strict=strict)
+                _evenement_to_element(evenement, bdhydro=False, strict=strict)
             )
         return element
 
 
-def _serieshydro_to_element(serieshydro, strict=True):
+def _serieshydro_to_element(serieshydro, bdhydro=False, strict=True):
     """Return a <Series> element from a list of obshydro.Serie."""
     if serieshydro is not None:
         element = _etree.Element('Series')
         for serie in serieshydro:
-            element.append(_seriehydro_to_element(serie, strict=strict))
+            element.append(
+                _seriehydro_to_element(serie, bdhydro=False, strict=strict)
+            )
         return element
 
 
-def _seriesmeteo_to_element(seriesmeteo, strict=True):
+def _seriesmeteo_to_element(seriesmeteo, bdhydro=False, strict=True):
     """Return a <ObssMeteo> element from a list of obsmeteo.Serie."""
     if seriesmeteo is not None:
         element = _etree.Element('ObssMeteo')
         for serie in seriesmeteo:
             for row in serie.observations.iterrows():
                 element.append(
-                    _obsmeteo_to_element(serie, *row, strict=strict)
+                    _obsmeteo_to_element(
+                        serie, *row, bdhydro=False, strict=strict
+                    )
                 )
         return element
 
 
-def _simulations_to_element(simulations, strict=True):
+def _simulations_to_element(simulations, bdhydro=False, strict=True):
     """Return a <Simuls> element from a list of simulation.Simulation."""
     if simulations is not None:
         element = _etree.Element('Simuls')
         for simulation in simulations:
-            element.append(_simulation_to_element(simulation, strict=strict))
+            element.append(
+                _simulation_to_element(
+                    simulation, bdhydro=False, strict=strict
+                )
+            )
         return element
 
 
 # -- atomic functions ---------------------------------------------------------
-def _scenario_to_element(scenario, strict=True):
+def _scenario_to_element(scenario, bdhydro=False, strict=True):
     """Return a <Scenario> element from a xml.Scenario."""
 
     if scenario is not None:
@@ -315,6 +353,9 @@ def _scenario_to_element(scenario, strict=True):
         _required(scenario, ['dtprod', 'emetteur', 'destinataire'])
         if strict:
             _required(scenario, ['code', 'version'])
+        if bdhydro:
+            _required(scenario.emetteur, ['contact'])
+            _required(scenario.emetteur.contact, ['code'])
 
         # template for scenario simple element
         story = _collections.OrderedDict((
@@ -322,7 +363,7 @@ def _scenario_to_element(scenario, strict=True):
             ('VersionScenario', {'value': scenario.version}),
             ('NomScenario', {'value': scenario.nom}),
             ('DateHeureCreationFichier',
-                {'value': scenario.dtprod.isoformat()})
+                {'value': scenario.dtprod.strftime('%Y-%m-%dT%H:%M:%S')})
         ))
         # template for scenario sub-elements <Emetteur> and <Destinataire>
         for tag in ('Emetteur', 'Destinataire'):
@@ -331,7 +372,7 @@ def _scenario_to_element(scenario, strict=True):
                 'sub': _collections.OrderedDict((
                     ('CdIntervenant', {
                         'value': unicode(item.intervenant.code),
-                        'attr': {"schemeAgencyID": item.intervenant.origine}
+                        'attr': {'schemeAgencyID': item.intervenant.origine}
                     }),
                     ('NomIntervenant', {
                         'value': unicode(item.intervenant.nom)
@@ -342,7 +383,10 @@ def _scenario_to_element(scenario, strict=True):
                         if (
                             (item.contact is not None) and
                             (item.contact.code is not None)
-                        ) else None
+                        ) else None,
+                        # bdhydro requires a junk attr for the contacts
+                        'attr': {'schemeAgencyID': 'SANDRE'}
+                        if bdhydro else None
                     })
                 ))
             }
@@ -351,7 +395,9 @@ def _scenario_to_element(scenario, strict=True):
         return _factory(root=_etree.Element('Scenario'), story=story)
 
 
-def _sitehydro_to_element(sitehydro, seuilshydro=None, strict=True):
+def _sitehydro_to_element(
+    sitehydro, seuilshydro=None, bdhydro=False, strict=True
+):
     """Return a <SiteHydro> element from a sitehydro.Sitehydro.
 
     Args:
@@ -426,7 +472,11 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None, strict=True):
         if len(sitehydro.stations) > 0:
             child = element.find('StationsHydro')
             for station in sitehydro.stations:
-                child.append(_stationhydro_to_element(station, strict=strict))
+                child.append(
+                    _stationhydro_to_element(
+                        station, bdhydro=bdhydro, strict=strict
+                    )
+                )
 
         # add the seuils if necessary
         if len(seuilshydro) > 0:
@@ -438,7 +488,7 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None, strict=True):
         return element
 
 
-def _sitemeteo_to_element(sitemeteo, strict=True):
+def _sitemeteo_to_element(sitemeteo, bdhydro=False, strict=True):
     """Return a <SiteMeteo> element from a sitemeteo.Sitemeteo."""
 
     if sitemeteo is not None:
@@ -486,7 +536,7 @@ def _sitemeteo_to_element(sitemeteo, strict=True):
         return element
 
 
-def _tronconvigilance_to_element(tronconvigilance, strict=True):
+def _tronconvigilance_to_element(tronconvigilance, bdhydro=False, strict=True):
     """Return a <TronconVigilanceSiteHydro> element from a """
     """sitehydro.Tronconvigilance."""
     if tronconvigilance is not None:
@@ -507,7 +557,7 @@ def _tronconvigilance_to_element(tronconvigilance, strict=True):
         )
 
 
-def _seuilhydro_to_element(seuilhydro, strict=True):
+def _seuilhydro_to_element(seuilhydro, bdhydro=False, strict=True):
     """Return a <ValeursSeuilSiteHydro> element from a seuil.Seuilhydro."""
     if seuilhydro is not None:
 
@@ -556,11 +606,15 @@ def _seuilhydro_to_element(seuilhydro, strict=True):
                 'value': sitevaleurseuil.valeur
             }
             story['DtActivationSeuilSiteHydro'] = {
-                'value': sitevaleurseuil.dtactivation.isoformat()
+                'value': sitevaleurseuil.dtactivation.strftime(
+                    '%Y-%m-%dT%H:%M:%S'
+                )
                 if sitevaleurseuil.dtactivation is not None else None
             }
             story['DtDesactivationSeuilSiteHydro'] = {
-                'value': sitevaleurseuil.dtdesactivation.isoformat()
+                'value': sitevaleurseuil.dtdesactivation.strftime(
+                    '%Y-%m-%dT%H:%M:%S'
+                )
                 if sitevaleurseuil.dtdesactivation is not None else None
             }
 
@@ -574,7 +628,7 @@ def _seuilhydro_to_element(seuilhydro, strict=True):
                 'value': sitevaleurseuil.tolerance
             }
         story['DtMajSeuilSiteHydro'] = {
-            'value': seuilhydro.dtmaj.isoformat()
+            'value': seuilhydro.dtmaj.strftime('%Y-%m-%dT%H:%M:%S')
             if seuilhydro.dtmaj is not None else None
         }
 
@@ -596,7 +650,9 @@ def _seuilhydro_to_element(seuilhydro, strict=True):
         return element
 
 
-def _valeurseuilstationhydro_to_element(valeurseuil, strict=True):
+def _valeurseuilstationhydro_to_element(
+    valeurseuil, bdhydro=False, strict=True
+):
     """Return a <ValeursSeuilStationHydro> element from a seuil.Valeurseuil.
 
     Requires valeurseuil.entite.code to be a station hydro code.
@@ -624,11 +680,13 @@ def _valeurseuilstationhydro_to_element(valeurseuil, strict=True):
                 'value': valeurseuil.valeur
             }),
             ('DtActivationSeuilStationHydro', {
-                'value': valeurseuil.dtactivation.isoformat()
+                'value': valeurseuil.dtactivation.strftime('%Y-%m-%dT%H:%M:%S')
                 if valeurseuil.dtactivation is not None else None
             }),
             ('DtDesactivationSeuilStationHydro', {
-                'value': valeurseuil.dtdesactivation.isoformat()
+                'value': valeurseuil.dtdesactivation.strftime(
+                    '%Y-%m-%dT%H:%M:%S'
+                )
                 if valeurseuil.dtdesactivation is not None else None
             }),
             ('ToleranceSeuilStationHydro', {'value': valeurseuil.tolerance})
@@ -640,7 +698,7 @@ def _valeurseuilstationhydro_to_element(valeurseuil, strict=True):
         )
 
 
-def _stationhydro_to_element(stationhydro, strict=True):
+def _stationhydro_to_element(stationhydro, bdhydro=False, strict=True):
     """Return a <StationHydro> element from a sitehydro.Stationhydro."""
 
     if stationhydro is not None:
@@ -702,13 +760,17 @@ def _stationhydro_to_element(stationhydro, strict=True):
         if len(stationhydro.capteurs) > 0:
             child = element.find('Capteurs')
             for capteur in stationhydro.capteurs:
-                child.append(_capteur_to_element(capteur, strict=strict))
+                child.append(
+                    _capteur_to_element(
+                        capteur, bdhydro=bdhydro, strict=strict
+                    )
+                )
 
         # return
         return element
 
 
-def _capteur_to_element(capteur, strict=True):
+def _capteur_to_element(capteur, bdhydro=False, strict=True):
     """Return a <Capteur> element from a sitehydro.Capteur."""
 
     if capteur is not None:
@@ -716,6 +778,8 @@ def _capteur_to_element(capteur, strict=True):
         # prerequisites
         if strict:
             _required(capteur, ['code'])
+        if bdhydro:
+            _required(capteur, ['libelle'])
 
         # template for capteur simple element
         story = _collections.OrderedDict((
@@ -729,7 +793,7 @@ def _capteur_to_element(capteur, strict=True):
         return _factory(root=_etree.Element('Capteur'), story=story)
 
 
-def _grandeur_to_element(grandeur, strict=True):
+def _grandeur_to_element(grandeur, bdhydro=False, strict=True):
     """Return a <GrdMeteo> element from a sitehydro.grandeur."""
 
     if grandeur is not None:
@@ -747,7 +811,7 @@ def _grandeur_to_element(grandeur, strict=True):
         return _factory(root=_etree.Element('GrdMeteo'), story=story)
 
 
-def _modeleprevision_to_element(modeleprevision, strict=True):
+def _modeleprevision_to_element(modeleprevision, bdhydro=False, strict=True):
     """Return a <ModelePrevision> element from a """
     """modeleprevision.Modeleprevision."""
 
@@ -769,7 +833,7 @@ def _modeleprevision_to_element(modeleprevision, strict=True):
         return _factory(root=_etree.Element('ModelePrevision'), story=story)
 
 
-def _evenement_to_element(evenement, strict=True):
+def _evenement_to_element(evenement, bdhydro=False, strict=True):
     """Return a <Evenement> element from a evenement.Evenement."""
 
     if evenement is not None:
@@ -788,19 +852,21 @@ def _evenement_to_element(evenement, strict=True):
         story['Cd%s' % evenement.entite.__class__.__name__.replace(
             'h', 'H').replace('m', 'M')] = {'value': evenement.entite.code}
         # suite
-        story['DtEvenement'] = {'value': evenement.dt.isoformat()}
+        story['DtEvenement'] = {
+            'value': evenement.dt.strftime('%Y-%m-%dT%H:%M:%S')
+        }
         story['DescEvenement'] = {'value': evenement.descriptif}
         story['TypPublicationEvenement'] = {'value': evenement.publication}
         story['DtMajEvenement'] = {
             'value': None if evenement.dtmaj is None
-            else evenement.dtmaj.isoformat()
+            else evenement.dtmaj.strftime('%Y-%m-%dT%H:%M:%S')
         }
 
         # action !
         return _factory(root=_etree.Element('Evenement'), story=story)
 
 
-def _seriehydro_to_element(seriehydro, strict=True):
+def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True):
     """Return a <Serie> element from a obshydro.Serie."""
 
     if seriehydro is not None:
@@ -818,10 +884,16 @@ def _seriehydro_to_element(seriehydro, strict=True):
             'hydro', 'Hydro')] = {'value': seriehydro.entite.code}
         # suite
         story['GrdSerie'] = {'value': seriehydro.grandeur}
-        story['DtDebSerie'] = {'value': seriehydro.dtdeb.isoformat()}
-        story['DtFinSerie'] = {'value': seriehydro.dtfin.isoformat()}
+        story['DtDebSerie'] = {
+            'value': seriehydro.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')
+        }
+        story['DtFinSerie'] = {
+            'value': seriehydro.dtfin.strftime('%Y-%m-%dT%H:%M:%S')
+        }
         story['StatutSerie'] = {'value': unicode(seriehydro.statut)}
-        story['DtProdSerie'] = {'value': seriehydro.dtprod.isoformat()}
+        story['DtProdSerie'] = {
+            'value': seriehydro.dtprod.strftime('%Y-%m-%dT%H:%M:%S')
+        }
         story['CdContact'] = {
             'value': getattr(
                 getattr(seriehydro, 'contact', None),
@@ -841,7 +913,7 @@ def _seriehydro_to_element(seriehydro, strict=True):
         return element
 
 
-def _observations_to_element(observations, strict=True):
+def _observations_to_element(observations, bdhydro=False, strict=True):
     """Return a <ObssHydro> element from a obshydro.Observations."""
 
     if observations is not None:
@@ -854,7 +926,7 @@ def _observations_to_element(observations, strict=True):
             obs = _etree.SubElement(element, 'ObsHydro')
             # dte and res are mandatory...
             child = _etree.SubElement(obs, 'DtObsHydro')
-            child.text = observation[0].isoformat()
+            child.text = observation[0].strftime('%Y-%m-%dT%H:%M:%S')
             child = _etree.SubElement(obs, 'ResObsHydro')
             child.text = unicode(observation[1]['res'])
             # while mth, qal and cnt aren't
@@ -872,7 +944,7 @@ def _observations_to_element(observations, strict=True):
         return element
 
 
-def _obsmeteo_to_element(seriemeteo, index, obs, strict=True):
+def _obsmeteo_to_element(seriemeteo, index, obs, bdhydro=False, strict=True):
     """Return a <ObsMeteo> element from a obsmeteo.serie and a observation."""
 
     if (seriemeteo is not None) and (index is not None) and (obs is not None):
@@ -888,14 +960,21 @@ def _obsmeteo_to_element(seriemeteo, index, obs, strict=True):
         story = _collections.OrderedDict()
         story['CdGrdMeteo'] = {'value': seriemeteo.grandeur.typemesure}
         story['CdSiteMeteo'] = {'value': seriemeteo.grandeur.sitemeteo.code}
-        story['DtProdObsMeteo'] = {'value': seriemeteo.dtprod.isoformat()}
-        story['DtObsMeteo'] = {'value': index.isoformat()}
+        story['DtProdObsMeteo'] = {
+            'value': seriemeteo.dtprod.strftime('%Y-%m-%dT%H:%M:%S')
+        }
+        story['DtObsMeteo'] = {'value': index.strftime('%Y-%m-%dT%H:%M:%S')}
         story['StatutObsMeteo'] = {'value': seriemeteo.statut}
         story['ResObsMeteo'] = {'value': obs.res}
-        story['DureeObsMeteo'] = {
-            'value': None if (seriemeteo.duree.total_seconds() == 0)
-            else int(seriemeteo.duree.total_seconds() / 60)
-        }
+        if bdhydro:
+            story['DureeObsMeteo'] = {
+                'value': int(seriemeteo.duree.total_seconds() / 60)
+            }
+        else:
+            story['DureeObsMeteo'] = {
+                'value': None if (seriemeteo.duree.total_seconds() == 0)
+                else int(seriemeteo.duree.total_seconds() / 60)
+            }
         story['IndiceQualObsMeteo'] = {
             'value': None if _math.isnan(obs.qua) else int(obs.qua)
         }
@@ -918,7 +997,7 @@ def _obsmeteo_to_element(seriemeteo, index, obs, strict=True):
         return element
 
 
-def _simulation_to_element(simulation, strict=True):
+def _simulation_to_element(simulation, bdhydro=False, strict=True):
     """Return a <Simul> element from a simulation.Simulation."""
 
     if simulation is not None:
@@ -932,11 +1011,15 @@ def _simulation_to_element(simulation, strict=True):
             _required(simulation, ['grandeur'])
             _required(simulation.modeleprevision, ['code'])
             _required(simulation.intervenant, ['code'])
+        if bdhydro:
+            _required(simulation, ['statut'])
 
         # template for simulation simple element
         story = _collections.OrderedDict((
             ('GrdSimul', {'value': simulation.grandeur}),
-            ('DtProdSimul', {'value': simulation.dtprod.isoformat()}),
+            ('DtProdSimul', {
+                'value': simulation.dtprod.strftime('%Y-%m-%dT%H:%M:%S')
+            }),
             ('IndiceQualiteSimul', {
                 'value': unicode(simulation.qualite)
                 if simulation.qualite is not None else None
@@ -974,7 +1057,7 @@ def _simulation_to_element(simulation, strict=True):
         return element
 
 
-def _previsions_to_element(previsions, strict=True):
+def _previsions_to_element(previsions, bdhydro=False, strict=True):
     """Return a <Prevs> element from a simulation.Previsions."""
 
     # this one is very VERY painful #:~/
@@ -993,7 +1076,9 @@ def _previsions_to_element(previsions, strict=True):
                     tag_name='DtPrev',
                     # dte is a numpy.datetime64 with perhaps nanoseconds
                     # it is better to cast it before getting the isoformat
-                    text=_numpy.datetime64(dte, 's').item().isoformat()
+                    text=_numpy.datetime64(dte, 's').item().strftime(
+                        '%Y-%m-%dT%H:%M:%S'
+                    )
                 )
             )
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1045,7 +1130,7 @@ def _previsions_to_element(previsions, strict=True):
 def _factory(root, story):
     """Return the <root> element including elements described in story.
 
-    Story is a dictionnary which keys are the xml tags to create and values
+    Story is a dictionnary which keys are the XML tags to create and values
     one of the possible 2 forms:
 
         1./ Rule to create a sub-element (recursif)
@@ -1062,12 +1147,12 @@ def _factory(root, story):
                 'force': bool (default False)
             }
 
-        If value is an iterable, an xml tag is created for each item of values.
+        If value is an iterable, an XML tag is created for each item of values.
 
         When force is True, a None value create the element tag, otherwise
         rule is left.
 
-    WARNING: as order matters for Xml Hydrometrie files, one must use
+    WARNING: as order matters for XML Hydrometrie files, one must use
              collections.OrderedDict to store the story.
 
     """
@@ -1131,7 +1216,8 @@ def _required(obj, attrs):
     """
     for attr in attrs:
         try:
-            assert getattr(obj, attr) is not None
+            if getattr(obj, attr) is None:
+                raise ValueError()
         except Exception:
             raise ValueError(
                 'attribute {attr} is requested with a value other '

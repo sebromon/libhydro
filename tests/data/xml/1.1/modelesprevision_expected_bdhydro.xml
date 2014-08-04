@@ -1,38 +1,37 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<!-- <hydrometrie xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1/sandre_sc_hydrometrie.xsd"> -->
 <hydrometrie>
   <Scenario>
     <CodeScenario>hydrometrie</CodeScenario>
     <VersionScenario>1.1</VersionScenario>
     <NomScenario>Echange de données hydrométriques</NomScenario>
-    <DateHeureCreationFichier>2001-12-17T09:30:47+05:00</DateHeureCreationFichier>
-    <RefFichier>modele.xml</RefFichier>
+    <DateHeureCreationFichier>2001-12-17T04:30:47</DateHeureCreationFichier>
+    <!-- <RefFichier>modele.xml</RefFichier> -->
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">825</CdIntervenant>
-      <CdContact schemeAgencyID="SCHAPI">222</CdContact>
+      <CdContact schemeAgencyID="SANDRE">222</CdContact>
     </Emetteur>
     <Destinataire>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
-      <CdContact schemeAgencyID="SCHAPI">2</CdContact>
+      <CdContact schemeAgencyID="SANDRE">2</CdContact>
     </Destinataire>
   </Scenario>
   <RefHyd>
     <ModelesPrevision>
       <ModelePrevision>
-        <CdContact>token</CdContact>
+        <!-- <CdContact>token</CdContact> -->
         <CdModelePrevision>token</CdModelePrevision>
         <LbModelePrevision>String</LbModelePrevision>
         <TypModelePrevision>0</TypModelePrevision>
         <DescModelePrevision>String</DescModelePrevision>
-        <DtMajModelePrevision>2001-12-17T09:30:47+05:00</DtMajModelePrevision>
+        <!-- <DtMajModelePrevision>2001-12-17T04:30:47</DtMajModelePrevision> -->
       </ModelePrevision>
       <ModelePrevision>
-        <CdContact>token</CdContact>
+        <!-- <CdContact>token</CdContact> -->
         <CdModelePrevision>token</CdModelePrevision>
         <LbModelePrevision>String</LbModelePrevision>
         <TypModelePrevision>0</TypModelePrevision>
         <DescModelePrevision>String</DescModelePrevision>
-        <DtMajModelePrevision>2001-12-17T09:30:47+05:00</DtMajModelePrevision>
+        <!-- <DtMajModelePrevision>2001-12-17T04:30:47</DtMajModelePrevision> -->
       </ModelePrevision>
     </ModelesPrevision>
   </RefHyd>

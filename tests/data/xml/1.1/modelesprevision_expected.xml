@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<hydrometrie>
+<hydrometrie xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1/sandre_sc_hydrometrie.xsd">
   <Scenario>
     <CodeScenario>hydrometrie</CodeScenario>
     <VersionScenario>1.1</VersionScenario>
@@ -7,7 +7,8 @@
     <DateHeureCreationFichier>2001-12-17T04:30:47</DateHeureCreationFichier>
     <!-- <RefFichier>modele.xml</RefFichier> -->
     <Emetteur>
-      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdIntervenant schemeAgencyID="SANDRE">825</CdIntervenant>
+      <CdContact>222</CdContact>
     </Emetteur>
     <Destinataire>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>

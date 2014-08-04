@@ -492,8 +492,9 @@ class TestFromXmlModelesPrevision(unittest.TestCase):
         self.assertEqual(
             scenario.dtprod, datetime.datetime(2001, 12, 17, 4, 30, 47)
         )
-        self.assertEqual(scenario.emetteur.intervenant.code, 1537)
+        self.assertEqual(scenario.emetteur.intervenant.code, 825)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
+        self.assertEqual(scenario.emetteur.contact.code, 222)
         self.assertEqual(scenario.destinataire.intervenant.code, 1537)
         self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
         self.assertEqual(scenario.destinataire.contact.code, 2)

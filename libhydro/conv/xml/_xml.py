@@ -36,8 +36,8 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.4b"""
-__date__ = """2014-08-03"""
+__version__ = """0.4c"""
+__date__ = """2014-08-04"""
 
 #HISTORY
 #V0.4 - 2014-07-18
@@ -93,7 +93,7 @@ class Message(object):
         self, scenario, siteshydro=None, sitesmeteo=None, seuilshydro=None,
         modelesprevision=None, evenements=None,
         serieshydro=None, seriesmeteo=None, simulations=None,
-        ordered=False, strict=True
+        strict=True
     ):
         """Initialisation.
 
@@ -107,15 +107,12 @@ class Message(object):
             serieshydro (obshydro.Serie iterable ou None)
             seriesmeteo (obsmeteo.Serie iterable ou None)
             simulations (simulation.Simulation iterable ou None)
-            ordered (bool, default False) = if True tries to keep things in
-                order when serialising (slower)
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite des elements
 
         """
 
         # -- simple properties --
-        self._ordered = bool(ordered)
         self._strict = bool(strict)
 
         # -- adjust the descriptor --
@@ -173,8 +170,8 @@ class Message(object):
         Arguments:
             src (nom de fichier, url, objet fichier...) = source de donnee. Les
                 type de src acceptes sont ceux de lxml.etree.parse
-            ordered (bool, default False) = if True tries to keep things in
-                order
+            ordered (bool, defaut False) = si True essaie de conserver l'ordre
+                de certains elements
 
         """
         # read the file
@@ -260,17 +257,22 @@ class Message(object):
             except Exception, e:
                 raise ValueError('bad element, {}'.format(e))
 
-    def write(self, file, encoding='utf-8', compression=0, force=False):
+    def write(
+        self, file, encoding='utf-8', compression=0, force=False,
+        bdhydro=False, ordered=False
+    ):
         """Ecrit le Message dans le fichier dst.
 
         Cette methode est un wrapper autour de lxml.etree.ElementTree.write.
         Se referer a la documentation de lxml pour le detail des options.
 
         Arguments:
-            dst (fichier)
+            dst (str ou objet fichier)
             encoding (string)
             compression (int de 0 a 9) = niveau de compression gzip
-            force (bool)
+            force (bool) = ecrase un fichier deja existant
+            ordered (bool, defaut False) = si True essaie de conserver l'ordre
+                de certains elements
 
         """
         # check file
@@ -288,8 +290,9 @@ class Message(object):
                 serieshydro=self.serieshydro,
                 seriesmeteo=self.seriesmeteo,
                 simulations=self.simulations,
-                ordered=self._ordered,
-                strict=self._strict
+                strict=self._strict,
+                bdhydro=bdhydro,
+                ordered=ordered
             )
         )
         tree.write(
@@ -301,7 +304,7 @@ class Message(object):
             compression=compression
         )
 
-    def show(self):
+    def show(self, bdhydro=False, ordered=False):
         """Return pretty print XML."""
         return _etree.tostring(
             _to_xml._to_xml(
@@ -314,8 +317,9 @@ class Message(object):
                 serieshydro=self.serieshydro,
                 seriesmeteo=self.seriesmeteo,
                 simulations=self.simulations,
-                ordered=self._ordered,
-                strict=self._strict
+                strict=self._strict,
+                bdhydro=bdhydro,
+                ordered=ordered
             ),
             encoding=_sys.stdout.encoding,
             xml_declaration=1,

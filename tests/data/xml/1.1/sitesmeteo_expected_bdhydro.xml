@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hydrometrie xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1/sandre_sc_hydrometrie.xsd">
+<hydrometrie>
   <Scenario>
     <CodeScenario>hydrometrie</CodeScenario>
     <VersionScenario>1.1</VersionScenario>
@@ -8,7 +8,7 @@
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">1520</CdIntervenant>
       <NomIntervenant>Service de Prévision des Crues (S.P.C.) Grand Delta</NomIntervenant>
-      <CdContact>26</CdContact>
+      <CdContact schemeAgencyID="SANDRE">26</CdContact>
     </Emetteur>
     <Destinataire>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>

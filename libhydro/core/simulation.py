@@ -294,13 +294,13 @@ class Simulation(object):
 
         # -- simple properties --
         self._strict = bool(strict)
+        self.public = bool(public)
+        self.commentaire = unicode(commentaire) if commentaire else None
+        self.intervenant = intervenant
 
         # -- adjust the descriptors --
         vars(self.__class__)['grandeur'].strict = self._strict
         vars(self.__class__)['statut'].strict = self._strict
-        self.public = bool(public)
-        self.commentaire = unicode(commentaire) if commentaire else None
-        self.intervenant = intervenant
 
         # -- descriptors --
         self.grandeur = grandeur

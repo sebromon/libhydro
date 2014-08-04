@@ -5,12 +5,12 @@ Ce module expose la classe:
     # Scenario
 
 Il contient les fonctions de lecture des fichiers au format
-Xml Hydrometrie (version 1.1 exclusivement).
+XML Hydrometrie (version 1.1 exclusivement).
 
 Toutes les heures sont considerees UTC si le fuseau horaire n'est pas precise.
 
 Les fonctions de ce module sont a usage prive, il est recommande d'utiliser la
-classe xml.Message comme interface aux fichiers Xml Hydrometrie.
+classe xml.Message comme interface aux fichiers XML Hydrometrie.
 
 """
 #-- imports -------------------------------------------------------------------
@@ -24,7 +24,6 @@ from __future__ import (
 import datetime as _datetime
 import collections as _collections
 
-import numpy as _numpy
 from lxml import etree as _etree
 
 from libhydro.core import (
@@ -45,8 +44,8 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.3b"""
-__date__ = """2014-08-03"""
+__version__ = """0.3c"""
+__date__ = """2014-08-04"""
 
 #HISTORY
 #V0.3 - 2014-07-31
@@ -60,10 +59,10 @@ __date__ = """2014-08-03"""
 
 #-- todos ---------------------------------------------------------------------
 # TODO - move the Scenario class and the named tuples in the _xml module
-# TODO - factorize Scenario.emetteur and destinaire properties
+# TODO - factorize Scenario.emetteur and destinataire properties
 # TODO - if xpath is too slow to acess elements, use indexing
 #        code=element[0].text,
-#        but xpath is more readable and do not care of xml order
+#        but xpath is more readable and do not care of XML order
 # TODO - XSD validation
 
 
@@ -95,7 +94,7 @@ class Scenario(object):
         code = hydrometrie
         version = 1.1
         nom = 'Echange de donnees hydrometriques'
-        dtprod (datetime.datetime)
+        dtprod (datetime.datetime) = date de production
         emetteur.intervenant (intervenant.Intervenant)
         emetteur.contact (Intervenant.Contact ou None)
         destinataire.intervenant (intervenant.Intervenant)
@@ -117,6 +116,9 @@ class Scenario(object):
     version = '1.1'
     nom = 'Echange de données hydrométriques'
 
+    # descriptors
+    dtprod = _composant.Datefromeverything(required=True)
+
     def __init__(self, emetteur, destinataire, dtprod=None):
         """Constructeur.
 
@@ -125,17 +127,18 @@ class Scenario(object):
                 est utilise, sa propriete Intervenant doit etre renseignee
             destinataire (intervenant.Intervenant ou Contact) = si un contact
                 est utilise, sa propriete Intervenant doit etre renseignee
-            dtprod (datetime ou isoformat, defaut utcnow())
+            dtprod (numpy.datetime64 string, datetime.datetime...,
+                defaut utcnow()) = date de production
 
         """
+        # -- descriptors --
+        self.dtprod = dtprod or _datetime.datetime.utcnow()
 
         # -- full properties --
         self._emetteur = Emetteur(None, None)
         self._destinataire = Destinataire(None, None)
-        self._dtprod = None
         self.emetteur = emetteur
         self.destinataire = destinataire
-        self.dtprod = dtprod
 
     # -- property emetteur --
     @property
@@ -199,34 +202,6 @@ class Scenario(object):
         else:
             raise TypeError('destinataire must be an Intervenant or a Contact')
 
-    # -- property dtprod --
-    @property
-    def dtprod(self):
-        """Return message generation date."""
-        return self._dtprod
-
-    @dtprod.setter
-    def dtprod(self, dtprod):
-        """Set message generation date."""
-        try:
-            # None case
-            if dtprod is None:
-                dtprod = _datetime.datetime.utcnow()
-
-            # other cases
-            if isinstance(dtprod, (str, unicode)):
-                dtprod = _numpy.datetime64(dtprod)
-            if isinstance(dtprod, _numpy.datetime64):
-                dtprod = dtprod.item()
-            if not isinstance(dtprod, _datetime.datetime):
-                raise TypeError('dtprod must be a datetime')
-
-            # all is well
-            self._dtprod = dtprod
-
-        except:
-            raise
-
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
@@ -244,16 +219,17 @@ class Scenario(object):
 
 
 # -- tests function -----------------------------------------------------------
-def _parse(src):
-    """Return objects from xml source file.
+def _parse(src, ordered=True):
+    """Return objects from XML source file.
 
     Cette fonction est destinee au tests unitaires. Les utilisateurs sont
     invites a utiliser la classe xml.Message comme interface de lecture des
-    fichiers Xml Hydrometrie.
+    fichiers XML Hydrometrie.
 
     Arguments:
         src (nom de fichier, url, objet fichier...) = source de donnee. Les
             type de src acceptes sont ceux de lxml.etree.parse
+        ordered (bool)
 
     Retourne un dictionnaire avec les cles:
             # scenario: xml.Scenario
@@ -293,7 +269,7 @@ def _parse(src):
         'sitesmeteo': _sitesmeteo_from_element(tree.find('RefHyd/SitesMeteo')),
         'seuilshydro': _seuilshydro_from_element(
             element=tree.find('RefHyd/SitesHydro'),
-            ordered=True
+            ordered=ordered
         ),
         'modelesprevision': _modelesprevision_from_element(
             tree.find('RefHyd/ModelesPrevision')

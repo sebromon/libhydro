@@ -115,9 +115,9 @@ class TestScenario(unittest.TestCase):
         emetteur = intervenant.Contact(intervenant=intervenant.Intervenant())
         Scenario(emetteur=emetteur, destinataire=destinataire)
         with self.assertRaises(TypeError):
-            Scenario(**{'emetteur': None, 'destinataire': destinataire})
+            Scenario(emetteur=None, destinataire=destinataire)
         with self.assertRaises(TypeError):
-            Scenario(**{'emetteur': 'emetteur', 'destinataire': destinataire})
+            Scenario(emetteur='emetteur', destinataire=destinataire)
 
     def test_error_02(self):
         """Destinataire error."""
@@ -125,30 +125,26 @@ class TestScenario(unittest.TestCase):
         emetteur = intervenant.Intervenant()
         Scenario(emetteur=emetteur, destinataire=destinataire)
         with self.assertRaises(TypeError):
-            Scenario(**{'emetteur': emetteur, 'destinataire': None})
+            Scenario(emetteu=emetteur, destinataire=None)
         with self.assertRaises(TypeError):
-            Scenario(**{'emetteur': emetteur, 'destinataire': 'destinataire'})
+            Scenario(emetteur=emetteur, destinataire='destinataire')
 
     def test_error_03(self):
         """Dtprod error."""
         emetteur = intervenant.Intervenant(code=5)
         destinataire = intervenant.Intervenant(code=8, nom='toto')
         Scenario(emetteur=emetteur, destinataire=destinataire, dtprod=None)
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             Scenario(
-                **{
-                    'emetteur': emetteur,
-                    'destinataire': destinataire,
-                    'dtprod': {}
-                }
+                emetteur=emetteur,
+                destinataire=destinataire,
+                dtprod=2012
             )
         with self.assertRaises(ValueError):
             Scenario(
-                **{
-                    'emetteur': emetteur,
-                    'destinataire': destinataire,
-                    'dtprod': 'ff'
-                }
+                emetteur=emetteur,
+                destinataire=destinataire,
+                dtprod='2012-13-24'
             )
 
 
@@ -272,9 +268,9 @@ class TestMessage(unittest.TestCase):
         scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
         assert Message(scenario=scenario, strict=False)
         with self.assertRaises(TypeError):
-            Message(**{'scenario': None, 'strict': False})
+            Message(scenario=None, strict=False)
         with self.assertRaises(TypeError):
-            Message(**{'scenario': 'scenario'})
+            Message(scenario='scenario')
 
     def test_error_02(self):
         """Siteshydro error."""
@@ -282,7 +278,7 @@ class TestMessage(unittest.TestCase):
         destinataire = intervenant.Intervenant()
         scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
         with self.assertRaises(TypeError):
-            Message(**{'scenario': scenario, 'siteshydro': 'siteshydro'})
+            Message(scenario=scenario, siteshydro='siteshydro')
 
     def test_error_03(self):
         """Seuilshydro error."""
@@ -296,7 +292,7 @@ class TestMessage(unittest.TestCase):
         ]
         scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
         with self.assertRaises(TypeError):
-            Message(**{'scenario': scenario, 'seuilshydro': 'seuilshydro'})
+            Message(scenario=scenario, seuilshydro='seuilshydro')
 
     def test_error_04(self):
         """Evenements error."""
@@ -304,7 +300,7 @@ class TestMessage(unittest.TestCase):
         destinataire = intervenant.Intervenant()
         scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
         with self.assertRaises(TypeError):
-            Message(**{'scenario': scenario, 'evenements': 'evenements'})
+            Message(scenario=scenario, evenements='evenements')
 
     def test_error_05(self):
         """Series error."""
@@ -313,7 +309,7 @@ class TestMessage(unittest.TestCase):
         destinataire = intervenant.Intervenant()
         scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
         with self.assertRaises(TypeError):
-            Message(**{'scenario': scenario, 'series': 'series'})
+            Message(scenario=scenario, series='series')
 
     def test_error_06(self):
         """Simulations error."""
@@ -321,7 +317,7 @@ class TestMessage(unittest.TestCase):
         destinataire = intervenant.Intervenant(mnemo='nemo')
         scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
         with self.assertRaises(TypeError):
-            Message(**{'scenario': scenario, 'simulations': 'simulations'})
+            Message(scenario=scenario, simulations='simulations')
 
     def test_add_01(self):
         """Add elements to message."""
@@ -336,9 +332,9 @@ class TestMessage(unittest.TestCase):
         """Add error."""
         msg = Message.from_file(self.file_sith)
         with self.assertRaises(TypeError):
-            msg.add(**{'blurp': ''})
+            msg.add(blurp='')
         with self.assertRaises(ValueError):
-            msg.add(**{'serieshydro': 'eee'})
+            msg.add(serieshydro='eee')
 
     def test_write_error_01(self):
         """Write existing file."""

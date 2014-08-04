@@ -37,10 +37,12 @@ from libhydro.core import (sitehydro, seuil)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.3b"""
-__date__ = """2014-08-03"""
+__version__ = """0.4a"""
+__date__ = """2014-08-04"""
 
 #HISTORY
+#V0.4 - 2014-08-04
+#    separate the sandre and bdhydro tests
 #V0.3 - 2014-08-01
 #    update the ToXmlBaseTest to write all tags
 #V0.2 - 2014-03-22
@@ -186,11 +188,18 @@ class ToXmlBaseTest(ParametrizedTestCase):
                     'data', 'xml', '1.1', '%s_expected.xml' % self.param
                 )
             )
+            self.expected_bdhydro = xml_to_unicode(
+                os.path.join(
+                    'data', 'xml', '1.1', '%s_expected_bdhydro.xml' % (
+                        self.param
+                    )
+                )
+            )
         # set our own assertEqual function, more verbose
         self.assertEqual = assert_unicode_equal
 
     def test_base(self):
-        """Base test."""
+        """Sandre format test."""
 
         # TODO discover hack - we do not want unittest.discover to run this
         #                      test directly. But it count as a real test :-(
@@ -204,7 +213,7 @@ class ToXmlBaseTest(ParametrizedTestCase):
         data['ordered'] = True
         # build xml string from objects
         xml = etree.tostring(
-            to_xml._to_xml(**data),
+            to_xml._to_xml(bdhydro=False, **data),
             encoding='utf-8'
         ).decode('utf-8')
         # test
@@ -212,7 +221,33 @@ class ToXmlBaseTest(ParametrizedTestCase):
         self.assertEqual(
             xml,
             self.expected,
-            msg='ToXMLBaseTest for unit <%s>' % self.param
+            msg='To XML SANDRE format test for unit <%s>' % self.param
+        )
+
+    def test_bdhydro(self):
+        """Bdhydro format test."""
+
+        # TODO discover hack - we do not want unittest.discover to run this
+        #                      test directly. But it count as a real test :-(
+        if self.param is None:
+            self.skipTest('this test runs in a separated TestSuite')
+
+        # build object from xml
+        data = from_xml._parse(
+            os.path.join('data', 'xml', '1.1', '%s.xml' % self.param)
+        )
+        data['ordered'] = True
+        # build xml string from objects
+        xml = etree.tostring(
+            to_xml._to_xml(bdhydro=True, **data),
+            encoding='utf-8'
+        ).decode('utf-8')
+        # test
+        # DEBUG - if self.param == 'seuilshydro': print(xml)
+        self.assertEqual(
+            xml,
+            self.expected_bdhydro,
+            msg='To XML BDHYDRO format test for unit <%s>' % self.param
         )
 
 

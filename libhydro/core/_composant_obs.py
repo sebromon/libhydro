@@ -197,11 +197,13 @@ class Serie(object):
 
             if (self._strict) and (observations is not None):
                 # we check we have a res column...
-                assert hasattr(observations, 'res')
+                if not hasattr(observations, 'res'):
+                    raise TypeError()
                 # ... and that index contains datetimes
                 # FIXME - should fail with datetime64 object.
                 #         Use .item().isoformat()
-                assert hasattr(observations.index[0], 'isoformat')
+                if not hasattr(observations.index[0], 'isoformat'):
+                    raise TypeError()
             self._observations = observations
 
         except:
