@@ -28,6 +28,7 @@ from lxml import etree as _etree
 
 from libhydro.core import (
     _composant,
+    intervenant as _intervenant,
     sitehydro as _sitehydro,
     sitemeteo as _sitemeteo,
     seuil as _seuil,
@@ -35,7 +36,6 @@ from libhydro.core import (
     obshydro as _obshydro,
     obsmeteo as _obsmeteo,
     simulation as _simulation,
-    intervenant as _intervenant,
     evenement as _evenement
 )
 
@@ -44,10 +44,12 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.3c"""
-__date__ = """2014-08-04"""
+__version__ = """0.4a"""
+__date__ = """2014-08-22"""
 
 #HISTORY
+#V0.4 - 2014-08-22
+#    add the intervenants
 #V0.3 - 2014-07-31
 #    add the modelesprevision element
 #    change the Scenario.emetteur and destinataire properties
@@ -233,6 +235,7 @@ def _parse(src, ordered=True):
 
     Retourne un dictionnaire avec les cles:
             # scenario: xml.Scenario
+            # intervenants: liste d'intervenant.Intervenant
             # siteshydro: liste de sitehydro.Siteshydro
             # sitesmeteo: liste de sitehydro.Siteshydro
             # seuilshydro: liste de seuil.Seuilhydro
@@ -263,10 +266,18 @@ def _parse(src, ordered=True):
         raise ValueError("can't parse xml file with namespaces")
 
     return {
-        'scenario': _scenario_from_element(tree.find('Scenario')),
-        # 'intervenants':
-        'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro')),
-        'sitesmeteo': _sitesmeteo_from_element(tree.find('RefHyd/SitesMeteo')),
+        'scenario': _scenario_from_element(
+            tree.find('Scenario')
+        ),
+        'intervenants': _intervenants_from_element(
+            tree.find('RefHyd/Intervenants')
+        ),
+        'siteshydro': _siteshydro_from_element(
+            tree.find('RefHyd/SitesHydro')
+        ),
+        'sitesmeteo': _sitesmeteo_from_element(
+            tree.find('RefHyd/SitesMeteo')
+        ),
         'seuilshydro': _seuilshydro_from_element(
             element=tree.find('RefHyd/SitesHydro'),
             ordered=ordered
@@ -280,14 +291,18 @@ def _parse(src, ordered=True):
         # 'courbestarage'
         # 'jaugeages'
         # 'courbescorrection'
-        'serieshydro': _serieshydro_from_element(tree.find('Donnees/Series')),
+        'serieshydro': _serieshydro_from_element(
+            tree.find('Donnees/Series')
+        ),
         'seriesmeteo': _seriesmeteo_from_element(
             tree.find('Donnees/ObssMeteo')
         ),
         # 'obsselab'
         # 'gradshydro'
         # 'qualifsannee'
-        'simulations': _simulations_from_element(tree.find('Donnees/Simuls'))
+        'simulations': _simulations_from_element(
+            tree.find('Donnees/Simuls')
+        )
         # 'alarmes'
     }
 
@@ -295,6 +310,16 @@ def _parse(src, ordered=True):
 # -- global functions ---------------------------------------------------------
 
 # TODO - some functions could be factorised
+
+def _intervenants_from_element(element):
+    """Return a list of intervenant.Intervenant from a <Intervenants> """
+    """element."""
+    intervenants = []
+    if element is not None:
+        for intervenant in element.findall('./Intervenant'):
+            intervenants.append(_intervenant_from_element(intervenant))
+    return intervenants
+
 
 def _siteshydro_from_element(element):
     """Return a list of sitehydro.Sitehydro from a <SitesHydro> element."""
@@ -480,6 +505,28 @@ def _scenario_from_element(element):
             ),
             dtprod=_value(element, 'DateHeureCreationFichier', _UTC)
         )
+
+
+def _intervenant_from_element(element):
+    """Return a intervenant.Intervenant from a <Intervenant> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['code'] = _value(element, 'CdIntervenant')
+        args['origin'] = element.attrib['schemeAgencyID']
+        args['nom'] = _value(element, 'Lbintervenant')
+        args['mnemo'] = _value(element, 'LbUsuelintervenant')
+        args['contacts'] = [
+            _contact_from_element(e)
+            for e in element.findall('Contacts/Contact')
+        ]
+
+        # build intervenant
+        return _intervenant.Intervenant(**args)
+
+
+def _contact_from_element(element):
+    raise NotImplementedError
 
 
 def _sitehydro_from_element(element):
@@ -948,7 +995,7 @@ def _previsions_from_element(element):
 
 # -- utility functions --------------------------------------------------------
 def _istrue(s):
-    """Return wether s is a sort of True or None."""
+    """Return wether s is a kind of True... or None."""
     # bool('False') is True...
     if s is None:
         return None

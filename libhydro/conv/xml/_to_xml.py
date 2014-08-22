@@ -58,6 +58,7 @@ __date__ = """2014-08-04"""
 ORDERED_ACCEPTED_KEYS = [
     'scenario',
     # line 115: [1:5]
+    # 'intervenants',
     'siteshydro', 'sitesmeteo', 'seuilshydro', 'modelesprevision',
     # line 143: [5:]
     'evenements', 'serieshydro', 'seriesmeteo', 'simulations'
@@ -229,9 +230,8 @@ def _sitesmeteo_to_element(sitesmeteo, bdhydro=False, strict=True):
         return element
 
 
-def _seuilshydro_to_element(
-    seuilshydro, ordered=False, bdhydro=False, strict=True
-):
+def _seuilshydro_to_element(seuilshydro, ordered=False,
+                            bdhydro=False, strict=True):
     """Return a <SitesHydro> element from a list of seuil.Seuilhydro."""
     if seuilshydro is not None:
         # the ugly XML doesn't support many Q values within a seuil
@@ -395,9 +395,8 @@ def _scenario_to_element(scenario, bdhydro=False, strict=True):
         return _factory(root=_etree.Element('Scenario'), story=story)
 
 
-def _sitehydro_to_element(
-    sitehydro, seuilshydro=None, bdhydro=False, strict=True
-):
+def _sitehydro_to_element(sitehydro, seuilshydro=None,
+                          bdhydro=False, strict=True):
     """Return a <SiteHydro> element from a sitehydro.Sitehydro.
 
     Args:
@@ -650,9 +649,8 @@ def _seuilhydro_to_element(seuilhydro, bdhydro=False, strict=True):
         return element
 
 
-def _valeurseuilstationhydro_to_element(
-    valeurseuil, bdhydro=False, strict=True
-):
+def _valeurseuilstationhydro_to_element(valeurseuil,
+                                        bdhydro=False, strict=True):
     """Return a <ValeursSeuilStationHydro> element from a seuil.Valeurseuil.
 
     Requires valeurseuil.entite.code to be a station hydro code.

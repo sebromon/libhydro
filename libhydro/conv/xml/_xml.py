@@ -21,7 +21,7 @@ from lxml import etree as _etree
 from . import (_from_xml, _to_xml)
 from libhydro.core import (
     _composant,
-    # intervenant as _intervenant,
+    intervenant as _intervenant,
     sitehydro as _sitehydro,
     sitemeteo as _sitemeteo,
     seuil as _seuil,
@@ -36,10 +36,12 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.4c"""
-__date__ = """2014-08-04"""
+__version__ = """0.5a"""
+__date__ = """2014-08-22"""
 
 #HISTORY
+#V0.5 - 2014-08-22
+#    add the intervenants
 #V0.4 - 2014-07-18
 #    add the modelesprevision element
 #    add the sitesmeteo and seriesmeteo element
@@ -57,6 +59,7 @@ class Message(object):
 
     Proprietes:
         scenario (xml.Scenario) = un objet Scenario obligatoire
+        intervenants (liste d'intervenant.Intervenant)
         siteshydro (liste de sitehydro.Sitehydro)
         sitesmeteo (liste de sitemeteo.Sitemeteo)
         seuilshydro (liste de seuil.Seuilhydro)
@@ -68,8 +71,6 @@ class Message(object):
 
     """
 
-        # 'intervenants': 'TODO',
-
         # 'courbestarage'
         # 'jaugeages'
         # 'courbescorrection'
@@ -78,6 +79,7 @@ class Message(object):
         # 'qualifsannee'
         # 'alarmes'
 
+    intervenants = _composant.Rlistproperty(cls=_intervenant.Intervenant)
     siteshydro = _composant.Rlistproperty(cls=_sitehydro.Sitehydro)
     sitesmeteo = _composant.Rlistproperty(cls=_sitemeteo.Sitemeteo)
     seuilshydro = _composant.Rlistproperty(cls=_seuil.Seuilhydro)
@@ -90,8 +92,8 @@ class Message(object):
     simulations = _composant.Rlistproperty(cls=_simulation.Simulation)
 
     def __init__(
-        self, scenario, siteshydro=None, sitesmeteo=None, seuilshydro=None,
-        modelesprevision=None, evenements=None,
+        self, scenario, intervenants=None, siteshydro=None, sitesmeteo=None,
+        seuilshydro=None, modelesprevision=None, evenements=None,
         serieshydro=None, seriesmeteo=None, simulations=None,
         strict=True
     ):
@@ -99,6 +101,7 @@ class Message(object):
 
         Arguments:
             scenario (xml.Scenario) = un objet Scenario obligatoire
+            intervenants (intervenant.Intervenant iterable ou None)
             siteshydro (sitehydro.Sitehydro iterable ou None)
             sitesmeteo (sitemeteo.Sitemeteo iterable ou None)
             seuilshydro (seuil.Seuilhydro iterable ou None)
@@ -121,6 +124,7 @@ class Message(object):
             vars(self.__class__)[key].required = self._strict  # [] or None
 
         # -- descriptors --
+        self.intervenants = intervenants or []
         self.siteshydro = siteshydro or []
         self.sitesmeteo = sitesmeteo or []
         self.seuilshydro = seuilshydro or []
@@ -189,6 +193,9 @@ class Message(object):
             scenario=_from_xml._scenario_from_element(
                 tree.find('Scenario')
             ),
+            intervenants=_from_xml._intervenants_from_element(
+                tree.find('RefHyd/Intervenants')
+            ),
             siteshydro=_from_xml._siteshydro_from_element(
                 tree.find('RefHyd/SitesHydro')
             ),
@@ -216,7 +223,6 @@ class Message(object):
             )
         )
 
-            # 'intervenants': TODO
             # 'courbestarage'
             # 'jaugeages'
             # 'courbescorrection'
@@ -233,15 +239,16 @@ class Message(object):
             Message.add(cle=valeur, ...)
 
         avec les regles suivantes:
-            CLE PARMI   /      VALEUR
-            siteshydro  = iterable de sitehydro.Sitehydro
-            sitesmeteo  = iterable de sitemeteo.Sitemeteo
-            seuilshydro = iterable de seuil.Seuilhydro
+            CLE PARMI    /      VALEUR
+            intervenants = iterable d'intervenant.Intervenant
+            siteshydro   = iterable de sitehydro.Sitehydro
+            sitesmeteo   = iterable de sitemeteo.Sitemeteo
+            seuilshydro  = iterable de seuil.Seuilhydro
             modelesprevision = iterable de modeleprevision.Modeleprevision
-            evenements  = iterable d'evenement.Evenement
-            serieshydro = iterable de obshydro.Serie
-            seriesmeteo = iterable de obsmeteo.Serie
-            simulations = iterable de simulation.Simulation
+            evenements   = iterable d'evenement.Evenement
+            serieshydro  = iterable de obshydro.Serie
+            seriesmeteo  = iterable de obsmeteo.Serie
+            simulations  = iterable de simulation.Simulation
 
         """
         for key in kargs:
@@ -267,10 +274,11 @@ class Message(object):
         Se referer a la documentation de lxml pour le detail des options.
 
         Arguments:
-            dst (str ou objet fichier)
+            file (str ou objet fichier)
             encoding (string)
             compression (int de 0 a 9) = niveau de compression gzip
-            force (bool) = ecrase un fichier deja existant
+            force (bool, defaut False) = ecrase un fichier deja existant
+            bdhydro (bool, defaut False) = utilise le format bdhydro
             ordered (bool, defaut False) = si True essaie de conserver l'ordre
                 de certains elements
 
@@ -282,6 +290,7 @@ class Message(object):
         tree = _etree.ElementTree(
             _to_xml._to_xml(
                 scenario=self.scenario,
+                intervenants=self.intervenants,
                 siteshydro=self.siteshydro,
                 sitesmeteo=self.sitesmeteo,
                 seuilshydro=self.seuilshydro,
@@ -290,9 +299,9 @@ class Message(object):
                 serieshydro=self.serieshydro,
                 seriesmeteo=self.seriesmeteo,
                 simulations=self.simulations,
-                strict=self._strict,
                 bdhydro=bdhydro,
-                ordered=ordered
+                ordered=ordered,
+                strict=self._strict
             )
         )
         tree.write(
@@ -305,10 +314,18 @@ class Message(object):
         )
 
     def show(self, bdhydro=False, ordered=False):
-        """Return pretty print XML."""
+        """Return a pretty print XML.
+
+       Arguments:
+            bdhydro (bool, defaut False) = utilise le format bdhydro
+            ordered (bool, defaut False) = si True essaie de conserver l'ordre
+                de certains elements
+
+        """
         return _etree.tostring(
             _to_xml._to_xml(
                 scenario=self.scenario,
+                intervenants=self.intervenants,
                 siteshydro=self.siteshydro,
                 sitesmeteo=self.sitesmeteo,
                 seuilshydro=self.seuilshydro,
@@ -334,6 +351,7 @@ class Message(object):
             scenario = 'Message <sans scenario>'
         return '{scenario}\n' \
                'Contenu:\n' \
+               '{space}{intervenants} intervenants\n' \
                '{space}{siteshydro} siteshydro\n' \
                '{space}{sitesmeteo} sitesmeteo\n' \
                '{space}{seuilshydro} seuilshydro\n' \
@@ -344,6 +362,8 @@ class Message(object):
                '{space}{simulations} simulations'.format(
                    space=' ' * 4,
                    scenario=scenario,
+                   intervenants=0 if self.intervenants is None
+                   else len(self.intervenants),
                    siteshydro=0 if self.siteshydro is None
                    else len(self.siteshydro),
                    sitesmeteo=0 if self.sitesmeteo is None

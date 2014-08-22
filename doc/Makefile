@@ -8,7 +8,7 @@
 #                 texlive-collection-xetex#
 #------------------------------------------------------------------------------
 # Author: Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>
-# Version: 0.1b - 2014-08-02
+# Version: 0.1c - 2014-08-22
 # History:
 #   V0.1 - 2014-07-29
 #     first shot
@@ -43,8 +43,9 @@ pdf: _subdir installation_guide.md development_guide/notebooks/tutorial.ipynb
 	@echo '---------------------------'
 	@echo
 	@# installation guide
-	rm -rf ${DST}/installation_guide.pdf ${DST}/tutorial.pdf
-	@pandoc installation_guide.md -o ${DST}/installation_guide.pdf
+	rm -rf ${DST}/installation_guide*.pdf ${DST}/tutorial.pdf
+	@pandoc installation_guide_windows.md -o ${DST}/installation_guide_windows.pdf
+	@pandoc installation_guide_linux.md -o ${DST}/installation_guide_linux.pdf
 	@# tutorial
 	@ipython2 nbconvert --to markdown development_guide/notebooks/tutorial.ipynb
 	@pandoc tutorial.md -o ${DST}/tutorial.pdf --latex-engine=xelatex
