@@ -38,7 +38,7 @@ from libhydro.core import (sitehydro, seuil)
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.4a"""
-__date__ = """2014-08-04"""
+__date__ = """2014-08-25"""
 
 #HISTORY
 #V0.4 - 2014-08-04
@@ -260,7 +260,7 @@ class TestAllXmlBaseTests(unittest.TestCase):
     """
     suite = unittest.TestSuite()
     for unit in (
-        'siteshydro', 'sitesmeteo', 'seuilshydro',  # TODO intervenant
+        'intervenants', 'siteshydro', 'sitesmeteo', 'seuilshydro',
         'modelesprevision', 'evenements',
         'serieshydro', 'seriesmeteo', 'simulations'
     ):

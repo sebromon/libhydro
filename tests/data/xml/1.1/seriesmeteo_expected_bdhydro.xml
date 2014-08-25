@@ -48,7 +48,7 @@
         <DtObsMeteo>2010-02-26T14:00:00</DtObsMeteo>
         <StatutObsMeteo>4</StatutObsMeteo>
         <ResObsMeteo>4.0</ResObsMeteo>
-        <!-- <DureeObsMeteo>0</DureeObsMeteo> -->
+        <DureeObsMeteo>0</DureeObsMeteo>
         <!-- <IndiceQualObsMeteo>100</IndiceQualObsMeteo> -->
         <QualifObsMeteo>16</QualifObsMeteo>
         <MethObsMeteo>0</MethObsMeteo>

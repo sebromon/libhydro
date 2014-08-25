@@ -4,26 +4,28 @@
     <CodeScenario>hydrometrie</CodeScenario>
     <VersionScenario>1.1</VersionScenario>
     <NomScenario>Scenario Echange Hydrometrie v1.1</NomScenario>
-    <DateHeureCreationFichier>2001-12-17T09:30:47-05:00</DateHeureCreationFichier>
+    <DateHeureCreationFichier>2001-12-17T09:30:47.10+05:00</DateHeureCreationFichier>
     <RefFichier>modele.xml</RefFichier>
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact>525</CdContact>
     </Emetteur>
     <Destinataire>
-      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
-      <CdContact schemeAgencyID="SCHAPI">2</CdContact>
+      <CdIntervenant schemeAgencyID="SIRET">12345671234567</CdIntervenant>
+      <CdContact>2</CdContact>
     </Destinataire>
   </Scenario>
   <RefHyd>
     <Intervenants>
+      <!-- intervenant 0 -->
       <Intervenant>
-        <CdIntervenant>token</CdIntervenant>
-        <NomIntervenant>String</NomIntervenant>
+        <CdIntervenant schemeAgencyID="SANDRE">11</CdIntervenant>
+        <NomIntervenant>Nom</NomIntervenant>
         <StIntervenant>String</StIntervenant>
         <DateCreationIntervenant>1967-08-13</DateCreationIntervenant>
-        <DateMajIntervenant>2001-12-17T09:30:47-05:00</DateMajIntervenant>
-        <AuteurIntervenant>String</AuteurIntervenant>
-        <MnIntervenant>String</MnIntervenant>
+        <DateMajIntervenant>2001-12-17T09:30:47+05:00</DateMajIntervenant>
+        <AuteurIntervenant>Auteur</AuteurIntervenant>
+        <MnIntervenant>Mnemo</MnIntervenant>
         <BpIntervenant>String</BpIntervenant>
         <ImmoIntervenant>String</ImmoIntervenant>
         <RueIntervenant>String</RueIntervenant>
@@ -38,9 +40,9 @@
         <CdCommune>0aaaa</CdCommune>
         <Contacts>
           <Contact>
-            <CdContact>token</CdContact>
-            <NomContact>String</NomContact>
-            <PrenomContact>String</PrenomContact>
+            <CdContact>1</CdContact>
+            <NomContact>Nom</NomContact>
+            <PrenomContact>Prenom</PrenomContact>
             <CiviliteContact>1</CiviliteContact>
             <ProfilContact>String</ProfilContact>
             <AdContact>String</AdContact>
@@ -53,7 +55,7 @@
             <FaxContact>String</FaxContact>
             <MelContact>String</MelContact>
             <PaysContact>Str</PaysContact>
-            <DateMajContact>2001-12-17T09:30:47-05:00</DateMajContact>
+            <DateMajContact>2001-12-17T09:30:47</DateMajContact>
             <ProfilsAdminLocal>
               <ProfilAdminLocal>
                 <CdProfilAdminLocal>GEST</CdProfilAdminLocal>
@@ -61,8 +63,8 @@
                   <CdZoneHydro>toke</CdZoneHydro>
                   <CdZoneHydro>toke</CdZoneHydro>
                 </ZonesHydro>
-                <DtActivationProfilAdminLocal>2001-12-17T09:30:47-05:00</DtActivationProfilAdminLocal>
-                <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47-05:00</DtDesactivationProfilAdminLocal>
+                <DtActivationProfilAdminLocal>2001-12-17T09:30:47</DtActivationProfilAdminLocal>
+                <DtDesactivationProfilAdminLocal>2001-12-17T09:30:49</DtDesactivationProfilAdminLocal>
               </ProfilAdminLocal>
               <ProfilAdminLocal>
                 <CdProfilAdminLocal>GEST</CdProfilAdminLocal>
@@ -70,20 +72,20 @@
                   <CdZoneHydro>toke</CdZoneHydro>
                   <CdZoneHydro>toke</CdZoneHydro>
                 </ZonesHydro>
-                <DtActivationProfilAdminLocal>2001-12-17T09:30:47-05:00</DtActivationProfilAdminLocal>
-                <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47-05:00</DtDesactivationProfilAdminLocal>
+                <DtActivationProfilAdminLocal>2001-12-17T09:30:47</DtActivationProfilAdminLocal>
+                <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47</DtDesactivationProfilAdminLocal>
               </ProfilAdminLocal>
             </ProfilsAdminLocal>
             <AliasContact>String</AliasContact>
             <MotPassContact>String</MotPassContact>
-            <DtActivationContact>2001-12-17T09:30:47-05:00</DtActivationContact>
-            <DtDesactivationContact>2001-12-17T09:30:47-05:00</DtDesactivationContact>
+            <DtActivationContact>2001-12-17T09:30:47</DtActivationContact>
+            <DtDesactivationContact>2001-12-17T09:30:47</DtDesactivationContact>
           </Contact>
           <Contact>
-            <CdContact>token</CdContact>
-            <NomContact>String</NomContact>
-            <PrenomContact>String</PrenomContact>
-            <CiviliteContact>1</CiviliteContact>
+            <CdContact>2</CdContact>
+            <NomContact>Nom2</NomContact>
+            <PrenomContact>Prenom2</PrenomContact>
+            <CiviliteContact>2</CiviliteContact>
             <ProfilContact>String</ProfilContact>
             <AdContact>String</AdContact>
             <AdEtrangereContact>String</AdEtrangereContact>
@@ -95,7 +97,7 @@
             <FaxContact>String</FaxContact>
             <MelContact>String</MelContact>
             <PaysContact>Str</PaysContact>
-            <DateMajContact>2001-12-17T09:30:47-05:00</DateMajContact>
+            <DateMajContact>2001-12-17T09:30:47</DateMajContact>
             <ProfilsAdminLocal>
               <ProfilAdminLocal>
                 <CdProfilAdminLocal>GEST</CdProfilAdminLocal>
@@ -103,8 +105,8 @@
                   <CdZoneHydro>toke</CdZoneHydro>
                   <CdZoneHydro>toke</CdZoneHydro>
                 </ZonesHydro>
-                <DtActivationProfilAdminLocal>2001-12-17T09:30:47-05:00</DtActivationProfilAdminLocal>
-                <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47-05:00</DtDesactivationProfilAdminLocal>
+                <DtActivationProfilAdminLocal>2001-12-17T09:30:47</DtActivationProfilAdminLocal>
+                <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47</DtDesactivationProfilAdminLocal>
               </ProfilAdminLocal>
               <ProfilAdminLocal>
                 <CdProfilAdminLocal>GEST</CdProfilAdminLocal>
@@ -112,14 +114,14 @@
                   <CdZoneHydro>toke</CdZoneHydro>
                   <CdZoneHydro>toke</CdZoneHydro>
                 </ZonesHydro>
-                <DtActivationProfilAdminLocal>2001-12-17T09:30:47-05:00</DtActivationProfilAdminLocal>
-                <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47-05:00</DtDesactivationProfilAdminLocal>
+                <DtActivationProfilAdminLocal>2001-12-17T09:30:47</DtActivationProfilAdminLocal>
+                <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47</DtDesactivationProfilAdminLocal>
               </ProfilAdminLocal>
             </ProfilsAdminLocal>
             <AliasContact>String</AliasContact>
             <MotPassContact>String</MotPassContact>
-            <DtActivationContact>2001-12-17T09:30:47-05:00</DtActivationContact>
-            <DtDesactivationContact>2001-12-17T09:30:47-05:00</DtDesactivationContact>
+            <DtActivationContact>2001-12-17T09:30:47</DtActivationContact>
+            <DtDesactivationContact>2001-12-17T09:30:47</DtDesactivationContact>
           </Contact>
         </Contacts>
         <PaysComplementIntervenant>Str</PaysComplementIntervenant>
@@ -128,17 +130,18 @@
         <FaxComplementIntervenant>String</FaxComplementIntervenant>
         <SiteWebComplementIntervenant>String</SiteWebComplementIntervenant>
         <IntervenantPere>
-          <CdIntervenant>token</CdIntervenant>
+          <CdIntervenant schemeAgencyID="SANDRE">33</CdIntervenant>
         </IntervenantPere>
       </Intervenant>
+      <!-- intervenant 1 -->
       <Intervenant>
-        <CdIntervenant>token</CdIntervenant>
-        <NomIntervenant>String</NomIntervenant>
+        <CdIntervenant schemeAgencyID="SIRET">12345671234567</CdIntervenant>
+        <NomIntervenant>Nom Sirét</NomIntervenant>
         <StIntervenant>String</StIntervenant>
         <DateCreationIntervenant>1967-08-13</DateCreationIntervenant>
-        <DateMajIntervenant>2001-12-17T09:30:47-05:00</DateMajIntervenant>
+        <DateMajIntervenant>2001-12-17T09:30:47</DateMajIntervenant>
         <AuteurIntervenant>String</AuteurIntervenant>
-        <MnIntervenant>String</MnIntervenant>
+        <MnIntervenant>Captâîn Mnémo</MnIntervenant>
         <BpIntervenant>String</BpIntervenant>
         <ImmoIntervenant>String</ImmoIntervenant>
         <RueIntervenant>String</RueIntervenant>
@@ -153,10 +156,10 @@
         <CdCommune>0aaaa</CdCommune>
         <Contacts>
           <Contact>
-            <CdContact>token</CdContact>
-            <NomContact>String</NomContact>
-            <PrenomContact>String</PrenomContact>
-            <CiviliteContact>1</CiviliteContact>
+            <CdContact>5</CdContact>
+            <NomContact>Nom Contaçt</NomContact>
+            <PrenomContact>Prenom Contaçt</PrenomContact>
+            <CiviliteContact>3</CiviliteContact>
             <ProfilContact>String</ProfilContact>
             <AdContact>String</AdContact>
             <AdEtrangereContact>String</AdEtrangereContact>
@@ -168,7 +171,7 @@
             <FaxContact>String</FaxContact>
             <MelContact>String</MelContact>
             <PaysContact>Str</PaysContact>
-            <DateMajContact>2001-12-17T09:30:47-05:00</DateMajContact>
+            <DateMajContact>2001-12-17T09:30:47</DateMajContact>
             <ProfilsAdminLocal>
               <ProfilAdminLocal>
                 <CdProfilAdminLocal>GEST</CdProfilAdminLocal>
@@ -176,8 +179,8 @@
                   <CdZoneHydro>toke</CdZoneHydro>
                   <CdZoneHydro>toke</CdZoneHydro>
                 </ZonesHydro>
-                <DtActivationProfilAdminLocal>2001-12-17T09:30:47-05:00</DtActivationProfilAdminLocal>
-                <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47-05:00</DtDesactivationProfilAdminLocal>
+                <DtActivationProfilAdminLocal>2001-12-17T09:30:47</DtActivationProfilAdminLocal>
+                <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47</DtDesactivationProfilAdminLocal>
               </ProfilAdminLocal>
               <ProfilAdminLocal>
                 <CdProfilAdminLocal>GEST</CdProfilAdminLocal>
@@ -185,56 +188,14 @@
                   <CdZoneHydro>toke</CdZoneHydro>
                   <CdZoneHydro>toke</CdZoneHydro>
                 </ZonesHydro>
-                <DtActivationProfilAdminLocal>2001-12-17T09:30:47-05:00</DtActivationProfilAdminLocal>
-                <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47-05:00</DtDesactivationProfilAdminLocal>
+                <DtActivationProfilAdminLocal>2001-12-17T09:30:47</DtActivationProfilAdminLocal>
+                <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47</DtDesactivationProfilAdminLocal>
               </ProfilAdminLocal>
             </ProfilsAdminLocal>
             <AliasContact>String</AliasContact>
             <MotPassContact>String</MotPassContact>
-            <DtActivationContact>2001-12-17T09:30:47-05:00</DtActivationContact>
-            <DtDesactivationContact>2001-12-17T09:30:47-05:00</DtDesactivationContact>
-          </Contact>
-          <Contact>
-            <CdContact>token</CdContact>
-            <NomContact>String</NomContact>
-            <PrenomContact>String</PrenomContact>
-            <CiviliteContact>1</CiviliteContact>
-            <ProfilContact>String</ProfilContact>
-            <AdContact>String</AdContact>
-            <AdEtrangereContact>String</AdEtrangereContact>
-            <CpContact>3.14159265358979</CpContact>
-            <VilleContact>String</VilleContact>
-            <FonctionContact>String</FonctionContact>
-            <TelephoneContact>String</TelephoneContact>
-            <PortContact>String</PortContact>
-            <FaxContact>String</FaxContact>
-            <MelContact>String</MelContact>
-            <PaysContact>Str</PaysContact>
-            <DateMajContact>2001-12-17T09:30:47-05:00</DateMajContact>
-            <ProfilsAdminLocal>
-              <ProfilAdminLocal>
-                <CdProfilAdminLocal>GEST</CdProfilAdminLocal>
-                <ZonesHydro>
-                  <CdZoneHydro>toke</CdZoneHydro>
-                  <CdZoneHydro>toke</CdZoneHydro>
-                </ZonesHydro>
-                <DtActivationProfilAdminLocal>2001-12-17T09:30:47-05:00</DtActivationProfilAdminLocal>
-                <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47-05:00</DtDesactivationProfilAdminLocal>
-              </ProfilAdminLocal>
-              <ProfilAdminLocal>
-                <CdProfilAdminLocal>GEST</CdProfilAdminLocal>
-                <ZonesHydro>
-                  <CdZoneHydro>toke</CdZoneHydro>
-                  <CdZoneHydro>toke</CdZoneHydro>
-                </ZonesHydro>
-                <DtActivationProfilAdminLocal>2001-12-17T09:30:47-05:00</DtActivationProfilAdminLocal>
-                <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47-05:00</DtDesactivationProfilAdminLocal>
-              </ProfilAdminLocal>
-            </ProfilsAdminLocal>
-            <AliasContact>String</AliasContact>
-            <MotPassContact>String</MotPassContact>
-            <DtActivationContact>2001-12-17T09:30:47-05:00</DtActivationContact>
-            <DtDesactivationContact>2001-12-17T09:30:47-05:00</DtDesactivationContact>
+            <DtActivationContact>2001-12-17T09:30:47</DtActivationContact>
+            <DtDesactivationContact>2001-12-17T09:30:47</DtDesactivationContact>
           </Contact>
         </Contacts>
         <PaysComplementIntervenant>Str</PaysComplementIntervenant>
@@ -243,7 +204,7 @@
         <FaxComplementIntervenant>String</FaxComplementIntervenant>
         <SiteWebComplementIntervenant>String</SiteWebComplementIntervenant>
         <IntervenantPere>
-          <CdIntervenant>token</CdIntervenant>
+          <CdIntervenant schemeAgencyID="SIRET">82400001234567</CdIntervenant>
         </IntervenantPere>
       </Intervenant>
     </Intervenants>

@@ -1,0 +1,212 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<hydrometrie xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1/sandre_sc_hydrometrie.xsd">
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>1.1</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2001-12-17T04:30:47</DateHeureCreationFichier>
+    <!-- <RefFichier>modele.xml</RefFichier> -->
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact>525</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SIRET">12345671234567</CdIntervenant>
+      <CdContact>2</CdContact>
+    </Destinataire>
+  </Scenario>
+  <RefHyd>
+    <Intervenants>
+      <!-- intervenant 0 -->
+      <Intervenant>
+        <CdIntervenant schemeAgencyID="SANDRE">11</CdIntervenant>
+        <NomIntervenant>Nom</NomIntervenant>
+        <!-- <StIntervenant>String</StIntervenant> -->
+        <!-- <DateCreationIntervenant>1967-08-13</DateCreationIntervenant> -->
+        <!-- <DateMajIntervenant>2001-12-17T09:30:47+05:00</DateMajIntervenant> -->
+        <!-- <AuteurIntervenant>Auteur</AuteurIntervenant> -->
+        <MnIntervenant>Mnemo</MnIntervenant>
+        <!-- <BpIntervenant>String</BpIntervenant> -->
+        <!-- <ImmoIntervenant>String</ImmoIntervenant> -->
+        <!-- <RueIntervenant>String</RueIntervenant> -->
+        <!-- <LieuIntervenant>String</LieuIntervenant> -->
+        <!-- <VilleIntervenant>String</VilleIntervenant> -->
+        <!-- <DepIntervenant>String</DepIntervenant> -->
+        <!-- <CommentairesIntervenant>String</CommentairesIntervenant> -->
+        <!-- <ActivitesIntervenant>String</ActivitesIntervenant> -->
+        <!-- <CPIntervenant>Strin</CPIntervenant> -->
+        <!-- <NomInternationalIntervenant>String</NomInternationalIntervenant> -->
+        <!-- <CdSIRETRattacheIntervenant>token</CdSIRETRattacheIntervenant> -->
+        <!-- <CdCommune>0aaaa</CdCommune> -->
+        <Contacts>
+          <Contact>
+            <CdContact>1</CdContact>
+            <NomContact>Nom</NomContact>
+            <PrenomContact>Prenom</PrenomContact>
+            <CiviliteContact>1</CiviliteContact>
+            <!-- <ProfilContact>String</ProfilContact> -->
+            <!-- <AdContact>String</AdContact> -->
+            <!-- <AdEtrangereContact>String</AdEtrangereContact> -->
+            <!-- <CpContact>3.14159265358979</CpContact> -->
+            <!-- <VilleContact>String</VilleContact> -->
+            <!-- <FonctionContact>String</FonctionContact> -->
+            <!-- <TelephoneContact>String</TelephoneContact> -->
+            <!-- <PortContact>String</PortContact> -->
+            <!-- <FaxContact>String</FaxContact> -->
+            <!-- <MelContact>String</MelContact> -->
+            <!-- <PaysContact>Str</PaysContact> -->
+            <!-- <DateMajContact>2001-12-17T09:30:47</DateMajContact> -->
+            <!-- <ProfilsAdminLocal> -->
+            <!--   <ProfilAdminLocal> -->
+            <!--     <CdProfilAdminLocal>GEST</CdProfilAdminLocal> -->
+            <!--     <ZonesHydro> -->
+            <!--       <CdZoneHydro>toke</CdZoneHydro> -->
+            <!--       <CdZoneHydro>toke</CdZoneHydro> -->
+            <!--     </ZonesHydro> -->
+            <!--     <DtActivationProfilAdminLocal>2001-12-17T09:30:47</DtActivationProfilAdminLocal> -->
+            <!--     <DtDesactivationProfilAdminLocal>2001-12-17T09:30:49</DtDesactivationProfilAdminLocal> -->
+            <!--   </ProfilAdminLocal> -->
+            <!--   <ProfilAdminLocal> -->
+            <!--     <CdProfilAdminLocal>GEST</CdProfilAdminLocal> -->
+            <!--     <ZonesHydro> -->
+            <!--       <CdZoneHydro>toke</CdZoneHydro> -->
+            <!--       <CdZoneHydro>toke</CdZoneHydro> -->
+            <!--     </ZonesHydro> -->
+            <!--     <DtActivationProfilAdminLocal>2001-12-17T09:30:47</DtActivationProfilAdminLocal> -->
+            <!--     <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47</DtDesactivationProfilAdminLocal> -->
+            <!--   </ProfilAdminLocal> -->
+            <!-- </ProfilsAdminLocal> -->
+            <!-- <AliasContact>String</AliasContact> -->
+            <!-- <MotPassContact>String</MotPassContact> -->
+            <!-- <DtActivationContact>2001-12-17T09:30:47</DtActivationContact> -->
+            <!-- <DtDesactivationContact>2001-12-17T09:30:47</DtDesactivationContact> -->
+          </Contact>
+          <Contact>
+            <CdContact>2</CdContact>
+            <NomContact>Nom2</NomContact>
+            <PrenomContact>Prenom2</PrenomContact>
+            <CiviliteContact>2</CiviliteContact>
+            <!-- <ProfilContact>String</ProfilContact> -->
+            <!-- <AdContact>String</AdContact> -->
+            <!-- <AdEtrangereContact>String</AdEtrangereContact> -->
+            <!-- <CpContact>3.14159265358979</CpContact> -->
+            <!-- <VilleContact>String</VilleContact> -->
+            <!-- <FonctionContact>String</FonctionContact> -->
+            <!-- <TelephoneContact>String</TelephoneContact> -->
+            <!-- <PortContact>String</PortContact> -->
+            <!-- <FaxContact>String</FaxContact> -->
+            <!-- <MelContact>String</MelContact> -->
+            <!-- <PaysContact>Str</PaysContact> -->
+            <!-- <DateMajContact>2001-12-17T09:30:47</DateMajContact> -->
+            <!-- <ProfilsAdminLocal> -->
+            <!--   <ProfilAdminLocal> -->
+            <!--     <CdProfilAdminLocal>GEST</CdProfilAdminLocal> -->
+            <!--     <ZonesHydro> -->
+            <!--       <CdZoneHydro>toke</CdZoneHydro> -->
+            <!--       <CdZoneHydro>toke</CdZoneHydro> -->
+            <!--     </ZonesHydro> -->
+            <!--     <DtActivationProfilAdminLocal>2001-12-17T09:30:47</DtActivationProfilAdminLocal> -->
+            <!--     <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47</DtDesactivationProfilAdminLocal> -->
+            <!--   </ProfilAdminLocal> -->
+            <!--   <ProfilAdminLocal> -->
+            <!--     <CdProfilAdminLocal>GEST</CdProfilAdminLocal> -->
+            <!--     <ZonesHydro> -->
+            <!--       <CdZoneHydro>toke</CdZoneHydro> -->
+            <!--       <CdZoneHydro>toke</CdZoneHydro> -->
+            <!--     </ZonesHydro> -->
+            <!--     <DtActivationProfilAdminLocal>2001-12-17T09:30:47</DtActivationProfilAdminLocal> -->
+            <!--     <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47</DtDesactivationProfilAdminLocal> -->
+            <!--   </ProfilAdminLocal> -->
+            <!-- </ProfilsAdminLocal> -->
+            <!-- <AliasContact>String</AliasContact> -->
+            <!-- <MotPassContact>String</MotPassContact> -->
+            <!-- <DtActivationContact>2001-12-17T09:30:47</DtActivationContact> -->
+            <!-- <DtDesactivationContact>2001-12-17T09:30:47</DtDesactivationContact> -->
+          </Contact>
+        </Contacts>
+        <!-- <PaysComplementIntervenant>Str</PaysComplementIntervenant> -->
+        <!-- <AdEtrangereComplementIntervenant>String</AdEtrangereComplementIntervenant> -->
+        <!-- <TelephoneComplementIntervenant>String</TelephoneComplementIntervenant> -->
+        <!-- <FaxComplementIntervenant>String</FaxComplementIntervenant> -->
+        <!-- <SiteWebComplementIntervenant>String</SiteWebComplementIntervenant> -->
+        <!-- <IntervenantPere> -->
+        <!--   <CdIntervenant schemeAgencyID="SANDRE">33</CdIntervenant> -->
+        <!-- </IntervenantPere> -->
+      </Intervenant>
+      <!-- intervenant 1 -->
+      <Intervenant>
+        <CdIntervenant schemeAgencyID="SIRET">12345671234567</CdIntervenant>
+        <NomIntervenant>Nom Sirét</NomIntervenant>
+        <!-- <StIntervenant>String</StIntervenant> -->
+        <!-- <DateCreationIntervenant>1967-08-13</DateCreationIntervenant> -->
+        <!-- <DateMajIntervenant>2001-12-17T09:30:47</DateMajIntervenant> -->
+        <!-- <AuteurIntervenant>String</AuteurIntervenant> -->
+        <MnIntervenant>Captâîn Mnémo</MnIntervenant>
+        <!-- <BpIntervenant>String</BpIntervenant> -->
+        <!-- <ImmoIntervenant>String</ImmoIntervenant> -->
+        <!-- <RueIntervenant>String</RueIntervenant> -->
+        <!-- <LieuIntervenant>String</LieuIntervenant> -->
+        <!-- <VilleIntervenant>String</VilleIntervenant> -->
+        <!-- <DepIntervenant>String</DepIntervenant> -->
+        <!-- <CommentairesIntervenant>String</CommentairesIntervenant> -->
+        <!-- <ActivitesIntervenant>String</ActivitesIntervenant> -->
+        <!-- <CPIntervenant>Strin</CPIntervenant> -->
+        <!-- <NomInternationalIntervenant>String</NomInternationalIntervenant> -->
+        <!-- <CdSIRETRattacheIntervenant>token</CdSIRETRattacheIntervenant> -->
+        <!-- <CdCommune>0aaaa</CdCommune> -->
+        <Contacts>
+          <Contact>
+            <CdContact>5</CdContact>
+            <NomContact>Nom Contaçt</NomContact>
+            <PrenomContact>Prenom Contaçt</PrenomContact>
+            <CiviliteContact>3</CiviliteContact>
+            <!-- <ProfilContact>String</ProfilContact> -->
+            <!-- <AdContact>String</AdContact> -->
+            <!-- <AdEtrangereContact>String</AdEtrangereContact> -->
+            <!-- <CpContact>3.14159265358979</CpContact> -->
+            <!-- <VilleContact>String</VilleContact> -->
+            <!-- <FonctionContact>String</FonctionContact> -->
+            <!-- <TelephoneContact>String</TelephoneContact> -->
+            <!-- <PortContact>String</PortContact> -->
+            <!-- <FaxContact>String</FaxContact> -->
+            <!-- <MelContact>String</MelContact> -->
+            <!-- <PaysContact>Str</PaysContact> -->
+            <!-- <DateMajContact>2001-12-17T09:30:47</DateMajContact> -->
+            <!-- <ProfilsAdminLocal> -->
+            <!--   <ProfilAdminLocal> -->
+            <!--     <CdProfilAdminLocal>GEST</CdProfilAdminLocal> -->
+            <!--     <ZonesHydro> -->
+            <!--       <CdZoneHydro>toke</CdZoneHydro> -->
+            <!--       <CdZoneHydro>toke</CdZoneHydro> -->
+            <!--     </ZonesHydro> -->
+            <!--     <DtActivationProfilAdminLocal>2001-12-17T09:30:47</DtActivationProfilAdminLocal> -->
+            <!--     <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47</DtDesactivationProfilAdminLocal> -->
+            <!--   </ProfilAdminLocal> -->
+            <!--   <ProfilAdminLocal> -->
+            <!--     <CdProfilAdminLocal>GEST</CdProfilAdminLocal> -->
+            <!--     <ZonesHydro> -->
+            <!--       <CdZoneHydro>toke</CdZoneHydro> -->
+            <!--       <CdZoneHydro>toke</CdZoneHydro> -->
+            <!--     </ZonesHydro> -->
+            <!--     <DtActivationProfilAdminLocal>2001-12-17T09:30:47</DtActivationProfilAdminLocal> -->
+            <!--     <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47</DtDesactivationProfilAdminLocal> -->
+            <!--   </ProfilAdminLocal> -->
+            <!-- </ProfilsAdminLocal> -->
+            <!-- <AliasContact>String</AliasContact> -->
+            <!-- <MotPassContact>String</MotPassContact> -->
+            <!-- <DtActivationContact>2001-12-17T09:30:47</DtActivationContact> -->
+            <!-- <DtDesactivationContact>2001-12-17T09:30:47</DtDesactivationContact> -->
+          </Contact>
+        </Contacts>
+        <!-- <PaysComplementIntervenant>Str</PaysComplementIntervenant> -->
+        <!-- <AdEtrangereComplementIntervenant>String</AdEtrangereComplementIntervenant> -->
+        <!-- <TelephoneComplementIntervenant>String</TelephoneComplementIntervenant> -->
+        <!-- <FaxComplementIntervenant>String</FaxComplementIntervenant> -->
+        <!-- <SiteWebComplementIntervenant>String</SiteWebComplementIntervenant> -->
+        <!-- <IntervenantPere> -->
+        <!--   <CdIntervenant schemeAgencyID="SIRET">82400001234567</CdIntervenant> -->
+        <!-- </IntervenantPere> -->
+      </Intervenant>
+    </Intervenants>
+  </RefHyd>
+</hydrometrie>

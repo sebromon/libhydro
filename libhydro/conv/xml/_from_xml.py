@@ -44,11 +44,12 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.4a"""
-__date__ = """2014-08-22"""
+__version__ = """0.4b"""
+__date__ = """2014-08-25"""
 
 #HISTORY
 #V0.4 - 2014-08-22
+#    factorize the global functions
 #    add the intervenants
 #V0.3 - 2014-07-31
 #    add the modelesprevision element
@@ -60,8 +61,9 @@ __date__ = """2014-08-22"""
 
 
 #-- todos ---------------------------------------------------------------------
-# TODO - move the Scenario class and the named tuples in the _xml module
-# TODO - factorize Scenario.emetteur and destinataire properties
+# FIXME- move the Scenario class and the named tuples in the _xml module
+# FIXME- factorize Scenario.emetteur and destinataire properties, as well as
+#        others Intervenants or Contacts
 # TODO - if xpath is too slow to acess elements, use indexing
 #        code=element[0].text,
 #        but xpath is more readable and do not care of XML order
@@ -307,38 +309,571 @@ def _parse(src, ordered=True):
     }
 
 
+# -- atomic functions ---------------------------------------------------------
+def _scenario_from_element(element):
+    """Return a xml.Scenario from a <Scenario> element."""
+    if element is not None:
+        return Scenario(
+            emetteur=_intervenant.Intervenant(
+                code=_value(element.find('Emetteur'), 'CdIntervenant'),
+                nom=_value(element.find('Emetteur'), 'NomIntervenant'),
+                contacts=_intervenant.Contact(
+                    _value(element.find('Emetteur'), 'CdContact')
+                ),
+            ),
+            destinataire=_intervenant.Intervenant(
+                code=_value(element.find('Destinataire'), 'CdIntervenant'),
+                nom=_value(element.find('Destinataire'), 'NomIntervenant'),
+                contacts=_intervenant.Contact(
+                    _value(element.find('Destinataire'), 'CdContact')
+                ),
+            ),
+            dtprod=_value(element, 'DateHeureCreationFichier', _UTC)
+        )
+
+
+def _intervenant_from_element(element):
+    """Return a intervenant.Intervenant from a <Intervenant> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['code'] = _value(element, 'CdIntervenant', int)
+        args['origine'] = element.find(
+            'CdIntervenant'
+        ).attrib['schemeAgencyID']
+        args['nom'] = _value(element, 'NomIntervenant')
+        args['mnemo'] = _value(element, 'MnIntervenant')
+        args['contacts'] = [
+            _contact_from_element(e)
+            for e in element.findall('Contacts/Contact')
+        ]
+        # build an Intervenant
+        intervenant = _intervenant.Intervenant(**args)
+        # update the Contacts
+        for contact in intervenant.contacts:
+            contact.intervenant = intervenant
+        # return
+        return intervenant
+
+
+def _contact_from_element(element, intervenant=None):
+    """Return a intervenant.Contact from a <Contact> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['code'] = _value(element, 'CdContact', int)
+        args['nom'] = _value(element, 'NomContact')
+        args['prenom'] = _value(element, 'PrenomContact')
+        args['civilite'] = _value(element, 'CiviliteContact', int)
+        args['intervenant'] = intervenant
+        # build a Contact an return
+        return _intervenant.Contact(**args)
+
+
+def _sitehydro_from_element(element):
+    """Return a sitehydro.Sitehydro from a <SiteHydro> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['code'] = _value(element, 'CdSiteHydro')
+        args['codeh2'] = _value(element, 'CdSiteHydroAncienRef')
+        typesite = _value(element, 'TypSiteHydro')
+        if typesite is not None:
+            args['typesite'] = typesite
+        args['libelle'] = _value(element, 'LbSiteHydro')
+        args['libelleusuel'] = _value(element, 'LbUsuelSiteHydro')
+        args['coord'] = _coord_from_element(
+            element.find('CoordSiteHydro'), 'SiteHydro'
+        )
+        args['stations'] = [
+            _stationhydro_from_element(e)
+            for e in element.findall('StationsHydro/StationHydro')
+        ]
+        args['communes'] = [
+            unicode(e.text) for e in element.findall('CdCommune')
+        ]
+        args['tronconsvigilance'] = [
+            _tronconvigilance_from_element(e)
+            for e in element.findall(
+                'TronconsVigilanceSiteHydro/TronconVigilanceSiteHydro'
+            )
+        ]
+        # build a Sitehydro and return
+        return _sitehydro.Sitehydro(**args)
+
+
+def _sitemeteo_from_element(element):
+    """Return a sitemeteo.Sitemeteo from a <SiteMeteo> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['code'] = _value(element, 'CdSiteMeteo')
+        args['libelle'] = _value(element, 'LbSiteMeteo')
+        args['libelleusuel'] = _value(element, 'LbUsuelSiteMeteo')
+        args['coord'] = _coord_from_element(
+            element.find('CoordSiteMeteo'), 'SiteMeteo'
+        )
+        args['commune'] = _value(element, 'CdCommune')
+        # build a Sitemeteo
+        sitemeteo = _sitemeteo.Sitemeteo(**args)
+        # add the Grandeurs
+        sitemeteo.grandeurs.extend([
+            _grandeur_from_element(e, sitemeteo)
+            for e in element.findall('GrdsMeteo/GrdMeteo')
+        ])
+        # return
+        return sitemeteo
+
+
+def _tronconvigilance_from_element(element):
+    """Return a sitehydro.Tronconvigilance from a <TronconVigilanceSiteHydro>
+    element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['code'] = _value(element, 'CdTronconVigilance')
+        args['libelle'] = _value(element, 'NomCTronconVigilance')
+        # build a Tronconvigilance and return
+        return _sitehydro.Tronconvigilance(**args)
+
+
+def _stationhydro_from_element(element):
+    """Return a sitehydro.Stationhydro from a <StationHydro> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['code'] = _value(element, 'CdStationHydro')
+        args['codeh2'] = _value(element, 'CdStationHydroAncienRef')
+        typestation = _value(element, 'TypStationHydro')
+        if typestation is not None:
+            args['typestation'] = typestation
+        args['libelle'] = _value(element, 'LbStationHydro')
+        args['libellecomplement'] = _value(
+            element, 'ComplementLibelleStationHydro'
+        )
+        niveauaffichage = _value(element, 'NiveauAffichageStationHydro')
+        if niveauaffichage is not None:
+            args['niveauaffichage'] = niveauaffichage
+        args['coord'] = _coord_from_element(
+            element.find('CoordStationHydro'), 'StationHydro'
+        )
+        args['capteurs'] = [
+            _capteur_from_element(e)
+            for e in element.findall('Capteurs/Capteur')
+        ]
+        args['commune'] = _value(element, 'CdCommune')
+        args['ddcs'] = [
+            unicode(e.text)
+            for e in element.findall('ReseauxMesureStationHydro/CodeSandreRdd')
+        ]
+        # build a Station and return
+        return _sitehydro.Stationhydro(**args)
+
+
+def _coord_from_element(element, entite):
+    """Return a dict {'x': x, 'y': y, 'proj': proj}.
+
+    Arg entite is the xml element suffix, a string in
+    (SiteHydro, StationHydro).
+
+    """
+    if element is not None:
+        coord = {}
+        coord['x'] = _value(element, 'CoordX%s' % entite, float)
+        coord['y'] = _value(element, 'CoordY%s' % entite, float)
+        coord['proj'] = _value(element, 'ProjCoord%s' % entite, int)
+        return coord
+
+
+def _capteur_from_element(element):
+    """Return a sitehydro.Capteur from a <Capteur> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['code'] = _value(element, 'CdCapteur')
+        args['codeh2'] = _value(element, 'CdCapteurAncienRef')
+        args['libelle'] = _value(element, 'LbCapteur')
+        typemesure = _value(element, 'TypMesureCapteur')
+        if typemesure is not None:
+            args['typemesure'] = typemesure
+        # build a Capteur and return
+        return _sitehydro.Capteur(**args)
+
+
+def _grandeur_from_element(element, sitemeteo=None):
+    """Return a sitemeteo.Grandeur from a <GrdMeteo> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['typemesure'] = _value(element, 'CdGrdMeteo')
+        if sitemeteo is not None:
+            args['sitemeteo'] = sitemeteo
+        # build a Grandeur and return
+        return _sitemeteo.Grandeur(**args)
+
+
+def _seuilhydro_from_element(element, sitehydro):
+    """Return a seuil.Seuilhydro from a <ValeursSeuilSiteHydro> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['sitehydro'] = sitehydro
+        args['code'] = _value(element, 'CdSeuilSiteHydro')
+        typeseuil = _value(element, 'TypSeuilSiteHydro')
+        if typeseuil is not None:
+            args['typeseuil'] = typeseuil
+        duree = _value(element, 'DureeSeuilSiteHydro')
+        if duree is not None:
+            args['duree'] = duree
+        args['nature'] = _value(element, 'NatureSeuilSiteHydro')
+        args['libelle'] = _value(element, 'LbUsuelSeuilSiteHydro')
+        args['mnemo'] = _value(element, 'MnemoSeuilSiteHydro')
+        args['gravite'] = _value(element, 'IndiceGraviteSeuilSiteHydro')
+        args['commentaire'] = _value(element, 'ComSeuilSiteHydro')
+        args['publication'] = _istrue(
+            _value(element, 'DroitPublicationSeuilSiteHydro')
+        )
+        args['valeurforcee'] = _value(element, 'ValForceeSeuilSiteHydro')
+        args['dtmaj'] = _value(element, 'DtMajSeuilSiteHydro', _UTC)
+        seuil = _seuil.Seuilhydro(**args)
+        # add the values
+        args['valeurs'] = []
+        valeurseuil = _valeurseuilsitehydro_from_element(
+            element, sitehydro, seuil
+        )
+        if valeurseuil is not None:
+            args['valeurs'].append(valeurseuil)
+        args['valeurs'].extend([
+            _valeurseuilstationhydro_from_element(e, seuil)
+            for e in element.findall(
+                './ValeursSeuilsStationHydro/ValeursSeuilStationHydro'
+            )
+        ])
+        # build a Seuilhydro and return
+        # FIXME - why do we use a second Seuilhydro ????
+        return _seuil.Seuilhydro(**args)
+
+
+def _valeurseuilsitehydro_from_element(element, sitehydro, seuil):
+    """Return a seuil.Valeurseuil from a <ValeursSeuilSiteHydro> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        valeur = _value(element, 'ValDebitSeuilSiteHydro')
+        if valeur is None:
+            # Q can be None if the seuil has only H values
+            # all other Valeurseuil related tags are ignored
+            return
+        args['valeur'] = valeur
+        args['seuil'] = seuil
+        args['entite'] = sitehydro
+        args['tolerance'] = _value(element, 'ToleranceSeuilSiteHydro')
+        args['dtactivation'] = _value(
+            element, 'DtActivationSeuilSiteHydro', _UTC
+        )
+        args['dtdesactivation'] = _value(
+            element, 'DtDesactivationSeuilSiteHydro', _UTC
+        )
+        # build a Valeurseuil and return
+        return _seuil.Valeurseuil(**args)
+
+
+def _valeurseuilstationhydro_from_element(element, seuil):
+    """Return a seuil.Valeurseuil from a <ValeursSeuilStationHydro> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['valeur'] = _value(element, 'ValHauteurSeuilStationHydro')
+        args['seuil'] = seuil
+        args['entite'] = _sitehydro.Stationhydro(
+            code=_value(element, 'CdStationHydro')
+        )
+        args['tolerance'] = _value(element, 'ToleranceSeuilStationHydro')
+        args['dtactivation'] = _value(
+            element, 'DtActivationSeuilStationHydro', _UTC
+        )
+        args['dtdesactivation'] = _value(
+            element, 'DtDesactivationSeuilStationHydro', _UTC
+        )
+        # build a Valeurseuil and return
+        return _seuil.Valeurseuil(**args)
+
+
+def _modeleprevision_from_element(element):
+    """Return a modeleprevision.Modeleprevision from a """
+    """<ModelePrevision> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['code'] = _value(element, 'CdModelePrevision')
+        args['libelle'] = _value(element, 'LbModelePrevision')
+        args['typemodele'] = _value(element, 'TypModelePrevision', int)
+        args['description'] = _value(element, 'DescModelePrevision')
+        # build a Modeleprevision and return
+        return _modeleprevision.Modeleprevision(**args)
+
+
+def _evenement_from_element(element):
+    """Return a evenement.Evenement from a <Evenement> element."""
+    if element is not None:
+        # prepare args
+        # entite can be a Sitehydro, a Stationhydro or a Sitemeteo
+        entite = None
+        if element.find('CdSiteHydro') is not None:
+            entite = _sitehydro.Sitehydro(
+                code=_value(element, 'CdSiteHydro')
+            )
+        elif element.find('CdStationHydro') is not None:
+            entite = _sitehydro.Stationhydro(
+                code=_value(element, 'CdStationHydro')
+            )
+        elif element.find('CdSiteMeteo') is not None:
+            entite = _sitemeteo.Sitemeteo(
+                code=_value(element, 'CdSiteMeteo')
+            )
+        # build an Evenement and return
+        return _evenement.Evenement(
+            entite=entite,
+            descriptif=_value(element, 'DescEvenement'),
+            contact=_intervenant.Contact(
+                code=_value(element, 'CdContact'),
+            ),
+            dt=_value(element, 'DtEvenement', _UTC),
+            publication=_value(element, 'TypPublicationEvenement'),
+            dtmaj=_value(element, 'DtMajEvenement', _UTC),
+        )
+
+
+def _seriehydro_from_element(element):
+    """Return a obshydro.Serie from a <Serie> element."""
+    if element is not None:
+        # prepare args
+        # entite can be a Sitehydro, a Stationhydro or a Capteur
+        entite = None
+        if element.find('CdSiteHydro') is not None:
+            entite = _sitehydro.Sitehydro(
+                code=_value(element, 'CdSiteHydro')
+            )
+        elif element.find('CdStationHydro') is not None:
+            entite = _sitehydro.Stationhydro(
+                code=_value(element, 'CdStationHydro')
+            )
+        elif element.find('CdCapteur') is not None:
+            entite = _sitehydro.Capteur(
+                code=_value(element, 'CdCapteur')
+            )
+        # build a Contact
+        contact = _intervenant.Contact(code=_value(element, 'CdContact'))
+        # build a Serie and return
+        return _obshydro.Serie(
+            entite=entite,
+            grandeur=_value(element, 'GrdSerie'),
+            statut=_value(element, 'StatutSerie'),
+            dtdeb=_value(element, 'DtDebSerie', _UTC),
+            dtfin=_value(element, 'DtFinSerie', _UTC),
+            dtprod=_value(element, 'DtProdSerie', _UTC),
+            contact=contact,
+            observations=_obsshydro_from_element(element.find('ObssHydro'))
+        )
+
+
+def _seriemeteo_from_element(element):
+    """Return a obsmeteo.Serie from a <ObsMeteo> element.
+
+    Warning, the serie here does not contains observations, dtdeb or dtfin.
+
+    """
+    if element is not None:
+        # build a Grandeur
+        grandeur = _sitemeteo.Grandeur(
+            typemesure=_value(element, 'CdGrdMeteo'),
+            sitemeteo=_sitemeteo.Sitemeteo(_value(element, 'CdSiteMeteo'))
+        )
+        # prepare the duree in minutes
+        duree = _value(element, 'DureeObsMeteo', int) or 0
+        # build a Contact
+        contact = _intervenant.Contact(code=_value(element, 'CdContact'))
+        # build a Serie without the observations and return
+        return _obsmeteo.Serie(
+            grandeur=grandeur,
+            duree=duree * 60,
+            statut=_value(element, 'StatutObsMeteo', int),
+            dtprod=_value(element, 'DtProdObsMeteo', _UTC),
+            contact=contact
+        )
+
+
+def _obsshydro_from_element(element):
+    """Return a sorted obshydro.Observations from a <ObssHydro> element."""
+    if element is not None:
+        # prepare a list of Observation
+        observations = []
+        for o in element:
+            args = {}
+            args['dte'] = _value(o, 'DtObsHydro', _UTC)
+            args['res'] = _value(o, 'ResObsHydro')
+            if args['res'] is None:
+                return
+            mth = _value(o, 'MethObsHydro', int)
+            if mth is not None:
+                args['mth'] = mth
+            qal = _value(o, 'QualifObsHydro', int)
+            if qal is not None:
+                args['qal'] = qal
+            continuite = _istrue(_value(o, 'ContObsHydro'))
+            if continuite is not None:
+                args['cnt'] = continuite
+            observations.append(_obshydro.Observation(**args))
+        # build the Observations and return
+        return _obshydro.Observations(*observations).sort()
+
+
+def _obsmeteo_from_element(element):
+    """Return a obsmeteo.Observation from a <ObssHydro> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['dte'] = _value(element, 'DtObsMeteo', _UTC)
+        args['res'] = _value(element, 'ResObsMeteo')
+        if args['res'] is None:
+            return
+        mth = _value(element, 'MethObsMeteo', int)
+        if mth is not None:
+            args['mth'] = mth
+        qal = _value(element, 'QualifObsMeteo', int)
+        if qal is not None:
+            args['qal'] = qal
+        qua = _value(element, 'IndiceQualObsMeteo', int)
+        if qua is not None:
+            args['qua'] = qua
+        # build the Observation and return
+        return _obsmeteo.Observation(**args)
+
+
+def _simulation_from_element(element):
+    """Return a simulation.Simulation from a <Simul> element."""
+    if element is not None:
+        # prepare args
+        # entite can be a Sitehydro or a Stationhydro
+        entite = None
+        if element.find('CdSiteHydro') is not None:
+            entite = _sitehydro.Sitehydro(
+                code=_value(element, 'CdSiteHydro')
+            )
+        elif element.find('CdStationHydro') is not None:
+            entite = _sitehydro.Stationhydro(
+                code=_value(element, 'CdStationHydro')
+            )
+        # prepare qualite
+        # warning: qualite is int(float())
+        qualite = _value(element, 'IndiceQualiteSimul', float)
+        if qualite is not None:
+            qualite = int(qualite)
+        # build a Simulation and return
+        return _simulation.Simulation(
+            entite=entite,
+            modeleprevision=_modeleprevision.Modeleprevision(
+                code=_value(element, 'CdModelePrevision')
+            ),
+            grandeur=_value(element, 'GrdSimul'),
+            statut=_value(element, 'StatutSimul', int),
+            qualite=qualite,
+            public=_value(element, 'PubliSimul', bool),
+            commentaire=_value(element, 'ComSimul'),
+            dtprod=_value(element, 'DtProdSimul', _UTC),
+            previsions=_previsions_from_element(element.find('Prevs')),
+            intervenant=_intervenant.Intervenant(
+                _value(element, 'CdIntervenant')
+            )
+        )
+
+
+def _previsions_from_element(element):
+    """Return a simulation.Previsions from a <Prevs> element."""
+    if element is not None:
+        # prepare
+        previsions = []
+        for prev in element:
+            dte = _value(prev, 'DtPrev', _UTC)
+
+            # -------------------
+            # compute Res[Min|Moy|Max]Prev
+            # -------------------
+            # xpath syntax: p.xpath('ResMoyPrev|ResMinPrev|ResMaxPrev')
+            for resprev in prev.xpath('|'.join(PREV_PROBABILITY)):
+                previsions.append(
+                    _simulation.Prevision(
+                        dte=dte,
+                        res=resprev.text,
+                        prb=PREV_PROBABILITY[resprev.tag]
+                    )
+                )
+
+            # -------------------
+            # compute ProbsPrev
+            # -------------------
+            for probprev in prev.findall('.//ProbPrev'):
+                previsions.append(
+                    _simulation.Prevision(
+                        dte=dte,
+                        res=_value(probprev, 'ResProbPrev', float),
+                        prb=_value(probprev, 'PProbPrev', int)
+                    )
+                )
+        # build a Previsions and return
+        return _simulation.Previsions(*previsions)
+
+
 # -- global functions ---------------------------------------------------------
+def _global_function_builder(xpath, func):
+    """Return a function that returns a list of func(item) for each item in a
+    etree.Element returned by the xpath search.
 
-# TODO - some functions could be factorised
+    Arguments:
+        xpath (str) = xpath tags to search in etree.Element closure
+        func (function object) = elementary function to call on each item
 
-def _intervenants_from_element(element):
-    """Return a list of intervenant.Intervenant from a <Intervenants> """
-    """element."""
-    intervenants = []
-    if element is not None:
-        for intervenant in element.findall('./Intervenant'):
-            intervenants.append(_intervenant_from_element(intervenant))
-    return intervenants
+    """
+    def closure(elem):
+        """Elem should be a etree.Element."""
+        items = []
+        if elem is not None:
+            for item in elem.findall(xpath):
+                items.append(func(item))
+        return items
+    return closure
+
+# return a list of intervenant.Intervenant from a <Intervenants> element
+_intervenants_from_element = _global_function_builder(
+    './Intervenant', _intervenant_from_element
+)
+# return a list of sitehydro.Sitehydro from a <SitesHydro> element
+_siteshydro_from_element = _global_function_builder(
+    './SiteHydro', _sitehydro_from_element
+)
+# return a list of sitemeteo.Sitemeteo from a <SitesMeteo> element
+_sitesmeteo_from_element = _global_function_builder(
+    './SiteMeteo', _sitemeteo_from_element
+)
+# return a list of Modeleprevision from a <ModelesPrevision> element
+_modelesprevision_from_element = _global_function_builder(
+    './ModelePrevision', _modeleprevision_from_element
+)
+# return a list of evenement.Evenement from a <Evenements> element
+_evenements_from_element = _global_function_builder(
+    './Evenement', _evenement_from_element
+)
+# return a list of obshydro.Serie from a <Series> element
+_serieshydro_from_element = _global_function_builder(
+    './Serie', _seriehydro_from_element
+)
+# return a list of simulation.Simulation from a <Simuls> element
+_simulations_from_element = _global_function_builder(
+    './Simul', _simulation_from_element
+)
 
 
-def _siteshydro_from_element(element):
-    """Return a list of sitehydro.Sitehydro from a <SitesHydro> element."""
-    siteshydro = []
-    if element is not None:
-        for sitehydro in element.findall('./SiteHydro'):
-            siteshydro.append(_sitehydro_from_element(sitehydro))
-    return siteshydro
-
-
-def _sitesmeteo_from_element(element):
-    """Return a list of sitemeteo.Sitemeteo from a <SitesMeteo> element."""
-    sitesmeteo = []
-    if element is not None:
-        for sitemeteo in element.findall('./SiteMeteo'):
-            sitesmeteo.append(_sitemeteo_from_element(sitemeteo))
-    return sitesmeteo
-
-
+# these 2 functions doesn't fir with the _global_function_builder :-\
 def _seuilshydro_from_element(element, ordered=False):
     """Return a list of seuil.Seuilhydro from a <SitesHydro> element.
 
@@ -405,34 +940,6 @@ def _seuilshydro_from_element(element, ordered=False):
     return seuilshydro.values()
 
 
-def _modelesprevision_from_element(element):
-    """Return a list of modeleprevision.Modeleprevision from a """
-    """<ModelesPrevision> element."""
-    modelesprevision = []
-    if element is not None:
-        for modele in element.findall('./ModelePrevision'):
-            modelesprevision.append(_modeleprevision_from_element(modele))
-    return modelesprevision
-
-
-def _evenements_from_element(element):
-    """Return a list of evenement.Evenement from a <Evenements> element."""
-    evenements = []
-    if element is not None:
-        for evenement in element.findall('./Evenement'):
-            evenements.append(_evenement_from_element(evenement))
-    return evenements
-
-
-def _serieshydro_from_element(element):
-    """Return a list of obshydro.Serie from a <Series> element."""
-    serieshydro = []
-    if element is not None:
-        for seriehydro in element.findall('./Serie'):
-            serieshydro.append(_seriehydro_from_element(seriehydro))
-    return serieshydro
-
-
 def _seriesmeteo_from_element(element):
     """Return a list of obsmeteo.Serie from a <ObssMeteo> element.
 
@@ -473,524 +980,6 @@ def _seriesmeteo_from_element(element):
             serie.dtfin = max(serie.observations.index)
 
     return list(seriesmeteo)
-
-
-def _simulations_from_element(element):
-    """Return a list of simulation.Simulation from a <Simuls> element."""
-    simuls = []
-    if element is not None:
-        for simul in element.findall('./Simul'):
-            simuls.append(_simulation_from_element(simul))
-    return simuls
-
-
-# -- atomic functions ---------------------------------------------------------
-def _scenario_from_element(element):
-    """Return a xml.Scenario from a <Scenario> element."""
-    if element is not None:
-        return Scenario(
-            emetteur=_intervenant.Intervenant(
-                code=_value(element.find('Emetteur'), 'CdIntervenant'),
-                nom=_value(element.find('Emetteur'), 'NomIntervenant'),
-                contacts=_intervenant.Contact(
-                    _value(element.find('Emetteur'), 'CdContact')
-                ),
-            ),
-            destinataire=_intervenant.Intervenant(
-                code=_value(element.find('Destinataire'), 'CdIntervenant'),
-                nom=_value(element.find('Destinataire'), 'NomIntervenant'),
-                contacts=_intervenant.Contact(
-                    _value(element.find('Destinataire'), 'CdContact')
-                ),
-            ),
-            dtprod=_value(element, 'DateHeureCreationFichier', _UTC)
-        )
-
-
-def _intervenant_from_element(element):
-    """Return a intervenant.Intervenant from a <Intervenant> element."""
-    if element is not None:
-        # prepare args
-        args = {}
-        args['code'] = _value(element, 'CdIntervenant')
-        args['origin'] = element.attrib['schemeAgencyID']
-        args['nom'] = _value(element, 'Lbintervenant')
-        args['mnemo'] = _value(element, 'LbUsuelintervenant')
-        args['contacts'] = [
-            _contact_from_element(e)
-            for e in element.findall('Contacts/Contact')
-        ]
-
-        # build intervenant
-        return _intervenant.Intervenant(**args)
-
-
-def _contact_from_element(element):
-    raise NotImplementedError
-
-
-def _sitehydro_from_element(element):
-    """Return a sitehydro.Sitehydro from a <SiteHydro> element."""
-    if element is not None:
-        # prepare args
-        args = {}
-        args['code'] = _value(element, 'CdSiteHydro')
-        args['codeh2'] = _value(element, 'CdSiteHydroAncienRef')
-        typesite = _value(element, 'TypSiteHydro')
-        if typesite is not None:
-            args['typesite'] = typesite
-        args['libelle'] = _value(element, 'LbSiteHydro')
-        args['libelleusuel'] = _value(element, 'LbUsuelSiteHydro')
-        args['coord'] = _coord_from_element(
-            element.find('CoordSiteHydro'), 'SiteHydro'
-        )
-        args['stations'] = [
-            _stationhydro_from_element(e)
-            for e in element.findall('StationsHydro/StationHydro')
-        ]
-        args['communes'] = [
-            unicode(e.text) for e in element.findall('CdCommune')
-        ]
-        args['tronconsvigilance'] = [
-            _tronconvigilance_from_element(e)
-            for e in element.findall(
-                'TronconsVigilanceSiteHydro/TronconVigilanceSiteHydro'
-            )
-        ]
-
-        # build Sitehydro
-        return _sitehydro.Sitehydro(**args)
-
-
-def _sitemeteo_from_element(element):
-    """Return a sitemeteo.Sitemeteo from a <SiteMeteo> element."""
-    if element is not None:
-        # prepare args
-        args = {}
-        args['code'] = _value(element, 'CdSiteMeteo')
-        args['libelle'] = _value(element, 'LbSiteMeteo')
-        args['libelleusuel'] = _value(element, 'LbUsuelSiteMeteo')
-        args['coord'] = _coord_from_element(
-            element.find('CoordSiteMeteo'), 'SiteMeteo'
-        )
-        args['commune'] = _value(element, 'CdCommune')
-        # build a Sitemeteo
-        sitemeteo = _sitemeteo.Sitemeteo(**args)
-        # add the grandeurs
-        sitemeteo.grandeurs.extend([
-            _grandeur_from_element(e, sitemeteo)
-            for e in element.findall('GrdsMeteo/GrdMeteo')
-        ])
-        # return
-        return sitemeteo
-
-
-def _tronconvigilance_from_element(element):
-    """Return a sitehydro.Tronconvigilance from a <TronconVigilanceSiteHydro>
-    element."""
-    if element is not None:
-        # prepare args
-        args = {}
-        args['code'] = _value(element, 'CdTronconVigilance')
-        args['libelle'] = _value(element, 'NomCTronconVigilance')
-
-        # build Tronconvigilance
-        return _sitehydro.Tronconvigilance(**args)
-
-
-def _stationhydro_from_element(element):
-    """Return a sitehydro.Stationhydro from a <StationHydro> element."""
-    if element is not None:
-        # prepare args
-        args = {}
-        args['code'] = _value(element, 'CdStationHydro')
-        args['codeh2'] = _value(element, 'CdStationHydroAncienRef')
-        typestation = _value(element, 'TypStationHydro')
-        if typestation is not None:
-            args['typestation'] = typestation
-        args['libelle'] = _value(element, 'LbStationHydro')
-        args['libellecomplement'] = _value(
-            element, 'ComplementLibelleStationHydro'
-        )
-        niveauaffichage = _value(element, 'NiveauAffichageStationHydro')
-        if niveauaffichage is not None:
-            args['niveauaffichage'] = niveauaffichage
-        args['coord'] = _coord_from_element(
-            element.find('CoordStationHydro'), 'StationHydro'
-        )
-        args['capteurs'] = [
-            _capteur_from_element(e)
-            for e in element.findall('Capteurs/Capteur')
-        ]
-        args['commune'] = _value(element, 'CdCommune')
-        args['ddcs'] = [
-            unicode(e.text)
-            for e in element.findall('ReseauxMesureStationHydro/CodeSandreRdd')
-        ]
-        # build Station
-        return _sitehydro.Stationhydro(**args)
-
-
-def _coord_from_element(element, entite):
-    """Return a dict {'x': x, 'y': y, 'proj': proj}.
-
-    Arg entite is the xml element suffix, a string in
-    (SiteHydro, StationHydro).
-
-    """
-    if element is not None:
-        coord = {}
-        coord['x'] = _value(element, 'CoordX%s' % entite, float)
-        coord['y'] = _value(element, 'CoordY%s' % entite, float)
-        coord['proj'] = _value(element, 'ProjCoord%s' % entite, int)
-        return coord
-
-
-def _capteur_from_element(element):
-    """Return a sitehydro.Capteur from a <Capteur> element."""
-    if element is not None:
-        # prepare args
-        args = {}
-        args['code'] = _value(element, 'CdCapteur')
-        args['codeh2'] = _value(element, 'CdCapteurAncienRef')
-        args['libelle'] = _value(element, 'LbCapteur')
-        typemesure = _value(element, 'TypMesureCapteur')
-        if typemesure is not None:
-            args['typemesure'] = typemesure
-        # build Capteur
-        return _sitehydro.Capteur(**args)
-
-
-def _grandeur_from_element(element, sitemeteo=None):
-    """Return a sitemeteo.Grandeur from a <GrdMeteo> element."""
-    if element is not None:
-        # prepare args
-        args = {}
-        args['typemesure'] = _value(element, 'CdGrdMeteo')
-        if sitemeteo is not None:
-            args['sitemeteo'] = sitemeteo
-        # build Grandeur
-        return _sitemeteo.Grandeur(**args)
-
-
-def _seuilhydro_from_element(element, sitehydro):
-    """Return a seuil.Seuilhydro from a <ValeursSeuilSiteHydro> element."""
-    if element is not None:
-        # prepare args
-        args = {}
-        args['sitehydro'] = sitehydro
-        args['code'] = _value(element, 'CdSeuilSiteHydro')
-        typeseuil = _value(element, 'TypSeuilSiteHydro')
-        if typeseuil is not None:
-            args['typeseuil'] = typeseuil
-        duree = _value(element, 'DureeSeuilSiteHydro')
-        if duree is not None:
-            args['duree'] = duree
-        args['nature'] = _value(element, 'NatureSeuilSiteHydro')
-        args['libelle'] = _value(element, 'LbUsuelSeuilSiteHydro')
-        args['mnemo'] = _value(element, 'MnemoSeuilSiteHydro')
-        args['gravite'] = _value(element, 'IndiceGraviteSeuilSiteHydro')
-        args['commentaire'] = _value(element, 'ComSeuilSiteHydro')
-        args['publication'] = _istrue(
-            _value(element, 'DroitPublicationSeuilSiteHydro')
-        )
-        args['valeurforcee'] = _value(element, 'ValForceeSeuilSiteHydro')
-        args['dtmaj'] = _value(element, 'DtMajSeuilSiteHydro', _UTC)
-        seuil = _seuil.Seuilhydro(**args)
-        # add the values
-        args['valeurs'] = []
-        valeurseuil = _valeurseuilsitehydro_from_element(
-            element, sitehydro, seuil
-        )
-        if valeurseuil is not None:
-            args['valeurs'].append(valeurseuil)
-        args['valeurs'].extend([
-            _valeurseuilstationhydro_from_element(e, seuil)
-            for e in element.findall(
-                './ValeursSeuilsStationHydro/ValeursSeuilStationHydro'
-            )
-        ])
-        # build Seuilhydro
-        # FIXME - why do we use a second Seuilhydro ????
-        return _seuil.Seuilhydro(**args)
-
-
-def _valeurseuilsitehydro_from_element(element, sitehydro, seuil):
-    """Return a seuil.Valeurseuil from a <ValeursSeuilSiteHydro> element."""
-    if element is not None:
-        # prepare args
-        args = {}
-        valeur = _value(element, 'ValDebitSeuilSiteHydro')
-        if valeur is None:
-            # Q can be None if the seuil has only H values
-            # all other Valeurseuil related tags are ignored
-            return
-        args['valeur'] = valeur
-        args['seuil'] = seuil
-        args['entite'] = sitehydro
-        args['tolerance'] = _value(element, 'ToleranceSeuilSiteHydro')
-        args['dtactivation'] = _value(
-            element, 'DtActivationSeuilSiteHydro', _UTC
-        )
-        args['dtdesactivation'] = _value(
-            element, 'DtDesactivationSeuilSiteHydro', _UTC
-        )
-        # build Valeurseuil
-        return _seuil.Valeurseuil(**args)
-
-
-def _valeurseuilstationhydro_from_element(element, seuil):
-    """Return a seuil.Valeurseuil from a <ValeursSeuilStationHydro> element."""
-    if element is not None:
-        # prepare args
-        args = {}
-        args['valeur'] = _value(element, 'ValHauteurSeuilStationHydro')
-        args['seuil'] = seuil
-        args['entite'] = _sitehydro.Stationhydro(
-            code=_value(element, 'CdStationHydro')
-        )
-        args['tolerance'] = _value(element, 'ToleranceSeuilStationHydro')
-        args['dtactivation'] = _value(
-            element, 'DtActivationSeuilStationHydro', _UTC
-        )
-        args['dtdesactivation'] = _value(
-            element, 'DtDesactivationSeuilStationHydro', _UTC
-        )
-        # build Valeurseuil
-        return _seuil.Valeurseuil(**args)
-
-
-def _modeleprevision_from_element(element):
-    """Return a modeleprevision.Modeleprevision from a """
-    """<ModelePrevision> element."""
-    if element is not None:
-        # prepare args
-        args = {}
-        args['code'] = _value(element, 'CdModelePrevision')
-        args['libelle'] = _value(element, 'LbModelePrevision')
-        args['typemodele'] = _value(element, 'TypModelePrevision', int)
-        args['description'] = _value(element, 'DescModelePrevision')
-        # build a modeleprevision and return
-        return _modeleprevision.Modeleprevision(**args)
-
-
-def _evenement_from_element(element):
-    """Return a evenement.Evenement from a <Evenement> element."""
-    if element is not None:
-
-        # entite can be a Sitehydro, a Stationhydro or a Sitemeteo
-        entite = None
-        if element.find('CdSiteHydro') is not None:
-            entite = _sitehydro.Sitehydro(
-                code=_value(element, 'CdSiteHydro')
-            )
-        elif element.find('CdStationHydro') is not None:
-            entite = _sitehydro.Stationhydro(
-                code=_value(element, 'CdStationHydro')
-            )
-        elif element.find('CdSiteMeteo') is not None:
-            entite = _sitemeteo.Sitemeteo(
-                code=_value(element, 'CdSiteMeteo')
-            )
-
-        # make the Evenement
-        return _evenement.Evenement(
-            entite=entite,
-            descriptif=_value(element, 'DescEvenement'),
-            contact=_intervenant.Contact(
-                code=_value(element, 'CdContact'),
-            ),
-            dt=_value(element, 'DtEvenement', _UTC),
-            publication=_value(element, 'TypPublicationEvenement'),
-            dtmaj=_value(element, 'DtMajEvenement', _UTC),
-        )
-
-
-def _seriehydro_from_element(element):
-    """Return a obshydro.Serie from a <Serie> element."""
-    if element is not None:
-
-        # entite can be a Sitehydro, a Stationhydro or a Capteur
-        entite = None
-        if element.find('CdSiteHydro') is not None:
-            entite = _sitehydro.Sitehydro(
-                code=_value(element, 'CdSiteHydro')
-            )
-        elif element.find('CdStationHydro') is not None:
-            entite = _sitehydro.Stationhydro(
-                code=_value(element, 'CdStationHydro')
-            )
-        elif element.find('CdCapteur') is not None:
-            entite = _sitehydro.Capteur(
-                code=_value(element, 'CdCapteur')
-            )
-
-        # get the contact
-        contact = _intervenant.Contact(code=_value(element, 'CdContact'))
-
-        # make the Serie
-        return _obshydro.Serie(
-            entite=entite,
-            grandeur=_value(element, 'GrdSerie'),
-            statut=_value(element, 'StatutSerie'),
-            dtdeb=_value(element, 'DtDebSerie', _UTC),
-            dtfin=_value(element, 'DtFinSerie', _UTC),
-            dtprod=_value(element, 'DtProdSerie', _UTC),
-            contact=contact,
-            observations=_obsshydro_from_element(element.find('ObssHydro'))
-        )
-
-
-def _seriemeteo_from_element(element):
-    """Return a obsmeteo.Serie from a <ObsMeteo> element.
-
-    Warning, the serie here does not contains observations, dtdeb or dtfin.
-
-    """
-    if element is not None:
-
-        # compute grandeur
-        grandeur = _sitemeteo.Grandeur(
-            typemesure=_value(element, 'CdGrdMeteo'),
-            sitemeteo=_sitemeteo.Sitemeteo(_value(element, 'CdSiteMeteo'))
-        )
-
-        # get duree in minutes
-        duree = _value(element, 'DureeObsMeteo', int) or 0
-
-        # get the contact
-        contact = _intervenant.Contact(code=_value(element, 'CdContact'))
-
-        # make the Serie without the observations
-        return _obsmeteo.Serie(
-            grandeur=grandeur,
-            duree=duree * 60,
-            statut=_value(element, 'StatutObsMeteo', int),
-            dtprod=_value(element, 'DtProdObsMeteo', _UTC),
-            contact=contact
-        )
-
-
-def _obsshydro_from_element(element):
-    """Return a sorted obshydro.Observations from a <ObssHydro> element."""
-    if element is not None:
-
-        # prepare a list of Observation
-        observations = []
-        for o in element:
-            args = {}
-            args['dte'] = _value(o, 'DtObsHydro', _UTC)
-            args['res'] = _value(o, 'ResObsHydro')
-            if args['res'] is None:
-                return
-            mth = _value(o, 'MethObsHydro', int)
-            if mth is not None:
-                args['mth'] = mth
-            qal = _value(o, 'QualifObsHydro', int)
-            if qal is not None:
-                args['qal'] = qal
-            continuite = _istrue(_value(o, 'ContObsHydro'))
-            if continuite is not None:
-                args['cnt'] = continuite
-            observations.append(_obshydro.Observation(**args))
-
-        # build Observations
-        return _obshydro.Observations(*observations).sort()
-
-
-def _obsmeteo_from_element(element):
-    """Return a obsmeteo.Observation from a <ObssHydro> element."""
-    if element is not None:
-        # prepare args
-        args = {}
-        args['dte'] = _value(element, 'DtObsMeteo', _UTC)
-        args['res'] = _value(element, 'ResObsMeteo')
-        if args['res'] is None:
-            return
-        mth = _value(element, 'MethObsMeteo', int)
-        if mth is not None:
-            args['mth'] = mth
-        qal = _value(element, 'QualifObsMeteo', int)
-        if qal is not None:
-            args['qal'] = qal
-        qua = _value(element, 'IndiceQualObsMeteo', int)
-        if qua is not None:
-            args['qua'] = qua
-        # build Observation
-        return _obsmeteo.Observation(**args)
-
-
-def _simulation_from_element(element):
-    """Return a simulation.Simulation from a <Simul> element."""
-    if element is not None:
-        # entite can be a Sitehydro or a Stationhydro
-        entite = None
-        if element.find('CdSiteHydro') is not None:
-            entite = _sitehydro.Sitehydro(
-                code=_value(element, 'CdSiteHydro')
-            )
-        elif element.find('CdStationHydro') is not None:
-            entite = _sitehydro.Stationhydro(
-                code=_value(element, 'CdStationHydro')
-            )
-        # prepare the qualite
-        # warning: qualite is int(float())
-        qualite = _value(element, 'IndiceQualiteSimul', float)
-        if qualite is not None:
-            qualite = int(qualite)
-        # make the Simulation
-        return _simulation.Simulation(
-            entite=entite,
-            modeleprevision=_modeleprevision.Modeleprevision(
-                code=_value(element, 'CdModelePrevision')
-            ),
-            grandeur=_value(element, 'GrdSimul'),
-            statut=_value(element, 'StatutSimul', int),
-            qualite=qualite,
-            public=_value(element, 'PubliSimul', bool),
-            commentaire=_value(element, 'ComSimul'),
-            dtprod=_value(element, 'DtProdSimul', _UTC),
-            previsions=_previsions_from_element(element.find('Prevs')),
-            intervenant=_intervenant.Intervenant(
-                _value(element, 'CdIntervenant')
-            )
-        )
-
-
-def _previsions_from_element(element):
-    """Return a simulation.Previsions from a <Prevs> element."""
-    if element is not None:
-
-        previsions = []
-        for prev in element:
-            dte = _value(prev, 'DtPrev', _UTC)
-
-            # -------------------
-            # compute Res[Min|Moy|Max]Prev
-            # -------------------
-            # xpath syntax: p.xpath('ResMoyPrev|ResMinPrev|ResMaxPrev')
-            for resprev in prev.xpath('|'.join(PREV_PROBABILITY)):
-                previsions.append(
-                    _simulation.Prevision(
-                        dte=dte,
-                        res=resprev.text,
-                        prb=PREV_PROBABILITY[resprev.tag]
-                    )
-                )
-
-            # -------------------
-            # compute ProbsPrev
-            # -------------------
-            for probprev in prev.findall('.//ProbPrev'):
-                previsions.append(
-                    _simulation.Prevision(
-                        dte=dte,
-                        res=_value(probprev, 'ResProbPrev', float),
-                        prb=_value(probprev, 'PProbPrev', int)
-                    )
-                )
-
-        return _simulation.Previsions(*previsions)
 
 
 # -- utility functions --------------------------------------------------------

@@ -37,8 +37,8 @@ from libhydro.conv.xml import (Scenario, Message)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1g"""
-__date__ = """2014-08-01"""
+__version__ = """0.1h"""
+__date__ = """2014-08-25"""
 
 #HISTORY
 #V0.1 - 2013-08-22
@@ -118,6 +118,10 @@ class TestScenario(unittest.TestCase):
             Scenario(emetteur=None, destinataire=destinataire)
         with self.assertRaises(TypeError):
             Scenario(emetteur='emetteur', destinataire=destinataire)
+        # a Contact without Intervenant emetteur
+        emetteur.intervenant = None
+        with self.assertRaises(TypeError):
+            Scenario(emetteur=emetteur, destinataire=destinataire)
 
     def test_error_02(self):
         """Destinataire error."""
@@ -125,9 +129,17 @@ class TestScenario(unittest.TestCase):
         emetteur = intervenant.Intervenant()
         Scenario(emetteur=emetteur, destinataire=destinataire)
         with self.assertRaises(TypeError):
-            Scenario(emetteu=emetteur, destinataire=None)
+            Scenario(emetteur=emetteur, destinataire=None)
         with self.assertRaises(TypeError):
             Scenario(emetteur=emetteur, destinataire='destinataire')
+        # a Contact without an Intervenant
+        destinataire = intervenant.Contact(
+            code=5, intervenant=intervenant.Intervenant()
+        )
+        Scenario(emetteur=emetteur, destinataire=destinataire)
+        destinataire.intervenant = None
+        with self.assertRaises(TypeError):
+            Scenario(emetteur=emetteur, destinataire=destinataire)
 
     def test_error_03(self):
         """Dtprod error."""

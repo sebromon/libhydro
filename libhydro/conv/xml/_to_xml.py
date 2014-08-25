@@ -34,11 +34,12 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.4d"""
-__date__ = """2014-08-04"""
+__version__ = """0.4e"""
+__date__ = """2014-08-25"""
 
 #HISTORY
 #V0.4 - 2014-07-31
+#    factorize the global functions
 #    replace isoformat() by strftime()
 #    add the to_xml.bdhydro argument
 #    add the modelesprevision element
@@ -57,10 +58,10 @@ __date__ = """2014-08-04"""
 # order matters in XML, we must have the keys list !
 ORDERED_ACCEPTED_KEYS = [
     'scenario',
-    # line 115: [1:5]
-    # 'intervenants',
-    'siteshydro', 'sitesmeteo', 'seuilshydro', 'modelesprevision',
-    # line 143: [5:]
+    # line 140: [1:6]
+    'intervenants', 'siteshydro', 'sitesmeteo',
+    'seuilshydro', 'modelesprevision',
+    # line 180: [6:]
     'evenements', 'serieshydro', 'seriesmeteo', 'simulations'
 ]
 
@@ -84,12 +85,10 @@ NS_ATTR = {
 
 
 # -- testsfunction ------------------------------------------------------------
-def _to_xml(
-    scenario=None, siteshydro=None, sitesmeteo=None, seuilshydro=None,
-    modelesprevision=None, evenements=None,
-    serieshydro=None, seriesmeteo=None, simulations=None,
-    bdhydro=False, strict=True, ordered=False
-):
+def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
+            seuilshydro=None, modelesprevision=None, evenements=None,
+            serieshydro=None, seriesmeteo=None, simulations=None,
+            bdhydro=False, strict=True, ordered=False):
     """Return a etree.Element a partir des donnees passes en argument.
 
     Cette fonction est privee et les utilisateurs sont invites a utiliser la
@@ -97,6 +96,7 @@ def _to_xml(
 
     Arguments:
         scenario (xml.Scenario) = 1 element
+        intervenants (intervenant.Intervenant collection) = iterable or None
         siteshydro (sitehydro.Sitehydro collection) = iterable or None
         sitesmeteo (sitemeteo.Sitemeteo collection) = iterable or None
         seuilshydro (seuil.Seuilhydro collection) = iterable or None
@@ -137,12 +137,18 @@ def _to_xml(
         )
 
     # add the referentiel
-    items = ORDERED_ACCEPTED_KEYS[1:5]
+    items = ORDERED_ACCEPTED_KEYS[1:6]
     choice = len(
         [args[i] for i in items if args[i] is not None]
     ) > 0
     if choice:
         sub = _etree.SubElement(tree, 'RefHyd')
+
+        # intervenants
+        if args['intervenants'] is not None:
+            sub.append(_intervenants_to_element(
+                args['intervenants'], bdhydro=bdhydro, strict=strict)
+            )
 
         # siteshydro and seuilshydro
         if (args['siteshydro'], args['seuilshydro']) != (None, None):
@@ -159,6 +165,7 @@ def _to_xml(
                 element = _seuilshydro_to_element(
                     seuilshydro=args['seuilshydro'],
                     ordered=ordered,
+                    bdhydro=bdhydro,
                     strict=strict
                 )
                 for elementsitehydro in element.findall('./SiteHydro'):
@@ -167,17 +174,17 @@ def _to_xml(
         # sitesmeteo
         if args['sitesmeteo'] is not None:
             sub.append(_sitesmeteo_to_element(
-                args['sitesmeteo'], strict=strict)
+                args['sitesmeteo'], bdhydro=bdhydro, strict=strict)
             )
 
         # modelesprevision
         if args['modelesprevision'] is not None:
             sub.append(_modelesprevision_to_element(
-                args['modelesprevision'], strict=strict)
+                args['modelesprevision'], bdhydro=bdhydro, strict=strict)
             )
 
     # add the datas
-    items = ORDERED_ACCEPTED_KEYS[5:]
+    items = ORDERED_ACCEPTED_KEYS[6:]
     choice = len(
         [args[i] for i in items if args[i] is not None]
     ) > 0
@@ -205,147 +212,11 @@ def _to_xml(
     return tree
 
 
-# -- global functions ---------------------------------------------------------
-def _siteshydro_to_element(siteshydro, bdhydro=False, strict=True):
-    """Return a <SitesHydro> element from a list of sitehydro.Sitehydro."""
-    if siteshydro is not None:
-        element = _etree.Element('SitesHydro')
-        for sitehydro in siteshydro:
-            element.append(
-                _sitehydro_to_element(
-                    sitehydro=sitehydro, bdhydro=bdhydro, strict=strict
-                )
-            )
-        return element
-
-
-def _sitesmeteo_to_element(sitesmeteo, bdhydro=False, strict=True):
-    """Return a <SitesMeteo> element from a list of sitemeteo.Sitemeteo."""
-    if sitesmeteo is not None:
-        element = _etree.Element('SitesMeteo')
-        for sitemeteo in sitesmeteo:
-            element.append(
-                _sitemeteo_to_element(sitemeteo=sitemeteo, strict=strict)
-            )
-        return element
-
-
-def _seuilshydro_to_element(seuilshydro, ordered=False,
-                            bdhydro=False, strict=True):
-    """Return a <SitesHydro> element from a list of seuil.Seuilhydro."""
-    if seuilshydro is not None:
-        # the ugly XML doesn't support many Q values within a seuil
-        # to deal with that use case, we have to split the values on
-        # duplicates seuils
-        newseuils = []
-        for seuilhydro in seuilshydro:
-            if seuilhydro.valeurs is not None:
-                valeurs_site = [
-                    valeur for valeur in seuilhydro.valeurs
-                    if (valeur.entite == seuilhydro.sitehydro)
-                ]
-                if len(valeurs_site) > 1:
-                    for valeur in valeurs_site[1:]:
-                        # for each value except the first one, we make a new
-                        # Seuilhydro with the same code and a uniq value
-                        seuil = _seuil.Seuilhydro(
-                            sitehydro=seuilhydro.sitehydro,
-                            code=seuilhydro.code,
-                            valeurs=[valeur]
-                        )
-                        newseuils.append(seuil)
-                        # then we remove the value from the initial iterable
-                        seuilhydro.valeurs.remove(valeur)
-        seuilshydro.extend(newseuils)
-
-        # now we group the seuilshydro by Sitehydro, putting them into a dict:
-        #     {sitehydro: [seuilhydro, ...], ...}
-        if ordered:
-            siteshydro = _collections.OrderedDict()
-        else:
-            siteshydro = {}
-        for seuilhydro in seuilshydro:
-            siteshydro.setdefault(seuilhydro.sitehydro, []).append(seuilhydro)
-
-        # make the elements
-        element = _etree.Element('SitesHydro')
-        for sitehydro in siteshydro:
-            element.append(
-                _sitehydro_to_element(
-                    sitehydro=sitehydro,
-                    seuilshydro=siteshydro[sitehydro],
-                    strict=strict
-                )
-            )
-        return element
-
-
-# TODO - these 4 functions can be factorised
-
-def _modelesprevision_to_element(modelesprevision, bdhydro=False, strict=True):
-    """Return a <ModelesPrevision> element from a list of """
-    """modeleprevision.Modeleprevision."""
-    if modelesprevision is not None:
-        element = _etree.Element('ModelesPrevision')
-        for modeleprevision in modelesprevision:
-            element.append(_modeleprevision_to_element(
-                modeleprevision=modeleprevision, strict=strict)
-            )
-        return element
-
-
-def _evenements_to_element(evenements, bdhydro=False, strict=True):
-    """Return a <Evenements> element from a list of evenement.Evenement."""
-    if evenements is not None:
-        element = _etree.Element('Evenements')
-        for evenement in evenements:
-            element.append(
-                _evenement_to_element(evenement, bdhydro=False, strict=strict)
-            )
-        return element
-
-
-def _serieshydro_to_element(serieshydro, bdhydro=False, strict=True):
-    """Return a <Series> element from a list of obshydro.Serie."""
-    if serieshydro is not None:
-        element = _etree.Element('Series')
-        for serie in serieshydro:
-            element.append(
-                _seriehydro_to_element(serie, bdhydro=False, strict=strict)
-            )
-        return element
-
-
-def _seriesmeteo_to_element(seriesmeteo, bdhydro=False, strict=True):
-    """Return a <ObssMeteo> element from a list of obsmeteo.Serie."""
-    if seriesmeteo is not None:
-        element = _etree.Element('ObssMeteo')
-        for serie in seriesmeteo:
-            for row in serie.observations.iterrows():
-                element.append(
-                    _obsmeteo_to_element(
-                        serie, *row, bdhydro=False, strict=strict
-                    )
-                )
-        return element
-
-
-def _simulations_to_element(simulations, bdhydro=False, strict=True):
-    """Return a <Simuls> element from a list of simulation.Simulation."""
-    if simulations is not None:
-        element = _etree.Element('Simuls')
-        for simulation in simulations:
-            element.append(
-                _simulation_to_element(
-                    simulation, bdhydro=False, strict=strict
-                )
-            )
-        return element
-
-
 # -- atomic functions ---------------------------------------------------------
 def _scenario_to_element(scenario, bdhydro=False, strict=True):
     """Return a <Scenario> element from a xml.Scenario."""
+
+    # FIXME - we should check the scenario name <NomScenario>
 
     if scenario is not None:
 
@@ -393,6 +264,77 @@ def _scenario_to_element(scenario, bdhydro=False, strict=True):
 
         # action !
         return _factory(root=_etree.Element('Scenario'), story=story)
+
+
+def _intervenant_to_element(intervenant, bdhydro=False, strict=True):
+    """Return a <Intervenant> element from a intervenant.Intervenant."""
+
+    if intervenant is not None:
+
+        # prerequisites
+        if strict:
+            _required(intervenant, ['code'])
+
+        # template for intervenant simple elements
+        story = _collections.OrderedDict((
+            ('CdIntervenant', {
+                'value': unicode(intervenant.code),
+                'attr': {'schemeAgencyID': intervenant.origine}
+            }),
+            ('NomIntervenant', {'value': intervenant.nom}),
+            ('MnIntervenant', {'value': intervenant.mnemo}),
+            ('Contacts', {
+                'value': None,
+                'force': True if (len(intervenant.contacts) > 0) else False
+            })
+        ))
+
+        # make element <Intervenant>
+        element = _factory(root=_etree.Element('Intervenant'), story=story)
+
+        # add the contacts if necessary
+        if len(intervenant.contacts) > 0:
+            child = element.find('Contacts')
+            for contact in intervenant.contacts:
+                child.append(
+                    _contact_to_element(
+                        contact, bdhydro=bdhydro, strict=strict
+                    )
+                )
+
+        # return
+        return element
+
+
+def _contact_to_element(contact, bdhydro=False, strict=True):
+    """Return a <Contact> element from a intervenant.Contact."""
+
+    if contact is not None:
+
+        #prerequisite
+        if strict:
+            _required(contact, ['code'])
+
+        # template for contact simple elements
+        story = _collections.OrderedDict((
+            # FIXME - this tag can be factorize
+            ('CdContact', {
+                'value': contact.code
+                if (
+                    (contact is not None) and
+                    (contact.code is not None)
+                ) else None,
+                # bdhydro requires a junk attr for the contacts
+                'attr': {'schemeAgencyID': 'SANDRE'}
+                if bdhydro else None
+            }),
+            ('NomContact', {'value': contact.nom}),
+            ('PrenomContact', {'value': contact.prenom}),
+            ('CiviliteContact', {'value': contact.civilite}),
+        ))
+
+        # make element <Contact> and return
+        return _factory(root=_etree.Element('Contact'), story=story)
 
 
 def _sitehydro_to_element(sitehydro, seuilshydro=None,
@@ -954,7 +896,7 @@ def _obsmeteo_to_element(seriemeteo, index, obs, bdhydro=False, strict=True):
             _required(seriemeteo.grandeur.sitemeteo, ['code'])
             _required(seriemeteo, ['statut'])  # contact is also mandatory
 
-        # template for seriehydro simple elements
+        # template for seriemeteo simple elements
         story = _collections.OrderedDict()
         story['CdGrdMeteo'] = {'value': seriemeteo.grandeur.typemesure}
         story['CdSiteMeteo'] = {'value': seriemeteo.grandeur.sitemeteo.code}
@@ -1052,6 +994,122 @@ def _simulation_to_element(simulation, bdhydro=False, strict=True):
             )
 
         # return
+        return element
+
+
+# -- global functions ---------------------------------------------------------
+def _global_function_builder(tag, func):
+    """Return a function that returns an etree.Element 'tag' with
+    func(item) children for each item in a items list.
+
+    Arguments:
+        tag  (str) = the parent etree.Element tag name
+        func (str) = elementary function name to call
+
+    """
+    def closure(items, bdhydro=False, strict=True):
+        """Items should be a list of item objects."""
+        if items is not None:
+            element = _etree.Element(tag)
+            for item in items:
+                element.append(
+                    func(item, bdhydro=bdhydro, strict=strict)
+                )
+            return element
+    return closure
+
+# return a <Intervenants> element from a list of intervenant.Intervenants
+_intervenants_to_element = _global_function_builder(
+    'Intervenants', _intervenant_to_element
+)
+# return a <SitesHydro> element from a list of sitehydro.Sitehydro
+_siteshydro_to_element = _global_function_builder(
+    'SitesHydro', _sitehydro_to_element
+)
+# return a <SitesMeteo> element from a list of sitemeteo.Sitemeteo
+_sitesmeteo_to_element = _global_function_builder(
+    'SitesMeteo', _sitemeteo_to_element
+)
+# return a <ModelesPrevision> element from a list of Modeleprevision
+_modelesprevision_to_element = _global_function_builder(
+    'ModelesPrevision', _modeleprevision_to_element
+)
+# return a <Evenements> element from a list of evenement.Evenement
+_evenements_to_element = _global_function_builder(
+    'Evenements', _evenement_to_element
+)
+# return a <Series> element from a list of obshydro.Serie
+_serieshydro_to_element = _global_function_builder(
+    'Series', _seriehydro_to_element
+)
+# return a <Simuls> element from a list of simulation.Simulation
+_simulations_to_element = _global_function_builder(
+    'Simuls', _simulation_to_element
+)
+
+
+# these 3 functions doesn't fir with the _global_function_builder :-\
+def _seriesmeteo_to_element(seriesmeteo, bdhydro=False, strict=True):
+    """Return a <ObssMeteo> element from a list of obsmeteo.Serie."""
+    if seriesmeteo is not None:
+        element = _etree.Element('ObssMeteo')
+        for serie in seriesmeteo:
+            for row in serie.observations.iterrows():
+                element.append(
+                    _obsmeteo_to_element(
+                        serie, *row, bdhydro=bdhydro, strict=strict
+                    )
+                )
+        return element
+
+
+def _seuilshydro_to_element(seuilshydro, ordered=False,
+                            bdhydro=False, strict=True):
+    """Return a <SitesHydro> element from a list of seuil.Seuilhydro."""
+    if seuilshydro is not None:
+        # the ugly XML doesn't support many Q values within a seuil
+        # to deal with that use case, we have to split the values on
+        # duplicates seuils
+        newseuils = []
+        for seuilhydro in seuilshydro:
+            if seuilhydro.valeurs is not None:
+                valeurs_site = [
+                    valeur for valeur in seuilhydro.valeurs
+                    if (valeur.entite == seuilhydro.sitehydro)
+                ]
+                if len(valeurs_site) > 1:
+                    for valeur in valeurs_site[1:]:
+                        # for each value except the first one, we make a new
+                        # Seuilhydro with the same code and a uniq value
+                        seuil = _seuil.Seuilhydro(
+                            sitehydro=seuilhydro.sitehydro,
+                            code=seuilhydro.code,
+                            valeurs=[valeur]
+                        )
+                        newseuils.append(seuil)
+                        # then we remove the value from the initial iterable
+                        seuilhydro.valeurs.remove(valeur)
+        seuilshydro.extend(newseuils)
+
+        # now we group the seuilshydro by Sitehydro, putting them into a dict:
+        #     {sitehydro: [seuilhydro, ...], ...}
+        if ordered:
+            siteshydro = _collections.OrderedDict()
+        else:
+            siteshydro = {}
+        for seuilhydro in seuilshydro:
+            siteshydro.setdefault(seuilhydro.sitehydro, []).append(seuilhydro)
+
+        # make the elements
+        element = _etree.Element('SitesHydro')
+        for sitehydro in siteshydro:
+            element.append(
+                _sitehydro_to_element(
+                    sitehydro=sitehydro,
+                    seuilshydro=siteshydro[sitehydro],
+                    strict=strict
+                )
+            )
         return element
 
 
