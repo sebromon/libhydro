@@ -4,7 +4,7 @@
 # All tests must be run from inside the test directory.
 #------------------------------------------------------------------------------
 # Author: Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>
-# Version: 0.1a - 2014-08-01
+# Version: 0.1a - 2014-08-26
 # History:
 #   V0.1 - 2014-08-01
 #     first shot
@@ -18,9 +18,10 @@ SHELL = /bin/sh
 
 TESTS_FILES := $(wildcard *.py)
 
-default: tests
+default: help
 
-.PHONY: tests _tests_title ${TESTS_FILES}
+.PHONY: t tests _tests_title ${TESTS_FILES}
+t: tests
 tests: _tests_title ${TESTS_FILES} clean
 _tests_title:
 	@echo
@@ -36,7 +37,7 @@ ${TESTS_FILES}:
 #     -v, --verbose                     Verbose output
 #     -s, --start-directory directory   Directory to start discovery (. default)
 #     -p, --pattern pattern             Pattern to match test files (test*.py default)
-d: _discover clean
+d: discover
 discover: _discover clean
 _discover:
 	@echo
@@ -47,7 +48,7 @@ _discover:
 	@python -m unittest discover -p 'test*.py'
 
 .PHONY: c coverage _coverage
-c: _coverage clean
+c: coverage
 coverage: _coverage clean
 _coverage:
 	@echo
@@ -68,8 +69,8 @@ help:
 	@echo 'Available commands'
 	@echo '------------------'
 	@echo
-	@echo 'make [tests]'
-	@echo 'make d[iscover]'
 	@echo 'make c[overage]'
 	@echo 'make clean'
-	@echo 'make help'
+	@echo 'make d[iscover]'
+	@echo 'make t[ests]'
+	@echo 'make [help]'

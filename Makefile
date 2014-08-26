@@ -2,16 +2,28 @@
 # LIBHYDRO - main makefile
 #------------------------------------------------------------------------------
 # Author: Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>
-# Version: 0.1a - 2014-08-02
+# Version: 0.2a - 2014-08-26
 # History:
+#   V0.2 - 2014-08-26
+#     add the backup and the doc targets
 #   V0.1 - 2014-08-02
 #     first shot
 #------------------------------------------------------------------------------
 # TODO - link the tests and doc Makefiles
 #------------------------------------------------------------------------------
 SHELL = /bin/sh
+BACKUP_DST := '/mnt/vosges2/gouinph/developpements/libhydro/libhydro'
 
 default: help
+
+.PHONY: backup
+backup:
+	@echo
+	@echo '-----------------------'
+	@echo 'Backup the repo'
+	@echo '-----------------------'
+	@echo
+	tar cjf ${BACKUP_DST}_$(shell date +%Y%m%d).tar.bz2 .
 
 .PHONY: dist
 dist:
@@ -20,7 +32,13 @@ dist:
 	@echo 'Create the distribution'
 	@echo '-----------------------'
 	@echo
-	@python setup.py sdist
+	@python setup.py sdist --format=gztar
+	@python setup.py sdist --format=zip
+	# @python setup.py bdist_wininst
+
+.PHONY: doc
+doc:
+	@cd doc && $(MAKE) all
 
 .PHONY: clean
 clean:
@@ -35,10 +53,13 @@ clean:
 cleanall:
 	@echo
 	@echo '---------------------------'
-	@echo 'Clean the pyc and swp files'
+	@echo 'Clean everything'
 	@echo '---------------------------'
 	@echo
+	# remove the pyc and the swap files
 	@find . -name '*.pyc' -or -name '*.swp' -exec rm {} \;
+	# remove the build and the libhydro.egg-info dirs
+	@rm -rf ./build ./libhydro.egg-info
 
 .PHONY: help
 help:
@@ -47,6 +68,8 @@ help:
 	@echo 'Available commands'
 	@echo '------------------'
 	@echo
-	@echo 'make dist'
+	@echo 'make backup'
 	@echo 'make clean|cleanall'
+	@echo 'make dist'
+	@echo 'make doc'
 	@echo 'make [help]'

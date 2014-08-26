@@ -76,6 +76,7 @@ paquets (l'utilisation des proxy du MEDDE pour accéder à internet est à valid
 avec votre administrateur réseau).
 
 Exemple:
+
     path=(chemin à personnaliser);C:\Program Files\Python27;C:\Program Files\Python27\scripts
     PYTHONPATH=(chemin à personnaliser)
     http_proxy=http://direct.proxy.i2:8080

@@ -37,7 +37,7 @@
         <CPIntervenant>Strin</CPIntervenant>
         <NomInternationalIntervenant>String</NomInternationalIntervenant>
         <CdSIRETRattacheIntervenant>token</CdSIRETRattacheIntervenant>
-        <CdCommune>0aaaa</CdCommune>
+        <CdCommune>32001</CdCommune>
         <Contacts>
           <Contact>
             <CdContact>1</CdContact>
@@ -54,7 +54,7 @@
             <PortContact>String</PortContact>
             <FaxContact>String</FaxContact>
             <MelContact>String</MelContact>
-            <PaysContact>Str</PaysContact>
+            <PaysContact>FR</PaysContact>
             <DateMajContact>2001-12-17T09:30:47</DateMajContact>
             <ProfilsAdminLocal>
               <ProfilAdminLocal>
@@ -96,7 +96,7 @@
             <PortContact>String</PortContact>
             <FaxContact>String</FaxContact>
             <MelContact>String</MelContact>
-            <PaysContact>Str</PaysContact>
+            <PaysContact>IT</PaysContact>
             <DateMajContact>2001-12-17T09:30:47</DateMajContact>
             <ProfilsAdminLocal>
               <ProfilAdminLocal>
@@ -124,7 +124,7 @@
             <DtDesactivationContact>2001-12-17T09:30:47</DtDesactivationContact>
           </Contact>
         </Contacts>
-        <PaysComplementIntervenant>Str</PaysComplementIntervenant>
+        <PaysComplementIntervenant>FR</PaysComplementIntervenant>
         <AdEtrangereComplementIntervenant>String</AdEtrangereComplementIntervenant>
         <TelephoneComplementIntervenant>String</TelephoneComplementIntervenant>
         <FaxComplementIntervenant>String</FaxComplementIntervenant>
@@ -153,7 +153,7 @@
         <CPIntervenant>Strin</CPIntervenant>
         <NomInternationalIntervenant>String</NomInternationalIntervenant>
         <CdSIRETRattacheIntervenant>token</CdSIRETRattacheIntervenant>
-        <CdCommune>0aaaa</CdCommune>
+        <CdCommune>2B002</CdCommune>
         <Contacts>
           <Contact>
             <CdContact>5</CdContact>
@@ -170,7 +170,7 @@
             <PortContact>String</PortContact>
             <FaxContact>String</FaxContact>
             <MelContact>String</MelContact>
-            <PaysContact>Str</PaysContact>
+            <PaysContact>FR</PaysContact>
             <DateMajContact>2001-12-17T09:30:47</DateMajContact>
             <ProfilsAdminLocal>
               <ProfilAdminLocal>
@@ -198,7 +198,7 @@
             <DtDesactivationContact>2001-12-17T09:30:47</DtDesactivationContact>
           </Contact>
         </Contacts>
-        <PaysComplementIntervenant>Str</PaysComplementIntervenant>
+        <PaysComplementIntervenant>AD</PaysComplementIntervenant>
         <AdEtrangereComplementIntervenant>String</AdEtrangereComplementIntervenant>
         <TelephoneComplementIntervenant>String</TelephoneComplementIntervenant>
         <FaxComplementIntervenant>String</FaxComplementIntervenant>

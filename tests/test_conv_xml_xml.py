@@ -37,8 +37,8 @@ from libhydro.conv.xml import (Scenario, Message)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1h"""
-__date__ = """2014-08-25"""
+__version__ = """0.1i"""
+__date__ = """2014-08-26"""
 
 #HISTORY
 #V0.1 - 2013-08-22
@@ -51,6 +51,7 @@ FILES_PATH = os.path.join('data', 'xml', '1.1')
 
 #-- class TestScenario --------------------------------------------------------
 class TestScenario(unittest.TestCase):
+
     """Scenario class tests."""
 
     def test_base_01(self):
@@ -162,6 +163,7 @@ class TestScenario(unittest.TestCase):
 
 #-- class TestMessage --------------------------------------------------------
 class TestMessage(unittest.TestCase):
+
     """Message class tests."""
 
     def setUp(self):
@@ -248,11 +250,10 @@ class TestMessage(unittest.TestCase):
         msg.simulations.insert(0, msg.simulations[0])
 
     def test_base_09(self):
-        """Message from file with namespaces."""
-        with self.assertRaises(ValueError):
-            Message.from_file(
-                os.path.join(FILES_PATH, 'siteshydro_with_namespace.xml')
-            )
+        """Message from a file with namespaces."""
+        fname = os.path.join(FILES_PATH, 'siteshydro_with_namespace.xml')
+        msg = Message.from_file(fname)
+        msg.write(self.tmp_file, force=True)
 
     def test_str_01(self):
         """Test __str__ method with basic values."""

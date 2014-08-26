@@ -36,8 +36,8 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.5a"""
-__date__ = """2014-08-22"""
+__version__ = """0.5b"""
+__date__ = """2014-08-26"""
 
 #HISTORY
 #V0.5 - 2014-08-22
@@ -171,6 +171,8 @@ class Message(object):
     def from_file(src, ordered=False):
         """Parse le fichier src et retourne un xml.Message.
 
+        Supprime les eventuels namespaces.
+
         Arguments:
             src (nom de fichier, url, objet fichier...) = source de donnee. Les
                 type de src acceptes sont ceux de lxml.etree.parse
@@ -184,10 +186,15 @@ class Message(object):
         )
         tree = _etree.parse(src, parser=parser)
 
-        # deal with namespaces
-        # TODO - we could certainly do better with namespaces
-        if tree.getroot().nsmap != {}:
-            raise ValueError("can't parse xml file with namespaces")
+        # remove all existing namespaces
+        # standard nsmap should be: {
+        #     None: 'http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1',
+        #    'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
+        # }
+        nsmap = tree.getroot().nsmap
+        if nsmap != {}:
+            for alias in nsmap:
+                _remove_namespace(tree.getroot(), nsmap[alias])
 
         return Message(
             scenario=_from_xml._scenario_from_element(
@@ -383,3 +390,13 @@ class Message(object):
                )
 
     __str__ = _composant.__str__
+
+
+# -- functions ----------------------------------------------------------------
+def _remove_namespace(element, namespace):
+    """Remove namespace in the passed etree.Element in place."""
+    ns = '{%s}' % namespace
+    nsl = len(ns)
+    for e in element.getiterator():
+        if e.tag.startswith(ns):
+            e.tag = e.tag[nsl:]

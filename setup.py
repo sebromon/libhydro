@@ -4,14 +4,22 @@
 from setuptools import setup, find_packages
 import os
 import re
-import codecs
 
+# work around mbcs bug in distutils.
+# http://bugs.python.org/issue10945
+import codecs
+# try:
+#     codecs.lookup('mbcs')
+# except LookupError:
+#     ascii = codecs.lookup('ascii')
+#     func = lambda name, enc = ascii: {True: enc}.get(name == 'mbcs')
+#     codecs.register(func)
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1d"""
-__date__ = """2014-07-08"""
+__version__ = """0.1e"""
+__date__ = """2014-08-26"""
 
 #HISTORY
 #V0.1 - 2014-01-28
@@ -56,7 +64,11 @@ setup(
     description='Librairie pour manipuler les objets des dictionnaires '
                 'Hydrometrie du SANDRE',
     long_description=long_description,
-    url='http://arc.schapi:8001',
+    url='https://bitbucket.org/PhilippeGouin/libhydro/',
+    download_url='https://bitbucket.org/PhilippeGouin/libhydro/downloads/'
+                 'libhydro-{}.tar.gz'.format(
+                     find_version('libhydro', '__init__.py')
+                 ),
     author='Philippe Gouin',
     author_email='philippe.gouin@developpement-durable.gouv.fr',
     # maintainer
@@ -64,32 +76,19 @@ setup(
     # license='MIT',
     platforms=('any',),
     classifiers=[
-        # How mature is this project? Common values are
-        # 3 - Alpha
-        # 4 - Beta
-        # 5 - Production/Stable
-        'Development Status :: 4 - Beta',
-
-        # Indicate who your project is intended for
-        # 'Intended Audience :: Developers',
-        # 'Topic :: Software Development :: Build Tools',
-
-        # Pick your license as you wish (should match "license" above)
-        # 'License :: OSI Approved :: MIT License',
-
-        # Specify the Python versions you support here. In particular, ensure
-        # that you indicate whether you support Python 2, Python 3 or both.
-        # 'Programming Language :: Python :: 2',
-        # 'Programming Language :: Python :: 2.6',
+        #refer to https://pypi.python.org/pypi?:action=list_classifiers
         'Programming Language :: Python :: 2.7',
-        # 'Programming Language :: Python :: 3',
-        # 'Programming Language :: Python :: 3.1',
-        # 'Programming Language :: Python :: 3.2',
-        # 'Programming Language :: Python :: 3.3',
+        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'Operating System :: OS Independent',
+        'Development Status :: 4 - Beta',
+        'Environment :: Other Environment',
+        'Intended Audience :: Science/Research',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Scientific/Engineering :: Atmospheric Science :: Hydrology',
     ],
 
     # What does your project relate to?
-    keywords='hydrology',
+    keywords=['hydrology'],
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages.
