@@ -36,8 +36,8 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.5b"""
-__date__ = """2014-08-26"""
+__version__ = """0.5c"""
+__date__ = """2014-09-16"""
 
 #HISTORY
 #V0.5 - 2014-08-22
@@ -290,8 +290,12 @@ class Message(object):
                 de certains elements
 
         """
-        # check file
-        if (not force) and (_os.path.isfile(file)):
+        # check for an exisitng file
+        if (
+            (not force) and
+            isinstance(file, basestring) and
+            (_os.path.isfile(file))
+        ):
             raise IOError('file already exists')
         # procede !
         tree = _etree.ElementTree(

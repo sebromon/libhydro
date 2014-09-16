@@ -1048,7 +1048,7 @@ _simulations_to_element = _global_function_builder(
 )
 
 
-# these 3 functions doesn't fir with the _global_function_builder :-\
+# these 3 functions doesn't fit with the _global_function_builder :-\
 def _seriesmeteo_to_element(seriesmeteo, bdhydro=False, strict=True):
     """Return a <ObssMeteo> element from a list of obsmeteo.Serie."""
     if seriesmeteo is not None:
