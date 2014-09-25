@@ -34,8 +34,8 @@ from libhydro.core import sitehydro
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2014-02-25"""
+__version__ = """0.2a"""
+__date__ = """2014-09-25"""
 
 #HISTORY
 #V0.1 - 2013-08-16
@@ -66,7 +66,7 @@ class TestSimulationFromHSF(unittest.TestCase):
         self.assertEqual(len(sim.previsions), 144)
         self.assertEqual(
             (sim.previsions[10], sim.previsions.index[10]),
-            (3.71, (datetime.datetime(2013, 1, 23, 1, 40), 50))
+            (3710, (datetime.datetime(2013, 1, 23, 1, 40), 50))
         )
 
     def test_base_02(self):
@@ -89,7 +89,7 @@ class TestSimulationFromHSF(unittest.TestCase):
         self.assertEqual(len(sim.previsions), 3)
         self.assertEqual(
             (sim.previsions[1], sim.previsions.index[1]),
-            (3.34, (datetime.datetime(2013, 1, 23, 12, 10), 50))
+            (3340, (datetime.datetime(2013, 1, 23, 12, 10), 50))
         )
 
     def test_fuzzy_mode_01(self):
@@ -133,10 +133,10 @@ class TestSerieFromHSF(unittest.TestCase):
         self.assertEqual(len(serie.observations), 144)
         self.assertEqual(
             (
-                serie.observations.irow(10).item(),
-                serie.observations.irow(10).name
+                serie.observations.irow(100).item(),
+                serie.observations.irow(100).name
             ),
-            (3.71, datetime.datetime(2013, 1, 23, 1, 40))
+            (3040, datetime.datetime(2013, 1, 23, 16, 40))
         )
 
     def test_base_02(self):
@@ -145,8 +145,8 @@ class TestSerieFromHSF(unittest.TestCase):
         serie = shom.serie_from_hfs(
             src=SRC,
             stationhydro=station,
-            begin='2013-01-23 12:00',
-            end='2013-01-23 12:25'
+            begin='2013-01-23 20:05',
+            end='2013-01-23 20:35'
         )
         self.assertEqual(serie.entite, station)
         self.assertEqual(
@@ -159,7 +159,7 @@ class TestSerieFromHSF(unittest.TestCase):
                 serie.observations.irow(1).item(),
                 serie.observations.irow(1).name
             ),
-            (3.34, datetime.datetime(2013, 1, 23, 12, 10))
+            (1550, datetime.datetime(2013, 1, 23, 20, 20))
         )
 
     def test_fuzzy_mode_01(self):
@@ -180,7 +180,7 @@ class TestSerieFromHSF(unittest.TestCase):
                 serie.observations.irow(73).item(),
                 serie.observations.irow(73).name
             ),
-            (3.34, datetime.datetime(2013, 1, 23, 12, 10))
+            (3340, datetime.datetime(2013, 1, 23, 12, 10))
         )
 
     def test_error_01(self):

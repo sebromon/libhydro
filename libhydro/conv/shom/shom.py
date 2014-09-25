@@ -48,10 +48,12 @@ from ...core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1d"""
-__date__ = """2013-08-17"""
+__version__ = """0.2a"""
+__date__ = """2014-09-25"""
 
 #HISTORY
+#V0.2 - 2014-09-25
+#    fix conversion to mm
 #V0.1 - 2013-08-01
 #    first shot
 
@@ -151,6 +153,7 @@ def serie_from_hfs(src, stationhydro=None, begin=None, end=None, strict=True):
 
     # update the DataFrame
     df.index.name = 'dte'
+    df.res *= 1000
 
     # if entite is None we use the HFS file name to build a station
     if stationhydro and strict:
