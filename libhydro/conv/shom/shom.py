@@ -76,7 +76,6 @@ def simulation_from_hfs(
         stationhydro (Stationhydro) = par defaut utilise le nom du fichier src
         begin, end (isoformat string) = dates de debut/fin de la plage de
             valeurs a conserver, bornes incluses
-        entite( Sitehydro, Stationhydro ou Capteur)
         dtprod (string ou datetime) = date de production
         strict (bool, defaut True) = le mode permissif permet de lever le
             controle de validite de la stationhydro
