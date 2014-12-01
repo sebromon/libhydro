@@ -78,7 +78,7 @@ Créer un environnement virtuel
     * utiliser ou pas les paquets de l'environnement de base avec --system-site-packages / --no-site-packages
     (dans le premier cas les paquets sont surchargés par ceux du virtualenv)
     * forcer l'interpréteur à utiliser avec -p (python path)
-    * spécifier un prompt spécifique avec --prompt=(prompt)
+    * formatter le prompt avec --prompt=(prompt)
 
 Utiliser l'environnement virtuel
 

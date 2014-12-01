@@ -283,7 +283,7 @@ class Message(object):
         Arguments:
             file (str ou objet fichier)
             encoding (string)
-            compression (int de 0 a 9) = niveau de compression gzip
+            compression (int de 0 a 9, defaut 0) = niveau de compression gzip
             force (bool, defaut False) = ecrase un fichier deja existant
             bdhydro (bool, defaut False) = utilise le format bdhydro
             ordered (bool, defaut False) = si True essaie de conserver l'ordre

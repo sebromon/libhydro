@@ -147,7 +147,7 @@ class Observations(_composant_obs.Observations):
 
     A la difference des observations hydrometriques, les observations
     meteorologiques devraient etre a pas de temps fixe et les donnes manquantes
-    representees par la valeur 'Nan' (not a number). ATENTION, ce conteneur ne
+    representees par la valeur 'Nan' (not a number). ATTENTION, ce conteneur ne
     garanti pas que l'index du DataFrame soit continu.
 
     Les donnees sont contenues dans 4 colonnes du DataFrame (voir Observation).

@@ -2,8 +2,8 @@ INSTALLATION DE LIBHYDRO SOUS WINDOWS
 ===============================================================================
 
 * Auteur: philippe.gouin@developpement-durable.gouv.fr
-* Version: 0.2d
-* Mise à jour: 2014-08-22
+* Version: 0.2e
+* Mise à jour: 2014-12-01
 
 Installation packagée de Python (conseillé)
 -------------------------------------------------------------------------------
@@ -25,8 +25,8 @@ paquets à installer.
 Si votre réseau local accède à internet via le proxy du MEDDE (à vérifier le
 cas échéant avec votre administrateur réseau), les 2 variables à déclarer sont:
 
-    http_proxy=http://direct.proxy.i2:8080
-    https_proxy=http://direct.proxy.i2:8080
+    http_proxy=http://(host:port)
+    https_proxy=http://(host:port)
 
 On peut le faire au choix:
 
@@ -79,8 +79,8 @@ Exemple:
 
     path=(chemin à personnaliser);C:\Program Files\Python27;C:\Program Files\Python27\scripts
     PYTHONPATH=(chemin à personnaliser)
-    http_proxy=http://direct.proxy.i2:8080
-    https_proxy=http://direct.proxy.i2:8080
+    http_proxy=http://(host:port)
+    https_proxy=http://(host:port)
 
 ### Installer les setup-tools et pip (optionnel) ###
 [Réf: http://www.pip-installer.org/en/latest/installing.html](http://www.pip-installer.org/en/latest/installing.html)
