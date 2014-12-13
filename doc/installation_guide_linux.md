@@ -2,10 +2,10 @@ INSTALLATION DE LIBHYDRO SOUS LINUX
 ===============================================================================
 
 * Auteur: philippe.gouin@developpement-durable.gouv.fr
-* Version: 0.1a
-* Mise à jour: 2014-08-22
+* Version: 0.1b
+* Mise à jour: 2014-12-13
 
-Installation packagée de Python
+Installation packagée de Python (CONSEILLE)
 -------------------------------------------------------------------------------
 
 Installer python et pip, un installeur de librairies.
@@ -17,15 +17,15 @@ Exemple:
 
     yum install python python-pip.noarch
 
-Installation manuelle de Python (compilation)
+Compilation de Python (compilation) (NON CONSEILLE)
 -------------------------------------------------------------------------------
-La procédure décrite ci-dessous est pour CentOS 6.2.
-[Réf: http://toomuchdata.com/2012/06/25/how-to-install-python-2-7-3-on-centos-6-2/](http://toomuchdata.com/2012/06/25/how-to-install-python-2-7-3-on-centos-6-2/)
+
+La procédure décrite ci-dessous est pour CentOS 6.2 [(Réf 1)][1].
 
 NB: la version python 2.4.3 de l'os, nécessaire pour pas mal de programmes, est
 /usr/bin/python.
 
-Installer les dépendances:
+Installer les dépendances
 
     yum groupinstall "Development tools"  # big but requested to enable all features in python
     yum install gcc zlib-devel bzip2-devel openssl-devel ncurses-devel readline-devel sqlite sqlite-devel
@@ -34,7 +34,7 @@ Installer les dépendances:
     yum install sqlite.x86_64 sqlite-devel.x86_64  # sqlite is requested by ipython
     yum install openssl-devel.i386 openssl-devel.x86_64  # optional
 
-Compiler la version la plus récente de la série 2 de Python:
+Compiler la version la plus récente de la série 2 de Python
 
     wget http://www.python.org/ftp/python/2.x.y/Python-2.x.y.tar.bz2
     ./configure
@@ -47,23 +47,23 @@ Si problème relatif à sqlite3, il faut patcher les sources:
     wget -O patch_sqlite https://raw.github.com/gist/2727063/
     cat patch_sqlite | patch -p1
 
-Télécharger et installer pip et les setuptools:
+Télécharger et installer pip et les setuptools
 
-  wget --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-x.y.tar.gz
-  wget --no-check-certificate https://pypi.python.org/packages/source/p/pip/pip-x.y.z.tar.gz
-  python setup.py install  # pour chacun des modules
+    wget --no-check-certificate https://pypi.python.org/packages/source/s/setuptools/setuptools-x.y.tar.gz
+    wget --no-check-certificate https://pypi.python.org/packages/source/p/pip/pip-x.y.z.tar.gz
+    python setup.py install  # pour chacun des modules
 
-Pip et les proxy
-  Configurer les variables http_proxy, https_proxy et ftp_proxy pour permettre à pip de télécharger les paquets
-  par tous les moyens possibles.
+### Pip et les proxy ###
 
-  A défaut on peux préciser le proxy directement dans la commande install:
+Configurer les variables http_proxy, https_proxy et ftp_proxy pour permettre à pip de télécharger les paquets
+par tous les moyens possibles.
+
+A défaut on peux préciser le proxy directement dans la commande install:
 
     pip --proxy http://(proxy) install (paquet)
 
-Installation et utilisation de virtualenv
+Installation et utilisation de virtualenv [(Réf 2)][2]
 -------------------------------------------------------------------------------
-[Réf: http://sametmax.com/les-environnement-virtuels-python-virtualenv-et-virtualenvwrapper/](http://sametmax.com/les-environnement-virtuels-python-virtualenv-et-virtualenvwrapper/)
 
 Installer virtualenv avec pip
 
@@ -73,12 +73,12 @@ Créer un environnement virtuel
 
     virtualenv --system-site-packages (dest_dir)
 
-  On peut:
+On peut:
 
-    * utiliser ou pas les paquets de l'environnement de base avec --system-site-packages / --no-site-packages
-    (dans le premier cas les paquets sont surchargés par ceux du virtualenv)
-    * forcer l'interpréteur à utiliser avec -p (python path)
-    * formatter le prompt avec --prompt=(prompt)
+  * utiliser ou pas les paquets de l'environnement de base avec --system-site-packages / --no-site-packages
+  (dans le premier cas les paquets sont surchargés par ceux du virtualenv)
+  * forcer l'interpréteur à utiliser avec -p (python path)
+  * formatter le prompt avec --prompt=(prompt)
 
 Utiliser l'environnement virtuel
 
@@ -86,7 +86,7 @@ Utiliser l'environnement virtuel
   * en modifiant le python PATH
   * en utilisant virtualenvwrapper
 
-Création d'un environnement virtuel avec le wrapper
+Création d'un environnement virtuel avec le wrapper:
 
     mkvirtualenv --system-site-packages --prompt '[libhydro]' ~/.virtualenvs/libhydro
 
@@ -98,16 +98,15 @@ Commande
 
     (virtualenv)/bin/pip install numpy
 
-Difficultés éventuelles
-  Install Numpy first ! (c module, could be tricky). Could need the python-devel package.
+Difficultés éventuelles possibles, Numpy est un module en c qui peut nécessiter le package python-devel.
 
-  If inappropriate warnings from numpy.loadtxt():
+En cas de warnings inapprorpiés émis par numpy.loadtxt():
 
-    * edit the npyio.py file
-    (can be in (python)/lib/python2.7/site-packages/numpy-1.6.2-py2.7-linux-x86_64.egg/numpy/lib/
-    or /lib/python2.7/site-packages/numpy/lib/)
-    * comment the line 773 '''warnings.warn('loadtxt: Empty input file: "%s"' % fname)'''
-    * comment the line 1311 '''warnings.warn('genfromtxt: Empty input file: "%s"' % fname)'''
+  * edit the npyio.py file
+  (can be in (python)/lib/python2.7/site-packages/numpy-1.6.2-py2.7-linux-x86_64.egg/numpy/lib/
+  or /lib/python2.7/site-packages/numpy/lib/)
+  * comment the line 773 '''warnings.warn('loadtxt: Empty input file: "%s"' % fname)'''
+  * comment the line 1311 '''warnings.warn('genfromtxt: Empty input file: "%s"' % fname)'''
 
 #### Pandas (do not forget the 's' !!) ####
 
@@ -115,8 +114,7 @@ Commande
 
     pip install pandas
 
-Les dépendances suivantes sont automatiquement installées
-  python-dateutil, pytz et six
+Les dépendances suivantes sont automatiquement installées: python-dateutil, pytz et six.
 
 #### Lxml ####
 
@@ -138,6 +136,7 @@ Commande
         python-dateutil==2.1
         pytz==2013b
         six==1.3.0
+        suds-jurko==0.6
 
     pip install -r (pip_freeze_file)
 
@@ -147,3 +146,6 @@ Installer libhydro
 Télécharger et décompresser l'archive puis dans un terminal faire:
 
     python setup.py install
+
+[1]: http://toomuchdata.com/2012/06/25/how-to-install-python-2-7-3-on-centos-6-2/ "Python on CentOS"
+[2]: http://sametmax.com/les-environnement-virtuels-python-virtualenv-et-virtualenvwrapper/ "Les environnements virtuels"
