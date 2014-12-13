@@ -111,6 +111,6 @@ setup(
         'numpy >= 1.7.1',
         'pandas >= 0.11.0',
         'lxml >= 3.2.3',
-        'suds-jurko >= 0.6'
+        # 'suds-jurko >= 0.6'
     ),
 )
