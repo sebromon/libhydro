@@ -3,7 +3,7 @@ INSTALLATION DE LIBHYDRO SOUS LINUX
 
 * Auteur: philippe.gouin@developpement-durable.gouv.fr
 * Version: 0.1b
-* Mise à jour: 2014-12-13
+* Mise à jour: 2014-12-14
 
 Installation packagée de Python (CONSEILLE)
 -------------------------------------------------------------------------------
@@ -17,10 +17,10 @@ Exemple:
 
     yum install python python-pip.noarch
 
-Compilation de Python (compilation) (NON CONSEILLE)
+Compilation de Python (NON CONSEILLE)
 -------------------------------------------------------------------------------
 
-La procédure décrite ci-dessous est pour CentOS 6.2 [(Réf 1)][1].
+La procédure décrite ci-dessous est pour CentOS 6.2 ([Réf 1][1]).
 
 NB: la version python 2.4.3 de l'os, nécessaire pour pas mal de programmes, est
 /usr/bin/python.
@@ -35,12 +35,14 @@ Installer les dépendances
     yum install openssl-devel.i386 openssl-devel.x86_64  # optional
 
 Compiler la version la plus récente de la série 2 de Python
-
-    wget http://www.python.org/ftp/python/2.x.y/Python-2.x.y.tar.bz2
-    ./configure
-    make
-    # use 'make altinstall' if you care overwriting a previous python installation
-    su -c 'make install' # default install dans /usr/local/bin/python
+```
+#!sh
+wget http://www.python.org/ftp/python/2.x.y/Python-2.x.y.tar.bz2
+./configure
+make
+# use 'make altinstall' if you care overwriting a previous python installation
+su -c 'make install' # default install dans /usr/local/bin/python
+```
 
 Si problème relatif à sqlite3, il faut patcher les sources:
 
@@ -55,14 +57,14 @@ Télécharger et installer pip et les setuptools
 
 ### Pip et les proxy ###
 
-Configurer les variables http_proxy, https_proxy et ftp_proxy pour permettre à pip de télécharger les paquets
-par tous les moyens possibles.
+Configurer les variables http_proxy, https_proxy et ftp_proxy pour permettre à
+pip de télécharger les paquets par tous les moyens possibles.
 
 A défaut on peux préciser le proxy directement dans la commande install:
 
     pip --proxy http://(proxy) install (paquet)
 
-Installation et utilisation de virtualenv [(Réf 2)][2]
+Installation et utilisation de virtualenv ([Réf 2][2])
 -------------------------------------------------------------------------------
 
 Installer virtualenv avec pip
@@ -75,20 +77,24 @@ Créer un environnement virtuel
 
 On peut:
 
-  * utiliser ou pas les paquets de l'environnement de base avec --system-site-packages / --no-site-packages
-  (dans le premier cas les paquets sont surchargés par ceux du virtualenv)
+  * utiliser ou pas les paquets de l'environnement de base avec
+    --system-site-packages ou --no-site-packages (dans le premier cas les
+    paquets sont surchargés par ceux du virtualenv)
   * forcer l'interpréteur à utiliser avec -p (python path)
   * formatter le prompt avec --prompt=(prompt)
 
 Utiliser l'environnement virtuel
 
-  * avec la commande 'source (virtualenv)/bin/activate' | 'deactivate' pour sortir (!! commande générale)
+  * avec la commande 'source (virtualenv)/bin/activate' | 'deactivate' pour
+    sortir (!! commande générale)
   * en modifiant le python PATH
   * en utilisant virtualenvwrapper
 
 Création d'un environnement virtuel avec le wrapper:
-
-    mkvirtualenv --system-site-packages --prompt '[libhydro]' ~/.virtualenvs/libhydro
+```
+#!sh
+mkvirtualenv --system-site-packages --prompt '[libhydro]' ~/.virtualenvs/libhydro
+```
 
 Installer les dépendances de libhydro dans l'environnement virtuel
 -------------------------------------------------------------------------------
@@ -98,9 +104,10 @@ Commande
 
     (virtualenv)/bin/pip install numpy
 
-Difficultés éventuelles possibles, Numpy est un module en c qui peut nécessiter le package python-devel.
+Difficultés éventuelles possibles, Numpy est un module en c qui peut nécessiter
+le package python-devel.
 
-En cas de warnings inapprorpiés émis par numpy.loadtxt():
+En cas de warnings inappropriés émis par numpy.loadtxt():
 
   * edit the npyio.py file
   (can be in (python)/lib/python2.7/site-packages/numpy-1.6.2-py2.7-linux-x86_64.egg/numpy/lib/
@@ -114,14 +121,14 @@ Commande
 
     pip install pandas
 
-Les dépendances suivantes sont automatiquement installées: python-dateutil, pytz et six.
+Les dépendances python-dateutil, pytz et six sont automatiquement installées.
 
 #### Lxml ####
 
 Commande
 
     sudo yum install libxslt-devel.x86_64 libxml2-devel.x86_64
-    pip install lxml  # 3.2.3
+    pip install lxml
 
 #### Suds (version suds-jurko) ####
 
