@@ -21,9 +21,11 @@ paquets à installer.
 
 Si votre réseau local accède à internet via un proxy (à vérifier le
 cas échéant avec votre administrateur réseau), les 2 variables à déclarer sont:
-
-    http_proxy=http://(host:port)
-    https_proxy=http://(host:port)
+```
+#!bat
+http_proxy=http://(host:port)
+https_proxy=http://(host:port)
+```
 
 On peut le faire au choix:
 
@@ -33,8 +35,10 @@ On peut le faire au choix:
 
 ### Installer les pré-requis à libhydro ###
 Installer les pré-requis pour libhydro:
-
-    conda install pandas lxml
+```
+#!bat
+conda install pandas lxml
+```
 
 Dépendances facultatives pour Pandas, permettant d'améliorer les performances
 lors de l'utilisation de très grosses séries de données:
@@ -45,18 +49,22 @@ lors de l'utilisation de très grosses séries de données:
 
 En profiter pour installer d'autres paquets utiles:
 
-  * _ipython_, un "powerful interactive shell"
+  * _ipython-qtconsole_, un "powerful interactive shell"
   * _spyder_, un éditeur "for the Python language with advanced editing,
     interactive testing, debugging and introspection features"
 
 Si problème avec pip autour d'une erreur d'encodage ligne 249 du fichier
 mimetypes.py, remplacer ligne 250:
-
-    except UnicodeEncodeError:
+```
+#!python
+except UnicodeEncodeError:
+```
 
 par:
-
-    except (UnicodeEncodeError, UnicodeDecodeError):
+```
+#!python
+except (UnicodeEncodeError, UnicodeDecodeError):
+```
 
 Installation manuelle de Python (NON CONSEILLE)
 -------------------------------------------------------------------------------
@@ -74,11 +82,13 @@ paquets (l'utilisation d'un proxy pour accéder à internet est à valider
 avec votre administrateur réseau).
 
 Exemple:
-
-    path=(chemin à personnaliser);C:\Program Files\Python27;C:\Program Files\Python27\scripts
-    PYTHONPATH=(chemin à personnaliser)
-    http_proxy=http://(host:port)
-    https_proxy=http://(host:port)
+```
+#!bat
+path=(chemin à personnaliser);C:\Program Files\Python27;C:\Program Files\Python27\scripts
+PYTHONPATH=(chemin à personnaliser)
+http_proxy=http://(host:port)
+https_proxy=http://(host:port)
+```
 
 ### Installer les setup-tools et pip (optionnel) ([Réf 7][7]) ###
 
@@ -91,16 +101,22 @@ Dans tous les cas une installation manuelle des libraries via Pypi reste
 possible.
 
 Récupérer le paquet 'ez_setup.py' et l'installer avec la commande:
-
-    python ez_setup.py
+```
+#!bat
+python ez_setup.py
+```
 
 Récupérer le paquet 'get-pip.py' et l'installer avec:
-
-    python get-pip.py  # need the proxy !
+```
+#!bat
+python get-pip.py  # need the proxy !
+```
 
 Puis mettre à jour les setuptools:
-
-    pip install --upgrade setuptools
+```
+#!bat
+pip install --upgrade setuptools
+```
 
 ### Installer les pré-requis à libhydro ###
 Se reporter à la rubrique équivalent du paragraphe précédent.
@@ -117,8 +133,10 @@ préférable d'utiliser des paquets déjà construits, disponibles sur Pypi ou
 Installation de libhydro
 -------------------------------------------------------------------------------
 Télécharger et décompresser l'archive puis dans un terminal faire:
-
-    python setup.py install
+```
+#!bat
+python setup.py install
+```
 
 [1]: http://conda.pydata.org/miniconda.html "Miniconda"
 [2]: http://sametmax.com/les-environnement-virtuels-python-virtualenv-et-virtualenvwrapper/ "Virtualenv"
