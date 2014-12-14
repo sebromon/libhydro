@@ -1,5 +1,4 @@
 INSTALLATION DE LIBHYDRO SOUS LINUX
-Commande
 ===============================================================================
 
 * Auteur: philippe.gouin@developpement-durable.gouv.fr
@@ -117,6 +116,7 @@ mkvirtualenv --system-site-packages --prompt '[libhydro]' ~/.virtualenvs/libhydr
 Installer les dépendances de libhydro dans l'environnement virtuel
 -------------------------------------------------------------------------------
 ### Numpy ####
+Numpy est un pré-requis pour Pandas.
 ```
 #!sh
 (virtualenv)/bin/pip install numpy
@@ -134,6 +134,8 @@ En cas de warnings inappropriés émis par numpy.loadtxt():
   * comment the line 1311 '''warnings.warn('genfromtxt: Empty input file: "%s"' % fname)'''
 
 #### Pandas (do not forget the 's' !!) ####
+Pandas est utilisé pour stocker les séries de données temporelles (observations
+et prévisions).
 ```
 #!sh
 pip install pandas
@@ -142,6 +144,7 @@ pip install pandas
 Les dépendances python-dateutil, pytz et six sont automatiquement installées.
 
 #### Lxml ####
+Lxml est utilisé par le codec xml.
 ```
 #!sh
 sudo yum install libxslt-devel.x86_64 libxml2-devel.x86_64
@@ -149,6 +152,7 @@ pip install lxml
 ```
 
 #### Suds (version suds-jurko) ####
+Suds est utiliés pour les connections à la BdHydro.
 ```
 #!sh
 pip install suds-jurko

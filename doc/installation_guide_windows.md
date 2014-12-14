@@ -119,7 +119,7 @@ pip install --upgrade setuptools
 ```
 
 ### Installer les pré-requis à libhydro ###
-Se reporter à la rubrique équivalent du paragraphe précédent.
+Se reporter à la rubrique équivalent du guide d'installation Linux.
 
 Pour les dépendances suivantes qui nécessitent une compilation, il est
 préférable d'utiliser des paquets déjà construits, disponibles sur Pypi ou
