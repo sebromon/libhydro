@@ -8,6 +8,7 @@ Il contient les modules:
     # xml
 
 """
-__all__ = ['shom', 'xml']
+__all__ = ['csv', 'shom', 'xml']
+from .csv import csv
 from .shom import shom
 from . import xml

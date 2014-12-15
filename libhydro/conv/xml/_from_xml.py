@@ -873,7 +873,7 @@ _simulations_from_element = _global_function_builder(
 )
 
 
-# these 2 functions doesn't fir with the _global_function_builder :-\
+# these 2 functions doesn't fit with the _global_function_builder :-\
 def _seuilshydro_from_element(element, ordered=False):
     """Return a list of seuil.Seuilhydro from a <SitesHydro> element.
 
