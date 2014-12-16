@@ -121,9 +121,9 @@ def simulation_from_hfs(
     )
 
 
-def simulation_to_hfs():
-    """Not implemented."""
-    raise NotImplementedError()  # TODO
+# def simulation_to_hfs():
+#     """Not implemented."""
+#     raise NotImplementedError()  # TODO
 
 
 def serie_from_hfs(src, stationhydro=None, begin=None, end=None, strict=True):
@@ -182,6 +182,6 @@ def serie_from_hfs(src, stationhydro=None, begin=None, end=None, strict=True):
     )
 
 
-def serie_to_hfs(dst):
-    """Not implemented."""
-    raise NotImplementedError()  # TODO
+# def serie_to_hfs(dst):
+#     """Not implemented."""
+#     raise NotImplementedError()  # TODO

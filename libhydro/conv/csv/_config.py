@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-"""CSV codec defaut config.
+"""Module libhydro.conv.csv._config.
 
-Csv.dialect and mapping par defaut pour l"Echange de donnees d'hydrometrie au
-format simplifie".
+Configuration par defaut du codec CSV.
+
+Cette configuration est basee sVurles regles de l"Echange de donnees
+d'hydrometrie au format simplifie".
 
 """
 
@@ -20,27 +22,21 @@ import csv as _csv
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1a"""
-__date__ = """2014-12-15"""
+__version__ = """0.1b"""
+__date__ = """2014-12-16"""
 
 #HISTORY¬
  #V0.1 - 2014-12-15¬
  #    first shot¬
 
-#-- todos ---------------------------------------------------------------------
-# TODO - reverse the mapping
-#    for python 2.7+ / 3+:
-#        inv_map = {v: k for k, v in map.items()}
-#    in python2.7+, using map.iteritems() would be more efficient
 
-
-#-- config --------------------------------------------------------------------
+#-- DIALECT config ------------------------------------------------------------
 # FIXME - check Sandre rule to deal with semi columns in CSV
-# CAREFUL, csv dialect values must be strings in Python 2
+# CAREFUL, csv.Dialect values must be strings in Python 2
 DIALECT = {
     'delimiter': b';',
-    'doublequote': True,
-    # 'escapechar': '\\',
+    'doublequote': False,
+    'escapechar': b'\\',
     'lineterminator': b'\r\n',
     'quotechar': b'"',
     'quoting': _csv.QUOTE_NONE,
@@ -48,35 +44,44 @@ DIALECT = {
     'strict': False
 }
 
-# SYNTAX: xml_tag: object_attr
+#-- MAPPING config ------------------------------------------------------------
+# TODO - reverse the mapping
+#    for python 2.7+ / 3+:
+#        inv_map = {v: k for k, v in map.items()}
+#    in python2.7+, using map.iteritems() would be more efficient
+
+# SYNTAX: {object: {xml_tag: object_attr, ...}, ...}
 MAPPING = {
     'sitehydro': {
         '<CdSiteHydro>': 'code',  # mandatory
         '<LbSiteHydro>': 'libelle',
         '<TypSiteHydro>': 'typesite',
-        '<CoordXSiteHydro>': 'coord.x',
-        '<CoordYSiteHydro>': 'coord.y',
-        '<ProjCoordSiteHydro>': 'coord.proj',
-        '<AltitudeSiteHydro>': None,  # NotImplemented
-        '<SysAltimetriqueSiteHydro>': None,  # NotImplemented
-        '<BassinVersantSiteHydro>': None,  # NotImplemented
-        '<FuseauHoraireSiteHydro>': None,  # NotImplemented
-        '<CdEuMasseDEau>': None,  # NotImplemented
-        '<cdZoneHydro>': None,  # NotImplemented
-        '<CdEntiteHydrographique>': None,  # NotImplemented
+        '<AltitudeSiteHydro>': None,  # NotImplemented yet
+        '<SysAltimetriqueSiteHydro>': None,  # NotImplemented yet
+        '<BassinVersantSiteHydro>': None,  # NotImplemented yet
+        '<FuseauHoraireSiteHydro>': None,  # NotImplemented yet
+        '<CdEuMasseDEau>': None,  # NotImplemented yet
+        '<cdZoneHydro>': None,  # NotImplemented yet
+        '<CdEntiteHydrographique>': None,  # NotImplemented yet
         '<FLG>': None  # mandatory
+    },
+    'sitehydro.coord': {
+        '<CoordXSiteHydro>': 'x',
+        '<CoordYSiteHydro>': 'y',
+        '<ProjCoordSiteHydro>': 'proj'
     },
     'stationhydro': {
         '<CdStationHydro>': 'code',
         '<LbStationHydro>': 'libelle',
         '<TypStationHydro>': 'typestation',
-        '<CoordXStationHydro>': 'coord.x',
-        '<CoordYStationHydro>': 'coord.y',
-        '<ProjCoordStationHydro>': 'coord.proj',
-        '<DtMiseServiceStationHydro>': None,  # NotImplemented
-        '<DtFermetureStationHydro>': None,  # NotImplemented
+        '<DtMiseServiceStationHydro>': None,  # NotImplemented yet
+        '<DtFermetureStationHydro>': None,  # NotImplemented yet
         '<CdCommune>': 'commune',
-        '<FLG>': None  # mandatory
+    },
+    'stationhydro.coord': {
+        '<CoordXStationHydro>': 'x',
+        '<CoordYStationHydro>': 'y',
+        '<ProjCoordStationHydro>': 'proj',
     },
     'sitemeteo': {},
 
