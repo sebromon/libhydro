@@ -3,11 +3,12 @@
 
 Configuration par defaut du codec CSV.
 
-Cette configuration est basee sVurles regles de l"Echange de donnees
+Cette configuration est basee sur les regles de l"Echange de donnees
 d'hydrometrie au format simplifie".
 
-"""
+Elle peut etre surchargee pour definir ses propres regles.
 
+"""
 #-- imports -------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
@@ -32,7 +33,7 @@ __date__ = """2014-12-16"""
 
 #-- DIALECT config ------------------------------------------------------------
 # FIXME - check Sandre rule to deal with semi columns in CSV
-# CAREFUL, csv.Dialect values must be strings in Python 2
+# CAREFUL, the csv.register_dialect deals only with strings :-( in Python2
 DIALECT = {
     'delimiter': b';',
     'doublequote': False,
@@ -50,7 +51,7 @@ DIALECT = {
 #        inv_map = {v: k for k, v in map.items()}
 #    in python2.7+, using map.iteritems() would be more efficient
 
-# SYNTAX: {object: {xml_tag: object_attr, ...}, ...}
+# SYNTAX: {object: {CSV_header: object_attribute, ...}, ...}
 MAPPING = {
     'sitehydro': {
         '<CdSiteHydro>': 'code',  # mandatory

@@ -9,6 +9,6 @@ Il contient les modules:
 
 """
 __all__ = ['csv', 'shom', 'xml']
-from .csv import csv
+from . import csv
 from .shom import shom
 from . import xml

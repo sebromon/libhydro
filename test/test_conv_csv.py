@@ -101,3 +101,6 @@ class TestMapKeys(unittest.TestCase):
         )
         with self.assertRaises(AttributeError):
             lhcsv._map_keys(self.base, mapper, iterator='')
+
+#free format
+#g=c.siteshydro_from_csv('test/data/csv/siteshydro_free.csv', mapping={'sitehydro': {'Code':'code'}}, delimiter=',')
