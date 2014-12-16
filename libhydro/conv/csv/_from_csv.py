@@ -12,7 +12,7 @@ import csv as _csv
 import codecs as _codecs
 
 from ._config import (DIALECT, MAPPING)
-from libhydro.core import sitehydro as _sitehydro
+from libhydro.core import (sitehydro as _sitehydro, _composant_site)
 
 
 #-- strings -------------------------------------------------------------------
@@ -74,16 +74,18 @@ class _UnicodeReader:
 
 #-- exposed functions ---------------------------------------------------------
 def from_csv(data, fname, encoding='utf-8'):
-    """Read fname in default CSV format.
+    """Retourne les objets de type <data> contenus dans le fichier <fname>.
 
-   Une fonction generique pour lire les CSV au format Hydrometrie.
+   Une fonction generique pour lire les CSV au format Hydrometrie. Pour decoder
+   des fichiers ne respectant pas le format Hydrometrie, utiliser les fonctions
+   dediees.
 
     Arguments:
         data (string) = siteshydro, sitesmeteo, serieshydro, seriesmeteo
         fname (string) = nom du fichier
         encoding (string, defaut 'utf-8')
 
-    """
+     """
     return eval(
         '{}_from_csv(fname="{}", encoding="{}")'.format(
             data, fname, encoding
@@ -93,82 +95,82 @@ def from_csv(data, fname, encoding='utf-8'):
 
 def siteshydro_from_csv(fname, encoding='utf-8', dialect='hydrometrie',
                         merge=True, mapping=MAPPING, **kwds):
+    """Retourne la liste des sites hydrometriques contenus dans le fichier
+    <fname>.
 
-    """TODO.
+   Cette fonction est completement parametrable et permet de decoder facilement
+   des fichiers ne respectant pas le format Hydrometrie.
+
+    Arguments:
+        fname (string) = nom du fichier
+        encoding (string, defaut 'utf-8')
+        dialect (csv.Dialect, defaut DIALECT) = format du CSV
+        merge (bool, defaut True) = par defaut les sites identiques sont
+            regroupes dans une seule entite
+        mapping (dict, defaut MAPPING) = mapping header => attribut. Les
+            dictionnaires de second niveau sont configurables
+        **kwds = autres argument passes au csv.Reader
+
     """
-
+    # parse the CSV file
     with open(fname, 'rb') as f:
-        # init the reader
+
+        # init
         csv = _UnicodeReader(f=f, dialect=dialect, encoding=encoding, **kwds)
         fieldnames = csv.next()
-
-        # parse the csv file
         siteshydro = []
+
+        # main loop
         for i, row in enumerate(csv):
 
             # emulate the csv.DictReader
             row = dict(zip(fieldnames, row))
 
-            # sitehydro is mandatory...
+            # DEBUG - print('\nLine: {}\nRow: {}\n'.format(i, row))
+
             try:
-                sitehydro = _sitehydro.Sitehydro(
-                    **_map_keys(row, mapping['sitehydro'], strict=False)
+                # read the sitehydro
+                # if 'sitehydro' in mapping: mandatory !
+                sitehydro = _get_entity_from_row(
+                    cls=_sitehydro.Sitehydro,
+                    row=row,
+                    mapper=mapping['sitehydro']
                 )
                 if 'sitehydro.coord' in mapping:
-                    sitehydro.coord = _map_keys(
-                        row, mapping['sitehydro.coord'], strict=False
-                    ) or None
+                    sitehydro.coord = _get_entity_from_row(
+                        cls=_composant_site.Coord,
+                        row=row,
+                        mapper=mapping['sitehydro.coord']
+                    )
+
+                # read the stationhydro
+                if 'stationhydro' in mapping:
+                    stationhydro = _get_entity_from_row(
+                        cls=_sitehydro.Stationhydro,
+                        row=row,
+                        mapper=mapping['stationhydro']
+                    )
+                    if stationhydro and 'stationhydro.coord' in mapping:
+                        stationhydro.coord = _get_entity_from_row(
+                            cls=_composant_site.Coord,
+                            row=row,
+                            mapper=mapping['stationhydro.coord']
+                        )
+                    sitehydro.stations = stationhydro
 
             except Exception as e:
                 raise _csv.Error(
-                    'error line {} reading '
-                    'the sitehydro, {}'.format(i + 1, e)
+                    'error in line {}, {}'.format(i + 1, e)
                 )
 
-            # ... but stationhydro is optional
-            if 'stationhydro' in mapping:
-                dstation = _map_keys(
-                    row, mapping['stationhydro'], strict=False
-                ) or None
-                # DEBUG -
-                # print(
-                # 'Line: {}\nRow: {}\nStation: {}\n'.format(i, row, dstation)
-                # )
-                if dstation:
-                    try:
-                        stationhydro = _sitehydro.Stationhydro(**dstation)
-                        if 'stationhydro.coord' in mapping:
-                            stationhydro.coord = _map_keys(
-                                row, mapping['stationhydro.coord'],
-                                strict=False
-                            ) or None
-                        sitehydro.stations = [stationhydro]
-
-                    except Exception as e:
-                        raise _csv.Error(
-                            'error line {} reading '
-                            'the stationhydro, {}'.format(i + 1, e)
-                        )
-
+            # add the sitehydro to the list
             siteshydro.append(sitehydro)
 
-            # merge
-            # found = False
-            # if merge:
-            #     # o exp(n) !!
-            #     for s in siteshydro:
-            #         if s == sitehydro:
-            #             found = True
-            #             if stationhydro is not None:
-            #                 s.stationshydro.append(stationhydro)
-            #             break
-            # if not merge or not found:
-            #     if stationhydro is not None:
-            #         sitehydro.stationshydro = [stationhydro]
-            #     siteshydro.append(sitehydro)
-
-        # ending
+    # ending
+    if not merge:
         return siteshydro
+    else:
+        return _merge_siteshydro(siteshydro)
 
 
 def sitesmeteo_from_csv(fname):
@@ -184,6 +186,39 @@ def seriesmeteo_from_csv(fname):
 
 
 #-- private functions ---------------------------------------------------------
+def _merge_siteshydro(siteshydro):
+    """Merge site siteshydro.
+
+    This merge is O(n2) !!.
+
+    """
+    mergedsites = []
+    for sitehydro in siteshydro:
+        for mergedsite in mergedsites:
+            if sitehydro.__eq__(mergedsite, ignore=['_stations']):
+                mergedsite.stations.extend(sitehydro.stations)
+                break
+        else:  # we have a new sitehydro here
+            mergedsites.append(sitehydro)
+    return mergedsites
+
+
+def _get_entity_from_row(cls, row, mapper):
+    """.
+    """
+    try:
+        args = _map_keys(base=row, mapper=mapper, strict=False)
+        if args:
+            return cls(**args)
+        # else (args is None): return None
+
+    except Exception:
+        raise _csv.Error(
+            # "can't find a suitable {}, {}".format(cls.__name__.lower(), e)
+            "can't find a suitable {}".format(cls.__name__.lower())
+        )
+
+
 def _map_keys(base, mapper, strict=True, iterator='items'):
     """Return the base dictionary with mapped keys.
 

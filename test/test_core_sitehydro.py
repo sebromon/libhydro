@@ -32,8 +32,8 @@ from libhydro.core import _composant_site as composant_site
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1m"""
-__date__ = """2014-08-01"""
+__version__ = """0.1n"""
+__date__ = """2014-12-16"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -137,6 +137,24 @@ class TestSitehydro(unittest.TestCase):
                 [tronconvigilance for tronconvigilance in tronconsvigilance]
             )
         )
+
+    def test_equality(self):
+        """Equality test."""
+        # strict mode
+        code = 'O0334011'
+        site = sitehydro.Sitehydro(code=code)
+        other = sitehydro.Sitehydro(code=code)
+        self.assertEqual(site, other)
+        other.libelle = 'A label here...'
+        self.assertNotEqual(site, other)
+        # lazzy mode: None attributes are ignored
+        self.assertTrue(site.__eq__(other, lazzy=True))
+        # ignore some attrs
+        other.libelle = None
+        self.assertEqual(site, other)
+        other.stations = sitehydro.Stationhydro('A456102001')
+        self.assertNotEqual(site, other)
+        self.assertTrue(site.__eq__(other, ignore=['_stations']))
 
     def test_base_04(self):
         """Update some attributes."""
@@ -350,6 +368,21 @@ class TestStationhydro(unittest.TestCase):
         s.capteurs = capteurs
         self.assertEqual(s.capteurs, capteurs)
 
+    def test_equality(self):
+        """Equality test."""
+        # strict mode
+        code = 'O033401101'
+        station = sitehydro.Stationhydro(code=code)
+        other = sitehydro.Stationhydro(code=code)
+        self.assertEqual(station, other)
+        other.libelle = 'A label here...'
+        self.assertNotEqual(station, other)
+        # lazzy mode: None attributes are ignored
+        self.assertTrue(station.__eq__(other, lazzy=True))
+        # ignore some attrs
+        self.assertNotEqual(station, other)
+        self.assertTrue(station.__eq__(other, ignore=['libelle']))
+
     def test_str_01(self):
         """Test __str__ method with None values."""
         s = sitehydro.Stationhydro(code=0, strict=False)
@@ -445,6 +478,24 @@ class TestCapteur(unittest.TestCase):
             (c.code, c.typemesure, c.libelle),
             (code, typemesure, libelle)
         )
+
+    def test_equality(self):
+        """Equality test."""
+        # strict mode
+        typemesure = 'Q'
+        code = 'A03346500101'
+        libelle = 'Capteur de secours'
+        capteur = sitehydro.Capteur(
+            code=code, typemesure=typemesure, libelle=libelle
+        )
+        other = sitehydro.Capteur(
+            code=code, typemesure=typemesure, libelle=libelle
+        )
+        self.assertEqual(capteur, other)
+        other.libelle = None
+        self.assertNotEqual(capteur, other)
+        # lazzy mode: None attributes are ignored
+        self.assertTrue(capteur.__eq__(other, lazzy=True))
 
     def test_str_01(self):
         """Test __str__ method with None values."""

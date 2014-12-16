@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-"""Test program for csv converter.
+"""Test program for csv._from_csv converter.
 
 To run all tests just type:
-    python -m unittest test_conv_csv
+    python -m unittest test_conv_csv_from_csv
 
 To run only a class test:
-    python -m unittest test_conv_csv.TestClass
+    python -m unittest test_conv_csv_from_csv.TestClass
 
 To run only a specific test:
-    python -m unittest test_conv_csv.TestClass.test_method
+    python -m unittest test_conv_csv_from_csv.TestClass.test_method
 
 """
 #-- imports -------------------------------------------------------------------
@@ -21,15 +21,12 @@ from __future__ import (
 
 import sys
 import os
-import csv
 sys.path.append(os.path.join('..', '..'))
 
+import csv
 import unittest
-# import datetime
-# import pandas
 
-from libhydro.conv import csv as lhcsv
-# from libhydro.core import sitehydro
+from libhydro.conv.csv import _from_csv as lhcsv
 
 
 #-- strings -------------------------------------------------------------------
@@ -42,9 +39,7 @@ __date__ = """2014-12-16"""
 #V0.1 - 2014-12-16
 #    first shot
 
-
-#-- config --------------------------------------------------------------------
-# SRC = os.path.join('data', 'csv', 'LOCMARIAQUER.hfs')
+CSV_DIR = os.path.join('data', 'csv')
 
 
 #-- class TestMapKeys ---------------------------------------------------------
@@ -102,5 +97,53 @@ class TestMapKeys(unittest.TestCase):
         with self.assertRaises(AttributeError):
             lhcsv._map_keys(self.base, mapper, iterator='')
 
-#free format
-#g=c.siteshydro_from_csv('test/data/csv/siteshydro_free.csv', mapping={'sitehydro': {'Code':'code'}}, delimiter=',')
+
+#-- class TestFromCsv ---------------------------------------------------------
+class TestFromCsv(unittest.TestCase):
+
+    """FromCsv class tests."""
+
+    def test_base(self):
+        """Quick read all hydrometrie files test."""
+        files = (
+            # fname,            data,         encoding
+            ('siteshydro_full', 'siteshydro', 'utf-8'),
+            ('siteshydro_full_8859-1', 'siteshydro', 'latin1'),
+            ('siteshydro_minimum', 'siteshydro', 'utf-8'),
+            ('siteshydro_partial', 'siteshydro', 'utf-8'),
+            # TODO sitesmeteo, serieshydro, seriesmeteo
+        )
+        for f in files:
+            fname = os.path.join(CSV_DIR, '{}.csv'.format(f[0]))
+            lhcsv.from_csv(fname=fname, data=f[1], encoding=f[2])
+
+
+#-- class TestSitesHydroFromCsv -----------------------------------------------
+class TestsitesHydroFromCsv(unittest.TestCase):
+
+    """SitesHydroFromCsv class tests."""
+
+    def test_base(self):
+        """Base test."""
+        fname = os.path.join(CSV_DIR, 'siteshydro_minimum.csv')
+        # merge = True
+        siteshydro = lhcsv.siteshydro_from_csv(fname)
+        self.assertEqual(len(siteshydro), 4)
+        self.assertEqual(siteshydro[1].code, 'A0330810')
+        self.assertEqual(len(siteshydro[3].stations), 3)
+        self.assertEqual(siteshydro[3].stations[2].code, 'W001102512')
+        # merge = False
+        siteshydro = lhcsv.siteshydro_from_csv(fname, merge=False)
+        self.assertEqual(len(siteshydro), 8)
+        self.assertEqual(siteshydro[2].code, 'A0330810')
+        self.assertEqual(len(siteshydro[6].stations), 1)
+        self.assertEqual(siteshydro[6].stations[0].code, 'W001102511')
+
+#2
+
+#3
+
+#4
+        #5
+        #free format
+        #g=c.siteshydro_from_csv('test/data/csv/siteshydro_free.csv', mapping={'sitehydro': {'Code':'code'}}, delimiter=',')

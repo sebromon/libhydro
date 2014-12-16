@@ -23,11 +23,12 @@ from . import (_composant, _composant_site)
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.3g"""
-__date__ = """2014-07-20"""
+__version__ = """0.3h"""
+__date__ = """2014-12-16"""
 
 #HISTORY
 #V0.3 - 2014-02-20
+#    add the _Entitehydro comparison methods
 #    use descriptors
 #    merge Camillo (CMO) work
 #V0.1 - 2013-07-12
@@ -39,7 +40,6 @@ __date__ = """2014-07-20"""
 #            Tronconvigilance 100%
 # FIXME - generalize typeentite in _Entite.typentite ?
 # TODO - add navigability for Capteur => Station and Station => Site
-# TODO - __eq__ for all classes
 
 
 #-- config --------------------------------------------------------------------
@@ -130,6 +130,38 @@ class _Entitehydro(object):
 
         except:
             raise
+
+    def __eq__(self, other, lazzy=False, ignore=[]):
+        """Compares object all attributes and returns True ou False.
+
+        Arguments:
+            lazzy (bool, default False) = if True does not test an attribute
+                whose counterpart is None
+            ignore (iterable of strings) = attrs to remove from the comparison.
+                Be aware that properties attrs are underscored
+
+        """
+        # quick test
+        if self is other:
+            return True
+
+        # browse attrs
+        attrs = self.__dict__.copy()
+        for item in ignore:
+            attrs.pop(item, None)
+        for attr in attrs:
+            first = getattr(self, attr, True)
+            second = getattr(other, attr, False)
+            if lazzy and (first is None or second is None):
+                continue
+            if first != second:
+                return False
+
+        # all is the same
+        return True
+
+    def __ne__(self, other, lazzy=False, ignore=[]):
+        return not self.__eq__(other, lazzy=lazzy, ignore=ignore)
 
 
 #-- class _Site_or_station ---------------------------------------------------
