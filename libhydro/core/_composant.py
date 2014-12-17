@@ -42,10 +42,12 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.9f"""
-__date__ = """2014-07-20"""
+__version__ = """1.0a"""
+__date__ = """2014-12-17"""
 
 #HISTORY
+#V1.0 - 2014-12-17
+#    move here full __eq__ and __ne__ methods
 #V0.9 - 2014-07-16
 #    add the error_handler, the Rlist and the Rlistproperty
 #    split the module in 3 parts
@@ -463,6 +465,40 @@ def is_code_insee(code, length=5, errors='ignore'):
         if errors not in ('ignore', 'strict'):
             raise ValueError("unknown error handler name '%s'" % errors)
         ERROR_HANDLERS[errors](msg=err.message, error=type(err))
+
+
+def __eq__(self, other, lazzy=False, ignore=[]):
+    """Compares object all attributes and returns True ou False.
+
+    Arguments:
+        lazzy (bool, default False) = if True does not test an attribute
+            whose counterpart is None
+        ignore (iterable of strings) = attrs to remove from the comparison.
+            Be aware that properties attrs are underscored
+
+    """
+    # quick test
+    if self is other:
+        return True
+
+    # browse attrs
+    attrs = self.__dict__.copy()
+    for item in ignore:
+        attrs.pop(item, None)
+    for attr in attrs:
+        first = getattr(self, attr, True)
+        second = getattr(other, attr, False)
+        if lazzy and (first is None or second is None):
+            continue
+        if first != second:
+            return False
+
+    # all is the same
+    return True
+
+
+def __ne__(self, other, lazzy=False, ignore=[]):
+    return not self.__eq__(other, lazzy=lazzy, ignore=ignore)
 
 
 def __str__(self):

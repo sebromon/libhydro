@@ -53,8 +53,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.7e"""
-__date__ = """2014-07-18"""
+__version__ = """0.7f"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.7 - 2014-03-02
@@ -69,7 +69,7 @@ __date__ = """2014-07-18"""
 #     grandeur is a descriptor, it needs a callback
 #     ADMIT_SIMULATION = {
 #         Sitehydro: {'H': False, 'Q': True},
-#         Stationhydro: {'H': True, 'Q': False},
+#         Station: {'H': True, 'Q': False},
 #         Capteur: {'H': False, 'Q':False}
 #     }
 # def _admit_simulation(self, grandeur):
@@ -244,7 +244,7 @@ class Simulation(object):
     classe pour manipuler les simulations hydrauliques ou hydrologiques.
 
     Proprietes:
-        entite (Sitehydro, Stationhydro)
+        entite (Sitehydro, Station)
         modeleprevision (Modeleprevision)
         grandeur (char in NOMENCLATURE[509]) = H ou Q
         statut (int in NOMENCLATURE[516]) = brute ou critiquee
@@ -276,7 +276,7 @@ class Simulation(object):
         """Initialisation.
 
         Arguments:
-            entite (Sitehydro ou Stationhydro)
+            entite (Sitehydro ou Station)
             modeleprevision (Modeleprevision)
             grandeur (char in NOMENCLATURE[509]) = H ou Q
             statut (int in NOMENCLATURE[516], defaut 4) = brute ou critiquee
@@ -330,13 +330,13 @@ class Simulation(object):
                 # entite must be a site or a station
                 if not isinstance(
                     entite,
-                    (_sitehydro.Sitehydro, _sitehydro.Stationhydro)
+                    (_sitehydro.Sitehydro, _sitehydro.Station)
                 ):
                     raise TypeError(
-                        'entite must be a Sitehydro or a Stationhydro'
+                        'entite must be a Sitehydro or a Station'
                     )
 
-                # Q prevs on Sitehydro only, H prevs on Stationhydro
+                # Q prevs on Sitehydro only, H prevs on Station
                 if (self.grandeur is not None):
                     if (self.grandeur == 'Q') and \
                             not isinstance(entite, _sitehydro.Sitehydro):
@@ -345,10 +345,10 @@ class Simulation(object):
                         )
                     if (self.grandeur == 'H') and \
                             not isinstance(
-                                entite, _sitehydro.Stationhydro
+                                entite, _sitehydro.Station
                             ):
                         raise TypeError(
-                            'H previsions, entite must be a Stationhydro'
+                            'H previsions, entite must be a Station'
                         )
 
             # all is well

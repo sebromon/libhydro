@@ -21,8 +21,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2e"""
-__date__ = """2014-07-18"""
+__version__ = """0.2f"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.1 - 2014-02-10
@@ -372,7 +372,7 @@ class Valeurseuil (object):
     Proprietes:
         valeur (numerique) = valeur du seuil
         seuil (Seuilhydro ou Seuilmeteo)
-        entite (Sitehydro, Stationhydro ou Grandeurmeteo)
+        entite (Sitehydro, Station ou Grandeurmeteo)
         tolerance (numerique)
         dtactivation (datetime.datetime)
         dtdesactivation (datetime.datetime)
@@ -393,7 +393,7 @@ class Valeurseuil (object):
         Arguments:
             valeur (numerique) = valeur du seuil
             seuil (Seuilhydro ou Seuilmeteo)
-            entite (Sitehydro, stationhydro ou Grandeurmeteo)
+            entite (Sitehydro, Station ou Grandeurmeteo)
             tolerance (numerique)
             dtactivation (numpy.datetime64 string, datetime.datetime...)
             dtdesactivation (numpy.datetime64 string, datetime.datetime...)

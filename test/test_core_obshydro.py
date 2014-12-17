@@ -33,8 +33,8 @@ from libhydro.core import (sitehydro, obshydro, intervenant)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1h"""
-__date__ = """2014-07-25"""
+__version__ = """0.1i"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.1 - 2013-07-15
@@ -265,7 +265,7 @@ class TestSerie(unittest.TestCase):
 
     def test_base_02(self):
         """Serie on a station with no statut."""
-        s = sitehydro.Stationhydro(code='A044581001')
+        s = sitehydro.Station(code='A044581001')
         g = 'Q'
         o = obshydro.Observations(
             obshydro.Observation('2012-10-03 06:00', 33),
@@ -308,7 +308,7 @@ class TestSerie(unittest.TestCase):
 
     def test_str_02(self):
         """Test __str__ method with a small Observations."""
-        s = sitehydro.Stationhydro(code='A044581001')
+        s = sitehydro.Station(code='A044581001')
         o = obshydro.Observations(
             obshydro.Observation('2012-10-03 06:00', 33),
             obshydro.Observation('2012-10-03 08:00', 42)
@@ -320,7 +320,7 @@ class TestSerie(unittest.TestCase):
 
     def test_str_03(self):
         """Test __str__ method with a big Observations."""
-        s = sitehydro.Stationhydro(code='A044581001', libelle='Toulouse')
+        s = sitehydro.Station(code='A044581001', libelle='Toulouse')
         o = obshydro.Observations(
             *[obshydro.Observation('20%i-01-01 00:00' % x, x)
               for x in xrange(10, 50)]
@@ -357,7 +357,7 @@ class TestSerie(unittest.TestCase):
 
     def test_error_01(self):
         """Entite error."""
-        s = sitehydro.Stationhydro(code='A044581001', strict=False)
+        s = sitehydro.Station(code='A044581001', strict=False)
         o = obshydro.Observations(obshydro.Observation('2012-10-03 06:00', 33))
         obshydro.Serie(**{'entite': s, 'grandeur': 'H', 'observations': o})
         self.assertRaises(
@@ -368,7 +368,7 @@ class TestSerie(unittest.TestCase):
 
     def test_error_02(self):
         """Grandeur error."""
-        s = sitehydro.Stationhydro(code='A044581001', strict=False)
+        s = sitehydro.Station(code='A044581001', strict=False)
         o = obshydro.Observations(obshydro.Observation('2012-10-03 06:00', 33))
         obshydro.Serie(**{'entite': s, 'grandeur': 'H', 'observations': o})
         self.assertRaises(
@@ -384,7 +384,7 @@ class TestSerie(unittest.TestCase):
 
     def test_error_03(self):
         """Statut error."""
-        s = sitehydro.Stationhydro(code='A044581001', strict=False)
+        s = sitehydro.Station(code='A044581001', strict=False)
         o = obshydro.Observations(obshydro.Observation('2012-10-03 06:00', 33))
         obshydro.Serie(
             **{'entite': s, 'grandeur': 'H', 'statut': 12, 'observations': o}
@@ -402,7 +402,7 @@ class TestSerie(unittest.TestCase):
 
     def test_error_04(self):
         """Test Observations error."""
-        s = sitehydro.Stationhydro(code='A044581001', strict=False)
+        s = sitehydro.Station(code='A044581001', strict=False)
         obshydro.Serie(
             **{
                 'entite': s, 'grandeur': 'H', 'observations': 12,

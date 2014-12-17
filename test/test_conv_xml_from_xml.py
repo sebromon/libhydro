@@ -34,8 +34,8 @@ from libhydro.core import (sitehydro, sitemeteo)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2b"""
-__date__ = """2014-08-25"""
+__version__ = """0.2c"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.2 - 2014-08-03
@@ -664,7 +664,7 @@ class TestFromXmlEvenements(unittest.TestCase):
     def test_evenement_1(self):
         """Evenement 1 test."""
         evenement = self.data['evenements'][1]
-        self.assertTrue(isinstance(evenement.entite, sitehydro.Stationhydro))
+        self.assertTrue(isinstance(evenement.entite, sitehydro.Station))
         self.assertEqual(evenement.entite.code, 'Z853010101')
         self.assertEqual(evenement.contact.code, 8563)
         self.assertEqual(evenement.dt, datetime.datetime(2010, 2, 26, 9, 5))

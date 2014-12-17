@@ -48,6 +48,10 @@ __date__ = """2014-07-25"""
 #    first shot
 
 
+#-- todos ---------------------------------------------------------------------
+# TODO - add tests for the __eq__ and __ne__ methods
+
+
 #-- class TestErrorHandler ----------------------------------------------------
 class TestErrorHandler(unittest.TestCase):
 

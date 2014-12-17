@@ -107,15 +107,15 @@ class TestFromCsv(unittest.TestCase):
         """Quick read all hydrometrie files test."""
         files = (
             # fname,            data,         encoding
-            ('siteshydro_full', 'siteshydro', 'utf-8'),
-            ('siteshydro_full_8859-1', 'siteshydro', 'latin1'),
-            ('siteshydro_minimum', 'siteshydro', 'utf-8'),
-            ('siteshydro_partial', 'siteshydro', 'utf-8'),
-            # TODO sitesmeteo, serieshydro, seriesmeteo
+            ('siteshydro_full', 'sitehydro', 'utf-8'),
+            ('siteshydro_full_8859-1', 'sitehydro', 'latin1'),
+            ('siteshydro_minimum', 'sitehydro', 'utf-8'),
+            ('siteshydro_partial', 'sitehydro', 'utf-8'),
+            # TODO sitemeteo, seriehydro, seriemeteo
         )
         for f in files:
             fname = os.path.join(CSV_DIR, '{}.csv'.format(f[0]))
-            lhcsv.from_csv(fname=fname, data=f[1], encoding=f[2])
+            lhcsv.from_csv(fname=fname, dtype=f[1], encoding=f[2])
 
 
 #-- class TestSitesHydroFromCsv -----------------------------------------------

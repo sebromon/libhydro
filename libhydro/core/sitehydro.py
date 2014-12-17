@@ -3,7 +3,7 @@
 
 Ce module contient les classes:
     # Sitehydro
-    # Stationhydro
+    # Station
     # Capteur
     # Tronconvigilance
 
@@ -23,12 +23,16 @@ from . import (_composant, _composant_site)
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.3h"""
-__date__ = """2014-12-16"""
+__version__ = """0.4a"""
+__date__ = """2014-12-17"""
 
 #HISTORY
+#V0.4 - 2014-12-17
+#    change the class Stationhydro name to Station which is far better for
+#        metaprogramming regarding the Sitehydro stations list name
 #V0.3 - 2014-02-20
-#    add the _Entitehydro comparison methods
+#    add the _Entitehydro comparison methods, the switch it to the _composant
+#        module
 #    use descriptors
 #    merge Camillo (CMO) work
 #V0.1 - 2013-07-12
@@ -36,7 +40,7 @@ __date__ = """2014-12-16"""
 
 
 #-- todos ---------------------------------------------------------------------
-# PROGRESS - Sitehydro 20% - Stationhydro 30% - Capteur 30%
+# PROGRESS - Sitehydro 20% - Station 30% - Capteur 30%
 #            Tronconvigilance 100%
 # FIXME - generalize typeentite in _Entite.typentite ?
 # TODO - add navigability for Capteur => Station and Station => Site
@@ -131,43 +135,14 @@ class _Entitehydro(object):
         except:
             raise
 
-    def __eq__(self, other, lazzy=False, ignore=[]):
-        """Compares object all attributes and returns True ou False.
-
-        Arguments:
-            lazzy (bool, default False) = if True does not test an attribute
-                whose counterpart is None
-            ignore (iterable of strings) = attrs to remove from the comparison.
-                Be aware that properties attrs are underscored
-
-        """
-        # quick test
-        if self is other:
-            return True
-
-        # browse attrs
-        attrs = self.__dict__.copy()
-        for item in ignore:
-            attrs.pop(item, None)
-        for attr in attrs:
-            first = getattr(self, attr, True)
-            second = getattr(other, attr, False)
-            if lazzy and (first is None or second is None):
-                continue
-            if first != second:
-                return False
-
-        # all is the same
-        return True
-
-    def __ne__(self, other, lazzy=False, ignore=[]):
-        return not self.__eq__(other, lazzy=lazzy, ignore=ignore)
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
 
 
 #-- class _Site_or_station ---------------------------------------------------
 class _Site_or_station(_Entitehydro):
 
-    """Abstract base class for Sitehydro and Stationhydro.
+    """Abstract base class for Sitehydro and Station.
 
     Properties:
         -- properties of _Entitehydro     --
@@ -338,13 +313,13 @@ class Sitehydro(_Site_or_station):
         if stations is None:
             return
         # one station, we make a list with it
-        if isinstance(stations, Stationhydro):
+        if isinstance(stations, Station):
             stations = [stations]
         # an iterable of stations
         for station in stations:
             # some checks
             if self._strict:
-                if not isinstance(station, Stationhydro):
+                if not isinstance(station, Station):
                     raise TypeError(
                         'stations must be a Station or an iterable of Station'
                     )
@@ -421,10 +396,10 @@ class Sitehydro(_Site_or_station):
     __str__ = _composant.__str__
 
 
-#-- class Stationhydro --------------------------------------------------------
-class Stationhydro(_Site_or_station):
+#-- class Station -------------------------------------------------------------
+class Station(_Site_or_station):
 
-    """Classe Stationhydro.
+    """Classe Station.
 
     Classe pour manipuler des stations hydrometriques.
 
@@ -445,7 +420,7 @@ class Stationhydro(_Site_or_station):
 
     """
 
-    # Stationhydro other properties
+    # Station other properties
 
     #sitehydro
 
@@ -502,7 +477,7 @@ class Stationhydro(_Site_or_station):
         """
 
         # -- super --
-        super(Stationhydro, self).__init__(
+        super(Station, self).__init__(
             code=code, codeh2=codeh2, libelle=libelle,
             coord=coord, strict=strict
         )
@@ -643,7 +618,7 @@ class Capteur(_Entitehydro):
 
     # Capteur other properties
 
-    #stationhydro
+    #station
 
     #mnemonique
     #typecapteur
@@ -751,7 +726,7 @@ class Tronconvigilance(object):
 _ARTICLE = {
     # classe name: article
     Sitehydro: 'le',
-    Stationhydro: 'la',
+    Station: 'la',
     Capteur: 'le'
 }
 
@@ -759,12 +734,12 @@ _ARTICLE = {
 _CODE_HYDRO_LENGTH = {
     # class name: hydro code length
     Sitehydro: 8,
-    Stationhydro: 10,
+    Station: 10,
     Capteur: 12
 }
 
 # -- HYDRO ENTITY DEPEDENCY RULES --
-# rules for checking which Stationhydro a Sitehydro does accept
+# rules for checking which Station a Sitehydro does accept
 _SITE_ACCEPTED_STATION = {
     # type site : [type station, ...]
     'REEL': ('LIMNI', 'DEB', 'HC', 'LIMNIMERE', 'LIMNIFILLE'),
@@ -776,7 +751,7 @@ _SITE_ACCEPTED_STATION = {
     'VIRTUEL': tuple(),
     'RECONSTITUE': tuple()
 }
-# rules for checking which Capteur a Stationhydro does accept
+# rules for checking which Capteur a Station does accept
 _STATION_ACCEPTED_CAPTEUR = {
     'LIMNI': ('H',),
     'DEB': ('H', 'Q'),

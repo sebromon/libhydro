@@ -33,8 +33,8 @@ from libhydro.core import sitehydro
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1d"""
-__date__ = """2014-07-18"""
+__version__ = """0.1e"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.1 - 2014-02-12
@@ -339,7 +339,7 @@ class TestValeurseuil(unittest.TestCase):
         """Test __str__ method."""
         valeur = 8
         tolerance = 5
-        entite = sitehydro.Stationhydro('R533010110')
+        entite = sitehydro.Station('R533010110')
         valseuil = Valeurseuil(
             entite=entite, valeur=valeur, tolerance=tolerance
         )
@@ -348,7 +348,7 @@ class TestValeurseuil(unittest.TestCase):
 
     # def test_fuzzy_mode_01(self):  # TODO
     #     """Fuzzy mode."""
-    #     entite = sitehydro.Stationhydro('R533010110')
+    #     entite = sitehydro.Station('R533010110')
     #     descriptif = 'some texte here'
     #     publication = 9999
     #     e = seuil.seuil(
@@ -363,7 +363,7 @@ class TestValeurseuil(unittest.TestCase):
         """Test equality and inequality."""
         valeur = 8
         tolerance = 5
-        entite = sitehydro.Stationhydro('R533010110')
+        entite = sitehydro.Station('R533010110')
         valseuil = Valeurseuil(
             entite=entite, valeur=valeur, tolerance=tolerance
         )

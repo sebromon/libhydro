@@ -34,8 +34,8 @@ from libhydro.core import intervenant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2014-08-03"""
+__version__ = """0.1d"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.1 - 2013-11-26
@@ -62,7 +62,7 @@ class Testevenement(unittest.TestCase):
 
     def test_base_02(self):
         """Full evenement."""
-        entite = sitehydro.Stationhydro('R533010110')
+        entite = sitehydro.Station('R533010110')
         descriptif = 'some texte here'
         contact = intervenant.Contact(nom='moi')
         dt = datetime.datetime(1852, 2, 8, 5, 10, 8)
@@ -78,7 +78,7 @@ class Testevenement(unittest.TestCase):
 
     def test_str_01(self):
         """Test __str__ method."""
-        entite = sitehydro.Stationhydro('R533010110')
+        entite = sitehydro.Station('R533010110')
         descriptif = 'some texte here'
         contact = intervenant.Contact(nom='moi')
         e = evenement.Evenement(
@@ -88,7 +88,7 @@ class Testevenement(unittest.TestCase):
 
     def test_fuzzy_mode_01(self):
         """Fuzzy mode."""
-        entite = sitehydro.Stationhydro('R533010110')
+        entite = sitehydro.Station('R533010110')
         descriptif = 'some texte here'
         publication = 9999
         e = evenement.Evenement(
@@ -101,7 +101,7 @@ class Testevenement(unittest.TestCase):
 
     def test_error_01(self):
         """Entite error."""
-        entite = sitehydro.Stationhydro('R533010110')
+        entite = sitehydro.Station('R533010110')
         descriptif = 'some texte here'
         contact = intervenant.Contact(nom='moi')
         e = evenement.Evenement(
@@ -121,7 +121,7 @@ class Testevenement(unittest.TestCase):
 
     def test_error_02(self):
         """Descriptif error."""
-        entite = sitehydro.Stationhydro('R533010110')
+        entite = sitehydro.Station('R533010110')
         descriptif = 'some texte here'
         contact = intervenant.Contact(nom='moi')
         e = evenement.Evenement(
@@ -136,7 +136,7 @@ class Testevenement(unittest.TestCase):
 
     def test_error_03(self):
         """Contact error."""
-        entite = sitehydro.Stationhydro('R533010110')
+        entite = sitehydro.Station('R533010110')
         descriptif = 'some texte here'
         contact = intervenant.Contact(nom='moi')
         e = evenement.Evenement(
@@ -151,7 +151,7 @@ class Testevenement(unittest.TestCase):
 
     def test_error_04(self):
         """Publication error."""
-        entite = sitehydro.Stationhydro('R533010110')
+        entite = sitehydro.Station('R533010110')
         descriptif = 'some texte here'
         contact = intervenant.Contact(nom='moi')
         e = evenement.Evenement(

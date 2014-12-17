@@ -10,9 +10,12 @@ from __future__ import (
 
 import csv as _csv
 import codecs as _codecs
+import functools as _functools
 
 from ._config import (DIALECT, MAPPING)
-from libhydro.core import (sitehydro as _sitehydro, _composant_site)
+from libhydro.core import (
+    sitehydro as _sitehydro, sitemeteo as _sitemeteo, _composant_site
+)
 
 
 #-- strings -------------------------------------------------------------------
@@ -72,53 +75,83 @@ class _UnicodeReader:
         return self
 
 
-#-- exposed functions ---------------------------------------------------------
-def from_csv(data, fname, encoding='utf-8'):
-    """Retourne les objets de type <data> contenus dans le fichier <fname>.
+#-- main functions ------------------------------------------------------------
+def from_csv(dtype, fname, encoding='utf-8'):
+    """Retourne les objets de type <dtype> contenus dans le fichier CSV
+    <fname>.
 
-   Une fonction generique pour lire les CSV au format Hydrometrie. Pour decoder
-   des fichiers ne respectant pas le format Hydrometrie, utiliser les fonctions
-   dediees.
+   C'est une fonction generique pour lire les CSV au format Hydrometrie. Pour
+   decoder des fichiers ne respectant pas ce format, utiliser les fonctions
+   specifiques a chaque type de donnees.
 
     Arguments:
-        data (string) = siteshydro, sitesmeteo, serieshydro, seriesmeteo
+        dtype (string) = sitehydro, sitemeteo, seriehydro, seriemeteo
         fname (string) = nom du fichier
         encoding (string, defaut 'utf-8')
 
      """
+    # TODO - could be a sniffer
+    dtype = dtype.replace('site', 'sites').replace('serie', 'series')
     return eval(
         '{}_from_csv(fname="{}", encoding="{}")'.format(
-            data, fname, encoding
+            dtype, fname, encoding
         )
     )
 
 
-def siteshydro_from_csv(fname, encoding='utf-8', dialect='hydrometrie',
-                        merge=True, mapping=MAPPING, **kwds):
-    """Retourne la liste des sites hydrometriques contenus dans le fichier
-    <fname>.
+_FROM_CSV_DOC = """\
+Retourne la liste des {} contenus dans le fichier CSV <fname>.
 
-   Cette fonction est completement parametrable et permet de decoder facilement
-   des fichiers ne respectant pas le format Hydrometrie.
+Cette fonction est completement parametrable et permet de decoder des fichiers
+ne respectant pas le format Hydrometrie, en lui passant la configuration
+appropriee.
 
-    Arguments:
-        fname (string) = nom du fichier
-        encoding (string, defaut 'utf-8')
-        dialect (csv.Dialect, defaut DIALECT) = format du CSV
-        merge (bool, defaut True) = par defaut les sites identiques sont
-            regroupes dans une seule entite
-        mapping (dict, defaut MAPPING) = mapping header => attribut. Les
-            dictionnaires de second niveau sont configurables
-        **kwds = autres argument passes au csv.Reader
+Arguments:
+    fname (string) = nom du fichier
+    encoding (string, defaut 'utf-8')
+    dialect (csv.Dialect, defaut DIALECT) = format du CSV
+    merge (bool, defaut True) = par defaut les sites identiques sont
+        regroupes dans une seule entite
+    mapping (dict, defaut MAPPING) = mapping header => attribut. Les
+        dictionnaires de second niveau sont configurables
+    **kwds = autres argument passes au csv.Reader
+
+"""
+
+
+def _sites_from_csv(fname, encoding='utf-8', dialect='hydrometrie',
+                    merge=True, mapping=MAPPING, dtype=None, **kwds):
+    """Return the <dtype> entities in the CSV file <fname>.
+
+    Generic function for 'siteshydro' and 'sitesmeteo'.
+
+    Args:
+        dtype (string in 'sitehydro', 'sitemeteo')
+
+    The other args are described in the _FROM_CSV_DOCSTRING
 
     """
+    # init
+    children = {
+        'sitehydro': 'station',
+        'sitemeteo': 'grandeur'
+    }
+    if dtype not in children:
+        raise ValueError('wrong dtype')
+    classes = {
+        'sitehydro': _sitehydro.Sitehydro,
+        'station': _sitehydro.Station,
+        'sitemeteo': _sitemeteo.Sitemeteo,
+        'grandeur': _sitemeteo.Grandeur
+    }
+
     # parse the CSV file
     with open(fname, 'rb') as f:
 
         # init
         csv = _UnicodeReader(f=f, dialect=dialect, encoding=encoding, **kwds)
         fieldnames = csv.next()
-        siteshydro = []
+        sites = []
 
         # main loop
         for i, row in enumerate(csv):
@@ -129,52 +162,55 @@ def siteshydro_from_csv(fname, encoding='utf-8', dialect='hydrometrie',
             # DEBUG - print('\nLine: {}\nRow: {}\n'.format(i, row))
 
             try:
-                # read the sitehydro
-                # if 'sitehydro' in mapping: mandatory !
-                sitehydro = _get_entity_from_row(
-                    cls=_sitehydro.Sitehydro,
+                # read the parent entity (site)
+                # if 'site' in mapping: site is mandatory !
+                site = _get_entity_from_row(
+                    cls=classes[dtype],
                     row=row,
-                    mapper=mapping['sitehydro']
+                    mapper=mapping[dtype]
                 )
-                if 'sitehydro.coord' in mapping:
-                    sitehydro.coord = _get_entity_from_row(
+                if '{}.coord'.format(dtype) in mapping:
+                    site.coord = _get_entity_from_row(
                         cls=_composant_site.Coord,
                         row=row,
-                        mapper=mapping['sitehydro.coord']
+                        mapper=mapping['{}.coord'.format(dtype)]
                     )
 
-                # read the stationhydro
-                if 'stationhydro' in mapping:
-                    stationhydro = _get_entity_from_row(
-                        cls=_sitehydro.Stationhydro,
+                # read the child entity (station or grandeur)
+                if children[dtype] in mapping:
+                    child = _get_entity_from_row(
+                        cls=classes[children[dtype]],
                         row=row,
-                        mapper=mapping['stationhydro']
+                        mapper=mapping[children[dtype]]
                     )
-                    if stationhydro and 'stationhydro.coord' in mapping:
-                        stationhydro.coord = _get_entity_from_row(
+                    if child and '{}.coord'.format(children[dtype]) in mapping:
+                        child.coord = _get_entity_from_row(
                             cls=_composant_site.Coord,
                             row=row,
-                            mapper=mapping['stationhydro.coord']
+                            mapper=mapping['{}.coord'.format(children[dtype])]
                         )
-                    sitehydro.stations = stationhydro
+                    # join the child to his father
+                    setattr(site, '{}s'.format(children[dtype]), child)
 
             except Exception as e:
                 raise _csv.Error(
                     'error in line {}, {}'.format(i + 1, e)
                 )
 
-            # add the sitehydro to the list
-            siteshydro.append(sitehydro)
+            # add the site to the list
+            sites.append(site)
 
     # ending
-    if not merge:
-        return siteshydro
+    if not merge or sites == []:
+        return sites
     else:
-        return _merge_siteshydro(siteshydro)
+        return _merge_sites(sites=sites, childtype=children[dtype])
 
 
-def sitesmeteo_from_csv(fname):
-    raise NotImplementedError
+siteshydro_from_csv = _functools.partial(_sites_from_csv, dtype='sitehydro')
+siteshydro_from_csv.__doc__ = _FROM_CSV_DOC.format('sites hydrometriques')
+sitesmeteo_from_csv = _functools.partial(_sites_from_csv, dtype='sitemeteo')
+sitesmeteo_from_csv.__doc__ = _FROM_CSV_DOC.format('sites meteorologiques')
 
 
 def serieshydro_from_csv(fname):
@@ -186,28 +222,29 @@ def seriesmeteo_from_csv(fname):
 
 
 #-- private functions ---------------------------------------------------------
-def _merge_siteshydro(siteshydro):
-    """Merge site siteshydro.
+def _merge_sites(sites, childtype):
+    """Merge a list of sites.
 
     This merge is O(n2) !!.
 
     """
     mergedsites = []
-    for sitehydro in siteshydro:
+    for site in sites:
         for mergedsite in mergedsites:
-            if sitehydro.__eq__(mergedsite, ignore=['_stations']):
-                mergedsite.stations.extend(sitehydro.stations)
+            if site.__eq__(mergedsite, ignore=['_{}s'.format(childtype)]):
+                getattr(mergedsite, '{}s'.format(childtype)).extend(
+                    getattr(site, '{}s'.format(childtype)))
                 break
-        else:  # we have a new sitehydro here
-            mergedsites.append(sitehydro)
+        else:  # we have a new site here
+            mergedsites.append(site)
     return mergedsites
 
 
-def _get_entity_from_row(cls, row, mapper):
+def _get_entity_from_row(cls, row, mapper, strict=False):
     """.
     """
     try:
-        args = _map_keys(base=row, mapper=mapper, strict=False)
+        args = _map_keys(base=row, mapper=mapper, strict=strict)
         if args:
             return cls(**args)
         # else (args is None): return None
@@ -227,8 +264,8 @@ def _map_keys(base, mapper, strict=True, iterator='items'):
         and mapper = {k1: kk1, k2: None, ...}
         the function returns {Kk1: v1, ...}
 
-    If mapper[k] is None or if v is an empty string, the entry (k: v) is poped
-    from the returned dict.
+    If mapper[k] is None or if v is an empty string, the entry (k: v) is popped
+    from the returned dict, which can be empty.
 
     Arguments:
         base (dict) = the dict to update

@@ -24,7 +24,7 @@ import csv as _csv
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1b"""
-__date__ = """2014-12-16"""
+__date__ = """2014-12-17"""
 
 #HISTORY¬
  #V0.1 - 2014-12-15¬
@@ -71,38 +71,40 @@ MAPPING = {
         '<CoordYSiteHydro>': 'y',
         '<ProjCoordSiteHydro>': 'proj'
     },
-    'stationhydro': {
-        '<CdStationHydro>': 'code',
+    'station': {
+        '<CdStationHydro>': 'code',  # mandatory
         '<LbStationHydro>': 'libelle',
         '<TypStationHydro>': 'typestation',
         '<DtMiseServiceStationHydro>': None,  # NotImplemented yet
-        '<DtFermetureStationHydro>': None,  # NotImplemented yet
+        '<DtFermetureStationHydro>': None,  # NotImplemented yetv
         '<CdCommune>': 'commune',
     },
-    'stationhydro.coord': {
+    'station.coord': {
         '<CoordXStationHydro>': 'x',
         '<CoordYStationHydro>': 'y',
         '<ProjCoordStationHydro>': 'proj',
     },
-    'sitemeteo': {},
-
-    # <CdSiteMeteo>  # mandatory
-    # <LbSiteMeteo>
-    # <CoordXSiteMeteo>
-    # <CoordYSiteMeteo>
-    # <ProjCoordSiteMeteo>
-    # <AltitudeSiteMeteo>
-    # <SysAltimetriqueSiteMeteo>
-    # <FuseauHoraireSiteMeteo>
-    # <DtOuvertureSiteMeteo>
-    # <DtFermSiteMeteo>
-    # <CdSousSecteurHydro>
-    # <CdCommune>
-
-    # <CdGrdMeteo>
-    # <DtMiseServiceGrdMeteo>
-    # <DtFermetureServiceGrdMeteo>
-    # '<FLG>': None  # mandatory
+    'sitemeteo': {
+        '<CdSiteMeteo>': 'code',  # mandatory
+        '<LbSiteMeteo>': 'libelle',
+        '<AltitudeSiteMeteo>': None,  # NotImplemented yetv
+        '<SysAltimetriqueSiteMeteo>': None,  # NotImplemented yetv
+        '<FuseauHoraireSiteMeteo>': None,  # NotImplemented yetv
+        '<DtOuvertureSiteMeteo>': None,  # NotImplemented yetv
+        '<DtFermSiteMeteo>': None,  # NotImplemented yetv
+        '<CdSousSecteurHydro>': None,  # NotImplemented yetv
+        '<CdCommune>': 'commune',
+    },
+    'sitemeteo.coord': {
+        '<CoordXSiteMeteo>': 'x',
+        '<CoordYSiteMeteo>': 'y',
+        '<ProjCoordSiteMeteo>': 'proj',
+    },
+    'grandeur': {
+        '<CdGrdMeteo>': 'typemesure',  # mandatory
+        '<DtMiseServiceGrdMeteo>': None,  # NotImplemented yet
+        '<DtFermetureServiceGrdMeteo>': None,  # NotImplemented yet
+    },
 
     'obshydro': {},
 
