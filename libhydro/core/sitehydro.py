@@ -135,6 +135,7 @@ class _Entitehydro(object):
         except:
             raise
 
+    # -- special methods --
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 
@@ -382,7 +383,12 @@ class Sitehydro(_Site_or_station):
             # add station
             self._tronconsvigilance.append(tronconvigilance)
 
-    # -- other methods --
+    # -- special methods --
+    __all__attrs__ = [
+        'code', 'codeh2', 'typesite', 'libelle', 'libelleusuel', 'coord',
+        'stations', 'communes', 'tronconsvigilance'
+    ]
+
     def __unicode__(self):
         """Return unicode representation."""
         return 'Site {0} {1}::{2} [{3} station{4}]'.format(
@@ -587,7 +593,12 @@ class Station(_Site_or_station):
                 raise ValueError('ddc code must be 10 chars long')
             self._ddcs.append(ddc)
 
-    # -- other methods --
+    # -- special methods --
+    __all__attrs__ = [
+        'code', 'codeh2', 'typestation', 'libelle', 'libellecomplement',
+        'niveauaffichage', 'coord', 'capteurs', 'commune', 'ddcs',
+    ]
+
     def __unicode__(self):
         """Return unicode representation."""
         return 'Station {0} {1}::{2} [{3} capteur{4}]'.format(
@@ -660,7 +671,11 @@ class Capteur(_Entitehydro):
         # -- descriptors --
         self.typemesure = typemesure
 
-    # -- other methods --
+    # -- special methods --
+    __all__attrs__ = ['code', 'codeh2', 'typemesure', 'libelle']
+    # __eq__ = _composant.__eq__
+    # __ne__ = _composant.__ne__
+
     def __unicode__(self):
         """Return unicode representation."""
         return 'Capteur {0} {1}::{2}'.format(
@@ -684,6 +699,7 @@ class Tronconvigilance(object):
         libelle (string) = libelle du troncon
 
     """
+
     def __init__(self, code=None, libelle=None):
         """Initialisation.
 
@@ -695,21 +711,10 @@ class Tronconvigilance(object):
         self.code = unicode(code) if (code is not None) else None
         self.libelle = unicode(libelle) if (libelle is not None) else None
 
-    # -- other methods --
-    def __eq__(self, other):
-        """Return True ou False."""
-        return (
-            (self is other)
-            or
-            (
-                (self.code == other.code) and
-                (self.libelle == other.libelle)
-            )
-        )
-
-    def __ne__(self, other):
-        """Return True ou False."""
-        return not self.__eq__(other)
+    # -- special methods --
+    __all__attrs__ = ['code', 'libelle']
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
 
     def __unicode__(self):
         """Return unicode representation."""

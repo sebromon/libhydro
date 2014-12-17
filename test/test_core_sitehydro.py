@@ -156,7 +156,7 @@ class TestSitehydro(unittest.TestCase):
         self.assertEqual(site, other)
         other.stations = sitehydro.Station('A456102001')
         self.assertNotEqual(site, other)
-        self.assertTrue(site.__eq__(other, ignore=['_stations']))
+        self.assertTrue(site.__eq__(other, ignore=['stations']))
 
     def test_base_04(self):
         """Update some attributes."""

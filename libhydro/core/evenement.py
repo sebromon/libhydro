@@ -146,7 +146,13 @@ class Evenement(object):
                 raise TypeError('contact is required')
         self._contact = contact
 
-    # -- other methods --
+    # -- special methods --
+    __all__attrs__ = [
+        'entite', 'descriptif', 'contact', 'dt', 'publication', 'dtmaj'
+    ]
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+
     def __unicode__(self):
         """Return unicode representation."""
         return '''Evenement de l'entite {entite} ''' \

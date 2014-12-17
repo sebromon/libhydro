@@ -34,8 +34,8 @@ from . import sitemeteo as _sitemeteo
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1f"""
-__date__ = """2014-07-30"""
+__version__ = """0.1g"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.1 - 2014-07-11
@@ -323,20 +323,13 @@ class Serie(_composant_obs.Serie):
         except Exception as err:
             raise ValueError('resampling error, %s' % err)
 
-    def __eq__(self, other):
-        """Return True ou False."""
-        if self is other:
-            return True
-        for attr in (
-            'grandeur', 'duree', 'statut'  # , 'dtprod'
-        ):
-            if getattr(self, attr, True) != getattr(other, attr, False):
-                return False
-        return True
-
-    def __ne__(self, other):
-        """Return True ou False."""
-        return not self.__eq__(other)
+    # -- special methods --
+    __all__attrs__ = [
+        'grandeur', 'duree', 'statut', 'dtdeb', 'dtfin', 'dtprod',
+        'contact', 'observations'
+    ]
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
 
     def __unicode__(self):
         """Return unicode representation."""

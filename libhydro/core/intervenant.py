@@ -21,8 +21,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2e"""
-__date__ = """2014-07-31"""
+__version__ = """0.2f"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.2 - 2014-03-02
@@ -191,7 +191,11 @@ class Intervenant(object):
             contact.intervenant = self
             self._contacts.append(contact)
 
-    # -- other methods --
+    # -- special methods --
+    __all__attrs__ = ['code', 'origine', 'nom', 'mnemo', 'contacts']
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+
     def __unicode__(self):
         """Return unicode representation."""
         # init nom
@@ -315,7 +319,11 @@ class Contact(object):
                 raise TypeError('intervenant must be an Intervenant')
         self._intervenant = intervenant
 
-    # -- other methods --
+    # -- special methods --
+    __all__attrs__ = ['code', 'nom', 'prenom', 'civilite', 'intervenant']
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+
     def __unicode__(self):
         """Return unicode representation."""
         # init civilite

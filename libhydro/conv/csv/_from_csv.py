@@ -231,7 +231,7 @@ def _merge_sites(sites, childtype):
     mergedsites = []
     for site in sites:
         for mergedsite in mergedsites:
-            if site.__eq__(mergedsite, ignore=['_{}s'.format(childtype)]):
+            if site.__eq__(mergedsite, ignore=['{}s'.format(childtype)]):
                 getattr(mergedsite, '{}s'.format(childtype)).extend(
                     getattr(site, '{}s'.format(childtype)))
                 break

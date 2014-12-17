@@ -467,24 +467,33 @@ def is_code_insee(code, length=5, errors='ignore'):
         ERROR_HANDLERS[errors](msg=err.message, error=type(err))
 
 
-def __eq__(self, other, lazzy=False, ignore=[]):
-    """Compares object all attributes and returns True ou False.
+def __eq__(self, other, attrs=[], ignore=[], lazzy=False):
+    """Equal elaborate function.
 
     Arguments:
+        self, other
+        attrs (list of strings, default to self.__class__.__all__attrs__ or
+            __self.__dict__.keys() = the attrs to compare
+        ignore (iterable of strings, default None) = attrs to ignore in the
+            comparison
         lazzy (bool, default False) = if True does not test an attribute
             whose counterpart is None
-        ignore (iterable of strings) = attrs to remove from the comparison.
-            Be aware that properties attrs are underscored
+
+    NB: functool.partial could be smarter than a private class variable to
+    fix the default attrs list, but it doesn't work with 'self'.
 
     """
-    # quick test
+    # quick identity test
     if self is other:
         return True
-
-    # browse attrs
-    attrs = self.__dict__.copy()
-    for item in ignore:
-        attrs.pop(item, None)
+    # set the final attrs list
+    if not attrs:
+        attrs = getattr(
+            self.__class__, '__all__attrs__', self.__dict__.keys()
+        )
+    for attr in ignore:
+        attrs.remove(attr)
+    # action !
     for attr in attrs:
         first = getattr(self, attr, True)
         second = getattr(other, attr, False)
@@ -492,13 +501,13 @@ def __eq__(self, other, lazzy=False, ignore=[]):
             continue
         if first != second:
             return False
-
-    # all is the same
     return True
 
 
-def __ne__(self, other, lazzy=False, ignore=[]):
-    return not self.__eq__(other, lazzy=lazzy, ignore=ignore)
+def __ne__(self, other, attrs=[], ignore=[], lazzy=False):
+    return not self.__eq__(
+        other=other, attrs=attrs, ignore=ignore, lazzy=lazzy,
+    )
 
 
 def __str__(self):

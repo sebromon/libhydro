@@ -299,7 +299,14 @@ class Serie(_composant_obs.Serie):
         except:
             raise
 
-    # -- other methods --
+    # -- special methods --
+    __all__attrs__ = [
+        'entite', 'grandeur', 'statut', 'dtdeb', 'dtfin', 'dtprod',
+        'contact', 'observations'
+    ]
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+
     def __unicode__(self):
         """Return unicode representation."""
         # init

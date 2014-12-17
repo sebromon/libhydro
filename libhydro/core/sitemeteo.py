@@ -207,20 +207,10 @@ class Sitemeteo(object):
             # add capteur
             self._grandeurs.append(grandeur)
 
-    # -- other methods --
-    # def __eq__(self, other):
-    #     """Return True ou False."""
-    #     if self is other:
-    #         return True
-    #     for attr in ('code', ):
-    #         if getattr(self, attr, True) != getattr(other, attr, False):
-    #             return False
-    #     return True
-
-    # def __ne__(self, other):
-    #     """Return True ou False."""
-    #     return not self.__eq__(other)
-
+    # -- special methods --
+    __all__attrs__ = [
+        'code', 'libelle', 'libelleusuel', 'coord', 'commune', 'grandeurs'
+    ]
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 
@@ -302,20 +292,8 @@ class Grandeur(object):
                 raise TypeError('sitemeteo must be a Sitemeteo')
         self._sitemeteo = sitemeteo
 
-    # -- other methods --
-    # def __eq__(self, other):
-    #     """Return True ou False."""
-    #     if self is other:
-    #         return True
-    #     for attr in ('typemesure', 'sitemeteo'):
-    #         if getattr(self, attr, True) != getattr(other, attr, False):
-    #             return False
-    #     return True
-
-    # def __ne__(self, other):
-    #     """Return True ou False."""
-    #     return not self.__eq__(other)
-
+    # -- special methods --
+    __all__attrs__ = ['typemesure', 'sitemeteo']
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 

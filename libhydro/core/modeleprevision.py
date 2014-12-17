@@ -19,8 +19,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.8c"""
-__date__ = """2014-07-16"""
+__version__ = """0.8d"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.8 - 2014-03-02
@@ -105,7 +105,13 @@ class Modeleprevision(object):
         except:
             raise
 
-    # -- other methods --
+    # -- special methods --
+    __all__attrs__ = [
+        'code', 'libelle', 'typemodel', 'description'
+    ]
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+
     def __unicode__(self):
         """Return unicode representation."""
         return 'Modele de type {0} {1}::{2}\nDescription: {3}'.format(
