@@ -34,10 +34,12 @@ import numpy
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.4b"""
-__date__ = """2014-07-25"""
+__version__ = """0.5b"""
+__date__ = """2014-12-18"""
 
 #HISTORY
+#V0.5 - 2014-12-18
+#    add the __eq__ and __ne__ tests
 #V0.4 - 2014-07-20
 #    add the error_handler, Rlist and Rlistpropery tests
 #V0.3 - 2014-07-16
@@ -46,10 +48,6 @@ __date__ = """2014-07-25"""
 #    add the descriptor tests
 #V0.1 - 2013-11-07
 #    first shot
-
-
-#-- todos ---------------------------------------------------------------------
-# TODO - add tests for the __eq__ and __ne__ methods
 
 
 #-- class TestErrorHandler ----------------------------------------------------
@@ -530,3 +528,80 @@ class TestIsCodeInsee(unittest.TestCase):
         """Error handler test."""
         with self.assertRaises(ValueError):
             composant.is_code_insee('wrong code', errors='houps!')
+
+
+#-- class TestEqAndNe ---------------------------------------------------------
+class TestEqAndNe(unittest.TestCase):
+
+    """Special functions __eq__ and __ne__ class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        class Mock(object):
+
+            """A mock class."""
+
+            # we use a list here to have a stronger test but a tuple is
+            # better :)
+            __all__attrs__ = ['a', 'b', 'c']
+
+            def __init__(self, a, b, c):
+                self.a = a
+                self.b = b
+                self.c = c
+
+            __eq__ = composant.__eq__
+            __ne__ = composant.__ne__
+        self.Mock = Mock
+
+    def test_base(self):
+        """Base test."""
+        # with __all__attrs__
+        mock = self.Mock(1, 2, 3)
+        other = self.Mock(1, 2, 3)
+        self.assertEqual(mock, other)
+        other = self.Mock(1, 2, 4)
+        self.assertNotEqual(mock, other)
+        # without __all__attrs__
+        del self.Mock.__all__attrs__
+        mock = self.Mock(1, 2, 3)
+        other = self.Mock(1, 2, 3)
+        self.assertEqual(mock, other)
+        other = self.Mock(1, 2, 4)
+        self.assertNotEqual(mock, other)
+
+    def test_attrs(self):
+        """Attrs test."""
+        mock = self.Mock(1, 2, 3)
+        other = self.Mock(1, 4, 3)
+        self.assertTrue(mock.__eq__(other, attrs=['a']))
+        self.assertTrue(mock.__eq__(other, attrs=['a', 'c']))
+        self.assertTrue(mock.__ne__(other, attrs=['b']))
+
+    def test_ignore(self):
+        """Ignore test."""
+        mock = self.Mock(1, 2, 3)
+        other = self.Mock(1, 4, 5)
+        self.assertNotEqual(mock, other)
+        self.assertTrue(mock.__eq__(other, ignore=['b', 'c']))
+        self.assertTrue(mock.__eq__(other, attrs=['a']))
+        self.assertNotEqual(mock, other)
+        self.assertEqual(self.Mock.__all__attrs__, ['a', 'b', 'c'])
+
+    def test_lazzy(self):
+        """Lazzy test."""
+        mock = self.Mock(1, None, 3)
+        other = self.Mock(1, 2, None)
+        self.assertNotEqual(mock, other)
+        self.assertTrue(mock.__eq__(other, lazzy=True))
+        self.assertTrue(mock.__eq__(other, attrs=['a']))
+        self.assertTrue(mock.__eq__(other, attrs=['c', 'b'], lazzy=True))
+
+    def test_errors(self):
+        """Error test."""
+        mock = self.Mock(1, 2, 3)
+        other = self.Mock(1, 2, 3)
+        with self.assertRaises(AttributeError):
+            mock.__eq__(other, attrs=['z'])
+        with self.assertRaises(AttributeError):
+            mock.__eq__(other, ignore=['w'])

@@ -106,9 +106,9 @@ class Modeleprevision(object):
             raise
 
     # -- special methods --
-    __all__attrs__ = [
+    __all__attrs__ = (
         'code', 'libelle', 'typemodel', 'description'
-    ]
+    )
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 

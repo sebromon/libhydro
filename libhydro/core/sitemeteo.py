@@ -208,9 +208,9 @@ class Sitemeteo(object):
             self._grandeurs.append(grandeur)
 
     # -- special methods --
-    __all__attrs__ = [
+    __all__attrs__ = (
         'code', 'libelle', 'libelleusuel', 'coord', 'commune', 'grandeurs'
-    ]
+    )
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 
@@ -293,7 +293,7 @@ class Grandeur(object):
         self._sitemeteo = sitemeteo
 
     # -- special methods --
-    __all__attrs__ = ['typemesure', 'sitemeteo']
+    __all__attrs__ = ('typemesure', 'sitemeteo')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 

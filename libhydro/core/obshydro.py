@@ -182,6 +182,9 @@ class Observations(_composant_obs.Observations):
 
     On peut iterer dans le DataFrame avec la fonction iterrows().
 
+    ATTENTION, la comparaison de Pandas.DataFrames necessite d'ecrire:
+        (obs == obs).all().all()
+
     """
 
     def __new__(cls, *observations):
@@ -300,10 +303,10 @@ class Serie(_composant_obs.Serie):
             raise
 
     # -- special methods --
-    __all__attrs__ = [
+    __all__attrs__ = (
         'entite', 'grandeur', 'statut', 'dtdeb', 'dtfin', 'dtprod',
         'contact', 'observations'
-    ]
+    )
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 

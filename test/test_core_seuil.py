@@ -169,13 +169,15 @@ class TestSeuilhydro(unittest.TestCase):
         seuil = Seuilhydro(code=1, valeurs=valeurs[:])
         other = Seuilhydro(code=1, valeurs=valeurs[:])
         self.assertEqual(seuil, other)
-        self.assertTrue(seuil.__eq__(other, cmp_values=True))
-        self.assertTrue(seuil.__eq__(other, cmp_values=False))
+        self.assertTrue(seuil.__eq__(other, ignore=['valeurs']))
+        self.assertTrue(seuil.__eq__(other, ignore=['code']))
         # a shorter list of values
         other.valeurs = valeurs[1:]
         self.assertNotEqual(seuil, other)
-        self.assertFalse(seuil.__eq__(other, cmp_values=True))
-        self.assertTrue(seuil.__eq__(other, cmp_values=False))
+        self.assertTrue(seuil.__eq__(other, ignore=['valeurs']))
+        self.assertTrue(seuil.__eq__(other, ignore=['code', 'valeurs']))
+        self.assertFalse(seuil.__ne__(other, ignore=['valeurs']))
+        self.assertTrue(seuil.__ne__(other, ignore=['code']))
         # a different value
         seuil.valeurs = other.valeurs = [Valeurseuil(0)]
         self.assertEqual(seuil, other)

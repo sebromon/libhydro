@@ -147,9 +147,9 @@ class Evenement(object):
         self._contact = contact
 
     # -- special methods --
-    __all__attrs__ = [
+    __all__attrs__ = (
         'entite', 'descriptif', 'contact', 'dt', 'publication', 'dtmaj'
-    ]
+    )
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 

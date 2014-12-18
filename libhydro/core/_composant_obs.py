@@ -40,6 +40,9 @@ class Observations(_pandas.DataFrame):
 
     Returns a pandas.DataFrame from an iterable of elementary observations.
 
+    WARNING, comparison of Pandas.DataFrames requires:
+        (obs == obs).all().all()
+
     """
 
     def __new__(cls, observation_class, observations):
@@ -83,6 +86,8 @@ class Observations(_pandas.DataFrame):
             index=index
         )
         # TODO - can't subclass the DataFrame object
+        # obj.__eq__ = _composant.__eq__
+        # obj.__ne__ = _composant.__ne__
         # return obj.view(cls)
         return obj
 

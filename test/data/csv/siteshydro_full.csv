@@ -1,4 +1,4 @@
 <CdSiteHydro>;<LbSiteHydro>;<TypSiteHydro>;<CoordXSiteHydro>;<CoordYSiteHydro>;<ProjCoordSiteHydro>;<AltitudeSiteHydro>;<SysAltimetriqueSiteHydro> ;<BassinVersantSiteHydro>;<FuseauHoraireSiteHydro>;<CdEuMasseDEau>;<CdZoneHydro>;<CdEntiteHydrographique>;<CdStationHydro>;<LbStationHydro>;<TypStationHydro>;<CoordXStationHydro>;<CoordYStationHydro>;<ProjCoordStationHydro>;<DtMiseServiceStationHydro>;<DtFermetureStationHydro>;<CdCommune>;<FLG>
-D0137010;L'Helpe Mineure à Étroeungt;REEL;714192;2563916;5;152000;3;175;1;;D013;D0130700;D013701001;L'Helpe Mineure à Étroeungt - rive droite;LIMNI;14192;2563916;5;01/03/1963 00:00:00;;59218;<FLG>
-W8230456;Le bras du Meu à Rôc dé l'Aâr;MAREGRAPHE;10;10;20;1000;1;852;3;3333;E045;W8231234;W823460101;La station du bras du Meu;LIMNI;11;21;1;01/03/1963 10:05:22;10/04/1964;2A002;<FLG>
+D0137010;L'Helpe Mineure à Étroeungt;REEL;714192;2563916;5;152000;3;175;1;;D013;D0130700;D013701001;L'Helpe Mineure à Étroeungt - rive droite;LIMNI;714192;2563916;5;01/03/1963 00:00:00;;59218;<FLG>
+W8230456;Le bras du Meu à Rôc dé l'Aâr;MAREGRAPHE;10;20;1;1000;1;852;3;3333;E045;W8231234;W823460101;La stâtion du bras du Meu;LIMNI;11;21;1;01/03/1963 10:05:22;10/04/1964;2A002;<FLG>
 A0330810;La Marne à chaumont;VIRTUEL;892000;2445000;3;;;;;;;;;;;;;;;;;<FLG>

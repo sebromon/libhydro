@@ -30,8 +30,10 @@ __date__ = """2014-12-16"""
 
 
 #-- todos ---------------------------------------------------------------------
-# PROGRESS - 25%
+# PROGRESS - 50%
 # TODO - read by column number
+# TODO - wwrite a Reader class
+# TODO - check the <FLG> column
 
 
 #-- init ----------------------------------------------------------------------
@@ -149,6 +151,7 @@ def _sites_from_csv(fname, encoding='utf-8', dialect='hydrometrie',
     with open(fname, 'rb') as f:
 
         # init
+        # TODO - we should check the <FLG> here and in each line
         csv = _UnicodeReader(f=f, dialect=dialect, encoding=encoding, **kwds)
         fieldnames = csv.next()
         sites = []
@@ -252,7 +255,7 @@ def _get_entity_from_row(cls, row, mapper, strict=False):
     except Exception:
         raise _csv.Error(
             # "can't find a suitable {}, {}".format(cls.__name__.lower(), e)
-            "can't find a suitable {}".format(cls.__name__.lower())
+            "can't find a suitable {}".format(cls.__name__.capitalize())
         )
 
 

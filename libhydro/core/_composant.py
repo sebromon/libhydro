@@ -14,10 +14,14 @@ les descripteurs:
     # Datefromeverything
     # Nomenclatureitem
 
-et les fonctions:
+les fonctions:
     # is_code_hydro()
     # is_code_insee()
     # __str__()
+
+les fonctions speciales:
+    # __eq__
+    # __ne__
 
 """
 #-- imports -------------------------------------------------------------------
@@ -467,12 +471,12 @@ def is_code_insee(code, length=5, errors='ignore'):
         ERROR_HANDLERS[errors](msg=err.message, error=type(err))
 
 
-def __eq__(self, other, attrs=[], ignore=[], lazzy=False):
+def __eq__(self, other, attrs=None, ignore=None, lazzy=False):
     """Equal elaborate function.
 
     Arguments:
         self, other
-        attrs (list of strings, default to self.__class__.__all__attrs__ or
+        attrs (iterable of strings, default to self.__class__.__all__attrs__ or
             __self.__dict__.keys() = the attrs to compare
         ignore (iterable of strings, default None) = attrs to ignore in the
             comparison
@@ -491,16 +495,37 @@ def __eq__(self, other, attrs=[], ignore=[], lazzy=False):
         attrs = getattr(
             self.__class__, '__all__attrs__', self.__dict__.keys()
         )
-    for attr in ignore:
-        attrs.remove(attr)
+    if ignore:
+        for attr in ignore:
+            # we make attrs mutable or a copy before removing elements
+            attrs = list(attrs)
+            try:
+                attrs.remove(attr)
+            except ValueError:
+                raise AttributeError(
+                    "'{}' object has no attribute '{}'".format(
+                        attr, self.__class__.__name__
+                    )
+                )
     # action !
     for attr in attrs:
-        first = getattr(self, attr, True)
-        second = getattr(other, attr, False)
+        first = getattr(self, attr)
+        second = getattr(other, attr, False)  # never raise
         if lazzy and (first is None or second is None):
             continue
-        if first != second:
-            return False
+        try:
+            # base case - works with numpy.ndarrays of size 1
+            if not bool(first == second):
+            # if not first == second:
+                return False
+        except Exception:
+            # # comparison for ndarrays of size > 1 and pandas objects
+            try:
+                if not bool((first == second).all().all()):
+                    return False
+            except:
+                # here everything failed
+                return False
     return True
 
 

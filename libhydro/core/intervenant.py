@@ -192,7 +192,7 @@ class Intervenant(object):
             self._contacts.append(contact)
 
     # -- special methods --
-    __all__attrs__ = ['code', 'origine', 'nom', 'mnemo', 'contacts']
+    __all__attrs__ = ('code', 'origine', 'nom', 'mnemo', 'contacts')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 
@@ -320,7 +320,7 @@ class Contact(object):
         self._intervenant = intervenant
 
     # -- special methods --
-    __all__attrs__ = ['code', 'nom', 'prenom', 'civilite', 'intervenant']
+    __all__attrs__ = ('code', 'nom', 'prenom', 'civilite', 'intervenant')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 

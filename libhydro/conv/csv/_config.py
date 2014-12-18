@@ -64,7 +64,7 @@ MAPPING = {
         '<CdEuMasseDEau>': None,  # NotImplemented yet
         '<cdZoneHydro>': None,  # NotImplemented yet
         '<CdEntiteHydrographique>': None,  # NotImplemented yet
-        '<FLG>': None  # mandatory
+        # '<FLG>': None  # mandatory
     },
     'sitehydro.coord': {
         '<CoordXSiteHydro>': 'x',

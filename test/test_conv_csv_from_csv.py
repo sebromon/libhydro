@@ -32,13 +32,14 @@ from libhydro.conv.csv import _from_csv as lhcsv
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1a"""
-__date__ = """2014-12-16"""
+__version__ = """0.1b"""
+__date__ = """2014-12-18"""
 
 #HISTORY
 #V0.1 - 2014-12-16
 #    first shot
 
+#-- config --------------------------------------------------------------------
 CSV_DIR = os.path.join('data', 'csv')
 
 
@@ -98,28 +99,8 @@ class TestMapKeys(unittest.TestCase):
             lhcsv._map_keys(self.base, mapper, iterator='')
 
 
-#-- class TestFromCsv ---------------------------------------------------------
-class TestFromCsv(unittest.TestCase):
-
-    """FromCsv class tests."""
-
-    def test_base(self):
-        """Quick read all hydrometrie files test."""
-        files = (
-            # fname,            data,         encoding
-            ('siteshydro_full', 'sitehydro', 'utf-8'),
-            ('siteshydro_full_8859-1', 'sitehydro', 'latin1'),
-            ('siteshydro_minimum', 'sitehydro', 'utf-8'),
-            ('siteshydro_partial', 'sitehydro', 'utf-8'),
-            # TODO sitemeteo, seriehydro, seriemeteo
-        )
-        for f in files:
-            fname = os.path.join(CSV_DIR, '{}.csv'.format(f[0]))
-            lhcsv.from_csv(fname=fname, dtype=f[1], encoding=f[2])
-
-
 #-- class TestSitesHydroFromCsv -----------------------------------------------
-class TestsitesHydroFromCsv(unittest.TestCase):
+class TestSitesHydroFromCsv(unittest.TestCase):
 
     """SitesHydroFromCsv class tests."""
 
@@ -139,11 +120,120 @@ class TestsitesHydroFromCsv(unittest.TestCase):
         self.assertEqual(len(siteshydro[6].stations), 1)
         self.assertEqual(siteshydro[6].stations[0].code, 'W001102511')
 
-#2
+    def test_full(self):
+        """Full csv file test."""
+        fname = os.path.join(CSV_DIR, 'siteshydro_full.csv')
+        # merge = True
+        siteshydro = lhcsv.siteshydro_from_csv(fname)
+        self.assertEqual(len(siteshydro), 3)
+        self.assertEqual(siteshydro[1].code, 'W8230456')
+        self.assertEqual(len(siteshydro[1].stations), 1)
+        self.assertEqual(siteshydro[1].stations[0].commune, '2A002')
+        # merge = False
+        self.assertEqual(len(siteshydro), 3)
+        self.assertEqual(siteshydro[2].code, 'A0330810')
+        self.assertEqual(len(siteshydro[2].stations), 0)
+        self.assertEqual(siteshydro[2].coord.x, 892000)
 
-#3
+    def test_encoding(self):
+        """Encoding test."""
+        fname = os.path.join(CSV_DIR, 'siteshydro_full_8859-1.csv')
+        siteshydro = lhcsv.siteshydro_from_csv(fname, encoding='latin1')
+        ref = os.path.join(CSV_DIR, 'siteshydro_full.csv')
+        sitesref = lhcsv.siteshydro_from_csv(ref)
+        self.assertEqual(siteshydro, sitesref)
 
-#4
-        #5
-        #free format
-        #g=c.siteshydro_from_csv('test/data/csv/siteshydro_free.csv', mapping={'sitehydro': {'Code':'code'}}, delimiter=',')
+    def test_partial(self):
+        """Partial csv file test."""
+        fname = os.path.join(CSV_DIR, 'siteshydro_partial.csv')
+        # merge = True
+        siteshydro = lhcsv.siteshydro_from_csv(fname)
+        self.assertEqual(len(siteshydro), 5)
+        self.assertEqual(siteshydro[1].code, 'D0137011')
+        self.assertEqual(siteshydro[3].typesite, 'REEL')
+        self.assertTrue(';' in siteshydro[4].libelle)
+        # merge = False
+        siteshydro = lhcsv.siteshydro_from_csv(fname, merge=False)
+        self.assertEqual(len(siteshydro), 5)
+        self.assertEqual(siteshydro[1].code, 'D0137011')
+        self.assertEqual(siteshydro[3].typesite, 'REEL')
+        self.assertTrue(';' in siteshydro[4].libelle)
+
+    def test_free(self):
+        """Free format test."""
+        fname = os.path.join(CSV_DIR, 'siteshydro_free.csv')
+        # merge = True
+        siteshydro = lhcsv.siteshydro_from_csv(
+            fname,
+            mapping={
+                'sitehydro': {
+                    'code': 'code', 'label': 'libelle', 'family': 'typesite'
+                }
+            },
+            delimiter=b','  # byte !
+        )
+        self.assertEqual(len(siteshydro), 4)
+        self.assertEqual(siteshydro[3].code, 'D0137014')
+        self.assertEqual(siteshydro[2].typesite, 'VIRTUEL')
+        self.assertEqual(len(siteshydro[3].stations), 0)
+        self.assertTrue(',' in siteshydro[3].libelle)
+        # merge = False
+        siteshydro = lhcsv.siteshydro_from_csv(
+            fname,
+            mapping={
+                'sitehydro': {
+                    'code': 'code', 'label': 'libelle', 'family': 'typesite'
+                }
+            },
+            delimiter=b',',  # byte !
+            merge=False
+        )
+        self.assertEqual(len(siteshydro), 5)
+        self.assertEqual(siteshydro[4].code, 'D0137014')
+        self.assertEqual(siteshydro[3].typesite, 'VIRTUEL')
+        self.assertEqual(len(siteshydro[4].stations), 0)
+        self.assertTrue(',' in siteshydro[4].libelle)
+
+
+#-- class TestSitesMeteoFromCsv -----------------------------------------------
+class TestSitesMeteoFromCsv(unittest.TestCase):
+
+    """SitesMeteoFromCsv class tests."""
+
+    def test_base(self):
+        """Base test."""
+        fname = os.path.join(CSV_DIR, 'sitesmeteo_minimum.csv')
+        # merge = True
+        sitesmeteo = lhcsv.sitesmeteo_from_csv(fname)
+        self.assertEqual(len(sitesmeteo), 4)
+        self.assertEqual(sitesmeteo[0].code, '185238001')
+        self.assertEqual(sitesmeteo[3].code, '185238004')
+        # merge = False
+        sitesmeteo = lhcsv.sitesmeteo_from_csv(fname, merge=False)
+        self.assertEqual(len(sitesmeteo), 8)
+        self.assertEqual(sitesmeteo[2].code, '185238002')
+        self.assertEqual(sitesmeteo[7].code, '185238004')
+
+    def test_full(self):
+        """Full csv file test."""
+        fname = os.path.join(CSV_DIR, 'sitesmeteo_full.csv')
+        # merge = True
+        sitesmeteo = lhcsv.sitesmeteo_from_csv(fname)
+        self.assertEqual(len(sitesmeteo), 2)
+        self.assertEqual(sitesmeteo[0].code, '285238001')
+        self.assertEqual(sitesmeteo[1].code, '285238002')
+        self.assertEqual(sitesmeteo[0].commune, '85238')
+        self.assertEqual(sitesmeteo[1].commune, '65748')
+        # merge = False
+        sitesmeteo = lhcsv.sitesmeteo_from_csv(fname, merge=False)
+        self.assertEqual(len(sitesmeteo), 2)
+        self.assertEqual(sitesmeteo[0].code, '285238001')
+        self.assertEqual(sitesmeteo[1].code, '285238002')
+        self.assertEqual(sitesmeteo[0].commune, '85238')
+        self.assertEqual(sitesmeteo[1].commune, '65748')
+
+    def test_bad(self):
+        """Bad csv file test."""
+        fname = os.path.join(CSV_DIR, 'sitesmeteo_bad.csv')
+        with self.assertRaises(csv.Error):
+            lhcsv.sitesmeteo_from_csv(fname)

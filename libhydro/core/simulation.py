@@ -426,10 +426,10 @@ class Simulation(object):
             raise
 
     # -- special methods --
-    __all__attrs__ = [
+    __all__attrs__ = (
         'entite', 'modeleprevision', 'grandeur', 'statut', 'qualite',
         'public', 'commentaire', 'dtprod', 'previsions', 'intervenant'
-    ]
+    )
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 

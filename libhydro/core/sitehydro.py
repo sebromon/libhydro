@@ -384,10 +384,10 @@ class Sitehydro(_Site_or_station):
             self._tronconsvigilance.append(tronconvigilance)
 
     # -- special methods --
-    __all__attrs__ = [
+    __all__attrs__ = (
         'code', 'codeh2', 'typesite', 'libelle', 'libelleusuel', 'coord',
         'stations', 'communes', 'tronconsvigilance'
-    ]
+    )
 
     def __unicode__(self):
         """Return unicode representation."""
@@ -594,10 +594,10 @@ class Station(_Site_or_station):
             self._ddcs.append(ddc)
 
     # -- special methods --
-    __all__attrs__ = [
+    __all__attrs__ = (
         'code', 'codeh2', 'typestation', 'libelle', 'libellecomplement',
         'niveauaffichage', 'coord', 'capteurs', 'commune', 'ddcs',
-    ]
+    )
 
     def __unicode__(self):
         """Return unicode representation."""
@@ -672,7 +672,7 @@ class Capteur(_Entitehydro):
         self.typemesure = typemesure
 
     # -- special methods --
-    __all__attrs__ = ['code', 'codeh2', 'typemesure', 'libelle']
+    __all__attrs__ = ('code', 'codeh2', 'typemesure', 'libelle')
     # __eq__ = _composant.__eq__
     # __ne__ = _composant.__ne__
 
@@ -712,7 +712,7 @@ class Tronconvigilance(object):
         self.libelle = unicode(libelle) if (libelle is not None) else None
 
     # -- special methods --
-    __all__attrs__ = ['code', 'libelle']
+    __all__attrs__ = ('code', 'libelle')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 

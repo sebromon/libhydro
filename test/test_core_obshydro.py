@@ -41,6 +41,9 @@ __date__ = """2014-12-17"""
 #    first shot
 
 
+# TODO - tests eq and ne
+
+
 #-- class TestObservation -----------------------------------------------------
 class TestObservation(unittest.TestCase):
 
@@ -294,6 +297,56 @@ class TestSerie(unittest.TestCase):
                 datetime.datetime(2012, 10, 3, 10)
             )
         )
+
+    def test_equal_01(self):
+        """Test __eq__ method."""
+        st1 = sitehydro.Station('B456010120')
+        obs1 = obshydro.Observation('2012-10-03 06:00', 33)
+        obss1 = obshydro.Observations(obs1, )
+        serie1 = obshydro.Serie(entite=st1, grandeur='H', observations=obss1)
+
+        st2 = sitehydro.Station('B456010120')
+        obs2 = obshydro.Observation('2012-10-03 06:00', 33)
+        obss2 = obshydro.Observations(obs2, )
+        serie2 = obshydro.Serie(entite=st2, grandeur='H', observations=obss2)
+
+        st3 = sitehydro.Station('X824012010')
+        obs3 = obshydro.Observation('2012-10-03 06:00', 33, cnt=False)
+        obss3 = obshydro.Observations(obs3, )
+        serie3 = obshydro.Serie(entite=st3, grandeur='H', observations=obss3)
+
+        self.assertEqual(st1, st2)
+        self.assertNotEqual(st1, st3)
+        self.assertEqual(obs1, obs2)
+        self.assertNotEqual(obs1, obs3)
+        # print(
+        #     "\nWarning, comparison of obshydro.Observations requires "
+        #     "'(obs == obs).all().all()'\n"
+        # )
+        # self.assertEqual(obss1, obss2)
+        # self.assertNotEqual(obss1, obss3)
+        self.assertTrue((obss1 == obss2).all().all())
+        self.assertFalse((obss1 == obss3).all().all())
+        self.assertEqual(serie1, serie2)
+        self.assertNotEqual(serie1, serie3)
+        serie2.statut = 4
+        self.assertNotEqual(serie1, serie2)
+        self.assertTrue(serie1.__eq__(serie2, ignore=['statut']))
+
+    def test_non_equal_01(self):
+        """Test __ne__ method."""
+        st1 = sitehydro.Station('B456010120')
+        obs1 = obshydro.Observation('2012-10-03 06:00', 33)
+        obss1 = obshydro.Observations(obs1, )
+        serie1 = obshydro.Serie(entite=st1, grandeur='H', observations=obss1)
+
+        st2 = sitehydro.Station('B456010120')
+        obs2 = obshydro.Observation('2012-10-03 06:00', 44)
+        obss2 = obshydro.Observations(obs2, )
+        serie2 = obshydro.Serie(entite=st2, grandeur='H', observations=obss2)
+
+        self.assertNotEqual(serie1, serie2)
+        self.assertTrue(serie1.__eq__(serie2, ignore=['observations']))
 
     def test_str_01(self):
         """Test __str__ method with minimum values."""

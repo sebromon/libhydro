@@ -912,7 +912,7 @@ def _seuilshydro_from_element(element, ordered=False):
                 if not seuilhydro.__eq__(
                     other=seuilshydro[(sitehydro.code, seuilhydro.code)],
                     lazzy=True,
-                    cmp_values=False
+                    ignore=['valeurs']
                 ):
                     raise ValueError(
                         'seuilhydro %s from sitehydro %s '
@@ -960,7 +960,8 @@ def _seriesmeteo_from_element(element):
                 continue
 
             for serie in seriesmeteo:
-                if serie == ser:
+                # if serie == ser:
+                if serie.__eq__(ser, ignore=['observations']):
                     # add obs to an exisitng serie
                     serie.observations = \
                         _obsmeteo.Observations.concat(

@@ -78,6 +78,8 @@ class Observation(_numpy.ndarray):
             NOMENCLATURE[508]
         qua (int de 0 a 100, defaut Nan) = indice de qualite de la mesure
 
+    ATTENTION, Nan != Nan et deux observations sans qualite sont differentes.
+
     Usage:
         Getter => observation.['x'].item()
         Setter => observation.['x'] = value
@@ -166,6 +168,9 @@ class Observations(_composant_obs.Observations):
         obs = observations.res
 
     On peut iterer dans le DataFrame avec la fonction iterrows().
+
+    ATTENTION, la comparaison de Pandas.DataFrames necessite d'ecrire:
+        (obs == obs).all().all()
 
     """
 
@@ -324,10 +329,10 @@ class Serie(_composant_obs.Serie):
             raise ValueError('resampling error, %s' % err)
 
     # -- special methods --
-    __all__attrs__ = [
+    __all__attrs__ = (
         'grandeur', 'duree', 'statut', 'dtdeb', 'dtfin', 'dtprod',
         'contact', 'observations'
-    ]
+    )
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 

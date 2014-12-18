@@ -24,19 +24,42 @@ import os
 sys.path.append(os.path.join('..', '..'))
 
 # import csv
-# import unittest
+import unittest
 
-# from libhydro.conv import csv as lhcsv
+from libhydro.conv import csv as lhcsv
 
 
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1a"""
-__date__ = """2014-12-16"""
+__date__ = """2014-12-18"""
 
 #HISTORY
-#V0.1 - 2014-12-16
+#V0.1 - 2014-12-18
 #    first shot
 
-pass
+#-- config --------------------------------------------------------------------
+CSV_DIR = os.path.join('data', 'csv')
+
+
+#-- class TestFromCsv ---------------------------------------------------------
+class TestFromCsv(unittest.TestCase):
+
+    """FromCsv class tests."""
+
+    # TODO to be replaced by read and write
+
+    def test_base(self):
+        """Quick read all hydrometrie files test."""
+        files = (
+            # fname,            data,         encoding
+            ('siteshydro_full', 'sitehydro', 'utf-8'),
+            ('siteshydro_full_8859-1', 'sitehydro', 'latin1'),
+            ('siteshydro_minimum', 'sitehydro', 'utf-8'),
+            ('siteshydro_partial', 'sitehydro', 'utf-8'),
+            # TODO sitemeteo, seriehydro, seriemeteo
+        )
+        for f in files:
+            fname = os.path.join(CSV_DIR, '{}.csv'.format(f[0]))
+            lhcsv.from_csv(fname=fname, dtype=f[1], encoding=f[2])

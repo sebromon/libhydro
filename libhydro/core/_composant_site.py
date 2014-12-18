@@ -72,7 +72,7 @@ class Coord(object):
         self.proj = proj
 
     # -- other methods --
-    __all__attrs__ = ['x', 'y', 'proj']
+    __all__attrs__ = ('x', 'y', 'proj')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 

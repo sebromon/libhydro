@@ -303,11 +303,11 @@ class Seuilhydro(_Seuil):
             else None
 
     # -- special methods --
-    __all__attrs__ = [
+    __all__attrs__ = (
         'sitehydro', 'code', 'typeseuil', 'duree', 'nature', 'libelle',
         'mnemo', 'gravite', 'commentaire', 'publication', 'valeurforcee',
-        'dtmaj' 'valeurs'
-    ]
+        'dtmaj', 'valeurs'
+    )
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 
@@ -366,10 +366,10 @@ class Valeurseuil (object):
         self.dtdesactivation = dtdesactivation
 
     # -- special methods --
-    __all__attrs__ = [
+    __all__attrs__ = (
         'valeur', 'seuil', 'entite', 'tolerance', 'dtactivation',
         'dtdesactivation'
-    ]
+    )
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 
