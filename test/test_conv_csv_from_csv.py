@@ -32,8 +32,8 @@ from libhydro.conv.csv import _from_csv as lhcsv
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1b"""
-__date__ = """2014-12-18"""
+__version__ = """0.1c"""
+__date__ = """2014-12-19"""
 
 #HISTORY
 #V0.1 - 2014-12-16
@@ -56,7 +56,7 @@ class TestMapKeys(unittest.TestCase):
         """Base test."""
         mapper = {'a': 'aa', 'b': 'bb', 'c': 'cc', 'd': 'dd', 'n': 'nn'}
         self.assertEqual(
-            lhcsv._map_keys(self.base, mapper),
+            lhcsv.map_keys(self.base, mapper),
             {'aa': 1, 'bb': 2, 'cc': 3}
         )
 
@@ -64,12 +64,12 @@ class TestMapKeys(unittest.TestCase):
         """None mapper key test."""
         mapper = {'a': 'aa', 'b': None, 'c': 'cc', 'd': 'dd'}
         self.assertEqual(
-            lhcsv._map_keys(self.base, mapper),
+            lhcsv.map_keys(self.base, mapper),
             {'aa': 1, 'cc': 3}
         )
         mapper = {'a': None, 'b': None, 'c': None, 'd': 'dd'}
         self.assertEqual(
-            lhcsv._map_keys(self.base, mapper),
+            lhcsv.map_keys(self.base, mapper),
             {}
         )
 
@@ -77,26 +77,26 @@ class TestMapKeys(unittest.TestCase):
         """Strict and loose mode test."""
         mapper = {'b': 'bb', 'c': 'cc', 'd': 'dd'}
         self.assertEqual(
-            lhcsv._map_keys(self.base, mapper, strict=False),
+            lhcsv.map_keys(self.base, mapper, strict=False),
             {'bb': 2, 'cc': 3}
         )
         mapper = {}
         self.assertEqual(
-            lhcsv._map_keys(self.base, mapper, strict=False),
+            lhcsv.map_keys(self.base, mapper, strict=False),
             {}
         )
         with self.assertRaises(csv.Error):
-            lhcsv._map_keys(self.base, mapper, strict=True),
+            lhcsv.map_keys(self.base, mapper, strict=True),
 
     def test_ietrator(self):
         """Iterator test."""
         mapper = {'a': 'aa', 'b': 'bb', 'c': 'cc', 'd': 'dd'}
         self.assertEqual(
-            lhcsv._map_keys(self.base, mapper, iterator='items'),
-            lhcsv._map_keys(self.base, mapper, iterator='iteritems'),
+            lhcsv.map_keys(self.base, mapper, iterator='items'),
+            lhcsv.map_keys(self.base, mapper, iterator='iteritems'),
         )
         with self.assertRaises(AttributeError):
-            lhcsv._map_keys(self.base, mapper, iterator='')
+            lhcsv.map_keys(self.base, mapper, iterator='')
 
 
 #-- class TestSitesHydroFromCsv -----------------------------------------------
@@ -133,7 +133,8 @@ class TestSitesHydroFromCsv(unittest.TestCase):
         self.assertEqual(len(siteshydro), 3)
         self.assertEqual(siteshydro[2].code, 'A0330810')
         self.assertEqual(len(siteshydro[2].stations), 0)
-        self.assertEqual(siteshydro[2].coord.x, 892000)
+        self.assertEqual(siteshydro[2].coord.x, 892000.5)
+        self.assertEqual(siteshydro[2].coord.y, 2445000.1)
 
     def test_encoding(self):
         """Encoding test."""
@@ -151,13 +152,13 @@ class TestSitesHydroFromCsv(unittest.TestCase):
         self.assertEqual(len(siteshydro), 5)
         self.assertEqual(siteshydro[1].code, 'D0137011')
         self.assertEqual(siteshydro[3].typesite, 'REEL')
-        self.assertTrue(';' in siteshydro[4].libelle)
+        self.assertEqual(siteshydro[3].libelle, 'Site hydrométrique 4')
         # merge = False
         siteshydro = lhcsv.siteshydro_from_csv(fname, merge=False)
         self.assertEqual(len(siteshydro), 5)
         self.assertEqual(siteshydro[1].code, 'D0137011')
         self.assertEqual(siteshydro[3].typesite, 'REEL')
-        self.assertTrue(';' in siteshydro[4].libelle)
+        self.assertEqual(siteshydro[3].libelle, 'Site hydrométrique 4')
 
     def test_free(self):
         """Free format test."""
@@ -165,34 +166,68 @@ class TestSitesHydroFromCsv(unittest.TestCase):
         # merge = True
         siteshydro = lhcsv.siteshydro_from_csv(
             fname,
-            mapping={
-                'sitehydro': {
+            merge=True,
+            flag=None, second_line=None, decimal=None,
+            mapper={
+                'libhydro.core.sitehydro.Sitehydro': {
                     'code': 'code', 'label': 'libelle', 'family': 'typesite'
+                },
+                'libhydro.core.sitehydro.Sitehydro.coord': {
+                    'x': 'x', 'y': 'y', 'proj': 'proj'
                 }
             },
-            delimiter=b','  # byte !
+            delimiter=b',',  # byte !
+            escapechar=b'\\'
         )
         self.assertEqual(len(siteshydro), 4)
         self.assertEqual(siteshydro[3].code, 'D0137014')
         self.assertEqual(siteshydro[2].typesite, 'VIRTUEL')
         self.assertEqual(len(siteshydro[3].stations), 0)
         self.assertTrue(',' in siteshydro[3].libelle)
+        self.assertEqual(siteshydro[3].coord.x, 50.55)
+        self.assertEqual(siteshydro[3].coord.y, 51.5)
+        # merge = True and no mapper for coord
+        siteshydro = lhcsv.siteshydro_from_csv(
+            fname,
+            merge=True,
+            flag=None, second_line=None, decimal=None,
+            mapper={
+                'libhydro.core.sitehydro.Sitehydro': {
+                    'code': 'code', 'label': 'libelle', 'family': 'typesite'
+                },
+            },
+            delimiter=b',',  # byte !
+            escapechar=b'\\'
+        )
+        self.assertEqual(len(siteshydro), 4)
+        self.assertEqual(siteshydro[3].code, 'D0137014')
+        self.assertEqual(siteshydro[2].typesite, 'VIRTUEL')
+        self.assertEqual(len(siteshydro[3].stations), 0)
+        self.assertTrue(',' in siteshydro[3].libelle)
+        self.assertIsNone(siteshydro[3].coord)
         # merge = False
         siteshydro = lhcsv.siteshydro_from_csv(
             fname,
-            mapping={
-                'sitehydro': {
+            merge=False,
+            flag=None, second_line=None, decimal=None,
+            mapper={
+                'libhydro.core.sitehydro.Sitehydro': {
                     'code': 'code', 'label': 'libelle', 'family': 'typesite'
+                },
+                'libhydro.core.sitehydro.Sitehydro.coord': {
+                    'x': 'x', 'y': 'y', 'proj': 'proj'
                 }
             },
             delimiter=b',',  # byte !
-            merge=False
+            escapechar=b'\\'
         )
         self.assertEqual(len(siteshydro), 5)
         self.assertEqual(siteshydro[4].code, 'D0137014')
         self.assertEqual(siteshydro[3].typesite, 'VIRTUEL')
         self.assertEqual(len(siteshydro[4].stations), 0)
         self.assertTrue(',' in siteshydro[4].libelle)
+        self.assertEqual(siteshydro[4].coord.x, 50.55)
+        self.assertEqual(siteshydro[4].coord.y, 51.5)
 
 
 #-- class TestSitesMeteoFromCsv -----------------------------------------------

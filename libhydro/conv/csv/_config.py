@@ -1,59 +1,84 @@
 # -*- coding: utf-8 -*-
 """Module libhydro.conv.csv._config.
 
-Configuration par defaut du codec CSV.
+Configuration par defaut du codec CSV:
+    # csv.Dialect('hydrometrie')
+    # FLAG
+    # SECOND_LINE
+    # DECIMAL_POINT
+    # MAPPER
 
-Cette configuration est basee sur les regles de l"Echange de donnees
-d'hydrometrie au format simplifie".
-
-Elle peut etre surchargee pour definir ses propres regles.
+Cette configuration est basee sur les regles des documents:
+    # Presentation du format d'echange simplifie
+    # Echange de donnees d'hydrometrie au format simplifie
+disponibles sur le site du SANDRE <http://www.sandre.eaufrance.fr/>.
 
 """
 #-- imports -------------------------------------------------------------------
-from __future__ import (
-    unicode_literals as _unicode_literals,
-    absolute_import as _absolute_import,
-    division as _division,
-    print_function as _print_function
+from __future__ import unicode_literals as _unicode_literals
+import csv
+
+
+#------------------------------------------------------------------------------
+#
+# Configuration du Dialect CSV 'hydrometrie'
+#
+#------------------------------------------------------------------------------
+# Les valeurs du dialect 'hydrometrie' peuvent etre surchargees a la volee en
+# passant 'cle=valeur' aux differents readers
+
+# WARNING: le csv.register_dialect ne tolere pas les valeurs en unicode en
+#          Python 2 :-(
+
+csv.register_dialect(
+    'hydrometrie',
+    **{
+        'delimiter': b';',
+        'doublequote': False,
+        'escapechar': None,  # b'\\',
+        'lineterminator': b'\r\n',
+        'quoting': csv.QUOTE_NONE,
+        # 'quotechar': b'"',
+        'skipinitialspace': True,
+        'strict': False
+    }
 )
+#------------------------------------------------------------------------------
 
-import csv as _csv
+#
+# FLAG de fin de ligne
+#
+#------------------------------------------------------------------------------
+# Par defaut chaque ligne doit se terminer par un flag
+FLAG = {'header': '<FLG>', 'row': 'FLG'}
+# Pour ne pas utiliser les flags, utiliser FLAG = None
+# FLAG = None
 
+#------------------------------------------------------------------------------
+#
+# SECOND LINE
+#
+#------------------------------------------------------------------------------
+# Par defaut une seconde ligne d'en en-tete est utilisee
+SECOND_LINE = True
 
-#-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin """ \
-             """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1b"""
-__date__ = """2014-12-17"""
+#------------------------------------------------------------------------------
+#
+# DECIMAL
+#
+#------------------------------------------------------------------------------
+# Separateur decimal. Utiliser None pour un separateur '.' (plus rapide).
+DECIMAL_POINT = ','
+# DECIMAL_POINT = None
 
-#HISTORY¬
- #V0.1 - 2014-12-15¬
- #    first shot¬
-
-
-#-- DIALECT config ------------------------------------------------------------
-# FIXME - check Sandre rule to deal with semi columns in CSV
-# CAREFUL, the csv.register_dialect deals only with strings :-( in Python2
-DIALECT = {
-    'delimiter': b';',
-    'doublequote': False,
-    'escapechar': b'\\',
-    'lineterminator': b'\r\n',
-    'quotechar': b'"',
-    'quoting': _csv.QUOTE_NONE,
-    'skipinitialspace': True,
-    'strict': False
-}
-
-#-- MAPPING config ------------------------------------------------------------
-# TODO - reverse the mapping
-#    for python 2.7+ / 3+:
-#        inv_map = {v: k for k, v in map.items()}
-#    in python2.7+, using map.iteritems() would be more efficient
-
-# SYNTAX: {object: {CSV_header: object_attribute, ...}, ...}
-MAPPING = {
-    'sitehydro': {
+#------------------------------------------------------------------------------
+#
+# MAPPER
+#
+#------------------------------------------------------------------------------
+# Le mapper 'csv header' vers 'object attribute' pour chaque classe
+MAPPER = {
+    'libhydro.core.sitehydro.Sitehydro': {
         '<CdSiteHydro>': 'code',  # mandatory
         '<LbSiteHydro>': 'libelle',
         '<TypSiteHydro>': 'typesite',
@@ -64,14 +89,13 @@ MAPPING = {
         '<CdEuMasseDEau>': None,  # NotImplemented yet
         '<cdZoneHydro>': None,  # NotImplemented yet
         '<CdEntiteHydrographique>': None,  # NotImplemented yet
-        # '<FLG>': None  # mandatory
     },
-    'sitehydro.coord': {
+    'libhydro.core.sitehydro.Sitehydro.coord': {
         '<CoordXSiteHydro>': 'x',
         '<CoordYSiteHydro>': 'y',
         '<ProjCoordSiteHydro>': 'proj'
     },
-    'station': {
+    'libhydro.core.sitehydro.Station': {
         '<CdStationHydro>': 'code',  # mandatory
         '<LbStationHydro>': 'libelle',
         '<TypStationHydro>': 'typestation',
@@ -79,12 +103,12 @@ MAPPING = {
         '<DtFermetureStationHydro>': None,  # NotImplemented yetv
         '<CdCommune>': 'commune',
     },
-    'station.coord': {
+    'libhydro.core.sitehydro.Station.coord': {
         '<CoordXStationHydro>': 'x',
         '<CoordYStationHydro>': 'y',
         '<ProjCoordStationHydro>': 'proj',
     },
-    'sitemeteo': {
+    'libhydro.core.sitemeteo.Sitemeteo': {
         '<CdSiteMeteo>': 'code',  # mandatory
         '<LbSiteMeteo>': 'libelle',
         '<AltitudeSiteMeteo>': None,  # NotImplemented yetv
@@ -95,38 +119,38 @@ MAPPING = {
         '<CdSousSecteurHydro>': None,  # NotImplemented yetv
         '<CdCommune>': 'commune',
     },
-    'sitemeteo.coord': {
+    'libhydro.core.sitemeteo.Sitemeteo.coord': {
         '<CoordXSiteMeteo>': 'x',
         '<CoordYSiteMeteo>': 'y',
         '<ProjCoordSiteMeteo>': 'proj',
     },
-    'grandeur': {
+    'libhydro.core.sitemeteo.Sitemeteo.grandeur': {
         '<CdGrdMeteo>': 'typemesure',  # mandatory
         '<DtMiseServiceGrdMeteo>': None,  # NotImplemented yet
         '<DtFermetureServiceGrdMeteo>': None,  # NotImplemented yet
     },
 
-    'obshydro': {},
-
-    # <CdSiteHydro>  # mandatory
-    # <CdStationHydro>
-    # <GrdSerie>  # mandatory
-    # <DtObsHydro>  # mandatory
-    # <ResObsHydro>  # mandatory
-    # <MethObsHydro>
-    # <StatutSerie>
-    # '<FLG>': None  # mandatory
-
-    'obsmeteo': {},
-
-    # <CdSiteMeteo>  # mandatory
-    # <CdGrdMeteo>  # mandatory
-    # <DtObsMeteo>  # mandatory
-    # <DureeObsMeteo>
-    # <ResObsMeteo>  # mandatory
-    # <IndiceQualObsMeteo>
-    # <MethObsMeteo>
-    # <StatutObsMeteo>
-    # '<FLG>': None  # mandatory
-
+    'libhydro.core.obshydro.serie': {
+        '<CdSiteHydro>': 'entite',  # mandatory
+        '<CdStationHydro>': 'entite',
+        '<GrdSerie>': 'grandeur',  # mandatory
+        '<StatutSerie>': 'status',
+    },
+    'libhydro.core.obshydro.observation': {
+        '<DtObsHydro>': 'dte',  # mandatory
+        '<ResObsHydro>': 'res',  # mandatory
+        '<MethObsHydro>': 'mth',
+    },
+    'libhydro.core.obsmeteo.serie': {
+        '<CdSiteMeteo>': 'sitemeteo.code',  # mandatory
+        '<CdGrdMeteo>': 'grandeur.typemesure',  # mandatory
+        '<DureeObsMeteo>': 'duree',
+        '<StatutObsMeteo>': 'statut',
+    },
+    'libhydro.core.obsmeteo.observation': {
+        '<DtObsMeteo>': 'dte',  # mandatory
+        '<ResObsMeteo>': 'res',  # mandatory
+        '<MethObsMeteo>': 'mth',
+        '<IndiceQualObsMeteo>': 'qua',
+    }
 }

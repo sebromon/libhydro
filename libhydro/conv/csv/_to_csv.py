@@ -39,6 +39,14 @@ __date__ = """2014-12-15"""
 #     **DIALECT
 # )
 
+# TODO - reverse the mapping
+#    for python 2.7+ / 3+:
+#        inv_map = {v: k for k, v in map.items()}
+#    in python2.7+, using map.iteritems() would be more efficient
+
+
+#remove the ;
+# decimal separator ,
 
 #-- CSV encoding classes ------------------------------------------------------
 class _UnicodeWriter:

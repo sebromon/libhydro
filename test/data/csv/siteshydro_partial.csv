@@ -1,6 +1,7 @@
 <CdSiteHydro>;<LbSiteHydro>;<TypSiteHydro>;<CdEuMasseDEau>;<CdEntiteHydrographique>;<FLG>
-D0137010;Site hydrométrique 1;REEL;AZD25;D0130700;<FLG>
-D0137011;Site hydrométrique 2;REEL;AZD26;D0130701;<FLG>
-D0137012;Site hydrométrique 3;REEL;AZD27;D0130702;<FLG>
-D0137013;Site hydrométrique 4;REEL;AZD28;D0130703;<FLG>
-D0137013;Site hydrométrique with a semi-column \; in it's name;REEL;AZD28;D0130703;<FLG>
+CdSiteHydro;LbSiteHydro;TypSiteHydro;CdEuMasseDEau;CdEntiteHydrographique;FLG
+D0137010;Site hydrométrique 1;REEL;AZD25;D0130700;FLG
+D0137011;Site hydrométrique 2;REEL;AZD26;D0130701;FLG
+D0137012;Site hydrométrique 3;REEL;AZD27;D0130702;FLG
+D0137013;Site hydrométrique 4;REEL;AZD28;D0130703;FLG
+D0137013;Site hydrométrique with a semi-column in it's name is not allowed;REEL;AZD28;D0130703;FLG
