@@ -97,9 +97,9 @@ class Observation(_numpy.ndarray):
     def __new__(cls, dte, res, mth=0, qal=16, qua=_numpy.NaN):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
-        if mth not in _NOMENCLATURE[512]:
+        if int(mth) not in _NOMENCLATURE[512]:
             raise ValueError('incorrect method ')
-        if qal not in _NOMENCLATURE[508]:
+        if int(qal) not in _NOMENCLATURE[508]:
             raise ValueError('incorrect qualification')
         try:
             if not _math.isnan(qua):

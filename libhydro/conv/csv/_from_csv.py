@@ -19,10 +19,12 @@ import libhydro.core
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2a"""
-__date__ = """2014-12-19"""
+__version__ = """0.4a"""
+__date__ = """2014-12-20"""
 
 #HISTORY¬
+ #V0.4 - 2014-12-20¬
+ #    add the serieshydro reader
  #V0.1 - 2014-12-15¬
  #    first shot¬
 
@@ -41,12 +43,18 @@ DTYPE = {
     ),
     'sitemeteo': (
         libhydro.core.sitemeteo.Sitemeteo,  libhydro.core.sitemeteo.Grandeur
-    )
-
+    ),
+    'seriehydro': (
+        libhydro.core.obshydro.Serie, libhydro.core.obshydro.Observation
+    ),
+    'seriemeteo': (
+        libhydro.core.obsmeteo.Serie, libhydro.core.obsmeteo.Observation
+    ),
 }
 # Sort of ugly but we need to cast numbers using a locale DECIMAL separator,
 # and it's not easy to find which
-FLOAT_ATTRS = ('x', 'y')
+FLOAT_ATTRS = ('x', 'y', 'res')
+DATES_ATTRS = ('dte',)
 
 
 #-- CSV decoding classes ------------------------------------------------------
@@ -86,6 +94,9 @@ class _UnicodeReader:
 
 
 #-- main functions ------------------------------------------------------------
+# FIXME - this one should be a sniffer
+# class Sniffer(fname, encoding='utf-8'):
+#     pass
 def from_csv(dtype, fname, encoding='utf-8'):
     """Retourne les objets de type <dtype> contenus dans le fichier CSV
     <fname>.
@@ -101,7 +112,6 @@ def from_csv(dtype, fname, encoding='utf-8'):
         encoding (string, defaut 'utf-8')
 
      """
-    # TODO - could be a sniffer
     return eval(
         '{}_from_csv(fname="{}", encoding="{}")'.format(
             dtype.replace('site', 'sites').replace('serie', 'series'),
@@ -111,6 +121,7 @@ def from_csv(dtype, fname, encoding='utf-8'):
     )
 
 
+# FIXME  update docstring
 FROM_CSV_DOC = """\
 Retourne la liste des {} contenus dans le fichier CSV <fname>.
 
@@ -133,14 +144,17 @@ Arguments:
 
 """
 
+#FIXME - this one should be the Reader and exposed with the dtype arg
+# class Reader():
+#     pass
 
-def sites_from_csv(fname, dtype, merge=True, encoding='utf-8',
-                   dialect='hydrometrie',
-                   flag=FLAG, second_line=SECOND_LINE, decimal=DECIMAL_POINT,
-                   mapper=MAPPER, **kwds):
-    """Return the <dtype> entities in the CSV file <fname>.
 
-    Generic function for 'siteshydro' and 'sitesmeteo'.
+def parse_csv(fname, encoding='utf-8', dialect='hydrometrie',
+              merge=True, mapper=MAPPER, flag=FLAG, second_line=SECOND_LINE,
+              decimal=DECIMAL_POINT, dtype=None, **kwds):
+    """Parse the CSV <fname> and return a collection of <dtype> entities.
+
+    It is a generic function to encapsulate the file logic.
 
     Args:
         dtype (string in 'sitehydro', 'sitemeteo')
@@ -151,12 +165,13 @@ def sites_from_csv(fname, dtype, merge=True, encoding='utf-8',
     # init
     if dtype not in DTYPE:
         raise ValueError('dtype should be in {}'.format(DTYPE.keys()))
+
     # parse the CSV file
     with open(fname, 'rb') as f:
 
         # init
         csv = _UnicodeReader(f=f, dialect=dialect, encoding=encoding, **kwds)
-        sites = []
+        collection = []
 
         # fieldnames
         fieldnames = csv.next()
@@ -176,10 +191,16 @@ def sites_from_csv(fname, dtype, merge=True, encoding='utf-8',
                     raise _csv.Error('flag not found')
                 # emulate the csv.DictReader
                 row = dict(zip(fieldnames, row))
-                # append the site
-                sites.append(
-                    site_from_row(
-                        dtype=dtype, row=row, mapper=mapper, decimal=decimal
+                # append the row item
+                # calling 'site_from_row' or 'serie_from_row'
+                collection.append(
+                    eval(
+                        '{}_from_row('
+                        'dtype=dtype, row=row, mapper=mapper,'
+                        'decimal=decimal'
+                        ')'.format(
+                            dtype.replace('hydro', '').replace('meteo', '')
+                        )
                     )
                 )
             except Exception as e:
@@ -188,57 +209,64 @@ def sites_from_csv(fname, dtype, merge=True, encoding='utf-8',
                 )
 
     # ending
-    if not merge or sites is None or sites == []:
-        return sites
+    if not merge or collection is None or collection == []:
+        return collection
     else:
-        return merge_sites(sites=sites)
+        return merge_collection(collection=collection, dtype=dtype)
 
 
-siteshydro_from_csv = _functools.partial(sites_from_csv, dtype='sitehydro')
+# FIXME - not useful. We could expose only a SimpleReader, a sniffer for sandre
+# csv and a full Reader(dtype, ...)
+siteshydro_from_csv = _functools.partial(parse_csv, dtype='sitehydro')
 siteshydro_from_csv.__doc__ = FROM_CSV_DOC.format('sites hydrometriques')
-sitesmeteo_from_csv = _functools.partial(sites_from_csv, dtype='sitemeteo')
+sitesmeteo_from_csv = _functools.partial(parse_csv, dtype='sitemeteo')
 sitesmeteo_from_csv.__doc__ = FROM_CSV_DOC.format('sites meteorologiques')
-
-
-def serieshydro_from_csv(fname):
-    raise NotImplementedError
-
-
-def seriesmeteo_from_csv(fname):
-    raise NotImplementedError
+serieshydro_from_csv = _functools.partial(parse_csv, dtype='seriehydro')
+serieshydro_from_csv.__doc__ = FROM_CSV_DOC.format('series hydrometriques')
+seriesmeteo_from_csv = _functools.partial(parse_csv, dtype='seriemeteo')
+seriesmeteo_from_csv.__doc__ = FROM_CSV_DOC.format('series meteorologiques')
 
 
 #-- secondary functions -------------------------------------------------------
-def merge_sites(sites):
-    """Merge a list of sites.
+def merge_collection(collection, dtype):
+    """Merge a collection of dtype objects.
 
     This merge is O(n2) !!.
 
     """
     # pre-condition
-    if sites is None:
+    if collection is None:
         return
 
-    # init
-    # dtype is 'sitehydro' or 'sitemeteo'
-    dtype = sites[0].__class__.__name__.lower()
     # childtype is 'stations' or 'grandeurs'
-    childtype = '{}s'.format(DTYPE[dtype][1].__name__.lower())
-    mergedsites = []
+    child_name = '{}s'.format(DTYPE[dtype][1].__name__.lower())
+    mergedcollection = []
 
     # action
-    for site in sites:
-        for mergedsite in mergedsites:
-            if site.__eq__(mergedsite, ignore=[childtype]):
-                getattr(mergedsite, childtype).extend(
-                    getattr(site, childtype)
-                )
+    for item in collection:
+        for mergeditem in mergedcollection:
+            if item.__eq__(mergeditem, ignore=[child_name]):
+                if dtype[:4] == 'site':
+                    # we have a list to extend
+                    getattr(mergeditem, child_name).extend(
+                        getattr(item, child_name)
+                    )
+                else:
+                    # we have a DataFrame to concat
+                    setattr(
+                        mergeditem,
+                        child_name,
+                        libhydro.core.obshydro.Observations.concat(
+                            getattr(mergeditem, child_name),
+                            getattr(item, child_name)
+                        )
+                    )
                 break
-        else:  # we have a new site here
-            mergedsites.append(site)
+        else:  # we have a new item here
+            mergedcollection.append(item)
 
     # return
-    return mergedsites
+    return mergedcollection
 
 
 def site_from_row(dtype, row, mapper, decimal=None):
@@ -264,18 +292,18 @@ def site_from_row(dtype, row, mapper, decimal=None):
         )
     except Exception as e:
         raise ValueError(
-            "error while computing class names, {}".format(e)
+            "error while computing class name, {}".format(e)
         )
 
     # read the mandatory parent entity (site)
-    site = entity_from_row(
+    site = object_from_row(
         cls=site_cls,
         row=row,
         mapper=mapper[site_cls_name],
         decimal=decimal
     )
     if '{}.coord'.format(site_cls_name) in mapper:
-        site.coord = entity_from_row(
+        site.coord = object_from_row(
             cls=libhydro.core._composant_site.Coord,
             row=row,
             mapper=mapper['{}.coord'.format(site_cls_name)],
@@ -284,14 +312,14 @@ def site_from_row(dtype, row, mapper, decimal=None):
 
     # read the child entity (station or grandeur)
     if child_cls_name in mapper:
-        child = entity_from_row(
+        child = object_from_row(
             cls=child_cls,
             row=row,
             mapper=mapper[child_cls_name],
             decimal=decimal
         )
         if child and '{}.coord'.format(child_cls_name) in mapper:
-            child.coord = entity_from_row(
+            child.coord = object_from_row(
                 cls=libhydro.core._composant_site.Coord,
                 row=row,
                 mapper=mapper['{}.coord'.format(child_cls_name)],
@@ -304,8 +332,67 @@ def site_from_row(dtype, row, mapper, decimal=None):
     return site
 
 
-def entity_from_row(cls, row, mapper, strict=False,
-                    decimal=None, floats_attrs=FLOAT_ATTRS):
+def serie_from_row(dtype, row, mapper, decimal=None):
+    """."""  # FIXME - write the docstring
+    # map the string dtype in a class
+    try:
+        serie_cls = DTYPE[dtype][0]
+        serie_cls_name = '{}.{}'.format(
+            serie_cls.__module__, serie_cls.__name__
+        )
+        obs_cls = DTYPE[dtype][1]
+        obs_cls_name = '{}.{}'.format(
+            obs_cls.__module__, obs_cls.__name__
+        )
+    except Exception as e:
+        raise ValueError(
+            "error while computing class name, {}".format(e)
+        )
+
+    # get the entity and add it to the row and the mapper
+    try:
+        entity = object_from_row(
+            cls=libhydro.core.sitehydro.Station,
+            row=row,
+            mapper=mapper['{}.entite_station'.format(serie_cls_name)],
+            decimal=decimal
+        )
+        if entity is None:
+            raise Exception
+    except Exception:
+        entity = object_from_row(
+            cls=libhydro.core.sitehydro.Sitehydro,
+            row=row,
+            mapper=mapper['{}.entite_sitehydro'.format(serie_cls_name)],
+            decimal=decimal
+        )
+    row['entite'] = entity  # FIXME - check if key exists already
+    serie_mapper = mapper[serie_cls_name]
+    serie_mapper.update({'entite': 'entite'})  # FIXME check too
+
+    # build the serie
+    serie = object_from_row(
+        cls=libhydro.core.obshydro.Serie,
+        row=row,
+        mapper=serie_mapper,
+        decimal=decimal
+    )
+
+    # build and add the obs
+    obs = object_from_row(
+        cls=libhydro.core.obshydro.Observation,
+        row=row,
+        mapper=mapper[obs_cls_name],
+        decimal=decimal
+    )
+    serie.observations = libhydro.core.obshydro.Observations(obs)
+
+    # return
+    return serie
+
+
+def object_from_row(cls, row, mapper, strict=False, decimal=None,
+                    floats_attrs=FLOAT_ATTRS, dates_attrs=DATES_ATTRS):
     """Return an object of class 'cls" from the 'row' values 'mapped' with the
     mapper.
 
@@ -321,10 +408,13 @@ def entity_from_row(cls, row, mapper, strict=False,
     try:
         args = map_keys(base=row, mapper=mapper, strict=strict)
         if args:
-            # cast float_attrs to float
+            # cast float_attrs to floats
             if decimal and floats_attrs:
                 for arg in set(args).intersection(set(floats_attrs)):
                     args[arg] = float(args[arg].replace(decimal, '.'))
+            # cast date_attrs to dates
+            for arg in set(args).intersection(set(dates_attrs)):
+                args[arg] = datefstr(args[arg])
             # instantiate and return the object
             return cls(**args)
         # else (args is None): return None
@@ -383,3 +473,14 @@ def map_keys(base, mapper, strict=True, iterator='items'):
             if k in mapper.keys()
             if mapper[k] is not None
         }
+
+
+def datefstr(date):
+    """Return 'AAAA-MM-JJ hh:mm:ss' from 'JJ/MM/AAAA hh:mm:ss'."""
+    if not '/' in date:
+        return date
+    try:
+        d, h = date.split()
+        return '{} {}'.format('-'.join(d.split('/')[::-1]), h)
+    except Exception as e:
+        raise ValueError("'{}' is not a valid date, {} ".format(date, e))

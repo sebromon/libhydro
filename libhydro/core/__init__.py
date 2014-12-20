@@ -11,9 +11,11 @@ Il contient les modules:
     # modeleprevision
     # nomenclature
     # obshydro
+    # obsmeteo
     # seuil
     # simulation
     # sitehydro
+    # sitemeteo
 
 """
 __all__ = [
@@ -22,13 +24,15 @@ __all__ = [
     'modeleprevision',
     'nomenclature',
     'obshydro',
+    'obsmeteo',
     'seuil',
     'simulation',
-    'sitehydro'
+    'sitehydro',
+    'sitemeteo',
 ]
 
 from . import evenement, intervenant, modeleprevision, nomenclature, \
-    obshydro, seuil, simulation, sitehydro
+    obshydro, obsmeteo, seuil, simulation, sitehydro, sitemeteo
 
 # alarm
 # courbecorrection
@@ -36,6 +40,4 @@ from . import evenement, intervenant, modeleprevision, nomenclature, \
 # gradienthydro
 # jaugeage
 # obselaboreehydro
-# obsmeteo
 # qualifannee
-# sitemeteo

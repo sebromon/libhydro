@@ -129,25 +129,28 @@ MAPPER = {
         '<DtMiseServiceGrdMeteo>': None,  # NotImplemented yet
         '<DtFermetureServiceGrdMeteo>': None,  # NotImplemented yet
     },
-
-    'libhydro.core.obshydro.serie': {
-        '<CdSiteHydro>': 'entite',  # mandatory
-        '<CdStationHydro>': 'entite',
+    'libhydro.core.obshydro.Serie': {
         '<GrdSerie>': 'grandeur',  # mandatory
-        '<StatutSerie>': 'status',
+        '<StatutSerie>': 'statut',
     },
-    'libhydro.core.obshydro.observation': {
+    'libhydro.core.obshydro.Serie.entite_sitehydro': {
+        '<CdSiteHydro>': 'code',  # mandatory
+    },
+    'libhydro.core.obshydro.Serie.entite_station': {
+        '<CdStationHydro>': 'code',
+    },
+    'libhydro.core.obshydro.Observation': {
         '<DtObsHydro>': 'dte',  # mandatory
         '<ResObsHydro>': 'res',  # mandatory
         '<MethObsHydro>': 'mth',
     },
-    'libhydro.core.obsmeteo.serie': {
+    'libhydro.core.obsmeteo.Serie': {
         '<CdSiteMeteo>': 'sitemeteo.code',  # mandatory
         '<CdGrdMeteo>': 'grandeur.typemesure',  # mandatory
         '<DureeObsMeteo>': 'duree',
         '<StatutObsMeteo>': 'statut',
     },
-    'libhydro.core.obsmeteo.observation': {
+    'libhydro.core.Observation': {
         '<DtObsMeteo>': 'dte',  # mandatory
         '<ResObsMeteo>': 'res',  # mandatory
         '<MethObsMeteo>': 'mth',

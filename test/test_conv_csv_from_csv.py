@@ -32,10 +32,12 @@ from libhydro.conv.csv import _from_csv as lhcsv
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1c"""
-__date__ = """2014-12-19"""
+__version__ = """0.5a"""
+__date__ = """2014-12-20"""
 
 #HISTORY
+#V0.5 - 2014-12-20
+#    add serieshydro tests
 #V0.1 - 2014-12-16
 #    first shot
 
@@ -272,3 +274,79 @@ class TestSitesMeteoFromCsv(unittest.TestCase):
         fname = os.path.join(CSV_DIR, 'sitesmeteo_bad.csv')
         with self.assertRaises(csv.Error):
             lhcsv.sitesmeteo_from_csv(fname)
+
+
+#-- class TestSeriesHydroFromCsv ----------------------------------------------
+class TestSeriesHydroFromCsv(unittest.TestCase):
+
+    """SeriesHydroFromCsv class tests."""
+
+    def test_base(self):
+        """Base test."""
+        fname = os.path.join(CSV_DIR, 'serieshydro_minimum.csv')
+        # merge = True
+        serieshydro = lhcsv.serieshydro_from_csv(fname)
+        self.assertEqual(len(serieshydro), 2)
+        self.assertEqual(serieshydro[0].entite.code, 'O8231530')
+        self.assertEqual(serieshydro[1].entite.code, 'A0330101')
+        self.assertEqual(serieshydro[0].grandeur, 'Q')
+        self.assertEqual(serieshydro[1].grandeur, 'Q')
+        self.assertEqual(
+            serieshydro[0].observations.loc['2010-10-02 05:00', 'res'],
+            55.3
+        )
+        self.assertEqual(
+            serieshydro[0].observations.loc['2010-10-02 06:00', 'res'],
+            55.8
+        )
+        # merge = False
+        serieshydro = lhcsv.serieshydro_from_csv(fname, merge=False)
+        self.assertEqual(len(serieshydro), 4)
+        self.assertEqual(serieshydro[0].entite.code, 'O8231530')
+        self.assertEqual(serieshydro[1].entite.code, 'O8231530')
+        self.assertEqual(serieshydro[2].entite.code, 'A0330101')
+        self.assertEqual(serieshydro[3].entite.code, 'A0330101')
+        self.assertEqual(
+            serieshydro[3].observations.loc['2010-10-02 09:00', 'res'],
+            55
+        )
+
+    def test_full(self):
+        """Full csv file test."""
+        fname = os.path.join(CSV_DIR, 'serieshydro_full.csv')
+        # merge = True
+        serieshydro = lhcsv.serieshydro_from_csv(fname, decimal=b',')
+        self.assertEqual(len(serieshydro), 5)
+        self.assertEqual(serieshydro[0].entite.code, 'A2331020')
+        self.assertEqual(serieshydro[1].entite.code, 'R789122010')
+        self.assertEqual(serieshydro[4].entite.code, 'O823153001')
+        self.assertEqual(serieshydro[0].grandeur, 'Q')
+        self.assertEqual(serieshydro[1].grandeur, 'H')
+        self.assertEqual(serieshydro[0].statut, 0)
+        self.assertEqual(serieshydro[4].statut, 4)
+        self.assertEqual(
+            serieshydro[0].observations.loc['1999-02-13 05', 'res'].get(0),
+            123.33
+        )
+        self.assertEqual(
+            serieshydro[0].observations.loc['1999-02-13 05', 'mth'].get(0),
+            0
+        )
+        # merge = False
+        serieshydro = lhcsv.serieshydro_from_csv(fname, decimal=b',', merge=0)
+        self.assertEqual(len(serieshydro), 6)
+        self.assertEqual(serieshydro[0].entite.code, 'A2331020')
+        self.assertEqual(serieshydro[1].entite.code, 'R789122010')
+        self.assertEqual(serieshydro[4].entite.code, 'O823153001')
+        self.assertEqual(serieshydro[0].grandeur, 'Q')
+        self.assertEqual(serieshydro[1].grandeur, 'H')
+        self.assertEqual(serieshydro[0].statut, 0)
+        self.assertEqual(serieshydro[5].statut, 8)
+        self.assertEqual(
+            serieshydro[0].observations.loc['1999-02-13 05', 'res'].get(0),
+            123.33
+        )
+        self.assertEqual(
+            serieshydro[0].observations.loc['1999-02-13 05', 'mth'].get(0),
+            0
+        )

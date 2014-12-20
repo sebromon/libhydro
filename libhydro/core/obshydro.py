@@ -127,9 +127,9 @@ class Observation(_numpy.ndarray):
     def __new__(cls, dte, res, mth=0, qal=16, cnt=True):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
-        if mth not in _NOMENCLATURE[507]:
+        if int(mth) not in _NOMENCLATURE[507]:
             raise ValueError('incorrect method')
-        if qal not in _NOMENCLATURE[515]:
+        if int(qal) not in _NOMENCLATURE[515]:
             raise ValueError('incorrect qualification')
         obj = _numpy.array(
             (dte, res, mth, qal, cnt),
