@@ -145,12 +145,16 @@ MAPPER = {
         '<MethObsHydro>': 'mth',
     },
     'libhydro.core.obsmeteo.Serie': {
-        '<CdSiteMeteo>': 'sitemeteo.code',  # mandatory
-        '<CdGrdMeteo>': 'grandeur.typemesure',  # mandatory
         '<DureeObsMeteo>': 'duree',
         '<StatutObsMeteo>': 'statut',
     },
-    'libhydro.core.Observation': {
+    'libhydro.core.obsmeteo.Serie.grandeur.sitemeteo': {
+        '<CdSiteMeteo>': 'code',  # mandatory
+    },
+    'libhydro.core.obsmeteo.Serie.grandeur': {
+        '<CdGrdMeteo>': 'typemesure',  # mandatory
+    },
+    'libhydro.core.obsmeteo.Observation': {
         '<DtObsMeteo>': 'dte',  # mandatory
         '<ResObsMeteo>': 'res',  # mandatory
         '<MethObsMeteo>': 'mth',

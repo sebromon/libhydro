@@ -34,10 +34,12 @@ from . import sitemeteo as _sitemeteo
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1g"""
-__date__ = """2014-12-17"""
+__version__ = """0.9a"""
+__date__ = """2014-12-29"""
 
 #HISTORY
+#V0.9 - 2014-12-29
+#    update version number according to progress
 #V0.1 - 2014-07-11
 #    first shot
 
@@ -102,7 +104,7 @@ class Observation(_numpy.ndarray):
         if int(qal) not in _NOMENCLATURE[508]:
             raise ValueError('incorrect qualification')
         try:
-            if not _math.isnan(qua):
+            if not _math.isnan(float(qua)):
                 qua = int(qua)
                 if not (0 <= qua <= 100):
                     raise ValueError()

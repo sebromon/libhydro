@@ -19,10 +19,12 @@ import libhydro.core
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.4a"""
-__date__ = """2014-12-20"""
+__version__ = """0.5a"""
+__date__ = """2014-12-29"""
 
 #HISTORY¬
+ #V0.5 - 2014-12-29¬
+ #    add the seriesmeteo reader
  #V0.4 - 2014-12-20¬
  #    add the serieshydro reader
  #V0.1 - 2014-12-15¬
@@ -30,31 +32,32 @@ __date__ = """2014-12-20"""
 
 
 #-- todos ---------------------------------------------------------------------
-# PROGRESS - 50%
-# TODO - read by column number
+# PROGRESS - 80% - working but needs a big refactoring
 # TODO - write a Reader class and a Sniffer
+# TODO - read by column number
+# TODO - write an __iter__ method
 
 
 #-- config --------------------------------------------------------------------
 # datatype: (class, child class)
 DTYPE = {
     'sitehydro': (
-        libhydro.core.sitehydro.Sitehydro, libhydro.core.sitehydro.Station
+        libhydro.core.sitehydro.Sitehydro,
+        libhydro.core.sitehydro.Station
     ),
     'sitemeteo': (
-        libhydro.core.sitemeteo.Sitemeteo,  libhydro.core.sitemeteo.Grandeur
+        libhydro.core.sitemeteo.Sitemeteo,
+        libhydro.core.sitemeteo.Grandeur
     ),
     'seriehydro': (
-        libhydro.core.obshydro.Serie, libhydro.core.obshydro.Observation
+        libhydro.core.obshydro.Serie,
+        libhydro.core.obshydro.Observation
     ),
     'seriemeteo': (
-        libhydro.core.obsmeteo.Serie, libhydro.core.obsmeteo.Observation
+        libhydro.core.obsmeteo.Serie,
+        libhydro.core.obsmeteo.Observation
     ),
 }
-# Sort of ugly but we need to cast numbers using a locale DECIMAL separator,
-# and it's not easy to find which
-FLOAT_ATTRS = ('x', 'y', 'res')
-DATES_ATTRS = ('dte',)
 
 
 #-- CSV decoding classes ------------------------------------------------------
@@ -333,7 +336,16 @@ def site_from_row(dtype, row, mapper, decimal=None):
 
 
 def serie_from_row(dtype, row, mapper, decimal=None):
-    """."""  # FIXME - write the docstring
+    """Return a Serie object from a row.
+
+    Arguments:
+        dtype (string in 'seriehydro', 'seriemeteo')
+        row (dict) = {fieldname: value, ...}
+        mapper (dict, defaut MAPPER) = mapping header => attribut. Les
+            dictionnaires de second niveau sont configurables
+        decimal (char, defaut DECIMAL_POINT)
+
+    """
     # map the string dtype in a class
     try:
         serie_cls = DTYPE[dtype][0]
@@ -344,35 +356,56 @@ def serie_from_row(dtype, row, mapper, decimal=None):
         obs_cls_name = '{}.{}'.format(
             obs_cls.__module__, obs_cls.__name__
         )
+        obss_cls_name = '{}s'.format(obs_cls_name)
     except Exception as e:
         raise ValueError(
             "error while computing class name, {}".format(e)
         )
 
     # get the entity and add it to the row and the mapper
-    try:
-        entity = object_from_row(
-            cls=libhydro.core.sitehydro.Station,
+    if dtype == 'seriehydro':
+        try:
+            entity = object_from_row(
+                cls=libhydro.core.sitehydro.Station,
+                row=row,
+                mapper=mapper['{}.entite_station'.format(serie_cls_name)],
+                decimal=decimal
+            )
+            if entity is None:
+                raise Exception
+        except Exception:
+            entity = object_from_row(
+                cls=libhydro.core.sitehydro.Sitehydro,
+                row=row,
+                mapper=mapper['{}.entite_sitehydro'.format(serie_cls_name)],
+                decimal=decimal
+            )
+        row['entite'] = entity  # FIXME - check if key exists already
+        serie_mapper = mapper[serie_cls_name].copy()
+        serie_mapper.update({'entite': 'entite'})  # FIXME check too
+
+    else:  # seriemeteo
+        sitemeteo = object_from_row(
+            cls=libhydro.core.sitemeteo.Sitemeteo,
             row=row,
-            mapper=mapper['{}.entite_station'.format(serie_cls_name)],
+            mapper=mapper['{}.grandeur.sitemeteo'.format(serie_cls_name)]
+        )
+        row['sitemeteo'] = sitemeteo
+        grandeur_mapper = mapper['{}.grandeur'.format(serie_cls_name)].copy()
+        grandeur_mapper.update({'sitemeteo': 'sitemeteo'})
+        grandeur = object_from_row(
+            cls=libhydro.core.sitemeteo.Grandeur,
+            row=row,
+            mapper=grandeur_mapper,
             decimal=decimal
         )
-        if entity is None:
-            raise Exception
-    except Exception:
-        entity = object_from_row(
-            cls=libhydro.core.sitehydro.Sitehydro,
-            row=row,
-            mapper=mapper['{}.entite_sitehydro'.format(serie_cls_name)],
-            decimal=decimal
-        )
-    row['entite'] = entity  # FIXME - check if key exists already
-    serie_mapper = mapper[serie_cls_name]
-    serie_mapper.update({'entite': 'entite'})  # FIXME check too
+        row['grandeur'] = grandeur  # FIXME - check if key exists already
+        serie_mapper = mapper[serie_cls_name].copy()
+        serie_mapper.update({'grandeur': 'grandeur'})  # FIXME check too
 
     # build the serie
     serie = object_from_row(
-        cls=libhydro.core.obshydro.Serie,
+        cls=serie_cls,
         row=row,
         mapper=serie_mapper,
         decimal=decimal
@@ -380,19 +413,18 @@ def serie_from_row(dtype, row, mapper, decimal=None):
 
     # build and add the obs
     obs = object_from_row(
-        cls=libhydro.core.obshydro.Observation,
+        cls=obs_cls,
         row=row,
         mapper=mapper[obs_cls_name],
         decimal=decimal
     )
-    serie.observations = libhydro.core.obshydro.Observations(obs)
+    serie.observations = eval('{}'.format(obss_cls_name))(obs)
 
     # return
     return serie
 
 
-def object_from_row(cls, row, mapper, strict=False, decimal=None,
-                    floats_attrs=FLOAT_ATTRS, dates_attrs=DATES_ATTRS):
+def object_from_row(cls, row, mapper, strict=False, decimal=None):
     """Return an object of class 'cls" from the 'row' values 'mapped' with the
     mapper.
 
@@ -401,19 +433,23 @@ def object_from_row(cls, row, mapper, strict=False, decimal=None,
         row (dict)    |
         mapper (dict) | passed to the map_keys function
         strict (bool) |
-        decimal (char) = decimal point |
-        floats_attrs (list of strings) | = attributes to cast in float
+        decimal (char) = decimal point
 
     """
+    # ugly but we need to cast dates or numbers using a locale DECIMAL
+    # separator, and it's not easy to find which
+    FLOAT_ATTRS = set(['x', 'y', 'res'])
+    DATE_ATTRS = set(['dte'])
+
     try:
         args = map_keys(base=row, mapper=mapper, strict=strict)
         if args:
             # cast float_attrs to floats
-            if decimal and floats_attrs:
-                for arg in set(args).intersection(set(floats_attrs)):
+            if decimal:
+                for arg in set(args).intersection(FLOAT_ATTRS):
                     args[arg] = float(args[arg].replace(decimal, '.'))
             # cast date_attrs to dates
-            for arg in set(args).intersection(set(dates_attrs)):
+            for arg in set(args).intersection(DATE_ATTRS):
                 args[arg] = datefstr(args[arg])
             # instantiate and return the object
             return cls(**args)

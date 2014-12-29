@@ -32,12 +32,13 @@ from libhydro.conv.csv import _from_csv as lhcsv
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.5a"""
-__date__ = """2014-12-20"""
+__version__ = """0.5b"""
+__date__ = """2014-12-29"""
 
 #HISTORY
 #V0.5 - 2014-12-20
 #    add serieshydro tests
+#    add seriesmeteo tests
 #V0.1 - 2014-12-16
 #    first shot
 
@@ -349,4 +350,135 @@ class TestSeriesHydroFromCsv(unittest.TestCase):
         self.assertEqual(
             serieshydro[0].observations.loc['1999-02-13 05', 'mth'].get(0),
             0
+        )
+
+
+#-- class TestSeriesMeteoFromCsv ----------------------------------------------
+class TestSeriesMeteoFromCsv(unittest.TestCase):
+
+    """SeriesMeteoFromCsv class tests."""
+
+    def test_base(self):
+        """Base test."""
+        fname = os.path.join(CSV_DIR, 'seriesmeteo_minimum.csv')
+        # merge = True
+        seriesmeteo = lhcsv.seriesmeteo_from_csv(fname)
+        self.assertEqual(len(seriesmeteo), 1)
+        self.assertEqual(seriesmeteo[0].grandeur.typemesure, 'VV')
+        self.assertEqual(seriesmeteo[0].grandeur.sitemeteo.code, '031239004')
+        self.assertEqual(
+            seriesmeteo[0].observations.loc['2011-02-02 15:00', 'res'],
+            100
+        )
+        self.assertEqual(
+            seriesmeteo[0].observations.loc['2011-02-02 18:00', 'res'],
+            82.56
+        )
+        # merge = False
+        seriesmeteo = lhcsv.seriesmeteo_from_csv(fname, merge=False)
+        self.assertEqual(len(seriesmeteo), 4)
+        for i in range(4):
+            self.assertEqual(seriesmeteo[i].grandeur.typemesure, 'VV')
+            self.assertEqual(
+                seriesmeteo[0].grandeur.sitemeteo.code, '031239004'
+            )
+            self.assertEqual(
+                seriesmeteo[i].grandeur.sitemeteo.code, '031239004'
+            )
+            self.assertEqual(len(seriesmeteo[i].observations), 1)
+        self.assertEqual(
+            seriesmeteo[0].observations.loc['2011-02-02 15:00', 'res'],
+            100
+        )
+        self.assertEqual(
+            seriesmeteo[1].observations.loc['2011-02-02 16:00', 'res'],
+            852
+        )
+        self.assertEqual(
+            seriesmeteo[2].observations.loc['2011-02-02 17:00', 'res'],
+            5
+        )
+        self.assertEqual(
+            seriesmeteo[3].observations.loc['2011-02-02 18:00', 'res'],
+            82.56
+        )
+
+    def test_full(self):
+        """Full csv file test."""
+        fname = os.path.join(CSV_DIR, 'seriesmeteo_full.csv')
+        # merge = True
+        seriesmeteo = lhcsv.seriesmeteo_from_csv(fname, decimal=b',')
+        self.assertEqual(len(seriesmeteo), 3)
+        self.assertEqual(seriesmeteo[0].grandeur.typemesure, 'VV')
+        self.assertEqual(seriesmeteo[1].grandeur.typemesure, 'RR')
+        self.assertEqual(seriesmeteo[2].grandeur.typemesure, 'RR')
+        self.assertEqual(seriesmeteo[0].grandeur.sitemeteo.code, '02A004001')
+        self.assertEqual(seriesmeteo[1].grandeur.sitemeteo.code, '031239004')
+        self.assertEqual(seriesmeteo[2].grandeur.sitemeteo.code, '031239004')
+        self.assertEqual(seriesmeteo[0].statut, 0)
+        self.assertEqual(seriesmeteo[1].statut, 4)
+        self.assertEqual(seriesmeteo[2].statut, 8)
+        self.assertEqual(len(seriesmeteo[0].observations), 2)
+        self.assertEqual(len(seriesmeteo[1].observations), 2)
+        self.assertEqual(len(seriesmeteo[2].observations), 2)
+        self.assertEqual(
+            seriesmeteo[0].observations.to_string().split('\n')[2:],
+            [
+                '2011-02-02 14:00:00  10.1    0   16   55',
+                '2011-02-02 14:05:00  20.0    4   16   66'
+            ]
+        )
+        self.assertEqual(
+            seriesmeteo[1].observations.to_string().split('\n')[2:],
+            [
+                '2011-02-02 14:00:00   30   12   16  100',
+                '2011-02-02 15:00:00   40    0   16   75'
+            ]
+        )
+        self.assertEqual(
+            seriesmeteo[2].observations.to_string().split('\n')[2:],
+            [
+                '2011-02-02 16:00:00  50.5    8   16  100',
+                '2011-02-02 17:00:00   0.0    8   16  100'
+            ]
+        )
+        # merge = False
+        seriesmeteo = lhcsv.seriesmeteo_from_csv(fname, decimal=b',', merge=0)
+        self.assertEqual(len(seriesmeteo), 6)
+        self.assertEqual(seriesmeteo[0].grandeur.typemesure, 'VV')
+        self.assertEqual(seriesmeteo[1].grandeur.typemesure, 'VV')
+        self.assertEqual(seriesmeteo[3].grandeur.typemesure, 'RR')
+        self.assertEqual(seriesmeteo[5].grandeur.typemesure, 'RR')
+        self.assertEqual(seriesmeteo[0].grandeur.sitemeteo.code, '02A004001')
+        self.assertEqual(seriesmeteo[2].grandeur.sitemeteo.code, '031239004')
+        self.assertEqual(seriesmeteo[5].grandeur.sitemeteo.code, '031239004')
+        self.assertEqual(seriesmeteo[1].statut, 0)
+        self.assertEqual(seriesmeteo[3].statut, 4)
+        self.assertEqual(seriesmeteo[5].statut, 8)
+        self.assertEqual(len(seriesmeteo[0].observations), 1)
+        self.assertEqual(len(seriesmeteo[3].observations), 1)
+        self.assertEqual(len(seriesmeteo[5].observations), 1)
+        self.assertEqual(
+            seriesmeteo[0].observations.to_string().split('\n')[2:],
+            [
+                '2011-02-02 14:00:00  10.1    0   16   55',
+            ]
+        )
+        self.assertEqual(
+            seriesmeteo[1].observations.to_string().split('\n')[2:],
+            [
+                '2011-02-02 14:05:00   20    4   16   66'
+            ]
+        )
+        self.assertEqual(
+            seriesmeteo[4].observations.to_string().split('\n')[2:],
+            [
+                '2011-02-02 16:00:00  50.5    8   16  100',
+            ]
+        )
+        self.assertEqual(
+            seriesmeteo[5].observations.to_string().split('\n')[2:],
+            [
+                '2011-02-02 17:00:00    0    8   16  100'
+            ]
         )
