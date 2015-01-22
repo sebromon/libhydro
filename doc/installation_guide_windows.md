@@ -2,8 +2,8 @@ INSTALLATION DE LIBHYDRO SOUS WINDOWS
 ===============================================================================
 
 * Auteur: philippe.gouin@developpement-durable.gouv.fr
-* Version: 0.2e
-* Mise à jour: 2014-12-14
+* Version: 0.2f
+* Mise à jour: 2015-01-22
 
 Installation packagée de Python (CONSEILLE)
 -------------------------------------------------------------------------------
@@ -16,22 +16,29 @@ sur le même OS plusieurs distributions python isolées les unes des autres
 ([Réf 2][2]) ([Réf 3][3]).
 
 ### Paramétrer le proxy ####
-L'installateur conda doit pouvoir accéder à internet pour télécharger les
-paquets à installer.
+L'installateur conda doit pouvoir accéder à internet en http pour télécharger
+les paquets à installer, ce qui peux nécessiter le paramétrage d'un proxy (à
+vérifier le cas échéant avec votre administrateur réseau).
 
-Si votre réseau local accède à internet via un proxy (à vérifier le
-cas échéant avec votre administrateur réseau), les 2 variables à déclarer sont:
+La méthode conseillée est l'utilisation d'un fichier .condarc ([Réf 4][4]).
+
+Exemple:
 ```
 #!bat
-http_proxy=http://(host:port)
-https_proxy=http://(host:port)
+# Proxy settings: http://[username]:[password]@[server]:[port]
+proxy_servers:
+    http: http://user:pass@corp.com:8080
 ```
 
-On peut le faire au choix:
+A défaut, le proxy internet peut être déclaré dans la console DOS avec la
+commande set:
+```
+#!bat
+set http_proxy=http://[username]:[password]@[server]:[port]
+```
 
-  * dans les variables d'environnement (clic droit sur le poste de travail,
-    propriétés, avancé, variables d'environnement, variables utilisateur)
-  * dans un fichier .condarc ([Réf 4][4])
+Il est déconseillé d'utiliser des variables d'environnement globales qui
+peuvent impacter d'autres applications.
 
 ### Installer les pré-requis à libhydro ###
 Installer les pré-requis pour libhydro:
