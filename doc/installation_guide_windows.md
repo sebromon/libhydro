@@ -48,7 +48,7 @@ lors de l'utilisation de très grosses séries de données:
 En profiter pour installer d'autres paquets utiles:
 
   * _ipython_, un "powerful interactive shell"
-  * _spyder_, un editeur "for the Python language with advanced editing, interactive testing, debugging and introspection features"
+  * _spyder_, un éditeur "for the Python language with advanced editing, interactive testing, debugging and introspection features"
 
 Si problème avec pip autour d'une erreur d'encodage ligne 249 du fichier
 mimetypes.py, remplacer la ligne 250:
