@@ -17,6 +17,10 @@ Exemple:
 
     yum install python python-pip.noarch
 
+Sous Debian:
+
+    apt-get install python python-pip
+
 Installation manuelle de Python (compilation)
 -------------------------------------------------------------------------------
 La procédure décrite ci-dessous est pour CentOS 6.2.
