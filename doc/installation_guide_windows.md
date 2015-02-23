@@ -62,7 +62,7 @@ par:
 Installation manuelle de Python (non conseillé)
 -------------------------------------------------------------------------------
 ### Télécharger et installer Python ###
-[Réf: https://www.python.org/download](https://www.python.org/download]())
+[Réf: https://www.python.org/downloads](https://www.python.org/downloads]())
 
 Utiliser un 'Windows installer' en version 32 ou 64 bits en fonction de votre machine. Pour libhydro choisir la version la plus récente de Python 2.
 
