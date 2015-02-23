@@ -13,6 +13,7 @@ REMINDER*
 dist
 libhydro.egg-info
 TODO*
+*.pdf
 
 # -----------------------------------------------------------------------------
 #syntax: regexp
