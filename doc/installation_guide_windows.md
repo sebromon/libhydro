@@ -149,7 +149,7 @@ python setup.py install
 [2]: http://sametmax.com/les-environnement-virtuels-python-virtualenv-et-virtualenvwrapper/ "Virtualenv"
 [3]: http://conda.pydata.org/docs/commands/create.html "Conda create"
 [4]: http://conda.pydata.org/docs/config.html "Conda config"
-[5]: https://www.python.org/download "Python download"
+[5]: https://www.python.org/downloads "Python downloads"
 [6]: http://docs.python.org/2/using/windows.html "Python config windows"
 [7]: http://www.pip-installer.org/en/latest/installing.html "Pip installer"
 [8]: http://www.lfd.uci.edu/~gohlke/pythonlibs/ "Paquets python compilés pour Windows"
