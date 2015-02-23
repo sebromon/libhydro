@@ -48,8 +48,8 @@ from ...core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2a"""
-__date__ = """2014-09-25"""
+__version__ = """0.2b"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.2 - 2014-09-25
@@ -67,23 +67,23 @@ __date__ = """2014-09-25"""
 
 #-- functions -----------------------------------------------------------------
 def simulation_from_hfs(
-    src, stationhydro=None, begin=None, end=None, dtprod=None, strict=True
+    src, station=None, begin=None, end=None, dtprod=None, strict=True
 ):
     """Retourne une simulation.Simulation a partir d'un fichier HFS.
 
     Arguments:
         src (str o ou file) = fichier source
-        stationhydro (Stationhydro) = par defaut utilise le nom du fichier src
+        station (Station) = par defaut utilise le nom du fichier src
         begin, end (isoformat string) = dates de debut/fin de la plage de
             valeurs a conserver, bornes incluses
         dtprod (string ou datetime) = date de production
         strict (bool, defaut True) = le mode permissif permet de lever le
-            controle de validite de la stationhydro
+            controle de validite de la station
 
     """
     # get a obshydro.Serie from the Serie decoder
     serie = serie_from_hfs(
-        src=src, stationhydro=stationhydro, begin=begin, end=end, strict=strict
+        src=src, station=station, begin=begin, end=end, strict=strict
     )
 
     # make a multiindex with probability 50 for every value
@@ -121,23 +121,23 @@ def simulation_from_hfs(
     )
 
 
-def simulation_to_hfs():
-    """Not implemented."""
-    raise NotImplementedError()  # TODO
+# def simulation_to_hfs():
+#     """Not implemented."""
+#     raise NotImplementedError()  # TODO
 
 
-def serie_from_hfs(src, stationhydro=None, begin=None, end=None, strict=True):
+def serie_from_hfs(src, station=None, begin=None, end=None, strict=True):
     """Retourne une obshydro.Serie a partir d'un fichier HFS.
 
     La Serie est simplifiee et ne contient que la colonne res.
 
     Arguments:
         src (str o ou file) = fichier source
-        stationhydro (Stationhydro) = par defaut utilise le nom du fichier src
+        station (Station) = par defaut utilise le nom du fichier src
         begin, end (isoformat string) = dates de debut/fin de la plage de
             valeurs a conserver, bornes incluses
         strict (bool, defaut True) = le mode permissif permet de lever le
-            controle de validite de la stationhydro
+            controle de validite de la station
 
     """
     # parse file
@@ -155,11 +155,11 @@ def serie_from_hfs(src, stationhydro=None, begin=None, end=None, strict=True):
     df.res *= 1000
 
     # if entite is None we use the HFS file name to build a station
-    if stationhydro and strict:
-        if not isinstance(stationhydro, _sitehydro.Stationhydro):
-            raise TypeError('stationhydro is required')
-    if not stationhydro:
-        stationhydro = _sitehydro.Stationhydro(
+    if station and strict:
+        if not isinstance(station, _sitehydro.Station):
+            raise TypeError('station is required')
+    if not station:
+        station = _sitehydro.Station(
             code=None,
             typestation='LIMNI',
             libelle=_os.path.splitext(_os.path.split(src)[-1])[0],
@@ -175,13 +175,13 @@ def serie_from_hfs(src, stationhydro=None, begin=None, end=None, strict=True):
 
     # return
     return _obshydro.Serie(
-        entite=stationhydro,
+        entite=station,
         grandeur='H',
         observations=df,
         strict=strict
     )
 
 
-def serie_to_hfs(dst):
-    """Not implemented."""
-    raise NotImplementedError()  # TODO
+# def serie_to_hfs(dst):
+#     """Not implemented."""
+#     raise NotImplementedError()  # TODO

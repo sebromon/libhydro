@@ -1,0 +1,6 @@
+code,label,family,waterbody,river,x,y,proj
+D0137010,Site hydrométrique 1,REEL,AZD25,D0130700,10,11,5
+D0137011,Site hydrométrique 2,REEL,AZD26,D0130701,20,21,10
+D0137010,Site hydrométrique 1,REEL,AZD27,D0130700,10,11,5
+D0137013,Site hydrométrique 3,VIRTUEL,AZD28,D0130703,40,41,25
+D0137014,Site hydrométrique with an escpaed coma '\,' in it's name,REEL,AZD29,D0130704,50.55,51.5,25

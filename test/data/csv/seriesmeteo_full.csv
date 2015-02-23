@@ -1,0 +1,8 @@
+<CdSiteMeteo>;<CdGrdMeteo>;<DtObsMeteo>;<DureeObsMeteo>;<ResObsMeteo>;<IndiceQualObsMeteo>;<MethObsMeteo>;<StatutObsMeteo>;<FLG>
+CdSiteMeteo;CdGrdMeteo;DtObsMeteo;DureeObsMeteo;ResObsMeteo;IndiceQualObsMeteo;MethObsMeteo;StatutObsMeteo;FLG
+2A004001;VV;02/02/2011 15:00+01:00; 0;10,10; 55; 0;0;FLG
+2A004001;VV;02/02/2011 15:05+01:00; 0;   20; 66; 4;0;FLG
+31239004;RR;02/02/2011 15:00+01:00;60;   30;100;12;4;FLG
+31239004;RR;02/02/2011 16:00+01:00;60;   40; 75; 0;4;FLG
+31239004;RR;02/02/2011 17:00+01:00;60; 50,5;100; 8;8;FLG
+31239004;RR;02/02/2011 18:00+01:00;60;    0;100; 8;8;FLG

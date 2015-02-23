@@ -48,8 +48,8 @@ from . import sitehydro as _sitehydro
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2c"""
-__date__ = """2014-07-25"""
+__version__ = """0.2d"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.2 - 2014-07-15
@@ -64,7 +64,7 @@ __date__ = """2014-07-25"""
 # ADMIT_SERIE = {
 #     Sitehydro: 'Q',
 
-#     Stationhydro: type station...
+#     Station: type station...
 
 #     Capteur: 'H', brut corrige
 #                'Q' brut corrige
@@ -127,9 +127,9 @@ class Observation(_numpy.ndarray):
     def __new__(cls, dte, res, mth=0, qal=16, cnt=True):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
-        if mth not in _NOMENCLATURE[507]:
+        if int(mth) not in _NOMENCLATURE[507]:
             raise ValueError('incorrect method')
-        if qal not in _NOMENCLATURE[515]:
+        if int(qal) not in _NOMENCLATURE[515]:
             raise ValueError('incorrect qualification')
         obj = _numpy.array(
             (dte, res, mth, qal, cnt),
@@ -182,6 +182,9 @@ class Observations(_composant_obs.Observations):
 
     On peut iterer dans le DataFrame avec la fonction iterrows().
 
+    ATTENTION, la comparaison de Pandas.DataFrames necessite d'ecrire:
+        (obs == obs).all().all()
+
     """
 
     def __new__(cls, *observations):
@@ -209,7 +212,7 @@ class Serie(_composant_obs.Serie):
     Classe pour manipuler des series d'observations hydrometriques.
 
     Proprietes:
-        entite (Sitehydro, Stationhydro ou Capteur)
+        entite (Sitehydro, Station ou Capteur)
         grandeur (char parmi NOMENCLATURE[509]) = H ou Q
         statut (int parmi NOMENCLATURE[510]) = donnee brute, corrigee...
         dtdeb (datetime.datetime)
@@ -237,7 +240,7 @@ class Serie(_composant_obs.Serie):
         """Initialisation.
 
         Arguments:
-            entite (Sitehydro, Stationhydro ou Capteur)
+            entite (Sitehydro, Station ou Capteur)
             grandeur (char parmi NOMENCLATURE[509]) = H ou Q
             statut (int parmi NOMENCLATURE[510], defaut 0) = donnee brute,
                 corrigee...
@@ -286,20 +289,27 @@ class Serie(_composant_obs.Serie):
                     not isinstance(
                         entite,
                         (
-                            _sitehydro.Sitehydro, _sitehydro.Stationhydro,
+                            _sitehydro.Sitehydro, _sitehydro.Station,
                             _sitehydro.Capteur
                         )
                     )
                 )
             ):
                 raise TypeError(
-                    'entite must be a Sitehydro, a Stationhydro or a Capteur'
+                    'entite must be a Sitehydro, a Station or a Capteur'
                 )
             self._entite = entite
         except:
             raise
 
-    # -- other methods --
+    # -- special methods --
+    __all__attrs__ = (
+        'entite', 'grandeur', 'statut', 'dtdeb', 'dtfin', 'dtprod',
+        'contact', 'observations'
+    )
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+
     def __unicode__(self):
         """Return unicode representation."""
         # init

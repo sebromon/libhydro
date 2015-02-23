@@ -3,7 +3,7 @@
 
 Ce module contient les classes:
     # Sitehydro
-    # Stationhydro
+    # Station
     # Capteur
     # Tronconvigilance
 
@@ -23,11 +23,16 @@ from . import (_composant, _composant_site)
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.3g"""
-__date__ = """2014-07-20"""
+__version__ = """0.4a"""
+__date__ = """2014-12-17"""
 
 #HISTORY
+#V0.4 - 2014-12-17
+#    change the class Stationhydro name to Station which is far better for
+#        metaprogramming regarding the Sitehydro stations list name
 #V0.3 - 2014-02-20
+#    add the _Entitehydro comparison methods, the switch it to the _composant
+#        module
 #    use descriptors
 #    merge Camillo (CMO) work
 #V0.1 - 2013-07-12
@@ -35,11 +40,10 @@ __date__ = """2014-07-20"""
 
 
 #-- todos ---------------------------------------------------------------------
-# PROGRESS - Sitehydro 20% - Stationhydro 30% - Capteur 30%
+# PROGRESS - Sitehydro 20% - Station 30% - Capteur 30%
 #            Tronconvigilance 100%
 # FIXME - generalize typeentite in _Entite.typentite ?
 # TODO - add navigability for Capteur => Station and Station => Site
-# TODO - __eq__ for all classes
 
 
 #-- config --------------------------------------------------------------------
@@ -131,11 +135,15 @@ class _Entitehydro(object):
         except:
             raise
 
+    # -- special methods --
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+
 
 #-- class _Site_or_station ---------------------------------------------------
 class _Site_or_station(_Entitehydro):
 
-    """Abstract base class for Sitehydro and Stationhydro.
+    """Abstract base class for Sitehydro and Station.
 
     Properties:
         -- properties of _Entitehydro     --
@@ -306,13 +314,13 @@ class Sitehydro(_Site_or_station):
         if stations is None:
             return
         # one station, we make a list with it
-        if isinstance(stations, Stationhydro):
+        if isinstance(stations, Station):
             stations = [stations]
         # an iterable of stations
         for station in stations:
             # some checks
             if self._strict:
-                if not isinstance(station, Stationhydro):
+                if not isinstance(station, Station):
                     raise TypeError(
                         'stations must be a Station or an iterable of Station'
                     )
@@ -375,7 +383,12 @@ class Sitehydro(_Site_or_station):
             # add station
             self._tronconsvigilance.append(tronconvigilance)
 
-    # -- other methods --
+    # -- special methods --
+    __all__attrs__ = (
+        'code', 'codeh2', 'typesite', 'libelle', 'libelleusuel', 'coord',
+        'stations', 'communes', 'tronconsvigilance'
+    )
+
     def __unicode__(self):
         """Return unicode representation."""
         return 'Site {0} {1}::{2} [{3} station{4}]'.format(
@@ -389,10 +402,10 @@ class Sitehydro(_Site_or_station):
     __str__ = _composant.__str__
 
 
-#-- class Stationhydro --------------------------------------------------------
-class Stationhydro(_Site_or_station):
+#-- class Station -------------------------------------------------------------
+class Station(_Site_or_station):
 
-    """Classe Stationhydro.
+    """Classe Station.
 
     Classe pour manipuler des stations hydrometriques.
 
@@ -413,7 +426,7 @@ class Stationhydro(_Site_or_station):
 
     """
 
-    # Stationhydro other properties
+    # Station other properties
 
     #sitehydro
 
@@ -470,7 +483,7 @@ class Stationhydro(_Site_or_station):
         """
 
         # -- super --
-        super(Stationhydro, self).__init__(
+        super(Station, self).__init__(
             code=code, codeh2=codeh2, libelle=libelle,
             coord=coord, strict=strict
         )
@@ -580,7 +593,12 @@ class Stationhydro(_Site_or_station):
                 raise ValueError('ddc code must be 10 chars long')
             self._ddcs.append(ddc)
 
-    # -- other methods --
+    # -- special methods --
+    __all__attrs__ = (
+        'code', 'codeh2', 'typestation', 'libelle', 'libellecomplement',
+        'niveauaffichage', 'coord', 'capteurs', 'commune', 'ddcs',
+    )
+
     def __unicode__(self):
         """Return unicode representation."""
         return 'Station {0} {1}::{2} [{3} capteur{4}]'.format(
@@ -611,7 +629,7 @@ class Capteur(_Entitehydro):
 
     # Capteur other properties
 
-    #stationhydro
+    #station
 
     #mnemonique
     #typecapteur
@@ -653,7 +671,11 @@ class Capteur(_Entitehydro):
         # -- descriptors --
         self.typemesure = typemesure
 
-    # -- other methods --
+    # -- special methods --
+    __all__attrs__ = ('code', 'codeh2', 'typemesure', 'libelle')
+    # __eq__ = _composant.__eq__
+    # __ne__ = _composant.__ne__
+
     def __unicode__(self):
         """Return unicode representation."""
         return 'Capteur {0} {1}::{2}'.format(
@@ -677,6 +699,7 @@ class Tronconvigilance(object):
         libelle (string) = libelle du troncon
 
     """
+
     def __init__(self, code=None, libelle=None):
         """Initialisation.
 
@@ -688,21 +711,10 @@ class Tronconvigilance(object):
         self.code = unicode(code) if (code is not None) else None
         self.libelle = unicode(libelle) if (libelle is not None) else None
 
-    # -- other methods --
-    def __eq__(self, other):
-        """Return True ou False."""
-        return (
-            (self is other)
-            or
-            (
-                (self.code == other.code) and
-                (self.libelle == other.libelle)
-            )
-        )
-
-    def __ne__(self, other):
-        """Return True ou False."""
-        return not self.__eq__(other)
+    # -- special methods --
+    __all__attrs__ = ('code', 'libelle')
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
 
     def __unicode__(self):
         """Return unicode representation."""
@@ -719,7 +731,7 @@ class Tronconvigilance(object):
 _ARTICLE = {
     # classe name: article
     Sitehydro: 'le',
-    Stationhydro: 'la',
+    Station: 'la',
     Capteur: 'le'
 }
 
@@ -727,12 +739,12 @@ _ARTICLE = {
 _CODE_HYDRO_LENGTH = {
     # class name: hydro code length
     Sitehydro: 8,
-    Stationhydro: 10,
+    Station: 10,
     Capteur: 12
 }
 
 # -- HYDRO ENTITY DEPEDENCY RULES --
-# rules for checking which Stationhydro a Sitehydro does accept
+# rules for checking which Station a Sitehydro does accept
 _SITE_ACCEPTED_STATION = {
     # type site : [type station, ...]
     'REEL': ('LIMNI', 'DEB', 'HC', 'LIMNIMERE', 'LIMNIFILLE'),
@@ -744,7 +756,7 @@ _SITE_ACCEPTED_STATION = {
     'VIRTUEL': tuple(),
     'RECONSTITUE': tuple()
 }
-# rules for checking which Capteur a Stationhydro does accept
+# rules for checking which Capteur a Station does accept
 _STATION_ACCEPTED_CAPTEUR = {
     'LIMNI': ('H',),
     'DEB': ('H', 'Q'),

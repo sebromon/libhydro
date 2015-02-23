@@ -27,6 +27,7 @@ import math as _math
 from libhydro.core import (
     _composant,
     sitehydro as _sitehydro,
+    sitemeteo as _sitemeteo,
     seuil as _seuil
 )
 
@@ -34,8 +35,8 @@ from libhydro.core import (
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.4e"""
-__date__ = """2014-08-25"""
+__version__ = """0.4f"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.4 - 2014-07-31
@@ -69,6 +70,15 @@ PREV_PROBABILITY = {
     50: 'ResMoyPrev',
     0: 'ResMinPrev',
     100: 'ResMaxPrev'
+}
+
+# some tags mappings
+CLS_MAPPINGS = {
+    _sitehydro.Sitehydro: 'SiteHydro',
+    _sitehydro.Station: 'StationHydro',
+    _sitehydro.Capteur: 'Capteur',
+    _sitemeteo.Sitemeteo: 'SiteMeteo',
+    _sitemeteo.Grandeur: 'Grandeur'
 }
 
 # sandre hydrometrie namespaces
@@ -414,7 +424,7 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
             child = element.find('StationsHydro')
             for station in sitehydro.stations:
                 child.append(
-                    _stationhydro_to_element(
+                    _station_to_element(
                         station, bdhydro=bdhydro, strict=strict
                     )
                 )
@@ -584,15 +594,15 @@ def _seuilhydro_to_element(seuilhydro, bdhydro=False, strict=True):
             child = element.find('ValeursSeuilsStationHydro')
             for valeur in seuilhydro.valeurs:
                 child.append(
-                    _valeurseuilstationhydro_to_element(valeur, strict=strict)
+                    _valeurseuilstation_to_element(valeur, strict=strict)
                 )
 
         # return
         return element
 
 
-def _valeurseuilstationhydro_to_element(valeurseuil,
-                                        bdhydro=False, strict=True):
+def _valeurseuilstation_to_element(valeurseuil, bdhydro=False,
+                                   strict=True):
     """Return a <ValeursSeuilStationHydro> element from a seuil.Valeurseuil.
 
     Requires valeurseuil.entite.code to be a station hydro code.
@@ -610,10 +620,10 @@ def _valeurseuilstationhydro_to_element(valeurseuil,
             code=valeurseuil.entite.code, length=10, errors='ignore'
         ):
             raise TypeError(
-                'valeurseuil.entite is not a sitehydro.Stationhydro'
+                'valeurseuil.entite is not a sitehydro.Station'
             )
 
-        # template for valeurseuilstationhydro simple element
+        # template for valeurseuilstation simple element
         story = _collections.OrderedDict((
             ('CdStationHydro', {'value': valeurseuil.entite.code}),
             ('ValHauteurSeuilStationHydro', {
@@ -638,58 +648,58 @@ def _valeurseuilstationhydro_to_element(valeurseuil,
         )
 
 
-def _stationhydro_to_element(stationhydro, bdhydro=False, strict=True):
-    """Return a <StationHydro> element from a sitehydro.Stationhydro."""
+def _station_to_element(station, bdhydro=False, strict=True):
+    """Return a <StationHydro> element from a sitehydro.Station."""
 
-    if stationhydro is not None:
+    if station is not None:
 
         # prerequisites
         if strict:
-            _required(stationhydro, ['code'])
+            _required(station, ['code'])
 
-        # template for stationhydro simple element
+        # template for station simple element
         story = _collections.OrderedDict((
-            ('CdStationHydro', {'value': stationhydro.code}),
-            ('LbStationHydro', {'value': stationhydro.libelle}),
-            ('TypStationHydro', {'value': stationhydro.typestation}),
+            ('CdStationHydro', {'value': station.code}),
+            ('LbStationHydro', {'value': station.libelle}),
+            ('TypStationHydro', {'value': station.typestation}),
             ('ComplementLibelleStationHydro', {
-                'value': stationhydro.libellecomplement
+                'value': station.libellecomplement
             }),
             ('CoordStationHydro', {
                 'value': None,
-                'force': True if stationhydro.coord is not None else False
+                'force': True if station.coord is not None else False
             }),
             ('NiveauAffichageStationHydro', {
-                'value': stationhydro.niveauaffichage
+                'value': station.niveauaffichage
             }),
             ('ReseauxMesureStationHydro', {
                 'value': None,
-                'force': True if (len(stationhydro.ddcs) > 0) else False
+                'force': True if (len(station.ddcs) > 0) else False
             }),
             ('Capteurs', {
                 'value': None,
-                'force': True if (len(stationhydro.capteurs) > 0) else False
+                'force': True if (len(station.capteurs) > 0) else False
             }),
-            ('CdStationHydroAncienRef', {'value': stationhydro.codeh2}),
-            ('CdCommune', {'value': stationhydro.commune})
+            ('CdStationHydroAncienRef', {'value': station.codeh2}),
+            ('CdCommune', {'value': station.commune})
         ))
 
         # update the coord if necessary
-        if stationhydro.coord is not None:
+        if station.coord is not None:
             story['CoordStationHydro'] = {
                 'sub': _collections.OrderedDict((
-                    ('CoordXStationHydro', {'value': stationhydro.coord.x}),
-                    ('CoordYStationHydro', {'value': stationhydro.coord.y}),
+                    ('CoordXStationHydro', {'value': station.coord.x}),
+                    ('CoordYStationHydro', {'value': station.coord.y}),
                     ('ProjCoordStationHydro',
-                        {'value': stationhydro.coord.proj})
+                        {'value': station.coord.proj})
                 ))
             }
 
         # update ddcs if necessary
-        if len(stationhydro.ddcs) > 0:
+        if len(station.ddcs) > 0:
             story['ReseauxMesureStationHydro'] = {
                 'sub': {
-                    'CodeSandreRdd': {'value': stationhydro.ddcs}
+                    'CodeSandreRdd': {'value': station.ddcs}
                 }
             }
 
@@ -697,9 +707,9 @@ def _stationhydro_to_element(stationhydro, bdhydro=False, strict=True):
         element = _factory(root=_etree.Element('StationHydro'), story=story)
 
         # add the capteurs if necessary
-        if len(stationhydro.capteurs) > 0:
+        if len(station.capteurs) > 0:
             child = element.find('Capteurs')
-            for capteur in stationhydro.capteurs:
+            for capteur in station.capteurs:
                 child.append(
                     _capteur_to_element(
                         capteur, bdhydro=bdhydro, strict=strict
@@ -788,9 +798,10 @@ def _evenement_to_element(evenement, bdhydro=False, strict=True):
         # template for serie simple elements
         story = _collections.OrderedDict()
         story['CdContact'] = {'value': evenement.contact.code}
-        # entite can be a Sitehydro, a Stationhydro or a Sitemeteo
-        story['Cd%s' % evenement.entite.__class__.__name__.replace(
-            'h', 'H').replace('m', 'M')] = {'value': evenement.entite.code}
+        # entite can be a Sitehydro, a Station or a Sitemeteo
+        story['Cd{}'.format(CLS_MAPPINGS[evenement.entite.__class__])] = {
+            'value': evenement.entite.code
+        }
         # suite
         story['DtEvenement'] = {
             'value': evenement.dt.strftime('%Y-%m-%dT%H:%M:%S')
@@ -819,9 +830,10 @@ def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True):
 
         # template for seriehydro simple elements
         story = _collections.OrderedDict()
-        # entite can be a Sitehydro, a Stationhydro or a Capteur
-        story['Cd%s' % seriehydro.entite.__class__.__name__.replace(
-            'hydro', 'Hydro')] = {'value': seriehydro.entite.code}
+        # entite can be a Sitehydro, a Station or a Capteur
+        story['Cd{}'.format(CLS_MAPPINGS[seriehydro.entite.__class__])] = {
+            'value': seriehydro.entite.code
+        }
         # suite
         story['GrdSerie'] = {'value': seriehydro.grandeur}
         story['DtDebSerie'] = {
@@ -974,9 +986,10 @@ def _simulation_to_element(simulation, bdhydro=False, strict=True):
             }),
             ('ComSimul', {'value': simulation.commentaire})
         ))
-        # entite can be a Sitehydro or a Stationhydro
-        story['Cd%s' % simulation.entite.__class__.__name__.replace(
-            'hydro', 'Hydro')] = {'value': simulation.entite.code}
+        # entite can be a Sitehydro or a Station
+        story['Cd{}'.format(CLS_MAPPINGS[simulation.entite.__class__])] = {
+            'value': simulation.entite.code
+        }
         # suite
         story['CdModelePrevision'] = {'value': simulation.modeleprevision.code}
         story['CdIntervenant'] = {

@@ -37,8 +37,8 @@ from libhydro.core import (sitehydro, seuil)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.4a"""
-__date__ = """2014-08-25"""
+__version__ = """0.4b"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.4 - 2014-08-04
@@ -127,7 +127,7 @@ class TestToXmlSeuilsHydro(unittest.TestCase):
             to_xml._seuilhydro_to_element(seuilhydro)
 
     def test_error_02(self):
-        """Valeurseuil entite is not a stationhydro."""
+        """Valeurseuil entite is not a station."""
         site = sitehydro.Sitehydro('X2221010')
         seuilhydro = seuil.Seuilhydro('33', sitehydro=site)
         valeurseuil = seuil.Valeurseuil(
@@ -136,7 +136,7 @@ class TestToXmlSeuilsHydro(unittest.TestCase):
             entite=site
         )
         with self.assertRaises(TypeError):
-            to_xml._valeurseuilstationhydro_to_element(valeurseuil)
+            to_xml._valeurseuilstation_to_element(valeurseuil)
 
 
 # -- class ParametrizedTestCase -----------------------------------------------

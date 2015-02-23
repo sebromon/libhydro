@@ -33,7 +33,7 @@ Basic commands
     hg log|glog
     hg parents
     hg commit -m '(message)'
-    hg update
+    hg update|checkout
 
     hg incoming|pull (project)    # pull changesets from project
     hg merge                      # merge the new tip from project into our working directory

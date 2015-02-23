@@ -309,21 +309,54 @@ class TestSerie(unittest.TestCase):
 
     def test_equal_01(self):
         """Test __eq__ method."""
-        g1 = sitemeteo.Grandeur('EP')
-        o1 = obsmeteo.Observations(
-            obsmeteo.Observation('2012-10-03 06:00', 33),
-        )
-        serie1 = obsmeteo.Serie(
-            grandeur=g1, observations=o1,
-        )
-        g2 = sitemeteo.Grandeur('EP')
-        o2 = obsmeteo.Observations(
-            obsmeteo.Observation('2012-10-03 06:00', 33),
-        )
-        serie2 = obsmeteo.Serie(
-            grandeur=g2, observations=o2,
-        )
+        # avec qualite
+        grd1 = sitemeteo.Grandeur('EP')
+        obs1 = obsmeteo.Observation('2012-10-03 06:00', 33, qua=100)
+        obss1 = obsmeteo.Observations(obs1, )
+        serie1 = obsmeteo.Serie(grandeur=grd1, observations=obss1)
+
+        grd2 = sitemeteo.Grandeur('EP')
+        obs2 = obsmeteo.Observation('2012-10-03 06:00', 33, qua=100)
+        obss2 = obsmeteo.Observations(obs2, )
+        serie2 = obsmeteo.Serie(grandeur=grd2, observations=obss2)
+
+        grd3 = sitemeteo.Grandeur('VV')
+        obs3 = obsmeteo.Observation('2012-10-03 06:00', 33, qua=50)
+        obss3 = obsmeteo.Observations(obs3, )
+        serie3 = obsmeteo.Serie(grandeur=grd3, observations=obss3)
+
+        self.assertEqual(grd1, grd2)
+        self.assertNotEqual(grd1, grd3)
+        self.assertEqual(obs1, obs2)
+        self.assertNotEqual(obs1, obs3)
+        # print(
+        #     "\nWarning, comparison of obsmeteo.Observations requires "
+        #     "'(obs == obs).all().all()'\n"
+        # )
+        # self.assertEqual(obss1, obss2)
+        # self.assertNotEqual(obss1, obss3)
+        self.assertTrue((obss1 == obss2).all().all())
+        self.assertFalse((obss1 == obss3).all().all())
         self.assertEqual(serie1, serie2)
+        self.assertNotEqual(serie1, serie3)
+        serie2.statut = 4
+        self.assertNotEqual(serie1, serie2)
+        self.assertTrue(serie1.__eq__(serie2, ignore=['statut']))
+
+        # sans qualite => Nan != Nan
+        grd1 = sitemeteo.Grandeur('EP')
+        obs1 = obsmeteo.Observation('2012-10-03 06:00', 33)
+        obss1 = obsmeteo.Observations(obs1, )
+        serie1 = obsmeteo.Serie(grandeur=grd1, observations=obss1)
+
+        grd2 = sitemeteo.Grandeur('EP')
+        obs2 = obsmeteo.Observation('2012-10-03 06:00', 33)
+        obss2 = obsmeteo.Observations(obs2, )
+        serie2 = obsmeteo.Serie(grandeur=grd2, observations=obss2)
+
+        self.assertNotEqual(obs1, obs2)
+        self.assertFalse((obss1 == obss2).all().all())
+        self.assertNotEqual(serie1, serie2)
 
     def test_non_equal_01(self):
         """Test __ne__ method."""

@@ -72,22 +72,9 @@ class Coord(object):
         self.proj = proj
 
     # -- other methods --
-    def __eq__(self, other):
-        """Return True ou False."""
-        return (
-            # strictly required by the use of a descriptor
-            (self is other)
-            or
-            (
-                (self.x == other.x) and
-                (self.y == other.y) and
-                (self.proj == other.proj)
-            )
-        )
-
-    def __ne__(self, other):
-        """Return True ou False."""
-        return not self.__eq__(other)
+    __all__attrs__ = ('x', 'y', 'proj')
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
 
     def __unicode__(self):
         """Return unicode representation."""

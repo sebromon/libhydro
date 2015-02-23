@@ -21,8 +21,8 @@ from . import (_composant, sitehydro as _sitehydro, sitemeteo as _sitemeteo)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """1.0e"""
-__date__ = """2014-08-03"""
+__version__ = """1.0f"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V1.0 - 2014-03-02
@@ -42,7 +42,7 @@ class Evenement(object):
     Classe pour manipuler des evenements.
 
     Proprietes:
-        entite (sitehydro.Sitehydro ou sitehydro.Stationhydro ou
+        entite (sitehydro.Sitehydro ou sitehydro.Station ou
             sitemeteo.Sitemeteo) = entite concernee par l'evenement
         descriptif (string)
         contact (intervenant.Contact) = contact proprietaire de l'evenement
@@ -64,7 +64,7 @@ class Evenement(object):
         """Initialisation.
 
         Arguments:
-            entite (sitehydro.Sitehydro ou sitehydro.Stationhydro ou
+            entite (sitehydro.Sitehydro ou sitehydro.Station ou
                 sitemeteo.Sitemeteo) = entite concernee par l'evenement
             descriptif (string)
             contact (intervenant.Contact) = contact proprietaire de l'evenement
@@ -110,11 +110,11 @@ class Evenement(object):
                 raise TypeError('entite is required')
             if not isinstance(
                 entite,
-                (_sitehydro.Sitehydro, _sitehydro.Stationhydro,
+                (_sitehydro.Sitehydro, _sitehydro.Station,
                  _sitemeteo.Sitemeteo)
             ):
                 raise TypeError(
-                    'entite must be a Sitehydro, a Stationhydro or a Sitemeteo'
+                    'entite must be a Sitehydro, a Station or a Sitemeteo'
                 )
         self._entite = entite
 
@@ -146,7 +146,13 @@ class Evenement(object):
                 raise TypeError('contact is required')
         self._contact = contact
 
-    # -- other methods --
+    # -- special methods --
+    __all__attrs__ = (
+        'entite', 'descriptif', 'contact', 'dt', 'publication', 'dtmaj'
+    )
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+
     def __unicode__(self):
         """Return unicode representation."""
         return '''Evenement de l'entite {entite} ''' \

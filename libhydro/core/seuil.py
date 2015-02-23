@@ -21,8 +21,8 @@ from . import _composant
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2e"""
-__date__ = """2014-07-18"""
+__version__ = """0.2f"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.1 - 2014-02-10
@@ -191,6 +191,7 @@ class _Seuil(object):
             elif self.duree != 0:
                 raise ValueError('absolute seuil duree must be 0')
 
+    # -- special methods --
     def __unicode__(self):
         """Return unicode representation."""
         # init
@@ -301,67 +302,14 @@ class Seuilhydro(_Seuil):
         self.valeurforcee = bool(valeurforcee) if valeurforcee is not None \
             else None
 
-    # -- other methods --
-    def __eq__(self, other, lazzy=False, cmp_values=True):
-        """Return True ou False.
-
-        In lazzy mode do not test an attribute whose counterpart is None.
-        If not cmp_values, the function checks only the seuil metadatas.
-
-        """
-        # short test
-        if self is other:
-            return True
-
-        # check the seuil metadatas
-        for attr in (
-            'sitehydro', 'code', 'typeseuil', 'duree', 'nature', 'libelle',
-            'mnemo', 'gravite', 'commentaire', 'publication', 'valeurforcee',
-            'dtmaj'
-        ):
-            first = getattr(self, attr, True)
-            second = getattr(other, attr, False)
-            if lazzy and (first is None or second is None):
-                continue
-            if first != second:
-                return False
-
-        # check the values
-        if cmp_values:
-            return self.__eq__valeurs(other)
-
-        # all is the same
-        return True
-
-    def __eq__valeurs(self, other):
-        """Return a bool comparing attribute valeurs."""
-        # compare the values
-        try:
-            if len(self.valeurs) != len(other.valeurs):
-                return False
-            for valeur in self.valeurs:
-                for othervaleur in other.valeurs:
-                    if othervaleur == valeur:
-                        break
-                else:
-                    return False
-
-        except TypeError:
-            # None case or non iterable values (fuzzy mode)
-            if self.valeurs != other.valeurs:
-                return False
-
-        # all is the same
-        return True
-
-    def __ne__(self, other, lazzy=False, cmp_values=True):
-        """Return True ou False.
-
-        In lazzy mode do not test an attribute whose counterpart is None.
-        If not cmp_values, the function checks only the seuil metadatas.
-
-        """
-        return not self.__eq__(other, lazzy=lazzy, cmp_values=cmp_values)
+    # -- special methods --
+    __all__attrs__ = (
+        'sitehydro', 'code', 'typeseuil', 'duree', 'nature', 'libelle',
+        'mnemo', 'gravite', 'commentaire', 'publication', 'valeurforcee',
+        'dtmaj', 'valeurs'
+    )
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
 
 
 #-- class Valeurseuil ---------------------------------------------------------
@@ -372,7 +320,7 @@ class Valeurseuil (object):
     Proprietes:
         valeur (numerique) = valeur du seuil
         seuil (Seuilhydro ou Seuilmeteo)
-        entite (Sitehydro, Stationhydro ou Grandeurmeteo)
+        entite (Sitehydro, Station ou Grandeurmeteo)
         tolerance (numerique)
         dtactivation (datetime.datetime)
         dtdesactivation (datetime.datetime)
@@ -393,7 +341,7 @@ class Valeurseuil (object):
         Arguments:
             valeur (numerique) = valeur du seuil
             seuil (Seuilhydro ou Seuilmeteo)
-            entite (Sitehydro, stationhydro ou Grandeurmeteo)
+            entite (Sitehydro, Station ou Grandeurmeteo)
             tolerance (numerique)
             dtactivation (numpy.datetime64 string, datetime.datetime...)
             dtdesactivation (numpy.datetime64 string, datetime.datetime...)
@@ -417,22 +365,13 @@ class Valeurseuil (object):
         self.dtactivation = dtactivation
         self.dtdesactivation = dtdesactivation
 
-    # -- other methods --
-    def __eq__(self, other):
-        """Return True ou False."""
-        if self is other:
-            return True
-        for attr in (
-            'valeur', 'seuil', 'entite', 'tolerance',
-            'dtactivation', 'dtdesactivation'
-        ):
-            if getattr(self, attr, True) != getattr(other, attr, False):
-                return False
-        return True
-
-    def __ne__(self, other):
-        """Return True ou False."""
-        return not self.__eq__(other)
+    # -- special methods --
+    __all__attrs__ = (
+        'valeur', 'seuil', 'entite', 'tolerance', 'dtactivation',
+        'dtdesactivation'
+    )
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
 
     def __unicode__(self):
         """Return unicode representation."""

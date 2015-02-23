@@ -32,8 +32,8 @@ from libhydro.core import (simulation, modeleprevision, sitehydro)
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1g"""
-__date__ = """2014-07-18"""
+__version__ = """0.1h"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.1 - 2013-08-07
@@ -279,7 +279,7 @@ class TestSimulation(unittest.TestCase):
         )
         sim = simulation.Simulation(
             dtprod='2012-05-18T18:36Z',
-            entite=sitehydro.Stationhydro(
+            entite=sitehydro.Station(
                 code=0, libelle='Toulouse', strict=False
             ),
             previsions=previsions
@@ -297,7 +297,7 @@ class TestSimulation(unittest.TestCase):
         )
         sim = simulation.Simulation(
             dtprod='2012-05-18T18:36Z',
-            entite=sitehydro.Stationhydro(code=0, strict=False),
+            entite=sitehydro.Station(code=0, strict=False),
             previsions=previsions
         )
         self.assertTrue(sim.__str__().rfind('Simulation') > -1)
@@ -342,7 +342,7 @@ class TestSimulation(unittest.TestCase):
         """Entite error."""
         # init
         site = sitehydro.Sitehydro(code='A0440101')
-        station = sitehydro.Stationhydro(code='A044010101')
+        station = sitehydro.Station(code='A044010101')
         simul = simulation.Simulation(
             **{'entite': station, 'grandeur': 'H'}
         )

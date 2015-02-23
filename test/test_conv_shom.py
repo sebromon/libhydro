@@ -34,8 +34,8 @@ from libhydro.core import sitehydro
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2a"""
-__date__ = """2014-09-25"""
+__version__ = """0.2b"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.1 - 2013-08-16
@@ -71,11 +71,11 @@ class TestSimulationFromHSF(unittest.TestCase):
 
     def test_base_02(self):
         """Second base test."""
-        station = sitehydro.Stationhydro(code='-', libelle='LOC', strict=False)
+        station = sitehydro.Station(code='-', libelle='LOC', strict=False)
         dtprod = datetime.datetime(2010, 12, 12, 15, 33)
         sim = shom.simulation_from_hfs(
             src=SRC,
-            stationhydro=station,
+            station=station,
             begin='2013-01-23 12:00',
             end='2013-01-23 12:25',
             dtprod=dtprod
@@ -96,7 +96,7 @@ class TestSimulationFromHSF(unittest.TestCase):
         """Fuzzy mode test."""
         sim = shom.simulation_from_hfs(
             src=SRC,
-            stationhydro='X1',
+            station='X1',
             strict=False
         )
         self.assertEqual(sim.entite, 'X1')
@@ -141,10 +141,10 @@ class TestSerieFromHSF(unittest.TestCase):
 
     def test_base_02(self):
         """Second base test."""
-        station = sitehydro.Stationhydro(code='X231101001', libelle='LOC')
+        station = sitehydro.Station(code='X231101001', libelle='LOC')
         serie = shom.serie_from_hfs(
             src=SRC,
-            stationhydro=station,
+            station=station,
             begin='2013-01-23 20:05',
             end='2013-01-23 20:35'
         )
@@ -166,7 +166,7 @@ class TestSerieFromHSF(unittest.TestCase):
         """Fuzzy mode test."""
         serie = shom.serie_from_hfs(
             src=SRC,
-            stationhydro='X1',
+            station='X1',
             strict=False
         )
         self.assertEqual(serie.entite, 'X1')
@@ -220,13 +220,13 @@ class TestSerieFromHSF(unittest.TestCase):
 
     def test_error_04(self):
         """Entity error."""
-        station = sitehydro.Stationhydro(code='X1', strict=False)
+        station = sitehydro.Station(code='X1', strict=False)
         shom.serie_from_hfs(
             src=SRC,
-            stationhydro=station
+            station=station
         )
         self.assertRaises(
             TypeError,
             shom.serie_from_hfs,
-            **{'src': SRC, 'stationhydro': 33}
+            **{'src': SRC, 'station': 33}
         )

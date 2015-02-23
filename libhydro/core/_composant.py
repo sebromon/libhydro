@@ -14,10 +14,14 @@ les descripteurs:
     # Datefromeverything
     # Nomenclatureitem
 
-et les fonctions:
+les fonctions:
     # is_code_hydro()
     # is_code_insee()
     # __str__()
+
+les fonctions speciales:
+    # __eq__
+    # __ne__
 
 """
 #-- imports -------------------------------------------------------------------
@@ -42,10 +46,12 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.9f"""
-__date__ = """2014-07-20"""
+__version__ = """1.0a"""
+__date__ = """2014-12-17"""
 
 #HISTORY
+#V1.0 - 2014-12-17
+#    move here full __eq__ and __ne__ methods
 #V0.9 - 2014-07-16
 #    add the error_handler, the Rlist and the Rlistproperty
 #    split the module in 3 parts
@@ -463,6 +469,70 @@ def is_code_insee(code, length=5, errors='ignore'):
         if errors not in ('ignore', 'strict'):
             raise ValueError("unknown error handler name '%s'" % errors)
         ERROR_HANDLERS[errors](msg=err.message, error=type(err))
+
+
+def __eq__(self, other, attrs=None, ignore=None, lazzy=False):
+    """Equal elaborate function.
+
+    Arguments:
+        self, other
+        attrs (iterable of strings, default to self.__class__.__all__attrs__ or
+            __self.__dict__.keys() = the attrs to compare
+        ignore (iterable of strings, default None) = attrs to ignore in the
+            comparison
+        lazzy (bool, default False) = if True does not test an attribute
+            whose counterpart is None
+
+    NB: functool.partial could be smarter than a private class variable to
+    fix the default attrs list, but it doesn't work with 'self'.
+
+    """
+    # quick identity test
+    if self is other:
+        return True
+    # set the final attrs list
+    if not attrs:
+        attrs = getattr(
+            self.__class__, '__all__attrs__', self.__dict__.keys()
+        )
+    if ignore:
+        for attr in ignore:
+            # we make attrs mutable or a copy before removing elements
+            attrs = list(attrs)
+            try:
+                attrs.remove(attr)
+            except ValueError:
+                raise AttributeError(
+                    "'{}' object has no attribute '{}'".format(
+                        attr, self.__class__.__name__
+                    )
+                )
+    # action !
+    for attr in attrs:
+        first = getattr(self, attr)
+        second = getattr(other, attr, False)  # never raise
+        if lazzy and (first is None or second is None):
+            continue
+        try:
+            # base case - works with numpy.ndarrays of size 1
+            if not bool(first == second):
+            # if not first == second:
+                return False
+        except Exception:
+            # # comparison for ndarrays of size > 1 and pandas objects
+            try:
+                if not bool((first == second).all().all()):
+                    return False
+            except:
+                # here everything failed
+                return False
+    return True
+
+
+def __ne__(self, other, attrs=[], ignore=[], lazzy=False):
+    return not self.__eq__(
+        other=other, attrs=attrs, ignore=ignore, lazzy=lazzy,
+    )
 
 
 def __str__(self):

@@ -34,10 +34,12 @@ from . import sitemeteo as _sitemeteo
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1f"""
-__date__ = """2014-07-30"""
+__version__ = """0.9a"""
+__date__ = """2014-12-29"""
 
 #HISTORY
+#V0.9 - 2014-12-29
+#    update version number according to progress
 #V0.1 - 2014-07-11
 #    first shot
 
@@ -78,6 +80,8 @@ class Observation(_numpy.ndarray):
             NOMENCLATURE[508]
         qua (int de 0 a 100, defaut Nan) = indice de qualite de la mesure
 
+    ATTENTION, Nan != Nan et deux observations sans qualite sont differentes.
+
     Usage:
         Getter => observation.['x'].item()
         Setter => observation.['x'] = value
@@ -95,12 +99,12 @@ class Observation(_numpy.ndarray):
     def __new__(cls, dte, res, mth=0, qal=16, qua=_numpy.NaN):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
-        if mth not in _NOMENCLATURE[512]:
+        if int(mth) not in _NOMENCLATURE[512]:
             raise ValueError('incorrect method ')
-        if qal not in _NOMENCLATURE[508]:
+        if int(qal) not in _NOMENCLATURE[508]:
             raise ValueError('incorrect qualification')
         try:
-            if not _math.isnan(qua):
+            if not _math.isnan(float(qua)):
                 qua = int(qua)
                 if not (0 <= qua <= 100):
                     raise ValueError()
@@ -166,6 +170,9 @@ class Observations(_composant_obs.Observations):
         obs = observations.res
 
     On peut iterer dans le DataFrame avec la fonction iterrows().
+
+    ATTENTION, la comparaison de Pandas.DataFrames necessite d'ecrire:
+        (obs == obs).all().all()
 
     """
 
@@ -323,20 +330,13 @@ class Serie(_composant_obs.Serie):
         except Exception as err:
             raise ValueError('resampling error, %s' % err)
 
-    def __eq__(self, other):
-        """Return True ou False."""
-        if self is other:
-            return True
-        for attr in (
-            'grandeur', 'duree', 'statut'  # , 'dtprod'
-        ):
-            if getattr(self, attr, True) != getattr(other, attr, False):
-                return False
-        return True
-
-    def __ne__(self, other):
-        """Return True ou False."""
-        return not self.__eq__(other)
+    # -- special methods --
+    __all__attrs__ = (
+        'grandeur', 'duree', 'statut', 'dtdeb', 'dtfin', 'dtprod',
+        'contact', 'observations'
+    )
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
 
     def __unicode__(self):
         """Return unicode representation."""

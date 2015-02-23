@@ -44,8 +44,8 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.4b"""
-__date__ = """2014-08-25"""
+__version__ = """0.4c"""
+__date__ = """2014-12-17"""
 
 #HISTORY
 #V0.4 - 2014-08-22
@@ -386,7 +386,7 @@ def _sitehydro_from_element(element):
             element.find('CoordSiteHydro'), 'SiteHydro'
         )
         args['stations'] = [
-            _stationhydro_from_element(e)
+            _station_from_element(e)
             for e in element.findall('StationsHydro/StationHydro')
         ]
         args['communes'] = [
@@ -437,8 +437,8 @@ def _tronconvigilance_from_element(element):
         return _sitehydro.Tronconvigilance(**args)
 
 
-def _stationhydro_from_element(element):
-    """Return a sitehydro.Stationhydro from a <StationHydro> element."""
+def _station_from_element(element):
+    """Return a sitehydro.Station from a <StationHydro> element."""
     if element is not None:
         # prepare args
         args = {}
@@ -467,7 +467,7 @@ def _stationhydro_from_element(element):
             for e in element.findall('ReseauxMesureStationHydro/CodeSandreRdd')
         ]
         # build a Station and return
-        return _sitehydro.Stationhydro(**args)
+        return _sitehydro.Station(**args)
 
 
 def _coord_from_element(element, entite):
@@ -544,7 +544,7 @@ def _seuilhydro_from_element(element, sitehydro):
         if valeurseuil is not None:
             args['valeurs'].append(valeurseuil)
         args['valeurs'].extend([
-            _valeurseuilstationhydro_from_element(e, seuil)
+            _valeurseuilstation_from_element(e, seuil)
             for e in element.findall(
                 './ValeursSeuilsStationHydro/ValeursSeuilStationHydro'
             )
@@ -578,14 +578,14 @@ def _valeurseuilsitehydro_from_element(element, sitehydro, seuil):
         return _seuil.Valeurseuil(**args)
 
 
-def _valeurseuilstationhydro_from_element(element, seuil):
+def _valeurseuilstation_from_element(element, seuil):
     """Return a seuil.Valeurseuil from a <ValeursSeuilStationHydro> element."""
     if element is not None:
         # prepare args
         args = {}
         args['valeur'] = _value(element, 'ValHauteurSeuilStationHydro')
         args['seuil'] = seuil
-        args['entite'] = _sitehydro.Stationhydro(
+        args['entite'] = _sitehydro.Station(
             code=_value(element, 'CdStationHydro')
         )
         args['tolerance'] = _value(element, 'ToleranceSeuilStationHydro')
@@ -617,14 +617,14 @@ def _evenement_from_element(element):
     """Return a evenement.Evenement from a <Evenement> element."""
     if element is not None:
         # prepare args
-        # entite can be a Sitehydro, a Stationhydro or a Sitemeteo
+        # entite can be a Sitehydro, a Station or a Sitemeteo
         entite = None
         if element.find('CdSiteHydro') is not None:
             entite = _sitehydro.Sitehydro(
                 code=_value(element, 'CdSiteHydro')
             )
         elif element.find('CdStationHydro') is not None:
-            entite = _sitehydro.Stationhydro(
+            entite = _sitehydro.Station(
                 code=_value(element, 'CdStationHydro')
             )
         elif element.find('CdSiteMeteo') is not None:
@@ -648,14 +648,14 @@ def _seriehydro_from_element(element):
     """Return a obshydro.Serie from a <Serie> element."""
     if element is not None:
         # prepare args
-        # entite can be a Sitehydro, a Stationhydro or a Capteur
+        # entite can be a Sitehydro, a Station or a Capteur
         entite = None
         if element.find('CdSiteHydro') is not None:
             entite = _sitehydro.Sitehydro(
                 code=_value(element, 'CdSiteHydro')
             )
         elif element.find('CdStationHydro') is not None:
-            entite = _sitehydro.Stationhydro(
+            entite = _sitehydro.Station(
                 code=_value(element, 'CdStationHydro')
             )
         elif element.find('CdCapteur') is not None:
@@ -754,14 +754,14 @@ def _simulation_from_element(element):
     """Return a simulation.Simulation from a <Simul> element."""
     if element is not None:
         # prepare args
-        # entite can be a Sitehydro or a Stationhydro
+        # entite can be a Sitehydro or a Station
         entite = None
         if element.find('CdSiteHydro') is not None:
             entite = _sitehydro.Sitehydro(
                 code=_value(element, 'CdSiteHydro')
             )
         elif element.find('CdStationHydro') is not None:
-            entite = _sitehydro.Stationhydro(
+            entite = _sitehydro.Station(
                 code=_value(element, 'CdStationHydro')
             )
         # prepare qualite
@@ -873,7 +873,7 @@ _simulations_from_element = _global_function_builder(
 )
 
 
-# these 2 functions doesn't fir with the _global_function_builder :-\
+# these 2 functions doesn't fit with the _global_function_builder :-\
 def _seuilshydro_from_element(element, ordered=False):
     """Return a list of seuil.Seuilhydro from a <SitesHydro> element.
 
@@ -912,7 +912,7 @@ def _seuilshydro_from_element(element, ordered=False):
                 if not seuilhydro.__eq__(
                     other=seuilshydro[(sitehydro.code, seuilhydro.code)],
                     lazzy=True,
-                    cmp_values=False
+                    ignore=['valeurs']
                 ):
                     raise ValueError(
                         'seuilhydro %s from sitehydro %s '
@@ -960,7 +960,8 @@ def _seriesmeteo_from_element(element):
                 continue
 
             for serie in seriesmeteo:
-                if serie == ser:
+                # if serie == ser:
+                if serie.__eq__(ser, ignore=['observations']):
                     # add obs to an exisitng serie
                     serie.observations = \
                         _obsmeteo.Observations.concat(
