@@ -18,8 +18,8 @@ import codecs
 #-- strings -------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1e"""
-__date__ = """2014-08-26"""
+__version__ = """0.1f"""
+__date__ = """2015-02-03"""
 
 #HISTORY
 #V0.1 - 2014-01-28
@@ -46,7 +46,7 @@ def find_version(*file_paths):
         return version_match.group(1)
 
     # Not found case
-    raise RuntimeError("Unable to find version string.")
+    raise RuntimeError("Unable to find version string")
 
 
 # -- main ---------------------------------------------------------------------
@@ -54,8 +54,14 @@ def find_version(*file_paths):
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Get the long description from the relevant file
-with codecs.open('DESCRIPTION.rst', encoding='utf-8') as description:
-    long_description = description.read()
+try:
+    with codecs.open('DESCRIPTION.rst', encoding='utf-8') as description:
+        long_description = description.read()
+except Exception:
+    # description is not that important but we want users to execute
+    # the setup program within the root directory
+    print('Unable to find description in the local directory')
+    exit(1)
 
 # Setup
 setup(
@@ -107,7 +113,7 @@ setup(
     #     ],
     # },
     install_requires=(
-        'python >= 2.7, <3',
+        # 'python >= 2.7, <3',
         'numpy >= 1.7.1',
         'pandas >= 0.11.0',
         'lxml >= 3.2.3',
