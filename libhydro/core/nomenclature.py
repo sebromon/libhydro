@@ -109,7 +109,8 @@ NOMENCLATURE = {
         59: 'ETRS89 / LCC',
         60: 'ETRS89 / UTM Nord 30',
         61: 'ETRS89 / UTM Nord 31',
-        62: 'ETRS89 / UTM Nord 32'
+        62: 'ETRS89 / UTM Nord 32',
+        63: 'WGS84 Web Mercator'
     },
 
     # Methode d'obtention du resultat de l'observation hydrometrique
