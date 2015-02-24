@@ -2,9 +2,10 @@
 # LIBHYDRO - main makefile
 #------------------------------------------------------------------------------
 # Author: Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>
-# Version: 0.2a - 2014-08-26
+# Version: 0.2b - 2015-02-23
 # History:
 #   V0.2 - 2014-08-26
+#     add the wheel dist
 #     add the backup and the doc targets
 #   V0.1 - 2014-08-02
 #     first shot
@@ -34,7 +35,8 @@ dist:
 	@echo
 	@python setup.py sdist --format=gztar
 	@python setup.py sdist --format=zip
-	# @python setup.py bdist_wininst
+	@python setup.py bdist_wheel
+	@# FIXME - @python setup.py bdist_wininst
 
 .PHONY: doc
 doc:
