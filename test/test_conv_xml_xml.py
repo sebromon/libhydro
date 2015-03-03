@@ -20,8 +20,9 @@ from __future__ import (
 )
 
 import sys
+sys.path.append('..')
+
 import os
-sys.path.append(os.path.join('..', '..'))
 import tempfile
 import shutil
 

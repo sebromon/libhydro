@@ -20,10 +20,9 @@ from __future__ import (
 )
 
 import sys
-import os
-sys.path.append(os.path.join('..', '..'))
+sys.path.append('..')
 
-# import csv
+import os
 import unittest
 
 from libhydro.conv import csv as lhcsv

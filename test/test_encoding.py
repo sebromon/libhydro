@@ -21,9 +21,9 @@ from __future__ import (
 )
 
 import sys
-import os
-sys.path.append(os.path.join('..', '..'))
+sys.path.append('..')
 
+import os
 import unittest
 
 import codecs

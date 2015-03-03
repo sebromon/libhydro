@@ -20,8 +20,7 @@ from __future__ import (
 )
 
 import sys
-import os
-sys.path.append(os.path.join('..', '..'))
+sys.path.append('..')
 
 import unittest
 
@@ -227,7 +226,7 @@ class TestGrandeur(unittest.TestCase):
     """Grandeur class tests."""
 
     def test_base(self):
-    # def test_base_01(self):
+        # def test_base_01(self):
         """Base case test."""
         codeinsee = '013008110'
         s = sitemeteo.Sitemeteo(codeinsee)
