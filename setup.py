@@ -46,7 +46,7 @@ def find_version(*file_paths):
         return version_match.group(1)
 
     # Not found case
-    raise RuntimeError("Unable to find version string")
+    raise RuntimeError('Unable to find version string')
 
 
 # -- main ---------------------------------------------------------------------
