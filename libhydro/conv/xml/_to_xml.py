@@ -10,7 +10,7 @@ Les fonctions de ce module sont a usage prive, il est recommande d'utiliser la
 classe xml.Message comme interface aux fichiers XML Hydrometrie.
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -32,28 +32,26 @@ from libhydro.core import (
 )
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.4f"""
-__date__ = """2014-12-17"""
+__date__ = """2015-04-21"""
 
-#HISTORY
-#V0.4 - 2014-07-31
-#    factorize the global functions
-#    replace isoformat() by strftime()
-#    add the to_xml.bdhydro argument
-#    add the modelesprevision element
-#    add the required function
-#V0.3 - 2014-07-25
-#    add the sitesmeteo and seriesmeteo elements
-#V0.1 - 2013-08-20
-#    first shot
+# HISTORY
+# V0.4 - 2014-07-31
+#   factorize the global functions
+#   replace isoformat() by strftime()
+#   add the to_xml.bdhydro argument
+#   add the modelesprevision element
+#   add the required function
+# V0.3 - 2014-07-25
+#   add the sitesmeteo and seriesmeteo elements
+# V0.1 - 2013-08-20
+#   first shot
 
-
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # TODO - required could be a decorator
-
 
 # -- config -------------------------------------------------------------------
 # order matters in XML, we must have the keys list !
@@ -321,7 +319,7 @@ def _contact_to_element(contact, bdhydro=False, strict=True):
 
     if contact is not None:
 
-        #prerequisite
+        # prerequisite
         if strict:
             _required(contact, ['code'])
 
@@ -767,7 +765,7 @@ def _modeleprevision_to_element(modeleprevision, bdhydro=False, strict=True):
 
     if modeleprevision is not None:
 
-        #prerequisite
+        # prerequisite
         if strict:
             _required(modeleprevision, ['code'])
 
@@ -788,7 +786,7 @@ def _evenement_to_element(evenement, bdhydro=False, strict=True):
 
     if evenement is not None:
 
-        #prerequisite
+        # prerequisite
         _required(evenement, ['contact', 'entite', 'dt'])
         if strict:
             _required(evenement.contact, ['code'])
@@ -822,7 +820,7 @@ def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True):
 
     if seriehydro is not None:
 
-        #prerequisite
+        # prerequisite
         _required(seriehydro, ['entite', 'dtdeb', 'dtfin', 'dtprod'])
         if strict:
             _required(seriehydro.entite, ['code'])
@@ -901,7 +899,7 @@ def _obsmeteo_to_element(seriemeteo, index, obs, bdhydro=False, strict=True):
 
     if (seriemeteo is not None) and (index is not None) and (obs is not None):
 
-        #prerequisite
+        # prerequisite
         _required(seriemeteo, ['grandeur', 'dtprod', 'duree'])
         _required(seriemeteo.grandeur, ['sitemeteo'])
         if strict:
@@ -954,7 +952,7 @@ def _simulation_to_element(simulation, bdhydro=False, strict=True):
 
     if simulation is not None:
 
-        #prerequisite
+        # prerequisite
         _required(
             simulation, ['dtprod', 'entite', 'intervenant', 'modeleprevision']
         )
@@ -1276,7 +1274,7 @@ def _make_element(tag_name, text, tag_attrib=None):
 
 
 def _required(obj, attrs):
-    """Raise an exception if object all attributes are not None.
+    """Raise an exception if an attribute is missing or None.
 
     Arguments:
         obj = the object to test
