@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module composant.
 
 Ce module contient des elements de base de la librairie.
@@ -24,7 +24,7 @@ les fonctions speciales:
     # __ne__
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -43,29 +43,28 @@ import datetime as _datetime
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """1.0a"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V1.0 - 2014-12-17
-#    move here full __eq__ and __ne__ methods
-#V0.9 - 2014-07-16
-#    add the error_handler, the Rlist and the Rlistproperty
-#    split the module in 3 parts
-#V0.8 - 2014-02-01
-#    add and use descriptors
-#V0.1 - 2013-11-06
-#    first shot
+# HISTORY
+# V1.0 - 2014-12-17
+#   move here full __eq__ and __ne__ methods
+# V0.9 - 2014-07-16
+#   add the error_handler, the Rlist and the Rlistproperty
+#   split the module in 3 parts
+# V0.8 - 2014-02-01
+#   add and use descriptors
+# V0.1 - 2013-11-06
+#   first shot
 
-
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # TODO - use regex for codes matching functions
 
 
-#-- a basic errors handler ----------------------------------------------------
+# -- a basic errors handler ---------------------------------------------------
 def _warn_handler(msg, *args, **kwargs):
     """Print msg on stderr."""
     _warnings.warn(msg)
@@ -83,7 +82,7 @@ ERROR_HANDLERS = {
 }
 
 
-#-- class Rlist ---------------------------------------------------------------
+# -- class Rlist --------------------------------------------------------------
 class Rlist(list):
 
     """Class Rlist.
@@ -183,7 +182,7 @@ Rlist.__setitem__.__func__.__doc__ = list.__setitem__.__doc__
 Rlist.__setslice__.__func__.__doc__ = list.__setslice__.__doc__
 
 
-#-- class  Rlistproperty ------------------------------------------------------
+# -- class  Rlistproperty -----------------------------------------------------
 class Rlistproperty(object):
 
     """Class Rlistproperty
@@ -240,7 +239,7 @@ class Rlistproperty(object):
         self.data[instance] = rlist
 
 
-#-- class Datefromeverything --------------------------------------------------
+# -- class Datefromeverything -------------------------------------------------
 class Datefromeverything(object):
 
     """Class Datefromeverything.
@@ -304,7 +303,7 @@ class Datefromeverything(object):
         self.data[instance] = value
 
 
-#-- class Nomenclatureitem ----------------------------------------------------
+# -- class Nomenclatureitem ---------------------------------------------------
 class Nomenclatureitem(object):
 
     """Class Nomenclatureitem.
@@ -378,7 +377,7 @@ class Nomenclatureitem(object):
         self.data[instance] = value
 
 
-#-- functions -----------------------------------------------------------------
+# -- functions ----------------------------------------------------------------
 def is_code_hydro(code, length=8, errors='ignore'):
     """Return wether or not code is a valid code hydro as a bool.
 
@@ -516,7 +515,7 @@ def __eq__(self, other, attrs=None, ignore=None, lazzy=False):
         try:
             # base case - works with numpy.ndarrays of size 1
             if not bool(first == second):
-            # if not first == second:
+                # if not first == second:
                 return False
         except Exception:
             # # comparison for ndarrays of size > 1 and pandas objects

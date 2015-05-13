@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module python nomenclature.
 
 Contient les nomenclatures Sandre utilisees pour l'Hydrometrie.
@@ -13,7 +13,7 @@ Usage:
         des entiers ou des chaines.
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -22,28 +22,28 @@ from __future__ import (
 )
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.6a"""
 __date__ = """2014-07-15"""
 
-#HISTORY
-#V0.6 - 2014-07-15
-#    add a bunch of nomenclatures
-#V0.1 - 2013-07-12
-#    first shot
+# HISTORY
+# V0.6 - 2014-07-15
+#   add a bunch of nomenclatures
+# V0.1 - 2013-07-12
+#   first shot
 
 
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # TODO - all nomenclatures
 # TODO - write a decorator to check an attribute validity
 
 
-#-- config --------------------------------------------------------------------
+# -- config -------------------------------------------------------------------
 NOMENCLATURE = {
 
-    #Syntaxe: "reference : {code: mnemonique, ...}"
+    # Syntaxe: "reference : {code: mnemonique, ...}"
 
     # Projection des coordonnees
     22: {

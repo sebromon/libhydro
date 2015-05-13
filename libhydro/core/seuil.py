@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module seuil.
 
 Ce module contient les classes:
@@ -6,7 +6,7 @@ Ce module contient les classes:
     # Valeurseuil
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -18,18 +18,18 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 from . import _composant
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.2f"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V0.1 - 2014-02-10
-#    first shot
+# HISTORY
+# V0.1 - 2014-02-10
+#   first shot
 
 
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # PROGRESS - Seuilhydro 100% - Valeurseuil 60% - Seuilmeteo 0%
 # TODO - write Class Seuilmeteo
 # TODO - in Class Seuilhydro: BDTR.Warning 'libelle and mnemo are exclusive' ?
@@ -37,7 +37,7 @@ __date__ = """2014-12-17"""
 # TODO - write __unicode__ method for Seuilhydro
 
 
-#-- class _Seuil --------------------------------------------------------------
+# -- class _Seuil -------------------------------------------------------------
 class _Seuil(object):
 
     """Abstract base class for seuils.
@@ -235,7 +235,7 @@ class _Seuil(object):
     __str__ = _composant.__str__
 
 
-#-- class Seuilhydro ----------------------------------------------------------
+# -- class Seuilhydro ---------------------------------------------------------
 class Seuilhydro(_Seuil):
 
     """Classe Seuilhydro.
@@ -312,7 +312,7 @@ class Seuilhydro(_Seuil):
     __ne__ = _composant.__ne__
 
 
-#-- class Valeurseuil ---------------------------------------------------------
+# -- class Valeurseuil --------------------------------------------------------
 class Valeurseuil (object):
 
     """Classe Valeurseuil.

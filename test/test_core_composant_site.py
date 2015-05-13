@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for composant_site.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_core_composant_site.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -27,22 +27,22 @@ import unittest
 from libhydro.core import _composant_site as composant_site
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.3b"""
 __date__ = """2014-07-18"""
 
-#HISTORY
-#V0.3 - 2014-07-16
-#    remove the composant part
-#V0.2 - 2014-03-01
-#    add the descriptor tests
-#V0.1 - 2013-11-07
-#    first shot
+# HISTORY
+# V0.3 - 2014-07-16
+#   remove the composant part
+# V0.2 - 2014-03-01
+#   add the descriptor tests
+# V0.1 - 2013-11-07
+#   first shot
 
 
-#-- class TestCoord -----------------------------------------------------------
+# -- class TestCoord ----------------------------------------------------------
 class TestCoord(unittest.TestCase):
 
     """Coord class tests."""

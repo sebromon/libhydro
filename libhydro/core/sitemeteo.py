@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module sitemeteo.
 
 Ce module contient les classes:
@@ -8,7 +8,7 @@ Ce module contient les classes:
     # Classequalite - not implemented
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -19,24 +19,24 @@ from __future__ import (
 from . import (_composant, _composant_site)
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.3a"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V0.3 - 2014-12-17
-#    change the __eq__ and __ne__ methods
-#V0.1 - 2014-07-07
-#    first shot
+# HISTORY
+# V0.3 - 2014-12-17
+#   change the __eq__ and __ne__ methods
+# V0.1 - 2014-07-07
+#   first shot
 
 
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # PROGRESS - Sitemeteo 50% - Grandeur 10% - Visite 0% - Classequalite 0%
 
 
-#-- class Sitemeteo -----------------------------------------------------------
+# -- class Sitemeteo ----------------------------------------------------------
 class Sitemeteo(object):
 
     """Classe Sitemeteo.
@@ -57,22 +57,22 @@ class Sitemeteo(object):
 
     # Sitemeteo other properties
 
-    #mnemonique
-    #lieu-dit
-    #altitude, sysalti
-    #fuseau
-    #dtmaj
-    #dtes
-    #dths
-    #publication
-    #essai
-    #commentaire
+    # mnemonique
+    # lieu-dit
+    # altitude, sysalti
+    # fuseau
+    # dtmaj
+    # dtes
+    # dths
+    # publication
+    # essai
+    # commentaire
 
-    #images
-    #rolecontact
-    #soussecteurhydro
+    # images
+    # rolecontact
+    # soussecteurhydro
 
-    #visites
+    # visites
 
     def __init__(
         self, code, libelle=None, libelleusuel=None, coord=None, commune=None,
@@ -226,7 +226,7 @@ class Sitemeteo(object):
     __str__ = _composant.__str__
 
 
-#-- class Grandeur ------------------------------------------------------------
+# -- class Grandeur -----------------------------------------------------------
 class Grandeur(object):
 
     """Classe Grandeur.
@@ -310,7 +310,7 @@ class Grandeur(object):
 
     __str__ = _composant.__str__
 
-#-- class Visite --------------------------------------------------------------
+# -- class Visite -------------------------------------------------------------
 # class Visite(object):
 #
 #     raise NotImplementedError
@@ -323,7 +323,7 @@ class Grandeur(object):
 #     sitemeteo
 
 
-#-- class Classequalite -------------------------------------------------------
+# -- class Classequalite ------------------------------------------------------
 # class Classequalite(object):
 #
 #     raise NotImplementedError

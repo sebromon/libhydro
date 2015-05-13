@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module xml._from_xml.
 
 Ce module expose la classe:
@@ -13,7 +13,7 @@ Les fonctions de ce module sont a usage prive, il est recommande d'utiliser la
 classe xml.Message comme interface aux fichiers XML Hydrometrie.
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -40,27 +40,27 @@ from libhydro.core import (
 )
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
 __version__ = """0.4c"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V0.4 - 2014-08-22
-#    factorize the global functions
-#    add the intervenants
-#V0.3 - 2014-07-31
-#    add the modelesprevision element
-#    change the Scenario.emetteur and destinataire properties
-#V0.2 - 2014-07-21
-#    add the sitesmeteo and seriesmeteo elements
-#V0.1 - 2013-08-18
-#    first shot
+# HISTORY
+# V0.4 - 2014-08-22
+#   factorize the global functions
+#   add the intervenants
+# V0.3 - 2014-07-31
+#   add the modelesprevision element
+#   change the Scenario.emetteur and destinataire properties
+# V0.2 - 2014-07-21
+#   add the sitesmeteo and seriesmeteo elements
+# V0.1 - 2013-08-18
+#   first shot
 
 
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # FIXME- move the Scenario class and the named tuples in the _xml module
 # FIXME- factorize Scenario.emetteur and destinataire properties, as well as
 #        others Intervenants or Contacts
@@ -1006,4 +1006,4 @@ def _value(element, tag, cast=unicode):
         e = element.find(tag)
         if (e is not None) and (e.text is not None):
             return cast(e.text)
-    #return None
+    # return None

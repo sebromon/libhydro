@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for encoding problems.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_encoding.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     # !!! WE DO NOT USE the defautl unicode here !!!
     # unicode_literals as _unicode_literals,
@@ -29,18 +29,18 @@ import unittest
 import codecs
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1a"""
 __date__ = """2014-07-10"""
 
-#HISTORY
-#V0.1 - 2014-07-10
-#    first shot
+# HISTORY
+# V0.1 - 2014-07-10
+#   first shot
 
 
-#-- class TestWrite2tty -------------------------------------------------------
+# -- class TestWrite2tty ------------------------------------------------------
 class TestWrite2tty(unittest.TestCase):
 
     """TestWrite2tty class tests."""
@@ -84,9 +84,9 @@ class TestWrite2tty(unittest.TestCase):
 
     def test_redirected_tty(self):
         """Emulate a print to a file redirected TTY."""
-        #With a shell redirection, sys.stdout.encoding is None and
-        #the __str__ method switch to locale.getpreferredencoding and
-        #if it's None it switches again to 'ascii'
+        # With a shell redirection, sys.stdout.encoding is None and
+        # the __str__ method switch to locale.getpreferredencoding and
+        # if it's None it switches again to 'ascii'
         with codecs.open(
             self.fname, mode='w', encoding='ascii', errors='replace'
         ) as f:

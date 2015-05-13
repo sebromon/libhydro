@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for intervenant.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_core_intervenant.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -27,18 +27,18 @@ import unittest
 from libhydro.core import intervenant
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1c"""
 __date__ = """2014-02-20"""
 
-#HISTORY
-#V0.1 - 2013-08-20
-#    first shot
+# HISTORY
+# V0.1 - 2013-08-20
+#   first shot
 
 
-#-- class TestIntervenant -----------------------------------------------------
+# -- class TestIntervenant ----------------------------------------------------
 class TestIntervenant(unittest.TestCase):
 
     """Intervenant class tests."""
@@ -202,7 +202,7 @@ class TestIntervenant(unittest.TestCase):
         )
 
 
-#-- class TestContact ---------------------------------------------------------
+# -- class TestContact --------------------------------------------------------
 class TestContact(unittest.TestCase):
 
     """Contact class tests."""

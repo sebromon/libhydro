@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module libhydro.conv.xml.
 
 Le module xml contient des convertisseurs de et vers les fichiers au format

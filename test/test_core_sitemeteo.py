@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for sitemeteo.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_core_sitemeteo.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -28,18 +28,18 @@ from libhydro.core import sitemeteo
 from libhydro.core import _composant_site as composant_site
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1d"""
 __date__ = """2014-08-01"""
 
-#HISTORY
-#V0.1 - 2014-07-11
-#    first shot
+# HISTORY
+# V0.1 - 2014-07-11
+#   first shot
 
 
-#-- class TestSitemeteo -------------------------------------------------------
+# -- class TestSitemeteo ------------------------------------------------------
 class TestSitemeteo(unittest.TestCase):
 
     """Sitemeteo class tests."""
@@ -220,7 +220,7 @@ class TestSitemeteo(unittest.TestCase):
             sitemeteo.Sitemeteo(code=code, grandeurs=['I am not a troncon'])
 
 
-#-- class TestGrandeur ---------------------------------------------------
+# -- class TestGrandeur -------------------------------------------------------
 class TestGrandeur(unittest.TestCase):
 
     """Grandeur class tests."""

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module sitehydro.
 
 Ce module contient les classes:
@@ -8,7 +8,7 @@ Ce module contient les classes:
     # Tronconvigilance
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -19,38 +19,37 @@ from __future__ import (
 from . import (_composant, _composant_site)
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
 __version__ = """0.4a"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V0.4 - 2014-12-17
-#    change the class Stationhydro name to Station which is far better for
-#        metaprogramming regarding the Sitehydro stations list name
-#V0.3 - 2014-02-20
-#    add the _Entitehydro comparison methods, the switch it to the _composant
-#        module
-#    use descriptors
-#    merge Camillo (CMO) work
-#V0.1 - 2013-07-12
-#    first shot
+# HISTORY
+# V0.4 - 2014-12-17
+#   change the class Stationhydro name to Station which is far better for
+#       metaprogramming regarding the Sitehydro stations list name
+# V0.3 - 2014-02-20
+#   add the _Entitehydro comparison methods, the switch it to the _composant
+#       module
+#   use descriptors
+#   merge Camillo (CMO) work
+# V0.1 - 2013-07-12
+#   first shot
 
-
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # PROGRESS - Sitehydro 20% - Station 30% - Capteur 30%
 #            Tronconvigilance 100%
 # FIXME - generalize typeentite in _Entite.typentite ?
 # TODO - add navigability for Capteur => Station and Station => Site
 
 
-#-- config --------------------------------------------------------------------
+# -- config -------------------------------------------------------------------
 # config use classes definitions and is at the bottom
 
 
-#-- class _Entitehydro --------------------------------------------------------
+# -- class _Entitehydro -------------------------------------------------------
 class _Entitehydro(object):
 
     """Abstract base class for all hydro entities.
@@ -140,7 +139,7 @@ class _Entitehydro(object):
     __ne__ = _composant.__ne__
 
 
-#-- class _Site_or_station ---------------------------------------------------
+# -- class _Site_or_station --------------------------------------------------
 class _Site_or_station(_Entitehydro):
 
     """Abstract base class for Sitehydro and Station.
@@ -198,7 +197,7 @@ class _Site_or_station(_Entitehydro):
                         raise TypeError('coord incorrect')
 
 
-#-- class Sitehydro -----------------------------------------------------------
+# -- class Sitehydro ----------------------------------------------------------
 class Sitehydro(_Site_or_station):
 
     """Classe Sitehydro.
@@ -222,35 +221,35 @@ class Sitehydro(_Site_or_station):
 
     # Sitehydro other properties
 
-    #libellecomplement
-    #mnemonique
-    #precisionce
-    #pkamont
-    #pkaval
-    #altitude, sysalti
-    #dtmaj
-    #bv
-    #fuseau
-    #statut
-    #ponctuel
-    #dtpremieredonnee
-    #moisetiage
-    #moisanneehydro
-    #publication
-    #essai
-    #influence
-    #influencecommentaire
-    #commentaire
+    # libellecomplement
+    # mnemonique
+    # precisionce
+    # pkamont
+    # pkaval
+    # altitude, sysalti
+    # dtmaj
+    # bv
+    # fuseau
+    # statut
+    # ponctuel
+    # dtpremieredonnee
+    # moisetiage
+    # moisanneehydro
+    # publication
+    # essai
+    # influence
+    # influencecommentaire
+    # commentaire
 
-    #siteattache
-    #siteassocie
-    #masses d'eau
-    #entitehydro
-    #loistats
-    #images
-    #rolecontact
-    #zonehydro
-    #tronconhydro
+    # siteattache
+    # siteassocie
+    # masses d'eau
+    # entitehydro
+    # loistats
+    # images
+    # rolecontact
+    # zonehydro
+    # tronconhydro
 
     typesite = _composant.Nomenclatureitem(nomenclature=530)
 
@@ -402,7 +401,7 @@ class Sitehydro(_Site_or_station):
     __str__ = _composant.__str__
 
 
-#-- class Station -------------------------------------------------------------
+# -- class Station ------------------------------------------------------------
 class Station(_Site_or_station):
 
     """Classe Station.
@@ -428,31 +427,31 @@ class Station(_Site_or_station):
 
     # Station other properties
 
-    #sitehydro
+    # sitehydro
 
-    #descriptif
-    #dtmaj
-    #pk
-    #dtes
-    #dths
-    #surveillance
-    #publication
-    #delaidiscontinuite
-    #delaiabsence
-    #essai
-    #influence
-    #influencecommentaire
-    #commentaire
+    # descriptif
+    # dtmaj
+    # pk
+    # dtes
+    # dths
+    # surveillance
+    # publication
+    # delaidiscontinuite
+    # delaiabsence
+    # essai
+    # influence
+    # influencecommentaire
+    # commentaire
 
-    #remplace
-    #stationfille
-    #qualifications
-    #finalites
-    #loisstat
-    #images
-    #rolecontact
-    #stationattachee
-    #plageutilisation
+    # remplace
+    # stationfille
+    # qualifications
+    # finalites
+    # loisstat
+    # images
+    # rolecontact
+    # stationattachee
+    # plageutilisation
 
     typestation = _composant.Nomenclatureitem(nomenclature=531)
 
@@ -612,7 +611,7 @@ class Station(_Site_or_station):
     __str__ = _composant.__str__
 
 
-#-- class Capteur -------------------------------------------------------------
+# -- class Capteur ------------------------------------------------------------
 class Capteur(_Entitehydro):
 
     """Classe Capteur.
@@ -629,18 +628,18 @@ class Capteur(_Entitehydro):
 
     # Capteur other properties
 
-    #station
+    # station
 
-    #mnemonique
-    #typecapteur
-    #surveillance
-    #dtmaj
-    #pdt
-    #essai
-    #commentaire
+    # mnemonique
+    # typecapteur
+    # surveillance
+    # dtmaj
+    # pdt
+    # essai
+    # commentaire
 
-    #plageutilisation
-    #observateur
+    # plageutilisation
+    # observateur
 
     typemesure = _composant.Nomenclatureitem(nomenclature=520)
 
@@ -687,7 +686,7 @@ class Capteur(_Entitehydro):
     __str__ = _composant.__str__
 
 
-#-- class Tronconvigilance ----------------------------------------------------
+# -- class Tronconvigilance ---------------------------------------------------
 class Tronconvigilance(object):
 
     """Classe Tronconvigilance.

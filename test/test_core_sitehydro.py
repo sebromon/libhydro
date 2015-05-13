@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for sitehydro.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_core_sitehydro.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -28,20 +28,20 @@ from libhydro.core import sitehydro
 from libhydro.core import _composant_site as composant_site
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.2a"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V0.2 - 2014-12-17
-#   replace Stationhydro with Station
-#V0.1 - 2013-07-15
-#    first shot
+# HISTORY
+# V0.2 - 2014-12-17
+#  replace Stationhydro with Station
+# V0.1 - 2013-07-15
+#   first shot
 
 
-#-- class TestSitehydro -------------------------------------------------------
+# -- class TestSitehydro ------------------------------------------------------
 class TestSitehydro(unittest.TestCase):
 
     """Sitehydro class tests."""
@@ -304,7 +304,7 @@ class TestSitehydro(unittest.TestCase):
             )
 
 
-#-- class TestStation ---------------------------------------------------------
+# -- class TestStation --------------------------------------------------------
 class TestStation(unittest.TestCase):
 
     """Station class tests."""
@@ -453,7 +453,7 @@ class TestStation(unittest.TestCase):
             sitehydro.Station(code=code, ddcs=ddcs * 2)
 
 
-#-- class TestCapteur ----------------------------------------------------
+# -- class TestCapteur --------------------------------------------------------
 class TestCapteur(unittest.TestCase):
 
     """Capteur class tests."""
@@ -534,7 +534,7 @@ class TestCapteur(unittest.TestCase):
             sitehydro.Capteur(code='B4401122010133')
 
 
-#-- class TestTronconvigilance ------------------------------------------------
+# -- class TestTronconvigilance -----------------------------------------------
 class TestTronconvigilance(unittest.TestCase):
 
     """Tronconvigilance class tests."""

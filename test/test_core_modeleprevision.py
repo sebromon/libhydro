@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for modeleprevision.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_core_modeleprevision.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -27,18 +27,18 @@ import unittest
 from libhydro.core import modeleprevision
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1b"""
 __date__ = """2013-08-20"""
 
-#HISTORY
-#V0.1 - 2013-08-06
-#    first shot
+# HISTORY
+# V0.1 - 2013-08-06
+#   first shot
 
 
-#-- class TestModeleprevision -------------------------------------------------
+# -- class TestModeleprevision ------------------------------------------------
 class TestModeleprevision(unittest.TestCase):
     """Modeleprevision class tests."""
 

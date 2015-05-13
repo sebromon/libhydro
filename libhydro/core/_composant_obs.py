@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module composant_obs.
 
 Ce module contient les elements communs aux modules obshydro et obsmeteo.
@@ -8,7 +8,7 @@ Il integre les classes:
     # Serie
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -22,18 +22,18 @@ import pandas as _pandas
 from . import (_composant, intervenant as _intervenant)
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """1.0c"""
 __date__ = """2014-07-25"""
 
-#HISTORY
-#V0.1 - 2014-07-16
-#    split the composant file in 3 parts
+# HISTORY
+# V0.1 - 2014-07-16
+#   split the composant file in 3 parts
 
 
-#-- class Observations --------------------------------------------------------
+# -- class Observations -------------------------------------------------------
 class Observations(_pandas.DataFrame):
 
     """Base class observations for both hydrometrie and meteorologie.
@@ -117,7 +117,7 @@ class Observations(_pandas.DataFrame):
             return _pandas.concat([observations, Observations(others)])
 
 
-#-- class Serie ---------------------------------------------------------------
+# -- class Serie --------------------------------------------------------------
 class Serie(object):
 
     """Base class Serie.

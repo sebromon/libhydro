@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*
+# coding: utf-8
 """Package libhydro.conv.csv.
 
 Ce package contient des fonctions pour faciliter la lecture et l'ecriture de

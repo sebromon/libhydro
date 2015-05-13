@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module simulation.
 
 Ce module contient les classes:
@@ -34,7 +34,7 @@ d'une pandas.Series a double index, un timestamp et une probabilite.
 #         ...
 #     })
 
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -50,20 +50,19 @@ from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.7f"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V0.7 - 2014-03-02
-#    use descriptors
-#V0.1 - 2013-08-07
-#    first shot
+# HISTORY
+# V0.7 - 2014-03-02
+#   use descriptors
+# V0.1 - 2013-08-07
+#   first shot
 
-
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # PROGRESS - Prevision 100% - Previsions 90% - Simulation 80%
 # FIXME - integrity checks entite / grandeur
 #     grandeur is a descriptor, it needs a callback
@@ -78,7 +77,7 @@ __date__ = """2014-12-17"""
 # TODO - add a sort argument/method ?
 
 
-#-- class Prevision -----------------------------------------------------------
+# -- class Prevision ----------------------------------------------------------
 class Prevision(_numpy.ndarray):
 
     """Classe prevision.
@@ -145,7 +144,7 @@ class Prevision(_numpy.ndarray):
     __str__ = _composant.__str__
 
 
-#-- class Previsions ----------------------------------------------------------
+# -- class Previsions ---------------------------------------------------------
 class Previsions(_pandas.Series):
 
     """Classe Previsions.
@@ -236,7 +235,7 @@ class Previsions(_pandas.Series):
         return obj
 
 
-#-- class Simulation ----------------------------------------------------------
+# -- class Simulation ---------------------------------------------------------
 class Simulation(object):
 
     """Classe simulation.

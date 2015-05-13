@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for xml.xml.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_conv_xml_xml.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -35,22 +35,21 @@ from libhydro.core import intervenant
 from libhydro.conv.xml import (Scenario, Message)
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1i"""
 __date__ = """2014-08-26"""
 
-#HISTORY
-#V0.1 - 2013-08-22
-#    first shot
-
+# HISTORY
+# V0.1 - 2013-08-22
+#   first shot
 
 # -- config -------------------------------------------------------------------
 FILES_PATH = os.path.join('data', 'xml', '1.1')
 
 
-#-- class TestScenario --------------------------------------------------------
+# -- class TestScenario -------------------------------------------------------
 class TestScenario(unittest.TestCase):
 
     """Scenario class tests."""
@@ -162,7 +161,7 @@ class TestScenario(unittest.TestCase):
             )
 
 
-#-- class TestMessage --------------------------------------------------------
+# -- class TestMessage --------------------------------------------------------
 class TestMessage(unittest.TestCase):
 
     """Message class tests."""

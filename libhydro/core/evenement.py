@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module evenement.
 
 Ce module contient la classe:
     # Evenement
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -18,23 +18,23 @@ import datetime as _datetime
 from . import (_composant, sitehydro as _sitehydro, sitemeteo as _sitemeteo)
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """1.0f"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V1.0 - 2014-03-02
-#    use descriptors
-#V0.1 - 2013-11-26
-#    first shot
+# HISTORY
+# V1.0 - 2014-03-02
+#   use descriptors
+# V0.1 - 2013-11-26
+#   first shot
 
-
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # PROGRESS - Evenement 100%
 
-#-- class Evenement -----------------------------------------------------------
+
+# -- class Evenement ----------------------------------------------------------
 class Evenement(object):
 
     """Classe Evenement.

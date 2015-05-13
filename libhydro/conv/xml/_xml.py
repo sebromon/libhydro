@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module xml.classes.
 
 Ce module contient la classe:
     # Message
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -33,21 +33,21 @@ from libhydro.core import (
 )
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.5c"""
-__date__ = """2014-09-16"""
+__version__ = """0.5d"""
+__date__ = """2015-05-13"""
 
-#HISTORY
-#V0.5 - 2014-08-22
-#    add the intervenants
-#V0.4 - 2014-07-18
-#    add the modelesprevision element
-#    add the sitesmeteo and seriesmeteo element
-#    use a descriptor for Message components
-#V0.1 - 2013-08-20
-#    first shot
+# HISTORY
+# V0.5 - 2014-08-22
+#   add the intervenants
+# V0.4 - 2014-07-18
+#   add the modelesprevision element
+#   add the sitesmeteo and seriesmeteo element
+#   use a descriptor for Message components
+# V0.1 - 2013-08-20
+#   first shot
 
 
 # -- class Message ------------------------------------------------------------
@@ -71,13 +71,13 @@ class Message(object):
 
     """
 
-        # 'courbestarage'
-        # 'jaugeages'
-        # 'courbescorrection'
-        # 'obsselab'
-        # 'gradshydro'
-        # 'qualifsannee'
-        # 'alarmes'
+    # 'courbestarage'
+    # 'jaugeages'
+    # 'courbescorrection'
+    # 'obsselab'
+    # 'gradshydro'
+    # 'qualifsannee'
+    # 'alarmes'
 
     intervenants = _composant.Rlistproperty(cls=_intervenant.Intervenant)
     siteshydro = _composant.Rlistproperty(cls=_sitehydro.Sitehydro)
@@ -230,13 +230,13 @@ class Message(object):
             )
         )
 
-            # 'courbestarage'
-            # 'jaugeages'
-            # 'courbescorrection'
-            # 'obsselab'
-            # 'gradshydro'
-            # 'qualifsannee'
-            # 'alarmes'
+        # 'courbestarage'
+        # 'jaugeages'
+        # 'courbescorrection'
+        # 'obsselab'
+        # 'gradshydro'
+        # 'qualifsannee'
+        # 'alarmes'
 
     # -- other methods --
     def add(self, **kargs):
@@ -275,14 +275,14 @@ class Message(object):
         self, file, encoding='utf-8', compression=0, force=False,
         bdhydro=False, ordered=False
     ):
-        """Ecrit le Message dans le fichier dst.
+        """Ecrit le Message dans le fichier <file>.
 
         Cette methode est un wrapper autour de lxml.etree.ElementTree.write.
         Se referer a la documentation de lxml pour le detail des options.
 
         Arguments:
-            file (str ou objet fichier)
-            encoding (string)
+            file (str ou objet fichier) = fichier de destination
+            encoding (string, defaut utf-8) = encodage
             compression (int de 0 a 9, defaut 0) = niveau de compression gzip
             force (bool, defaut False) = ecrase un fichier deja existant
             bdhydro (bool, defaut False) = utilise le format bdhydro

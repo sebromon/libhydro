@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for obsmeteo.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_core_obsmeteo.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -29,18 +29,18 @@ import numpy
 from libhydro.core import (sitemeteo, obsmeteo, intervenant)
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1d"""
 __date__ = """2014-07-30"""
 
-#HISTORY
-#V0.1 - 2014-07-16
-#    first shot
+# HISTORY
+# V0.1 - 2014-07-16
+#   first shot
 
 
-#-- class TestObservation -----------------------------------------------------
+# -- class TestObservation ----------------------------------------------------
 class TestObservation(unittest.TestCase):
 
     """Observation class tests."""
@@ -131,7 +131,7 @@ class TestObservation(unittest.TestCase):
             )
 
 
-#-- class TestObservations ----------------------------------------------------
+# -- class TestObservations ---------------------------------------------------
 class TestObservations(unittest.TestCase):
 
     """Observations class tests."""
@@ -187,7 +187,7 @@ class TestObservations(unittest.TestCase):
             obsmeteo.Observations(*[o, 33])  # is wrong !!
 
 
-#-- class TestObservationsConcat ----------------------------------------------
+# -- class TestObservationsConcat ---------------------------------------------
 class TestObservationsConcat(unittest.TestCase):
 
     """Observations.concat function tests."""
@@ -226,7 +226,7 @@ class TestObservationsConcat(unittest.TestCase):
             obsmeteo.Observations.concat(*(obs1, '33'))
 
 
-#-- class TestSerie -----------------------------------------------------------
+# -- class TestSerie ----------------------------------------------------------
 class TestSerie(unittest.TestCase):
 
     """Serie class tests."""

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for seuil.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_core_seuil.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -29,18 +29,18 @@ from libhydro.core.seuil import Seuilhydro, Valeurseuil
 from libhydro.core import sitehydro
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1e"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V0.1 - 2014-02-12
-#    first shot
+# HISTORY
+# V0.1 - 2014-02-12
+#   first shot
 
 
-#-- class TestSeuilhydro ------------------------------------------------------
+# -- class TestSeuilhydro -----------------------------------------------------
 class TestSeuilhydro(unittest.TestCase):
 
     """Seuilhydro class tests."""
@@ -298,7 +298,7 @@ class TestSeuilhydro(unittest.TestCase):
         )
 
 
-#-- class TestValeurseuil -----------------------------------------------------
+# -- class TestValeurseuil ----------------------------------------------------
 class TestValeurseuil(unittest.TestCase):
 
     """Valeurseuil class tests."""

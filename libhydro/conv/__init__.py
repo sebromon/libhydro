@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Package libhydro.conv.
 
 Ce package contient des convertisseurs de et vers differents formats.

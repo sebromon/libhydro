@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for obshydro.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_core_obshydro.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -29,21 +29,21 @@ import numpy
 from libhydro.core import (sitehydro, obshydro, intervenant)
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1i"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V0.1 - 2013-07-15
-#    first shot
+# HISTORY
+# V0.1 - 2013-07-15
+#   first shot
 
 
 # TODO - tests eq and ne
 
 
-#-- class TestObservation -----------------------------------------------------
+# -- class TestObservation ----------------------------------------------------
 class TestObservation(unittest.TestCase):
 
     """Observation class tests."""
@@ -124,7 +124,7 @@ class TestObservation(unittest.TestCase):
         )
 
 
-#-- class TestObservations ----------------------------------------------------
+# -- class TestObservations ---------------------------------------------------
 class TestObservations(unittest.TestCase):
 
     """Observations class tests."""
@@ -182,7 +182,7 @@ class TestObservations(unittest.TestCase):
         )
 
 
-#-- class TestObservationsConcat ----------------------------------------------
+# -- class TestObservationsConcat ---------------------------------------------
 class TestObservationsConcat(unittest.TestCase):
 
     """Observations.concat function tests."""
@@ -224,7 +224,7 @@ class TestObservationsConcat(unittest.TestCase):
         )
 
 
-#-- class TestSerie -----------------------------------------------------------
+# -- class TestSerie ----------------------------------------------------------
 class TestSerie(unittest.TestCase):
 
     """Serie class tests."""

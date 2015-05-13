@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for csv._from_csv converter.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_conv_csv_from_csv.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -29,24 +29,24 @@ import unittest
 from libhydro.conv.csv import _from_csv as lhcsv
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.5b"""
 __date__ = """2014-12-29"""
 
-#HISTORY
-#V0.5 - 2014-12-20
-#    add serieshydro tests
-#    add seriesmeteo tests
-#V0.1 - 2014-12-16
-#    first shot
+# HISTORY
+# V0.5 - 2014-12-20
+#   add serieshydro tests
+#   add seriesmeteo tests
+# V0.1 - 2014-12-16
+#   first shot
 
-#-- config --------------------------------------------------------------------
+# -- config -------------------------------------------------------------------
 CSV_DIR = os.path.join('data', 'csv')
 
 
-#-- class TestMapKeys ---------------------------------------------------------
+# -- class TestMapKeys --------------------------------------------------------
 class TestMapKeys(unittest.TestCase):
 
     """MapKeys class tests."""
@@ -102,7 +102,7 @@ class TestMapKeys(unittest.TestCase):
             lhcsv.map_keys(self.base, mapper, iterator='')
 
 
-#-- class TestSitesHydroFromCsv -----------------------------------------------
+# -- class TestSitesHydroFromCsv ----------------------------------------------
 class TestSitesHydroFromCsv(unittest.TestCase):
 
     """SitesHydroFromCsv class tests."""
@@ -233,7 +233,7 @@ class TestSitesHydroFromCsv(unittest.TestCase):
         self.assertEqual(siteshydro[4].coord.y, 51.5)
 
 
-#-- class TestSitesMeteoFromCsv -----------------------------------------------
+# -- class TestSitesMeteoFromCsv ----------------------------------------------
 class TestSitesMeteoFromCsv(unittest.TestCase):
 
     """SitesMeteoFromCsv class tests."""
@@ -277,7 +277,7 @@ class TestSitesMeteoFromCsv(unittest.TestCase):
             lhcsv.sitesmeteo_from_csv(fname)
 
 
-#-- class TestSeriesHydroFromCsv ----------------------------------------------
+# -- class TestSeriesHydroFromCsv ---------------------------------------------
 class TestSeriesHydroFromCsv(unittest.TestCase):
 
     """SeriesHydroFromCsv class tests."""
@@ -353,7 +353,7 @@ class TestSeriesHydroFromCsv(unittest.TestCase):
         )
 
 
-#-- class TestSeriesMeteoFromCsv ----------------------------------------------
+# -- class TestSeriesMeteoFromCsv ---------------------------------------------
 class TestSeriesMeteoFromCsv(unittest.TestCase):
 
     """SeriesMeteoFromCsv class tests."""

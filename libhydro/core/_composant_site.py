@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module composant_site.
 
 Ce module contient les elements communs aux modules sitehydro et sitemeteo.
@@ -7,7 +7,7 @@ Il integre les classes:
     # Coord
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -19,18 +19,18 @@ from . import _composant
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """1.0b"""
 __date__ = """2014-07-18"""
 
-#HISTORY
-#V0.1 - 2014-07-16
-#    split the composant file in 3 parts
+# HISTORY
+# V0.1 - 2014-07-16
+#   split the composant file in 3 parts
 
 
-#-- class Coord ---------------------------------------------------------------
+# -- class Coord --------------------------------------------------------------
 class Coord(object):
 
     """Classe Coord.

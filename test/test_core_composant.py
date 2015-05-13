@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for composant.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_core_composant.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -30,26 +30,26 @@ import datetime
 import numpy
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.5b"""
 __date__ = """2014-12-18"""
 
-#HISTORY
-#V0.5 - 2014-12-18
-#    add the __eq__ and __ne__ tests
-#V0.4 - 2014-07-20
-#    add the error_handler, Rlist and Rlistpropery tests
-#V0.3 - 2014-07-16
-#    remove the composant_site part
-#V0.2 - 2014-03-01
-#    add the descriptor tests
-#V0.1 - 2013-11-07
-#    first shot
+# HISTORY
+# V0.5 - 2014-12-18
+#   add the __eq__ and __ne__ tests
+# V0.4 - 2014-07-20
+#   add the error_handler, Rlist and Rlistpropery tests
+# V0.3 - 2014-07-16
+#   remove the composant_site part
+# V0.2 - 2014-03-01
+#   add the descriptor tests
+# V0.1 - 2013-11-07
+#   first shot
 
 
-#-- class TestErrorHandler ----------------------------------------------------
+# -- class TestErrorHandler ---------------------------------------------------
 class TestErrorHandler(unittest.TestCase):
 
     """Error handler class tests."""
@@ -85,7 +85,7 @@ class TestErrorHandler(unittest.TestCase):
             error_handler(msg='a message', error=ValueError)
 
 
-#-- class TestRlist -----------------------------------------------------------
+# -- class TestRlist ----------------------------------------------------------
 class TestRlist(unittest.TestCase):
 
     """Rlist class tests."""
@@ -119,7 +119,7 @@ class TestRlist(unittest.TestCase):
             strl.checkiterable([], errors='gloups!')
 
 
-#-- class TestRlistproperty ---------------------------------------------------
+# -- class TestRlistproperty --------------------------------------------------
 class TestRlistproperty(unittest.TestCase):
 
     """Rlistproperty class tests."""
@@ -158,7 +158,7 @@ class TestRlistproperty(unittest.TestCase):
         self.assertEqual(len(l.data), 3)
 
 
-#-- class TestDatefromeverything ----------------------------------------------
+# -- class TestDatefromeverything ---------------------------------------------
 class TestDatefromeverything(unittest.TestCase):
 
     """Datefromeverything class tests."""
@@ -240,7 +240,7 @@ class TestDatefromeverything(unittest.TestCase):
         vnr.dt = None
 
 
-#-- class TestNomenclatureitem ------------------------------------------------
+# -- class TestNomenclatureitem -----------------------------------------------
 class TestNomenclatureitem(unittest.TestCase):
 
     """Nomenclatureitem class tests."""
@@ -363,7 +363,7 @@ class TestNomenclatureitem(unittest.TestCase):
             composant.Nomenclatureitem(**{'nomenclature': 0})
 
 
-#-- class TestIsCodeHydro -----------------------------------------------------
+# -- class TestIsCodeHydro ----------------------------------------------------
 class TestIsCodeHydro(unittest.TestCase):
 
     """Function is_code_hydro class tests."""
@@ -438,7 +438,7 @@ class TestIsCodeHydro(unittest.TestCase):
             composant.is_code_hydro('wrong code', errors='houps!')
 
 
-#-- class TestIsCodeInsee -----------------------------------------------------
+# -- class TestIsCodeInsee ----------------------------------------------------
 class TestIsCodeInsee(unittest.TestCase):
 
     """Function is_code_insee class tests."""
@@ -529,7 +529,7 @@ class TestIsCodeInsee(unittest.TestCase):
             composant.is_code_insee('wrong code', errors='houps!')
 
 
-#-- class TestEqAndNe ---------------------------------------------------------
+# -- class TestEqAndNe --------------------------------------------------------
 class TestEqAndNe(unittest.TestCase):
 
     """Special functions __eq__ and __ne__ class tests."""

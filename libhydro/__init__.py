@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Meta-package libhydro.
 
 Le meta-package libhydro est constitue des packages:
@@ -10,6 +10,6 @@ Le meta-package libhydro est constitue des packages:
 # bdhydro pour l'utilisation des services web d'Hydro3
 __version__ = '0.5.3'
 __all__ = ['core', 'conv']
- # __all__ = ['core', 'conv', 'bdhydro']
+# __all__ = ['core', 'conv', 'bdhydro']
 
 # from .bdhydro import bdhydro

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for shom converter.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_conv_shom.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -31,22 +31,22 @@ from libhydro.conv import shom
 from libhydro.core import sitehydro
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.2b"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V0.1 - 2013-08-16
-#    first shot
+# HISTORY
+# V0.1 - 2013-08-16
+#   first shot
 
 
-#-- config --------------------------------------------------------------------
+# -- config -------------------------------------------------------------------
 SRC = os.path.join('data', 'shom', 'LOCMARIAQUER.hfs')
 
 
-#-- class TestSimulationFromHFS -----------------------------------------------
+# -- class TestSimulationFromHFS ----------------------------------------------
 class TestSimulationFromHSF(unittest.TestCase):
 
     """SimulationFromHFS class tests."""
@@ -111,7 +111,7 @@ class TestSimulationFromHSF(unittest.TestCase):
         )
 
 
-#-- class TestSerieFromHFS -----------------------------------------------
+# -- class TestSerieFromHFS ---------------------------------------------------
 class TestSerieFromHSF(unittest.TestCase):
 
     """SerieFromHFS class tests."""

@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module modeleprevision.
 
 Ce module contient une seule classe:
     #Modeleprevision
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -16,24 +16,23 @@ from __future__ import (
 from . import _composant
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.8d"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V0.8 - 2014-03-02
-#    use descriptors
-#V0.1 - 2013-08-06
-#    first shot
+# HISTORY
+# V0.8 - 2014-03-02
+#   use descriptors
+# V0.1 - 2013-08-06
+#   first shot
 
-
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # PROGRESS - Modeleprevision 80%
 
 
-#-- class Sitehydro -----------------------------------------------------------
+# -- class Sitehydro ----------------------------------------------------------
 class Modeleprevision(object):
 
     """Class Modeleprevision.
@@ -50,8 +49,8 @@ class Modeleprevision(object):
 
     # Modeleprevision other properties
 
-    #dtmaj
-    #auteur
+    # dtmaj
+    # auteur
 
     typemodele = _composant.Nomenclatureitem(nomenclature=525, required=False)
 

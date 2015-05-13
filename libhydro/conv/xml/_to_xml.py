@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module xml._to_xml.
 
 Ce module contient les fonctions de generation des fichiers au format

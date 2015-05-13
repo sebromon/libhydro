@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module libhydro.conv.csv._config.
 
 Configuration par defaut du codec CSV:
@@ -14,22 +14,21 @@ Cette configuration est basee sur les regles des documents:
 disponibles sur le site du SANDRE <http://www.sandre.eaufrance.fr/>.
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import unicode_literals as _unicode_literals
 import csv
 
-
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #
 # Configuration du Dialect CSV 'hydrometrie'
 #
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Les valeurs du dialect 'hydrometrie' peuvent etre surchargees a la volee en
 # passant 'cle=valeur' aux differents readers
-
+#
 # WARNING: le csv.register_dialect ne tolere pas les valeurs en unicode en
 #          Python 2 :-(
-
+#
 csv.register_dialect(
     'hydrometrie',
     **{
@@ -43,39 +42,39 @@ csv.register_dialect(
         'strict': False
     }
 )
-#------------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
 #
 # FLAG de fin de ligne
 #
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Par defaut chaque ligne doit se terminer par un flag
 FLAG = {'header': '<FLG>', 'row': 'FLG'}
 # Pour ne pas utiliser les flags, utiliser FLAG = None
 # FLAG = None
 
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #
 # SECOND LINE
 #
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Par defaut une seconde ligne d'en en-tete est utilisee
 SECOND_LINE = True
 
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #
 # DECIMAL
 #
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Separateur decimal. Utiliser None pour un separateur '.' (plus rapide).
 DECIMAL_POINT = ','
 # DECIMAL_POINT = None
 
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #
 # MAPPER
 #
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Le mapper 'csv header' vers 'object attribute' pour chaque classe
 MAPPER = {
     'libhydro.core.sitehydro.Sitehydro': {

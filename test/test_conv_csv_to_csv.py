@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for csv._to_csv converter.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_conv_csv_to_csv.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -28,21 +28,21 @@ import unittest
 from libhydro.conv import csv as lhcsv
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1a"""
 __date__ = """2014-12-18"""
 
-#HISTORY
-#V0.1 - 2014-12-18
-#    first shot
+# HISTORY
+# V0.1 - 2014-12-18
+#   first shot
 
-#-- config --------------------------------------------------------------------
+# -- config -------------------------------------------------------------------
 CSV_DIR = os.path.join('data', 'csv')
 
 
-#-- class TestFromCsv ---------------------------------------------------------
+# -- class TestFromCsv --------------------------------------------------------
 class TestFromCsv(unittest.TestCase):
 
     """FromCsv class tests."""

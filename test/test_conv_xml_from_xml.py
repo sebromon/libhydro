@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for xml.from_xml.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_conv_xml_from_xml.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -31,20 +31,20 @@ from libhydro.conv.xml import _from_xml as from_xml
 from libhydro.core import (sitehydro, sitemeteo)
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.2c"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V0.2 - 2014-08-03
-#    add the modelesprevision tests
-#V0.1 - 2013-08-24
-#    first shot
+# HISTORY
+# V0.2 - 2014-08-03
+#   add the modelesprevision tests
+# V0.1 - 2013-08-24
+#   first shot
 
 
-#-- class TestFromXmlIntervenants ---------------------------------------------
+# -- class TestFromXmlIntervenants --------------------------------------------
 class TestFromXmlIntervenants(unittest.TestCase):
 
     """FromXmlIntervenants class tests."""
@@ -130,7 +130,7 @@ class TestFromXmlIntervenants(unittest.TestCase):
         self.assertEqual(c.intervenant, i)
 
 
-#-- class TestFromXmlSitesHydro ----------------------------------------------
+# -- class TestFromXmlSitesHydro ----------------------------------------------
 class TestFromXmlSitesHydros(unittest.TestCase):
 
     """FromXmlSitesHydro class tests."""
@@ -261,7 +261,7 @@ class TestFromXmlSitesHydros(unittest.TestCase):
             )
 
 
-#-- class TestFromXmlSeuilsHydro ----------------------------------------------
+# -- class TestFromXmlSeuilsHydro ---------------------------------------------
 class TestFromXmlSeuilsHydros(unittest.TestCase):
 
     """FromXmlSeuilsHydro class tests."""
@@ -477,7 +477,7 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
             )
 
 
-#-- class TestFromXmlSitesMeteo -----------------------------------------------
+# -- class TestFromXmlSitesMeteo ----------------------------------------------
 class TestFromXmlSitesMeteo(unittest.TestCase):
 
     """FromXmlSitesMeteo class tests."""
@@ -541,7 +541,7 @@ class TestFromXmlSitesMeteo(unittest.TestCase):
         self.assertEqual(sm.grandeurs[1].typemesure, 'VV')
 
 
-#-- class TestFromXmlModelesPrevision -----------------------------------------
+# -- class TestFromXmlModelesPrevision ----------------------------------------
 class TestFromXmlModelesPrevision(unittest.TestCase):
 
     """FromXmlModelesPrevision class tests."""
@@ -606,7 +606,7 @@ class TestFromXmlModelesPrevision(unittest.TestCase):
         self.assertEqual(modeleprevision.description, 'String')
 
 
-#-- class TestFromXmlEvenements -----------------------------------------------
+# -- class TestFromXmlEvenements ----------------------------------------------
 class TestFromXmlEvenements(unittest.TestCase):
 
     """FromXmlEvenements class tests."""
@@ -692,7 +692,7 @@ class TestFromXmlEvenements(unittest.TestCase):
         )
 
 
-#-- class TestFromXmlSeriesHydro ----------------------------------------------
+# -- class TestFromXmlSeriesHydro ---------------------------------------------
 class TestFromXmlSeriesHydro(unittest.TestCase):
 
     """FromXmlSeriesHydro class tests."""
@@ -789,7 +789,7 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
         self.assertEqual(len(data['serieshydro']), 34)
 
 
-#-- class TestFromXmlSeriesMeteo ----------------------------------------------
+# -- class TestFromXmlSeriesMeteo ---------------------------------------------
 class TestFromXmlSeriesMeteo(unittest.TestCase):
 
     """FromXmlSeriesMeteo class tests."""
@@ -914,7 +914,7 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
         )
 
 
-#-- class TestFromXmlSimulations ---------------------------------------------
+# -- class TestFromXmlSimulations ---------------------------------------------
 class TestFromXmlSimulations(unittest.TestCase):
 
     """FromXmlSimulations class tests."""

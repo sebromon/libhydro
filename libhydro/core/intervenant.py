@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module intervenant.
 
 Ce module contient les classes:
@@ -6,7 +6,7 @@ Ce module contient les classes:
     # Contact
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -18,25 +18,25 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 from . import _composant
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.2f"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V0.2 - 2014-03-02
-#    use descriptors
-#V0.1 - 2013-08-20
-#    first shot
+# HISTORY
+# V0.2 - 2014-03-02
+#   use descriptors
+# V0.1 - 2013-08-20
+#   first shot
 
 
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # PROGRESS - Intervenant 50% - Contact 30%
 # TODO - use the BD Hydro intervenants list
 
 
-#-- Class Intervenant ---------------------------------------------------------
+# -- Class Intervenant --------------------------------------------------------
 class Intervenant(object):
 
     """Classe Intervenant.
@@ -217,7 +217,7 @@ class Intervenant(object):
     __str__ = _composant.__str__
 
 
-#-- class Contact -------------------------------------------------------------
+# -- class Contact ------------------------------------------------------------
 class Contact(object):
 
     """Classe Contact.

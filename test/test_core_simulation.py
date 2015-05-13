@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for simulation.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_core_simulation.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -28,18 +28,18 @@ import datetime
 from libhydro.core import (simulation, modeleprevision, sitehydro)
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.1h"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V0.1 - 2013-08-07
-#    first shot
+# HISTORY
+# V0.1 - 2013-08-07
+#   first shot
 
 
-#-- class TestPrevision -------------------------------------------------------
+# -- class TestPrevision ------------------------------------------------------
 class TestPrevision(unittest.TestCase):
 
     """Prevision class tests."""
@@ -120,7 +120,7 @@ class TestPrevision(unittest.TestCase):
         )
 
 
-#-- class TestPrevisions ------------------------------------------------------
+# -- class TestPrevisions -----------------------------------------------------
 class TestPrevisions(unittest.TestCase):
 
     """Previsions class tests."""
@@ -184,7 +184,7 @@ class TestPrevisions(unittest.TestCase):
         )
 
 
-#-- class TestSimulation ------------------------------------------------------
+# -- class TestSimulation -----------------------------------------------------
 class TestSimulation(unittest.TestCase):
 
     """Simulation class tests."""

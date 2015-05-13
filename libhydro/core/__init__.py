@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Package libhydro.core.
 
 Ce package expose les classes modelisees par le Sandre dans les dictionnaires:

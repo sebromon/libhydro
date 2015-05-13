@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Test program for xml.to_xml.
 
 To run all tests just type:
@@ -11,7 +11,7 @@ To run only a specific test:
     python -m unittest test_conv_xml_to_xml.TestClass.test_method
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -34,21 +34,21 @@ from libhydro.conv.xml import (
 from libhydro.core import (sitehydro, seuil)
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.4b"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V0.4 - 2014-08-04
-#    separate the sandre and bdhydro tests
-#V0.3 - 2014-08-01
-#    update the ToXmlBaseTest to write all tags
-#V0.2 - 2014-03-22
-#    factorize all the base tests in a suite
-#V0.1 - 2013-08-30
-#    first shot
+# HISTORY
+# V0.4 - 2014-08-04
+#   separate the sandre and bdhydro tests
+# V0.3 - 2014-08-01
+#   update the ToXmlBaseTest to write all tags
+# V0.2 - 2014-03-22
+#   factorize all the base tests in a suite
+# V0.1 - 2013-08-30
+#   first shot
 
 # -- config -------------------------------------------------------------------
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -110,7 +110,7 @@ def assert_unicode_equal(xml, expected, msg=None):
             )
 
 
-#-- class TestToXmlSeuilsHydro ------------------------------------------------
+# -- class TestToXmlSeuilsHydro -----------------------------------------------
 class TestToXmlSeuilsHydro(unittest.TestCase):
 
     """ToXmlSeuilsHydro class tests, with some specific tests for seuils."""
@@ -167,7 +167,7 @@ class ParametrizedTestCase(unittest.TestCase):
         return suite
 
 
-#-- class ToXmlBaseTest -------------------------------------------------------
+# -- class ToXmlBaseTest ------------------------------------------------------
 class ToXmlBaseTest(ParametrizedTestCase):
 
     """ToXmlBaseTest class.
@@ -251,7 +251,7 @@ class ToXmlBaseTest(ParametrizedTestCase):
         )
 
 
-#-- class TestAllXmlBaseTests -------------------------------------------------
+# -- class TestAllXmlBaseTests ------------------------------------------------
 class TestAllXmlBaseTests(unittest.TestCase):
     """Run All base tests in a TestSuite.
 
@@ -270,7 +270,7 @@ class TestAllXmlBaseTests(unittest.TestCase):
     unittest.TextTestRunner(verbosity=1).run(suite)
 
 
-#-- class TestFunctions -------------------------------------------------------
+# -- class TestFunctions ------------------------------------------------------
 class TestFunctions(unittest.TestCase):
 
     """Functions class tests."""

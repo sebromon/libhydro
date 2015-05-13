@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module obshydro.
 
 Ce module contient les classes:
@@ -30,7 +30,7 @@ d'un pandas.DataFrame dont l'index est une serie de timestamp.
 #         name='observations de debit'
 # )
 
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -45,20 +45,20 @@ from . import (_composant, _composant_obs)
 from . import sitehydro as _sitehydro
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.2d"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V0.2 - 2014-07-15
-#    use the composant_obs module
-#V0.1 - 2013-07-18
-#    first shot
+# HISTORY
+# V0.2 - 2014-07-15
+#   use the composant_obs module
+# V0.1 - 2013-07-18
+#   first shot
 
 
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # PROGRESS - Serie 70% - Observations 100% - Observation 100%
 # FIXME - integriey checks entity / grandeur /statut
 # ADMIT_SERIE = {
@@ -81,7 +81,7 @@ __date__ = """2014-12-17"""
 # TODO - add a sort argument/method ?
 
 
-#-- class Observation ---------------------------------------------------------
+# -- class Observation --------------------------------------------------------
 class Observation(_numpy.ndarray):
 
     """Classe observation.
@@ -155,7 +155,7 @@ class Observation(_numpy.ndarray):
     __str__ = _composant.__str__
 
 
-#-- class Observations --------------------------------------------------------
+# -- class Observations -------------------------------------------------------
 class Observations(_composant_obs.Observations):
 
     """Classe Observations.
@@ -204,7 +204,7 @@ class Observations(_composant_obs.Observations):
         )
 
 
-#-- class Serie ---------------------------------------------------------------
+# -- class Serie --------------------------------------------------------------
 class Serie(_composant_obs.Serie):
 
     """Classe Serie.

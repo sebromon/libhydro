@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module shom.
 
 Ce module contient des convertisseurs de et vers les fichiers de predictions
@@ -27,7 +27,7 @@ Exemple:
 ...
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -45,27 +45,26 @@ from ...core import (
 )
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.2b"""
 __date__ = """2014-12-17"""
 
-#HISTORY
-#V0.2 - 2014-09-25
-#    fix conversion to mm
-#V0.1 - 2013-08-01
-#    first shot
+# HISTORY
+# V0.2 - 2014-09-25
+#   fix conversion to mm
+# V0.1 - 2013-08-01
+#   first shot
 
-
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # FIXME - simulation_from_hfs is rather slow
 #         15s to load a complete 4 years file in a simulation from DVD
 #         (5s in a serie is quite good)
 #         One could use use skiprows and nrows read_table options
 
 
-#-- functions -----------------------------------------------------------------
+# -- functions ----------------------------------------------------------------
 def simulation_from_hfs(
     src, station=None, begin=None, end=None, dtprod=None, strict=True
 ):

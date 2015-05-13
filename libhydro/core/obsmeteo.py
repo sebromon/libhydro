@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module obsmeteo.
 
 Ce module contient les classes:
@@ -14,7 +14,7 @@ et quelques fonctions utiles:
  d'un pandas.DataFrame dont l'index est une serie de timestamp.
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -31,26 +31,26 @@ from . import (_composant, _composant_obs)
 from . import sitemeteo as _sitemeteo
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.9a"""
 __date__ = """2014-12-29"""
 
-#HISTORY
-#V0.9 - 2014-12-29
-#    update version number according to progress
-#V0.1 - 2014-07-11
-#    first shot
+# HISTORY
+# V0.9 - 2014-12-29
+#   update version number according to progress
+# V0.1 - 2014-07-11
+#   first shot
 
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # PROGRESS - Serie 100% - Observations 100% - Observation 100%
 # TODO - as for obshydro, serie.dtdeb, dtend and duree are not related to the
 #        observations property (one can change an attribute without changing
 #        the other leading to incoherent datas)
 
 
-#-- class Observation ---------------------------------------------------------
+# -- class Observation --------------------------------------------------------
 class Observation(_numpy.ndarray):
 
     """Classe observation.
@@ -137,7 +137,7 @@ class Observation(_numpy.ndarray):
     __str__ = _composant.__str__
 
 
-#-- class Observations --------------------------------------------------------
+# -- class Observations -------------------------------------------------------
 class Observations(_composant_obs.Observations):
 
     """Classe Observations.
@@ -198,7 +198,7 @@ class Observations(_composant_obs.Observations):
         )
 
 
-#-- class Serie ---------------------------------------------------------------
+# -- class Serie --------------------------------------------------------------
 class Serie(_composant_obs.Serie):
 
     """Classe Serie.

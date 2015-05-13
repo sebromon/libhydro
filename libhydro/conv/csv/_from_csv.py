@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module libhydro.conv._from_csv."""
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -16,29 +16,29 @@ from ._config import (FLAG, SECOND_LINE, DECIMAL_POINT, MAPPER)
 import libhydro.core
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.5a"""
 __date__ = """2014-12-29"""
 
-#HISTORY¬
- #V0.5 - 2014-12-29¬
- #    add the seriesmeteo reader
- #V0.4 - 2014-12-20¬
- #    add the serieshydro reader
- #V0.1 - 2014-12-15¬
- #    first shot¬
+# HISTORY¬
+# V0.5 - 2014-12-29¬
+#   add the seriesmeteo reader
+# V0.4 - 2014-12-20¬
+#   add the serieshydro reader
+# V0.1 - 2014-12-15¬
+#   first shot¬
 
 
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # PROGRESS - 80% - working but needs a big refactoring
 # TODO - write a Reader class and a Sniffer
 # TODO - read by column number
 # TODO - write an __iter__ method
 
 
-#-- config --------------------------------------------------------------------
+# -- config -------------------------------------------------------------------
 # datatype: (class, child class)
 DTYPE = {
     'sitehydro': (
@@ -60,7 +60,7 @@ DTYPE = {
 }
 
 
-#-- CSV decoding classes ------------------------------------------------------
+# -- CSV decoding classes -----------------------------------------------------
 class _UTF8Recoder:
 
     """Iterator that reads an encoded stream and reencodes """
@@ -96,7 +96,7 @@ class _UnicodeReader:
         return self
 
 
-#-- main functions ------------------------------------------------------------
+# -- main functions -----------------------------------------------------------
 # FIXME - this one should be a sniffer
 # class Sniffer(fname, encoding='utf-8'):
 #     pass
@@ -147,9 +147,9 @@ Arguments:
 
 """
 
-#FIXME - this one should be the Reader and exposed with the dtype arg
-# class Reader():
-#     pass
+# FIXME - this one should be the Reader and exposed with the dtype arg
+#   class Reader():
+#       pass
 
 
 def parse_csv(fname, encoding='utf-8', dialect='hydrometrie',
@@ -230,7 +230,7 @@ seriesmeteo_from_csv = _functools.partial(parse_csv, dtype='seriemeteo')
 seriesmeteo_from_csv.__doc__ = FROM_CSV_DOC.format('series meteorologiques')
 
 
-#-- secondary functions -------------------------------------------------------
+# -- secondary functions ------------------------------------------------------
 def merge_collection(collection, dtype):
     """Merge a collection of dtype objects.
 
@@ -513,7 +513,7 @@ def map_keys(base, mapper, strict=True, iterator='items'):
 
 def datefstr(date):
     """Return 'AAAA-MM-JJ hh:mm:ss' from 'JJ/MM/AAAA hh:mm:ss'."""
-    if not '/' in date:
+    if '/' not in date:
         return date
     try:
         d, h = date.split()
