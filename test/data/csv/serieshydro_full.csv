@@ -1,5 +1,5 @@
 <CdSiteHydro>;<CdStationHydro>;<GrdSerie>;<DtObsHydro>;<ResObsHydro>;<MethObsHydro>;<StatutSerie>;<FLG>
-CdSiteHydro;CdStationHydro;GrdSerie;DtObsHydro;ResObsHydro;MethObsHydro;StatutSerie;FLG
+Code site;Code station;Grandeur;Date observation;Résultat;Methode;Statut;FLG
 A2331020;;Q;13/02/1999 05:22:10+00;123,33;0;0;FLG
 R7891220;R789122010;H;22/04/1968 12:12:12+00;5,00;4;4;FLG
 R7891220;R789122010;Q;1968-10-05 12:12:12+00;5,00;12;4;FLG

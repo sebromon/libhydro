@@ -330,6 +330,9 @@ class Serie(_composant_obs.Serie):
         except Exception as err:
             raise ValueError('resampling error, %s' % err)
 
+    # -- static methods --
+    # FIXME - add the concat function (from obshydro)
+
     # -- special methods --
     __all__attrs__ = (
         'grandeur', 'duree', 'statut', 'dtdeb', 'dtfin', 'dtprod',

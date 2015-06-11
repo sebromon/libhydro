@@ -45,7 +45,7 @@ __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
 __version__ = """0.4c"""
-__date__ = """2014-12-17"""
+__date__ = """2015-06-11"""
 
 # HISTORY
 # V0.4 - 2014-08-22
@@ -964,10 +964,10 @@ def _seriesmeteo_from_element(element):
                 if serie.__eq__(ser, ignore=['observations']):
                     # add obs to an exisitng serie
                     serie.observations = \
-                        _obsmeteo.Observations.concat(
+                        _obsmeteo.Observations.concat((
                             serie.observations,
                             _obsmeteo.Observations(obs)
-                        )
+                        ))
                     break
             else:
                 # new serie

@@ -25,11 +25,12 @@ from . import (_composant, intervenant as _intervenant)
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """1.0c"""
-__date__ = """2014-07-25"""
+__version__ = """1.0d"""
+__date__ = """2015-06-11"""
 
 # HISTORY
-# V0.1 - 2014-07-16
+# V1.0 - 2014-07-16
+#   add the Serie.concat function
 #   split the composant file in 3 parts
 
 
@@ -91,13 +92,16 @@ class Observations(_pandas.DataFrame):
         # return obj.view(cls)
         return obj
 
+    # -- static methods --
     @staticmethod
-    def concat(observations, others):
-        """Ajoute (concatene) une ou plusieurs observations.
+    def concat(observations, duplicates='raise', sort=False):
+        """Concatene plusieurs observations.
 
         Arguments:
-            observations (Observations)
-            others (Observation ou Observations) = observation(s) a ajouter
+            observations (iterable d'Observations) = observations a concatener
+            duplicates (string in ['raise' (defaut), 'drop']) = comportement
+                vis-a-vis des doublons dans l'index temporel
+            sort (bool, defaut False) = tri par l'index
 
         Pour agreger 2 Observations, on peut aussi utiliser la methode append
         des DataFrame ou bien directement la fonction concat de pandas.
@@ -110,11 +114,26 @@ class Observations(_pandas.DataFrame):
         # TODO - can't write a instance method to do that
         #        (can't subclass DataFrame !)
 
-        try:
-            return _pandas.concat([observations, others])
+        # pre-conditions
+        if not isinstance(duplicates, (str, unicode)) or \
+                duplicates not in ('raise', 'drop'):
+            raise ValueError(
+                "invalid str for duplicates: '{}'".format(duplicates)
+            )
 
-        except Exception:
-            return _pandas.concat([observations, Observations(others)])
+        # action
+        df = _pandas.concat(
+            observations,
+            verify_integrity=(duplicates != 'drop')
+        )
+        if duplicates == 'drop':
+            # group by the datetime index and take the most recent chunk
+            df = df.groupby(level=0).last()
+        if sort:
+            df.sort(inplace=True)
+
+        # return
+        return df
 
 
 # -- class Serie --------------------------------------------------------------
@@ -213,3 +232,47 @@ class Serie(object):
 
         except:
             raise TypeError('observations incorrect')
+
+    # -- static methods --
+    @staticmethod
+    def concat(series, duplicates='raise', sort=False):
+        """Concatene des series de base.
+
+        Methode a surcharger pour les series hydro et meteo.
+
+        Return a dic: {'dtdeb': dtdeb, 'dtfin': dtfin, 'dtprod': dtprod,
+                       'contact': contact, 'observations': observations}
+
+        Arguments:
+            series (iterable de Serie) = series a concatener
+            duplicates (str in ['raise' (defaut), 'drop']) = comportement
+                vis-a-vis des doublons dans l'index temporel des observations
+            sort (bool, defaut False) = tri des observations par l'index
+
+        """
+        # init
+        dtdeb, dtfin, dtprod, contact, observations = (None, ) * 5
+
+        # concatenate simple properties
+        for serie in series:
+            dtdeb = serie.dtdeb if dtdeb is None else min(dtdeb, serie.dtdeb)
+            dtfin = serie.dtfin if dtfin is None else max(dtfin, serie.dtfin)
+            dtprod = serie.dtprod if dtprod is None \
+                else min(dtprod, serie.dtprod)
+            if contact is None:
+                contact = serie.contact
+            elif contact != serie.contact:
+                raise ValueError(
+                    "can't concatenate series, contact doesn't match"
+                )
+
+        # concatenate observations
+        observations = Observations.concat(
+            [s.observations for s in series],
+            duplicates=duplicates,
+            sort=sort
+        )
+
+        # return
+        return {'dtdeb': dtdeb, 'dtfin': dtfin, 'dtprod': dtprod,
+                'contact': contact, 'observations': observations}

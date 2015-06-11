@@ -1,5 +1,5 @@
 <CdSiteMeteo>;<CdGrdMeteo>;<DtObsMeteo>;<ResObsMeteo>;<FLG>
-CdSiteMeteo;CdGrdMeteo;DtObsMeteo;ResObsMeteo;FLG
+Site;Grandeur;Date;Résultat;FLG
 31239004;VV;02/02/2011 15:00+00;100;FLG
 31239004;VV;02/02/2011 16:00+00;852;FLG
 31239004;VV;02/02/2011 17:00+00;5;FLG

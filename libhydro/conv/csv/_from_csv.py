@@ -20,7 +20,7 @@ import libhydro.core
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.5a"""
-__date__ = """2014-12-29"""
+__date__ = """2015-06-11"""
 
 # HISTORY¬
 # V0.5 - 2014-12-29¬
@@ -259,10 +259,10 @@ def merge_collection(collection, dtype):
                     setattr(
                         mergeditem,
                         child_name,
-                        libhydro.core.obshydro.Observations.concat(
+                        libhydro.core.obshydro.Observations.concat((
                             getattr(mergeditem, child_name),
                             getattr(item, child_name)
-                        )
+                        ))
                     )
                 break
         else:  # we have a new item here

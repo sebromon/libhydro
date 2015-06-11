@@ -48,11 +48,12 @@ from . import sitehydro as _sitehydro
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2d"""
-__date__ = """2014-12-17"""
+__version__ = """0.2e"""
+__date__ = """2015-05-19"""
 
 # HISTORY
 # V0.2 - 2014-07-15
+#   add the Serie.concat static method
 #   use the composant_obs module
 # V0.1 - 2013-07-18
 #   first shot
@@ -301,6 +302,46 @@ class Serie(_composant_obs.Serie):
             self._entite = entite
         except:
             raise
+
+    # -- static methods --
+    @staticmethod
+    def concat(series, duplicates='raise', sort=False):
+        """Concatene plusieurs series.
+
+        Retourne une nouvelle instance.
+
+        Arguments:
+            series (iterable de Serie) = series a concatener
+            duplicates (string in ['raise' (defaut), 'drop']) = comportement
+                vis-a-vis des doublons dans l'index temporel des observations
+            sort (bool, defaut False) = tri des observations par l'index
+
+        """
+        # check the specific attributes
+        entite, grandeur, statut = (None, ) * 3
+        for serie in series:
+            if entite is None:
+                entite = serie.entite
+            elif entite != serie.entite:
+                raise ValueError(
+                    "can't concatenate series, entite doesn't match"
+                )
+            if grandeur is None:
+                grandeur = serie.grandeur
+            elif grandeur != serie.grandeur:
+                raise ValueError(
+                    "can't concatenate series, grandeur doesn't match"
+                )
+            statut = serie.statut if statut is None \
+                else min(statut, serie.statut)
+
+        # call the base serie concat function
+        concat = _composant_obs.Serie.concat(
+            series=series, duplicates=duplicates, sort=sort
+        )
+
+        # return
+        return Serie(entite=entite, grandeur=grandeur, statut=statut, **concat)
 
     # -- special methods --
     __all__attrs__ = (
