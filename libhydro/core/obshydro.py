@@ -308,7 +308,9 @@ class Serie(_composant_obs.Serie):
     def concat(series, duplicates='raise', sort=False):
         """Concatene plusieurs series.
 
-        Retourne une nouvelle instance.
+        Leve une exception si l'entite ou la grandeur des series differe, sinon
+        retourne une nouvelle serie dont le statut est le plus faible de celui
+        des series a concatener.
 
         Arguments:
             series (iterable de Serie) = series a concatener

@@ -4,6 +4,7 @@
 ## Rubriques
 'Added' for new features.
 'Changed' for changes in existing functionality.
+'Breaks' for breaking changes
 'Dependency' for a dependency change.
 'Deprecated' for once-stable features removed in upcoming releases.
 'Fixed' for any bug fixes.
