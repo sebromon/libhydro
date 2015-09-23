@@ -48,11 +48,12 @@ from ...core import (
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2b"""
-__date__ = """2014-12-17"""
+__version__ = """0.2c"""
+__date__ = """2015-09-23"""
 
 # HISTORY
 # V0.2 - 2014-09-25
+#   configure and update the code model
 #   fix conversion to mm
 # V0.1 - 2013-08-01
 #   first shot
@@ -62,6 +63,10 @@ __date__ = """2014-12-17"""
 #         15s to load a complete 4 years file in a simulation from DVD
 #         (5s in a serie is quite good)
 #         One could use use skiprows and nrows read_table options
+
+
+# -- config -------------------------------------------------------------------
+CODE_MODEL = '00nMERSHOM'
 
 
 # -- functions ----------------------------------------------------------------
@@ -108,7 +113,7 @@ def simulation_from_hfs(
     # return Simulation
     return _simulation.Simulation(
         entite=serie.entite,
-        modeleprevision=_modeleprevision.Modeleprevision(code='SCnMERshom'),
+        modeleprevision=_modeleprevision.Modeleprevision(code=CODE_MODEL),
         grandeur='H',
         statut=16,
         qualite=100,
