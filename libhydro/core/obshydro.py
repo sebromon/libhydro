@@ -49,7 +49,7 @@ from . import sitehydro as _sitehydro
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.2e"""
-__date__ = """2015-05-19"""
+__date__ = """2015-10-30"""
 
 # HISTORY
 # V0.2 - 2014-07-15
@@ -262,9 +262,9 @@ class Serie(_composant_obs.Serie):
         )
 
         # -- adjust the descriptor --
-        vars(self.__class__)['grandeur'].strict = self._strict
-        vars(self.__class__)['grandeur'].required = self._strict
-        vars(self.__class__)['statut'].strict = self._strict
+        vars(Serie)['grandeur'].strict = self._strict
+        vars(Serie)['grandeur'].required = self._strict
+        vars(Serie)['statut'].strict = self._strict
 
         # -- descriptors --
         self.grandeur = grandeur

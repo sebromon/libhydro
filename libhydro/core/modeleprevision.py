@@ -20,7 +20,7 @@ from . import _composant
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.8d"""
-__date__ = """2014-12-17"""
+__date__ = """2015-10-30"""
 
 # HISTORY
 # V0.8 - 2014-03-02
@@ -74,7 +74,7 @@ class Modeleprevision(object):
         self._strict = bool(strict)
 
         # -- adjust the descriptor --
-        vars(self.__class__)['typemodele'].strict = self._strict
+        vars(Modeleprevision)['typemodele'].strict = self._strict
         self.libelle = unicode(libelle) if (libelle is not None) else None
         self.description = unicode(description) if \
             (description is not None) else None

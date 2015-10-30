@@ -24,7 +24,7 @@ __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
 __version__ = """0.4a"""
-__date__ = """2014-12-17"""
+__date__ = """2015-10-30"""
 
 # HISTORY
 # V0.4 - 2014-12-17
@@ -284,7 +284,7 @@ class Sitehydro(_Site_or_station):
         )
 
         # -- adjust the descriptor --
-        vars(self.__class__)['typesite'].strict = self._strict
+        vars(Sitehydro)['typesite'].strict = self._strict
 
         # -- simple properties --
         self.libelleusuel = unicode(libelleusuel) \
@@ -488,7 +488,7 @@ class Station(_Site_or_station):
         )
 
         # -- adjust the descriptor --
-        vars(self.__class__)['typestation'].strict = self._strict
+        vars(Station)['typestation'].strict = self._strict
 
         # -- simple properties --
         self.libellecomplement = unicode(libellecomplement) \
@@ -665,7 +665,7 @@ class Capteur(_Entitehydro):
         )
 
         # -- adjust the descriptor --
-        vars(self.__class__)['typemesure'].strict = self._strict
+        vars(Capteur)['typemesure'].strict = self._strict
 
         # -- descriptors --
         self.typemesure = typemesure

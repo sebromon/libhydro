@@ -35,7 +35,7 @@ from . import sitemeteo as _sitemeteo
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.9a"""
-__date__ = """2014-12-29"""
+__date__ = """2015-10-30"""
 
 # HISTORY
 # V0.9 - 2014-12-29
@@ -250,7 +250,7 @@ class Serie(_composant_obs.Serie):
         )
 
         # -- adjust the descriptor --
-        vars(self.__class__)['statut'].strict = self._strict
+        vars(Serie)['statut'].strict = self._strict
 
         # -- descriptors --
         self.statut = statut

@@ -35,7 +35,7 @@ from libhydro.core import sitehydro
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.2b"""
-__date__ = """2014-12-17"""
+__date__ = """2015-10-30"""
 
 # HISTORY
 # V0.1 - 2013-08-16
@@ -62,7 +62,7 @@ class TestSimulationFromHSF(unittest.TestCase):
             (sim.grandeur, sim.qualite, sim.commentaire),
             ('H', 100, 'data SHOM')
         )
-        self.assertEqual(sim.modeleprevision.code, 'SCnMERshom')
+        self.assertEqual(sim.modeleprevision.code, '00nMERSHOM')
         self.assertEqual(len(sim.previsions), 144)
         self.assertEqual(
             (sim.previsions[10], sim.previsions.index[10]),
@@ -85,7 +85,7 @@ class TestSimulationFromHSF(unittest.TestCase):
             (sim.grandeur, sim.qualite, sim.commentaire, sim.dtprod),
             ('H', 100, 'data SHOM', dtprod)
         )
-        self.assertEqual(sim.modeleprevision.code, 'SCnMERshom')
+        self.assertEqual(sim.modeleprevision.code, '00nMERSHOM')
         self.assertEqual(len(sim.previsions), 3)
         self.assertEqual(
             (sim.previsions[1], sim.previsions.index[1]),

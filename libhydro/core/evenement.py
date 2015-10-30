@@ -22,7 +22,7 @@ from . import (_composant, sitehydro as _sitehydro, sitemeteo as _sitemeteo)
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """1.0f"""
-__date__ = """2014-12-17"""
+__date__ = """2015-10-30"""
 
 # HISTORY
 # V1.0 - 2014-03-02
@@ -83,7 +83,7 @@ class Evenement(object):
         self._strict = bool(strict)
 
         # -- adjust the descriptor --
-        vars(self.__class__)['publication'].strict = self._strict
+        vars(Evenement)['publication'].strict = self._strict
 
         # -- descriptors --
         self.dt = dt

@@ -54,7 +54,7 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.7f"""
-__date__ = """2014-12-17"""
+__date__ = """2015-10-30"""
 
 # HISTORY
 # V0.7 - 2014-03-02
@@ -72,6 +72,7 @@ __date__ = """2014-12-17"""
 #         Capteur: {'H': False, 'Q':False}
 #     }
 # def _admit_simulation(self, grandeur):
+#      # be careful with  self._class_ and inheritance
 #      return ADMIT_SIMULATION[self.__class][grandeur]
 
 # TODO - add a sort argument/method ?
@@ -298,8 +299,8 @@ class Simulation(object):
         self.intervenant = intervenant
 
         # -- adjust the descriptors --
-        vars(self.__class__)['grandeur'].strict = self._strict
-        vars(self.__class__)['statut'].strict = self._strict
+        vars(Simulation)['grandeur'].strict = self._strict
+        vars(Simulation)['statut'].strict = self._strict
 
         # -- descriptors --
         self.grandeur = grandeur

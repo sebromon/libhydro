@@ -31,8 +31,8 @@ from libhydro.core import _composant_site as composant_site
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2a"""
-__date__ = """2014-12-17"""
+__version__ = """0.2b"""
+__date__ = """2015-10-30"""
 
 # HISTORY
 # V0.2 - 2014-12-17
@@ -302,6 +302,21 @@ class TestSitehydro(unittest.TestCase):
             sitehydro.Sitehydro(
                 code=code, tronconsvigilance='I am not a troncon'
             )
+
+    def test_inheritance(self):
+        """Test inheritance."""
+        class Sitehydro(sitehydro.Sitehydro):
+            def __init__(self, code, prop, *args, **kwargs):
+                super(Sitehydro, self).__init__(code, *args, **kwargs)
+                self.prop = prop
+
+        code = 'A3331020'
+        prop = 10
+        commune = '32001'
+        x = Sitehydro(code=code, prop=prop, communes=commune)
+        self.assertEqual(x.code, code)
+        self.assertEqual(x.prop, prop)
+        self.assertEqual(x.communes, [commune])
 
 
 # -- class TestStation --------------------------------------------------------

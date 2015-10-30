@@ -23,7 +23,7 @@ from . import (_composant, _composant_site)
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __version__ = """0.3a"""
-__date__ = """2014-12-17"""
+__date__ = """2014-10-30"""
 
 # HISTORY
 # V0.3 - 2014-12-17
@@ -268,8 +268,8 @@ class Grandeur(object):
         self._strict = bool(strict)
 
         # -- adjust the descriptor --
-        vars(self.__class__)['typemesure'].strict = self._strict
-        vars(self.__class__)['typemesure'].required = self._strict
+        vars(Grandeur)['typemesure'].strict = self._strict
+        vars(Grandeur)['typemesure'].required = self._strict
 
         # -- descriptors --
         self.typemesure = typemesure
