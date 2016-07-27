@@ -115,7 +115,7 @@ setup(
     install_requires=(
         # 'python >= 2.7, <3',
         'numpy >= 1.7.1',
-        'pandas >= 0.11.0',
+        'pandas == 0.16',
         'lxml >= 3.2.3',
         # 'suds-jurko >= 0.6'
     ),
