@@ -44,8 +44,8 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.4c"""
-__date__ = """2015-06-11"""
+__version__ = """0.4d"""
+__date__ = """2017-02-13"""
 
 # HISTORY
 # V0.4 - 2014-08-22
@@ -530,9 +530,8 @@ def _seuilhydro_from_element(element, sitehydro):
         args['mnemo'] = _value(element, 'MnemoSeuilSiteHydro')
         args['gravite'] = _value(element, 'IndiceGraviteSeuilSiteHydro')
         args['commentaire'] = _value(element, 'ComSeuilSiteHydro')
-        args['publication'] = _istrue(
-            _value(element, 'DroitPublicationSeuilSiteHydro')
-        )
+        args['publication'] = _value(
+            element, 'DroitPublicationSeuilSiteHydro', bool)
         args['valeurforcee'] = _value(element, 'ValForceeSeuilSiteHydro')
         args['dtmaj'] = _value(element, 'DtMajSeuilSiteHydro', _UTC)
         seuil = _seuil.Seuilhydro(**args)
@@ -720,7 +719,7 @@ def _obsshydro_from_element(element):
             qal = _value(o, 'QualifObsHydro', int)
             if qal is not None:
                 args['qal'] = qal
-            continuite = _istrue(_value(o, 'ContObsHydro'))
+            continuite = _value(o, 'ContObsHydro', bool)
             if continuite is not None:
                 args['cnt'] = continuite
             observations.append(_obshydro.Observation(**args))
@@ -984,14 +983,6 @@ def _seriesmeteo_from_element(element):
 
 
 # -- utility functions --------------------------------------------------------
-def _istrue(s):
-    """Return wether s is a kind of True... or None."""
-    # bool('False') is True...
-    if s is None:
-        return None
-    return (unicode(s).lower() in ('true', 'vrai', '1'))
-
-
 def _UTC(dte):
     """Return string date with suffix +00 if no time zone specified."""
     if (dte is not None) and (dte.find('+') == -1):
@@ -1005,5 +996,9 @@ def _value(element, tag, cast=unicode):
     if element is not None:
         e = element.find(tag)
         if (e is not None) and (e.text is not None):
+            if cast == bool:
+                # return wether text is a kind of True... or not
+                return (unicode(e.text).lower() in ('true', 'vrai', '1'))
+            # else
             return cast(e.text)
     # return None

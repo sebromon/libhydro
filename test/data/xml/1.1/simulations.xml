@@ -24,6 +24,7 @@
         <DtProdSimul>2010-02-26T14:45:00</DtProdSimul>
         <IndiceQualiteSimul>36.000</IndiceQualiteSimul>
         <StatutSimul>4</StatutSimul>
+        <PubliSimul>false</PubliSimul>
         <ComSimul>Biais=-14.91 Précision=36.00</ComSimul>
         <CdSiteHydro>Y1612020</CdSiteHydro>
         <CdModelePrevision>13_08</CdModelePrevision>
@@ -63,7 +64,7 @@
         <DtProdSimul>2010-02-26T14:45:00</DtProdSimul>
         <IndiceQualiteSimul>21.000</IndiceQualiteSimul>
         <StatutSimul>4</StatutSimul>
-        <PubliSimul>true</PubliSimul>
+        <PubliSimul>vrai</PubliSimul>
         <CdStationHydro>Y161202001</CdStationHydro>
         <CdModelePrevision>ScMerSHOM</CdModelePrevision>
         <CdContact schemeAgencyID="SANDRE">41</CdContact>
