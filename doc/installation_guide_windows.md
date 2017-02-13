@@ -2,8 +2,8 @@ INSTALLATION DE LIBHYDRO SOUS WINDOWS
 ===============================================================================
 
 * Auteur: philippe.gouin@developpement-durable.gouv.fr
-* Version: 0.2g
-* Mise à jour: 2015-02-23
+* Version: 0.2h
+* Mise à jour: 2016-09-28
 
 Installation packagée de Python (CONSEILLE)
 -------------------------------------------------------------------------------
@@ -16,18 +16,19 @@ sur le même OS plusieurs distributions python isolées les unes des autres
 ([Réf 2][2]) ([Réf 3][3]).
 
 ### Paramétrer le proxy ####
-L'installateur conda doit pouvoir accéder à internet en http pour télécharger
-les paquets à installer, ce qui peux nécessiter le paramétrage d'un proxy (à
-vérifier le cas échéant avec votre administrateur réseau).
+L'installateur conda doit pouvoir accéder à internet en http et https pour
+télécharger les paquets à installer, ce qui peux nécessiter le paramétrage
+d'un proxy (à vérifier le cas échéant avec votre administrateur réseau).
 
 La méthode conseillée est l'utilisation d'un fichier .condarc ([Réf 4][4]).
 
 Exemple:
 ```
 #!bat
-# Proxy settings: http://[username]:[password]@[server]:[port]
+# Proxy settings: http(s)://[username]:[password]@[server]:[port]
 proxy_servers:
-    http: http://user:pass@corp.com:8080
+    http: http://user:pass@corp.com:port
+    https: http://user:pass@corp.com:port
 ```
 
 A défaut, le proxy internet peut être déclaré dans la console DOS avec la
@@ -35,6 +36,7 @@ commande set:
 ```
 #!bat
 set http_proxy=http://[username]:[password]@[server]:[port]
+set https_proxy=http://[username]:[password]@[server]:[port]
 ```
 
 Il est déconseillé d'utiliser des variables d'environnement globales qui
