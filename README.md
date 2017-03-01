@@ -1,4 +1,4 @@
-Libhydro ![icon](https://bitbucket.org/PhilippeGouin/libhydro/raw/stable/icon.jpg)
+Libhydro ![icon](https://bitbucket.org/pch_fr/libhydro/raw/stable/icon.jpg)
 ===============================================================================
 
 Présentation
