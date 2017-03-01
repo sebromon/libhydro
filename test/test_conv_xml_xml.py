@@ -19,9 +19,6 @@ from __future__ import (
     print_function as _print_function
 )
 
-import sys
-sys.path.append('..')
-
 import os
 import tempfile
 import shutil

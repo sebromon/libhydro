@@ -19,9 +19,6 @@ from __future__ import (
     print_function as _print_function
 )
 
-import sys
-sys.path.append('..')
-
 import unittest
 
 from libhydro.core import _composant_site as composant_site

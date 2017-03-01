@@ -21,3 +21,15 @@ Launch iPython QtConsole with dark colors and inbeded matplotlib graphs:
 Installer les outils de test (facultatif)
 -------------------------------------------------------------------------------
     pip install coverage, nose
+
+Les test et PIP
+-------------------------------------------------------------------------------
+Les tests nécessitent que la libhydro soit accessible dans
+l'environnement Python utilisé. Pour que la version de la libhydro en
+cours de développement soit prise en compte, il convient de l'installer
+avec le mode 'éditable' de PIP (option -e). Depuis le dossier principal
+du dépôt ou figure le fichier setup.py, utiliser la commande:
+```
+#!sh
+pip install -e .
+```

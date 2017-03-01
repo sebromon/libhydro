@@ -20,8 +20,6 @@ from __future__ import (
 )
 
 import sys
-sys.path.append('..')
-
 import unittest
 import StringIO
 
