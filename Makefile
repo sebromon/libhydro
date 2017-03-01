@@ -1,10 +1,11 @@
+# which is bash on Fedora
 SHELL = /bin/sh
-BACKUP_DST := '/mnt/vosges2/gouinph/developpements/libhydro/libhydro'
+
+.PHONY: backup dist doc test clean cleanall help
 
 default: help
 
-.PHONY: backup
-backup:
+backup: cleanall
 	@echo
 	@echo '-----------------------'
 	@echo 'Backup the repo'
@@ -15,9 +16,8 @@ backup:
 	@if test -z "${DEST}"; then echo 'missing DEST dir'; exit 1; fi
 	@if test ! -d "${DEST}"; then echo 'unknown DEST dir'; exit 1; fi
 	# backup to ${DEST}
-	@tar cjf ${DEST}/bdimage_$(shell date +%Y%m%d).tar.bz2 -C '..' $(shell basename ${PWD})
+	@tar cjf ${DEST}/libhydro_$(shell date +%Y%m%d).tar.bz2 -C '..' $(shell basename ${PWD})
 
-.PHONY: dist
 dist:
 	@echo
 	@echo '-----------------------'
@@ -29,16 +29,13 @@ dist:
 	@python setup.py bdist_wheel
 	@# FIXME - @python setup.py bdist_wininst
 
-.PHONY: doc
 doc:
 	@cd doc && $(MAKE) all
 
-.PHONY: test
 test:
 	@echo
 	@$(MAKE) discover -C test
 
-.PHONY: clean
 clean:
 	@echo
 	@echo '-------------------'
@@ -47,7 +44,6 @@ clean:
 	@echo
 	@find . -name '*.pyc' -exec rm {} \;
 
-.PHONY: cleanall
 cleanall:
 	@echo
 	@echo '---------------------------'
@@ -59,7 +55,6 @@ cleanall:
 	# remove the build and the libhydro.egg-info dirs
 	@rm -rf ./build ./libhydro.egg-info
 
-.PHONY: help
 help:
 	@echo
 	@echo '------------------'
