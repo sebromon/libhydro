@@ -1,17 +1,3 @@
-#------------------------------------------------------------------------------
-# LIBHYDRO - main makefile
-#------------------------------------------------------------------------------
-# Author: Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>
-# Version: 0.2b - 2015-02-23
-# History:
-#   V0.2 - 2014-08-26
-#     add the wheel dist
-#     add the backup and the doc targets
-#   V0.1 - 2014-08-02
-#     first shot
-#------------------------------------------------------------------------------
-# TODO - link the tests and doc Makefiles
-#------------------------------------------------------------------------------
 SHELL = /bin/sh
 BACKUP_DST := '/mnt/vosges2/gouinph/developpements/libhydro/libhydro'
 
@@ -24,7 +10,12 @@ backup:
 	@echo 'Backup the repo'
 	@echo '-----------------------'
 	@echo
-	tar cjf ${BACKUP_DST}_$(shell date +%Y%m%d).tar.bz2 .
+	# check destination
+	@set -e
+	@if test -z "${DEST}"; then echo 'missing DEST dir'; exit 1; fi
+	@if test ! -d "${DEST}"; then echo 'unknown DEST dir'; exit 1; fi
+	# backup to ${DEST}
+	@tar cjf ${DEST}/bdimage_$(shell date +%Y%m%d).tar.bz2 -C '..' $(shell basename ${PWD})
 
 .PHONY: dist
 dist:
@@ -41,6 +32,11 @@ dist:
 .PHONY: doc
 doc:
 	@cd doc && $(MAKE) all
+
+.PHONY: test
+test:
+	@echo
+	@$(MAKE) discover -C test
 
 .PHONY: clean
 clean:
@@ -70,8 +66,9 @@ help:
 	@echo 'Available commands'
 	@echo '------------------'
 	@echo
-	@echo 'make backup'
+	@echo 'make backup DEST=<directory>'
 	@echo 'make clean|cleanall'
 	@echo 'make dist'
 	@echo 'make doc'
+	@echo 'make test'
 	@echo 'make [help]'
