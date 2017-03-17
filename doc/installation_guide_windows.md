@@ -144,7 +144,7 @@ Installation de libhydro
 Ouvrir un terminal et faire:
 ```
 #!bat
-pip install https://bitbucket.org/pch_fr/libhydro/downloads/libhydro-0.5.3-py2-none-any.whl"
+pip install "https://bitbucket.org/pch_fr/libhydro/downloads/libhydro-0.5.3-py2-none-any.whl"
 ```
 
 [1]: http://conda.pydata.org/miniconda.html "Miniconda"
