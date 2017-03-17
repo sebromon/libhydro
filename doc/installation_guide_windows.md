@@ -46,7 +46,7 @@ peuvent impacter d'autres applications.
 Installer les pré-requis pour libhydro:
 ```
 #!bat
-conda install pandas lxml
+conda install pip pandas lxml
 ```
 
 Dépendances facultatives pour Pandas, permettant d'améliorer les performances

@@ -2,8 +2,8 @@ INSTALLATION DE LIBHYDRO SOUS LINUX
 ===============================================================================
 
 * Auteur: philippe.gouin@developpement-durable.gouv.fr
-* Version: 0.1c
-* Mise à jour: 2015-02-23
+* Version: 0.1d
+* Mise à jour: 2017-03-17
 
 Installation packagée de Python (CONSEILLE)
 -------------------------------------------------------------------------------
