@@ -181,10 +181,10 @@ pip install -r (pip_freeze_file)
 
 Installer libhydro
 -------------------------------------------------------------------------------
-Télécharger et décompresser l'archive puis dans un terminal faire:
+Ouvrir un terminal et faire:
 ```
 #!sh
-python setup.py install
+pip install https://bitbucket.org/pch_fr/libhydro/downloads/libhydro-0.5.3-py2-none-any.whl"
 ```
 
 [1]: http://toomuchdata.com/2012/06/25/how-to-install-python-2-7-3-on-centos-6-2/ "Python on CentOS"

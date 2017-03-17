@@ -2,8 +2,8 @@ INSTALLATION DE LIBHYDRO SOUS WINDOWS
 ===============================================================================
 
 * Auteur: philippe.gouin@developpement-durable.gouv.fr
-* Version: 0.2h
-* Mise à jour: 2016-09-28
+* Version: 0.2i
+* Mise à jour: 2017-03-17
 
 Installation packagée de Python (CONSEILLE)
 -------------------------------------------------------------------------------
@@ -141,10 +141,10 @@ préférable d'utiliser des paquets déjà construits, disponibles sur Pypi ou
 
 Installation de libhydro
 -------------------------------------------------------------------------------
-Télécharger et décompresser l'archive puis dans un terminal faire:
+Ouvrir un terminal et faire:
 ```
 #!bat
-python setup.py install
+pip install https://bitbucket.org/pch_fr/libhydro/downloads/libhydro-0.5.3-py2-none-any.whl"
 ```
 
 [1]: http://conda.pydata.org/miniconda.html "Miniconda"
