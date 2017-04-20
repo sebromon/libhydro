@@ -8,11 +8,8 @@ Ce module contient les classes:
 """
 # -- imports ------------------------------------------------------------------
 from __future__ import (
-    unicode_literals as _unicode_literals,
-    absolute_import as _absolute_import,
-    division as _division,
-    print_function as _print_function
-)
+    unicode_literals as _unicode_literals, absolute_import as _absolute_import,
+    division as _division, print_function as _print_function)
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 from . import _composant
@@ -21,10 +18,13 @@ from . import _composant
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2f"""
-__date__ = """2014-12-17"""
+__version__ = """0.3.0"""
+__date__ = """2017-04-20"""
 
 # HISTORY
+# V0.3 - 2017-04-20
+#   fix Contact.code type
+#   some refactoring
 # V0.2 - 2014-03-02
 #   use descriptors
 # V0.1 - 2013-08-20
@@ -62,9 +62,8 @@ class Intervenant(object):
     # dtcreation
     # dtmaj
 
-    def __init__(
-        self, code=0, origine=None, nom=None, mnemo=None, contacts=None
-    ):
+    def __init__(self, code=0, origine=None, nom=None, mnemo=None,
+                 contacts=None):
         """Initialisation.
 
         Arguments:
@@ -174,8 +173,7 @@ class Intervenant(object):
             # some checks
             if not isinstance(contact, Contact):
                 raise TypeError(
-                    'contacts must be a Contact or an iterable of Contact'
-                )
+                    'contacts must be a Contact or an iterable of Contact')
             if (contact.intervenant is not None) \
                     and (contact.intervenant != self):
                 raise ValueError(
@@ -184,9 +182,7 @@ class Intervenant(object):
                         else '<sans code>',
                         contact.intervenant.code
                         if (contact.intervenant.code is not None)
-                        else '<sans code>'
-                    )
-                )
+                        else '<sans code>'))
             # add contact
             contact.intervenant = self
             self._contacts.append(contact)
@@ -211,8 +207,7 @@ class Intervenant(object):
             self.code if self.code is not None else '<sans code>',
             nom,
             len(self.contacts),
-            '' if (len(self.contacts) < 2) else 's'
-        )
+            '' if (len(self.contacts) < 2) else 's')
 
     __str__ = _composant.__str__
 
@@ -225,7 +220,7 @@ class Contact(object):
     Classe pour manipuler des contacts.
 
     Proprietes:
-        code (entier < 9999)
+        code (string(5))
         nom (string)
         prenom (string)
         civilite (entier parmi NOMENCLATURE[538])
@@ -251,13 +246,12 @@ class Contact(object):
 
     civilite = _composant.Nomenclatureitem(nomenclature=538, required=False)
 
-    def __init__(
-        self, code=None, nom=None, prenom=None, civilite=None, intervenant=None
-    ):
+    def __init__(self, code=None, nom=None, prenom=None, civilite=None,
+                 intervenant=None):
         """Initialisation.
 
         Arguments:
-            code (entier < 9999)
+            code (string(5))
             nom (string)
             prenom (string)
             civilite (entier parmi NOMENCLATURE[538])
@@ -295,9 +289,9 @@ class Contact(object):
 
             # other cases
             if code is not None:
-                code = int(code)
-                if not (0 <= code <= 9999):
-                    raise ValueError('code must be in range 0-9999')
+                code = unicode(code)
+                if len(code) > 5:
+                    raise ValueError('maximum code length is 5')
 
             # all is well
             self._code = code
@@ -342,8 +336,7 @@ class Contact(object):
             civilite,
             self.nom if self.nom is not None else '<sans nom>',
             self.prenom if self.prenom is not None else '<sans prenom>',
-            intervenant
-        )
+            intervenant)
 
     __str__ = _composant.__str__
 

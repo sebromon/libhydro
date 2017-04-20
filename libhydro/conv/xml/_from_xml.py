@@ -15,11 +15,8 @@ classe xml.Message comme interface aux fichiers XML Hydrometrie.
 """
 # -- imports ------------------------------------------------------------------
 from __future__ import (
-    unicode_literals as _unicode_literals,
-    absolute_import as _absolute_import,
-    division as _division,
-    print_function as _print_function
-)
+    unicode_literals as _unicode_literals, absolute_import as _absolute_import,
+    division as _division, print_function as _print_function)
 
 import datetime as _datetime
 import collections as _collections
@@ -27,27 +24,23 @@ import collections as _collections
 from lxml import etree as _etree
 
 from libhydro.core import (
-    _composant,
-    intervenant as _intervenant,
-    sitehydro as _sitehydro,
-    sitemeteo as _sitemeteo,
-    seuil as _seuil,
-    modeleprevision as _modeleprevision,
-    obshydro as _obshydro,
-    obsmeteo as _obsmeteo,
-    simulation as _simulation,
-    evenement as _evenement
-)
+    _composant, intervenant as _intervenant, sitehydro as _sitehydro,
+    sitemeteo as _sitemeteo, seuil as _seuil,
+    modeleprevision as _modeleprevision, obshydro as _obshydro,
+    obsmeteo as _obsmeteo, simulation as _simulation, evenement as _evenement)
 
 
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.4d"""
-__date__ = """2017-02-13"""
+__version__ = """0.5.0"""
+__date__ = """2017-04-20"""
 
 # HISTORY
+# V0.5 - 2017-04-20
+#   fix the Contact.code type
+#   some refactoring
 # V0.4 - 2014-08-22
 #   factorize the global functions
 #   add the intervenants
@@ -71,20 +64,13 @@ __date__ = """2017-02-13"""
 
 
 # -- config -------------------------------------------------------------------
-PREV_PROBABILITY = {
-    'ResMoyPrev': 50,
-    'ResMinPrev': 0,
-    'ResMaxPrev': 100
-}
+PREV_PROBABILITY = {'ResMoyPrev': 50, 'ResMinPrev': 0, 'ResMaxPrev': 100}
 
 
 # -- Emetteur and Destinataire named tuples -----------------------------------
-Emetteur = _collections.namedtuple(
-    'Emetteur', ['intervenant', 'contact']
-)
+Emetteur = _collections.namedtuple('Emetteur', ['intervenant', 'contact'])
 Destinataire = _collections.namedtuple(
-    'Destinataire', ['intervenant', 'contact']
-)
+    'Destinataire', ['intervenant', 'contact'])
 
 
 # -- class Scenario -----------------------------------------------------------
@@ -158,17 +144,14 @@ class Scenario(object):
         elif isinstance(emetteur, _intervenant.Intervenant):
             try:
                 # we try to use the first contact
-                self._emetteur = Emetteur(
-                    emetteur, emetteur.contacts[0]
-                )
+                self._emetteur = Emetteur(emetteur, emetteur.contacts[0])
             except Exception:
                 self._emetteur = Emetteur(emetteur, None)
         elif isinstance(emetteur, _intervenant.Contact):
             if not isinstance(emetteur.intervenant, _intervenant.Intervenant):
                 raise TypeError(
                     'using a Contact without intervenant for an emetteur '
-                    'is forbidden'
-                )
+                    'is forbidden')
             self._emetteur = Emetteur(emetteur.intervenant, emetteur)
         else:
             raise TypeError('emetteur must be an Intervenant or a Contact')
@@ -188,36 +171,30 @@ class Scenario(object):
             try:
                 # we try to use the first contact
                 self._destinataire = Destinataire(
-                    destinataire, destinataire.contacts[0]
-                )
+                    destinataire, destinataire.contacts[0])
             except Exception:
                 self._destinataire = Destinataire(destinataire, None)
         elif isinstance(destinataire, _intervenant.Contact):
             if not isinstance(
-                destinataire.intervenant, _intervenant.Intervenant
-            ):
+                    destinataire.intervenant, _intervenant.Intervenant):
                 raise TypeError(
                     'using a Contact without intervenant for an destinataire '
-                    'is forbidden'
-                )
+                    'is forbidden')
             self._destinataire = Destinataire(
-                destinataire.intervenant, destinataire
-            )
+                destinataire.intervenant, destinataire)
         else:
             raise TypeError('destinataire must be an Intervenant or a Contact')
 
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
-        return 'Message du {dt}\n' \
-               'Emetteur: {ei} [{ec}]\n' \
+        return 'Message du {dt}\n Emetteur: {ei} [{ec}]\n' \
                'Destinataire: {di} [{dc}]'.format(
                    dt=self.dtprod,
                    ei=unicode(self.emetteur.intervenant),
                    ec=unicode(self.emetteur.contact) or '<sans contact>',
                    di=unicode(self.destinataire.intervenant),
-                   dc=unicode(self.destinataire.contact) or '<sans contact>'
-               )
+                   dc=unicode(self.destinataire.contact) or '<sans contact>')
 
     __str__ = _composant.__str__
 
@@ -258,8 +235,7 @@ def _parse(src, ordered=True):
 
     # read the file
     parser = _etree.XMLParser(
-        remove_blank_text=True, remove_comments=True, ns_clean=True
-    )
+        remove_blank_text=True, remove_comments=True, ns_clean=True)
     tree = _etree.parse(src, parser=parser)
 
     # deal with namespaces
@@ -268,45 +244,28 @@ def _parse(src, ordered=True):
         raise ValueError("can't parse xml file with namespaces")
 
     return {
-        'scenario': _scenario_from_element(
-            tree.find('Scenario')
-        ),
+        'scenario': _scenario_from_element(tree.find('Scenario')),
         'intervenants': _intervenants_from_element(
-            tree.find('RefHyd/Intervenants')
-        ),
-        'siteshydro': _siteshydro_from_element(
-            tree.find('RefHyd/SitesHydro')
-        ),
-        'sitesmeteo': _sitesmeteo_from_element(
-            tree.find('RefHyd/SitesMeteo')
-        ),
+            tree.find('RefHyd/Intervenants')),
+        'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro')),
+        'sitesmeteo': _sitesmeteo_from_element(tree.find('RefHyd/SitesMeteo')),
         'seuilshydro': _seuilshydro_from_element(
-            element=tree.find('RefHyd/SitesHydro'),
-            ordered=ordered
-        ),
+            element=tree.find('RefHyd/SitesHydro'), ordered=ordered),
         'modelesprevision': _modelesprevision_from_element(
-            tree.find('RefHyd/ModelesPrevision')
-        ),
+            tree.find('RefHyd/ModelesPrevision')),
         'evenements': _evenements_from_element(
-            tree.find('Donnees/Evenements')
-        ),
+            tree.find('Donnees/Evenements')),
         # 'courbestarage'
         # 'jaugeages'
         # 'courbescorrection'
-        'serieshydro': _serieshydro_from_element(
-            tree.find('Donnees/Series')
-        ),
+        'serieshydro': _serieshydro_from_element(tree.find('Donnees/Series')),
         'seriesmeteo': _seriesmeteo_from_element(
-            tree.find('Donnees/ObssMeteo')
-        ),
+            tree.find('Donnees/ObssMeteo')),
         # 'obsselab'
         # 'gradshydro'
         # 'qualifsannee'
-        'simulations': _simulations_from_element(
-            tree.find('Donnees/Simuls')
-        )
         # 'alarmes'
-    }
+        'simulations': _simulations_from_element(tree.find('Donnees/Simuls'))}
 
 
 # -- atomic functions ---------------------------------------------------------
@@ -318,18 +277,13 @@ def _scenario_from_element(element):
                 code=_value(element.find('Emetteur'), 'CdIntervenant'),
                 nom=_value(element.find('Emetteur'), 'NomIntervenant'),
                 contacts=_intervenant.Contact(
-                    _value(element.find('Emetteur'), 'CdContact')
-                ),
-            ),
+                    _value(element.find('Emetteur'), 'CdContact')),),
             destinataire=_intervenant.Intervenant(
                 code=_value(element.find('Destinataire'), 'CdIntervenant'),
                 nom=_value(element.find('Destinataire'), 'NomIntervenant'),
                 contacts=_intervenant.Contact(
-                    _value(element.find('Destinataire'), 'CdContact')
-                ),
-            ),
-            dtprod=_value(element, 'DateHeureCreationFichier', _UTC)
-        )
+                    _value(element.find('Destinataire'), 'CdContact')),),
+            dtprod=_value(element, 'DateHeureCreationFichier', _UTC))
 
 
 def _intervenant_from_element(element):
@@ -338,15 +292,12 @@ def _intervenant_from_element(element):
         # prepare args
         args = {}
         args['code'] = _value(element, 'CdIntervenant', int)
-        args['origine'] = element.find(
-            'CdIntervenant'
-        ).attrib['schemeAgencyID']
+        args['origine'] = element.find('CdIntervenant').attrib[
+            'schemeAgencyID']
         args['nom'] = _value(element, 'NomIntervenant')
         args['mnemo'] = _value(element, 'MnIntervenant')
-        args['contacts'] = [
-            _contact_from_element(e)
-            for e in element.findall('Contacts/Contact')
-        ]
+        args['contacts'] = [_contact_from_element(e)
+                            for e in element.findall('Contacts/Contact')]
         # build an Intervenant
         intervenant = _intervenant.Intervenant(**args)
         # update the Contacts
@@ -361,7 +312,7 @@ def _contact_from_element(element, intervenant=None):
     if element is not None:
         # prepare args
         args = {}
-        args['code'] = _value(element, 'CdContact', int)
+        args['code'] = _value(element, 'CdContact')
         args['nom'] = _value(element, 'NomContact')
         args['prenom'] = _value(element, 'PrenomContact')
         args['civilite'] = _value(element, 'CiviliteContact', int)
@@ -383,21 +334,16 @@ def _sitehydro_from_element(element):
         args['libelle'] = _value(element, 'LbSiteHydro')
         args['libelleusuel'] = _value(element, 'LbUsuelSiteHydro')
         args['coord'] = _coord_from_element(
-            element.find('CoordSiteHydro'), 'SiteHydro'
-        )
+            element.find('CoordSiteHydro'), 'SiteHydro')
         args['stations'] = [
             _station_from_element(e)
-            for e in element.findall('StationsHydro/StationHydro')
-        ]
+            for e in element.findall('StationsHydro/StationHydro')]
         args['communes'] = [
-            unicode(e.text) for e in element.findall('CdCommune')
-        ]
+            unicode(e.text) for e in element.findall('CdCommune')]
         args['tronconsvigilance'] = [
             _tronconvigilance_from_element(e)
             for e in element.findall(
-                'TronconsVigilanceSiteHydro/TronconVigilanceSiteHydro'
-            )
-        ]
+                'TronconsVigilanceSiteHydro/TronconVigilanceSiteHydro')]
         # build a Sitehydro and return
         return _sitehydro.Sitehydro(**args)
 
@@ -411,16 +357,14 @@ def _sitemeteo_from_element(element):
         args['libelle'] = _value(element, 'LbSiteMeteo')
         args['libelleusuel'] = _value(element, 'LbUsuelSiteMeteo')
         args['coord'] = _coord_from_element(
-            element.find('CoordSiteMeteo'), 'SiteMeteo'
-        )
+            element.find('CoordSiteMeteo'), 'SiteMeteo')
         args['commune'] = _value(element, 'CdCommune')
         # build a Sitemeteo
         sitemeteo = _sitemeteo.Sitemeteo(**args)
         # add the Grandeurs
         sitemeteo.grandeurs.extend([
             _grandeur_from_element(e, sitemeteo)
-            for e in element.findall('GrdsMeteo/GrdMeteo')
-        ])
+            for e in element.findall('GrdsMeteo/GrdMeteo')])
         # return
         return sitemeteo
 
@@ -449,23 +393,18 @@ def _station_from_element(element):
             args['typestation'] = typestation
         args['libelle'] = _value(element, 'LbStationHydro')
         args['libellecomplement'] = _value(
-            element, 'ComplementLibelleStationHydro'
-        )
+            element, 'ComplementLibelleStationHydro')
         niveauaffichage = _value(element, 'NiveauAffichageStationHydro')
         if niveauaffichage is not None:
             args['niveauaffichage'] = niveauaffichage
         args['coord'] = _coord_from_element(
-            element.find('CoordStationHydro'), 'StationHydro'
-        )
+            element.find('CoordStationHydro'), 'StationHydro')
         args['capteurs'] = [
             _capteur_from_element(e)
-            for e in element.findall('Capteurs/Capteur')
-        ]
+            for e in element.findall('Capteurs/Capteur')]
         args['commune'] = _value(element, 'CdCommune')
-        args['ddcs'] = [
-            unicode(e.text)
-            for e in element.findall('ReseauxMesureStationHydro/CodeSandreRdd')
-        ]
+        args['ddcs'] = [unicode(e.text) for e in element.findall(
+            'ReseauxMesureStationHydro/CodeSandreRdd')]
         # build a Station and return
         return _sitehydro.Station(**args)
 
@@ -538,16 +477,13 @@ def _seuilhydro_from_element(element, sitehydro):
         # add the values
         args['valeurs'] = []
         valeurseuil = _valeurseuilsitehydro_from_element(
-            element, sitehydro, seuil
-        )
+            element, sitehydro, seuil)
         if valeurseuil is not None:
             args['valeurs'].append(valeurseuil)
         args['valeurs'].extend([
             _valeurseuilstation_from_element(e, seuil)
             for e in element.findall(
-                './ValeursSeuilsStationHydro/ValeursSeuilStationHydro'
-            )
-        ])
+                './ValeursSeuilsStationHydro/ValeursSeuilStationHydro')])
         # build a Seuilhydro and return
         # FIXME - why do we use a second Seuilhydro ????
         return _seuil.Seuilhydro(**args)
@@ -568,11 +504,9 @@ def _valeurseuilsitehydro_from_element(element, sitehydro, seuil):
         args['entite'] = sitehydro
         args['tolerance'] = _value(element, 'ToleranceSeuilSiteHydro')
         args['dtactivation'] = _value(
-            element, 'DtActivationSeuilSiteHydro', _UTC
-        )
+            element, 'DtActivationSeuilSiteHydro', _UTC)
         args['dtdesactivation'] = _value(
-            element, 'DtDesactivationSeuilSiteHydro', _UTC
-        )
+            element, 'DtDesactivationSeuilSiteHydro', _UTC)
         # build a Valeurseuil and return
         return _seuil.Valeurseuil(**args)
 
@@ -585,15 +519,12 @@ def _valeurseuilstation_from_element(element, seuil):
         args['valeur'] = _value(element, 'ValHauteurSeuilStationHydro')
         args['seuil'] = seuil
         args['entite'] = _sitehydro.Station(
-            code=_value(element, 'CdStationHydro')
-        )
+            code=_value(element, 'CdStationHydro'))
         args['tolerance'] = _value(element, 'ToleranceSeuilStationHydro')
         args['dtactivation'] = _value(
-            element, 'DtActivationSeuilStationHydro', _UTC
-        )
+            element, 'DtActivationSeuilStationHydro', _UTC)
         args['dtdesactivation'] = _value(
-            element, 'DtDesactivationSeuilStationHydro', _UTC
-        )
+            element, 'DtDesactivationSeuilStationHydro', _UTC)
         # build a Valeurseuil and return
         return _seuil.Valeurseuil(**args)
 
@@ -620,27 +551,22 @@ def _evenement_from_element(element):
         entite = None
         if element.find('CdSiteHydro') is not None:
             entite = _sitehydro.Sitehydro(
-                code=_value(element, 'CdSiteHydro')
-            )
+                code=_value(element, 'CdSiteHydro'))
         elif element.find('CdStationHydro') is not None:
             entite = _sitehydro.Station(
-                code=_value(element, 'CdStationHydro')
-            )
+                code=_value(element, 'CdStationHydro'))
         elif element.find('CdSiteMeteo') is not None:
             entite = _sitemeteo.Sitemeteo(
-                code=_value(element, 'CdSiteMeteo')
-            )
+                code=_value(element, 'CdSiteMeteo'))
         # build an Evenement and return
         return _evenement.Evenement(
             entite=entite,
             descriptif=_value(element, 'DescEvenement'),
             contact=_intervenant.Contact(
-                code=_value(element, 'CdContact'),
-            ),
+                code=_value(element, 'CdContact')),
             dt=_value(element, 'DtEvenement', _UTC),
             publication=_value(element, 'TypPublicationEvenement'),
-            dtmaj=_value(element, 'DtMajEvenement', _UTC),
-        )
+            dtmaj=_value(element, 'DtMajEvenement', _UTC))
 
 
 def _seriehydro_from_element(element):
@@ -651,16 +577,12 @@ def _seriehydro_from_element(element):
         entite = None
         if element.find('CdSiteHydro') is not None:
             entite = _sitehydro.Sitehydro(
-                code=_value(element, 'CdSiteHydro')
-            )
+                code=_value(element, 'CdSiteHydro'))
         elif element.find('CdStationHydro') is not None:
             entite = _sitehydro.Station(
-                code=_value(element, 'CdStationHydro')
-            )
+                code=_value(element, 'CdStationHydro'))
         elif element.find('CdCapteur') is not None:
-            entite = _sitehydro.Capteur(
-                code=_value(element, 'CdCapteur')
-            )
+            entite = _sitehydro.Capteur(code=_value(element, 'CdCapteur'))
         # build a Contact
         contact = _intervenant.Contact(code=_value(element, 'CdContact'))
         # build a Serie and return
@@ -672,8 +594,7 @@ def _seriehydro_from_element(element):
             dtfin=_value(element, 'DtFinSerie', _UTC),
             dtprod=_value(element, 'DtProdSerie', _UTC),
             contact=contact,
-            observations=_obsshydro_from_element(element.find('ObssHydro'))
-        )
+            observations=_obsshydro_from_element(element.find('ObssHydro')))
 
 
 def _seriemeteo_from_element(element):
@@ -686,8 +607,7 @@ def _seriemeteo_from_element(element):
         # build a Grandeur
         grandeur = _sitemeteo.Grandeur(
             typemesure=_value(element, 'CdGrdMeteo'),
-            sitemeteo=_sitemeteo.Sitemeteo(_value(element, 'CdSiteMeteo'))
-        )
+            sitemeteo=_sitemeteo.Sitemeteo(_value(element, 'CdSiteMeteo')))
         # prepare the duree in minutes
         duree = _value(element, 'DureeObsMeteo', int) or 0
         # build a Contact
@@ -698,8 +618,7 @@ def _seriemeteo_from_element(element):
             duree=duree * 60,
             statut=_value(element, 'StatutObsMeteo', int),
             dtprod=_value(element, 'DtProdObsMeteo', _UTC),
-            contact=contact
-        )
+            contact=contact)
 
 
 def _obsshydro_from_element(element):
@@ -757,12 +676,10 @@ def _simulation_from_element(element):
         entite = None
         if element.find('CdSiteHydro') is not None:
             entite = _sitehydro.Sitehydro(
-                code=_value(element, 'CdSiteHydro')
-            )
+                code=_value(element, 'CdSiteHydro'))
         elif element.find('CdStationHydro') is not None:
             entite = _sitehydro.Station(
-                code=_value(element, 'CdStationHydro')
-            )
+                code=_value(element, 'CdStationHydro'))
         # prepare qualite
         # warning: qualite is int(float())
         qualite = _value(element, 'IndiceQualiteSimul', float)
@@ -772,8 +689,7 @@ def _simulation_from_element(element):
         return _simulation.Simulation(
             entite=entite,
             modeleprevision=_modeleprevision.Modeleprevision(
-                code=_value(element, 'CdModelePrevision')
-            ),
+                code=_value(element, 'CdModelePrevision')),
             grandeur=_value(element, 'GrdSimul'),
             statut=_value(element, 'StatutSimul', int),
             qualite=qualite,
@@ -782,9 +698,7 @@ def _simulation_from_element(element):
             dtprod=_value(element, 'DtProdSimul', _UTC),
             previsions=_previsions_from_element(element.find('Prevs')),
             intervenant=_intervenant.Intervenant(
-                _value(element, 'CdIntervenant')
-            )
-        )
+                _value(element, 'CdIntervenant')))
 
 
 def _previsions_from_element(element):
@@ -802,11 +716,8 @@ def _previsions_from_element(element):
             for resprev in prev.xpath('|'.join(PREV_PROBABILITY)):
                 previsions.append(
                     _simulation.Prevision(
-                        dte=dte,
-                        res=resprev.text,
-                        prb=PREV_PROBABILITY[resprev.tag]
-                    )
-                )
+                        dte=dte, res=resprev.text,
+                        prb=PREV_PROBABILITY[resprev.tag]))
 
             # -------------------
             # compute ProbsPrev
@@ -814,11 +725,8 @@ def _previsions_from_element(element):
             for probprev in prev.findall('.//ProbPrev'):
                 previsions.append(
                     _simulation.Prevision(
-                        dte=dte,
-                        res=_value(probprev, 'ResProbPrev', float),
-                        prb=_value(probprev, 'PProbPrev', int)
-                    )
-                )
+                        dte=dte, res=_value(probprev, 'ResProbPrev', float),
+                        prb=_value(probprev, 'PProbPrev', int)))
         # build a Previsions and return
         return _simulation.Previsions(*previsions)
 
@@ -844,32 +752,25 @@ def _global_function_builder(xpath, func):
 
 # return a list of intervenant.Intervenant from a <Intervenants> element
 _intervenants_from_element = _global_function_builder(
-    './Intervenant', _intervenant_from_element
-)
+    './Intervenant', _intervenant_from_element)
 # return a list of sitehydro.Sitehydro from a <SitesHydro> element
 _siteshydro_from_element = _global_function_builder(
-    './SiteHydro', _sitehydro_from_element
-)
+    './SiteHydro', _sitehydro_from_element)
 # return a list of sitemeteo.Sitemeteo from a <SitesMeteo> element
 _sitesmeteo_from_element = _global_function_builder(
-    './SiteMeteo', _sitemeteo_from_element
-)
+    './SiteMeteo', _sitemeteo_from_element)
 # return a list of Modeleprevision from a <ModelesPrevision> element
 _modelesprevision_from_element = _global_function_builder(
-    './ModelePrevision', _modeleprevision_from_element
-)
+    './ModelePrevision', _modeleprevision_from_element)
 # return a list of evenement.Evenement from a <Evenements> element
 _evenements_from_element = _global_function_builder(
-    './Evenement', _evenement_from_element
-)
+    './Evenement', _evenement_from_element)
 # return a list of obshydro.Serie from a <Series> element
 _serieshydro_from_element = _global_function_builder(
-    './Serie', _seriehydro_from_element
-)
+    './Serie', _seriehydro_from_element)
 # return a list of simulation.Simulation from a <Simuls> element
 _simulations_from_element = _global_function_builder(
-    './Simul', _simulation_from_element
-)
+    './Simul', _simulation_from_element)
 
 
 # these 2 functions doesn't fit with the _global_function_builder :-\
@@ -882,12 +783,9 @@ def _seuilshydro_from_element(element, ordered=False):
     # -------------
     # no seuil case
     # -------------
-    if (
-        (element is None) or
-        element.find(
-            './SiteHydro/ValeursSeuilsSiteHydro/ValeursSeuilSiteHydro'
-        ) is None
-    ):
+    if ((element is None) or element.find(
+            './SiteHydro/ValeursSeuilsSiteHydro/ValeursSeuilSiteHydro')
+            is None):
         return []
 
     # -------------
@@ -901,30 +799,22 @@ def _seuilshydro_from_element(element, ordered=False):
         # FIXME - we should/could use the already build sitehydro
         sitehydro = _sitehydro_from_element(elementsitehydro)
         for elementseuilhydro in elementsitehydro.findall(
-            './ValeursSeuilsSiteHydro/ValeursSeuilSiteHydro'
-        ):
-            seuilhydro = _seuilhydro_from_element(
-                elementseuilhydro, sitehydro
-            )
+                './ValeursSeuilsSiteHydro/ValeursSeuilSiteHydro'):
+            seuilhydro = _seuilhydro_from_element(elementseuilhydro, sitehydro)
             if (sitehydro.code, seuilhydro.code) in seuilshydro:
                 # check that the seuil complies with it predecessors
                 if not seuilhydro.__eq__(
-                    other=seuilshydro[(sitehydro.code, seuilhydro.code)],
-                    lazzy=True,
-                    ignore=['valeurs']
-                ):
+                        other=seuilshydro[(sitehydro.code, seuilhydro.code)],
+                        lazzy=True, ignore=['valeurs']):
                     raise ValueError(
                         'seuilhydro %s from sitehydro %s '
                         'has inconsistent metadatas' % (
-                            seuilhydro.code, sitehydro.code
-                        )
-                    )
+                            seuilhydro.code, sitehydro.code))
                 # change the seuil object in the new seuil values
                 # to assure the navigability
                 for valeur in seuilhydro.valeurs:
                     valeur.seuil = seuilshydro[
-                        (sitehydro.code, seuilhydro.code)
-                    ]
+                        (sitehydro.code, seuilhydro.code)]
                 # add the valeurs to an existing entry
                 seuilshydro[
                     (sitehydro.code, seuilhydro.code)
@@ -932,8 +822,7 @@ def _seuilshydro_from_element(element, ordered=False):
             else:
                 # new entry
                 seuilshydro[
-                    (sitehydro.code, seuilhydro.code)
-                ] = seuilhydro
+                    (sitehydro.code, seuilhydro.code)] = seuilhydro
 
     # return a list of seuils
     return seuilshydro.values()
@@ -965,8 +854,7 @@ def _seriesmeteo_from_element(element):
                     serie.observations = \
                         _obsmeteo.Observations.concat((
                             serie.observations,
-                            _obsmeteo.Observations(obs)
-                        ))
+                            _obsmeteo.Observations(obs)))
                     break
             else:
                 # new serie

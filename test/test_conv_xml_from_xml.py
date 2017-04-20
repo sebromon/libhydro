@@ -13,11 +13,8 @@ To run only a specific test:
 """
 # -- imports ------------------------------------------------------------------
 from __future__ import (
-    unicode_literals as _unicode_literals,
-    absolute_import as _absolute_import,
-    division as _division,
-    print_function as _print_function
-)
+    unicode_literals as _unicode_literals, absolute_import as _absolute_import,
+    division as _division, print_function as _print_function)
 
 import os
 import unittest
@@ -31,10 +28,13 @@ from libhydro.core import (sitehydro, sitemeteo)
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2c"""
-__date__ = """2014-12-17"""
+__version__ = """0.3.0"""
+__date__ = """2017-04-20"""
 
 # HISTORY
+# V0.3 - 2017-04-20
+#   update tests to new Contact.code type
+#   some refactoring
 # V0.2 - 2014-08-03
 #   add the modelesprevision tests
 # V0.1 - 2013-08-24
@@ -49,8 +49,7 @@ class TestFromXmlIntervenants(unittest.TestCase):
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
         self.data = from_xml._parse(
-            os.path.join('data', 'xml', '1.1', 'intervenants.xml')
-        )
+            os.path.join('data', 'xml', '1.1', 'intervenants.xml'))
 
     def test_base(self):
         """Check Keys test."""
@@ -58,8 +57,7 @@ class TestFromXmlIntervenants(unittest.TestCase):
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
                  'seuilshydro', 'modelesprevision', 'evenements',
-                 'serieshydro', 'seriesmeteo', 'simulations'))
-        )
+                 'serieshydro', 'seriesmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertNotEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -75,16 +73,14 @@ class TestFromXmlIntervenants(unittest.TestCase):
         self.assertEqual(scenario.version, '1.1')
         self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
         self.assertEqual(
-            scenario.dtprod, datetime.datetime(2001, 12, 17, 4, 30, 47)
-        )
+            scenario.dtprod, datetime.datetime(2001, 12, 17, 4, 30, 47))
         self.assertEqual(scenario.emetteur.intervenant.code, 1537)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.emetteur.contact.code, 525)
+        self.assertEqual(scenario.emetteur.contact.code, '525')
         self.assertEqual(
-            scenario.destinataire.intervenant.code, 12345671234567
-        )
+            scenario.destinataire.intervenant.code, 12345671234567)
         self.assertEqual(scenario.destinataire.intervenant.origine, 'SIRET')
-        self.assertEqual(scenario.destinataire.contact.code, 2)
+        self.assertEqual(scenario.destinataire.contact.code, '2')
 
     def test_intervenant_0(self):
         """intervenant 0 test."""
@@ -97,13 +93,13 @@ class TestFromXmlIntervenants(unittest.TestCase):
         # contacts
         self.assertEqual(len(i.contacts), 2)
         c = i.contacts[0]
-        self.assertEqual(c.code, 1)
+        self.assertEqual(c.code, '1')
         self.assertEqual(c.nom, 'Nom')
         self.assertEqual(c.prenom, 'Prenom')
         self.assertEqual(c.civilite, 1)
         self.assertEqual(c.intervenant, i)
         c = i.contacts[1]
-        self.assertEqual(c.code, 2)
+        self.assertEqual(c.code, '2')
         self.assertEqual(c.nom, 'Nom2')
         self.assertEqual(c.prenom, 'Prenom2')
         self.assertEqual(c.civilite, 2)
@@ -120,7 +116,7 @@ class TestFromXmlIntervenants(unittest.TestCase):
         # contacts
         self.assertEqual(len(i.contacts), 1)
         c = i.contacts[0]
-        self.assertEqual(c.code, 5)
+        self.assertEqual(c.code, '5')
         self.assertEqual(c.nom, 'Nom Contaçt')
         self.assertEqual(c.prenom, 'Prenom Contaçt')
         self.assertEqual(c.civilite, 3)
@@ -135,8 +131,7 @@ class TestFromXmlSitesHydros(unittest.TestCase):
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
         self.data = from_xml._parse(
-            os.path.join('data', 'xml', '1.1', 'siteshydro.xml')
-        )
+            os.path.join('data', 'xml', '1.1', 'siteshydro.xml'))
 
     def test_base(self):
         """Check Keys test."""
@@ -144,8 +139,7 @@ class TestFromXmlSitesHydros(unittest.TestCase):
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
                  'seuilshydro', 'modelesprevision', 'evenements',
-                 'serieshydro', 'seriesmeteo', 'simulations'))
-        )
+                 'serieshydro', 'seriesmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertNotEqual(self.data['siteshydro'], [])
@@ -161,9 +155,8 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(scenario.version, '1.1')
         self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
         self.assertEqual(
-            scenario.dtprod, datetime.datetime(2010, 2, 26, 12, 53, 10)
-        )
-        self.assertEqual(scenario.emetteur.contact.code, 1069)
+            scenario.dtprod, datetime.datetime(2010, 2, 26, 12, 53, 10))
+        self.assertEqual(scenario.emetteur.contact.code, '1069')
         self.assertEqual(scenario.emetteur.intervenant.code, 25)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
         self.assertEqual(scenario.destinataire.intervenant.code, 1537)
@@ -181,11 +174,8 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         sh = self.data['siteshydro'][1]
         self.assertEqual(sh.code, 'O1984310')
         self.assertEqual(
-            sh.libelle, 'Le Touch à Toulouse [Saint-Martin-du-Touch]'
-        )
-        self.assertEqual(
-            sh.libelleusuel, 'St-Martin-du-Touch'
-        )
+            sh.libelle, 'Le Touch à Toulouse [Saint-Martin-du-Touch]')
+        self.assertEqual(sh.libelleusuel, 'St-Martin-du-Touch')
         self.assertEqual(sh.typesite, 'SOURCE')
         self.assertEqual(sh.code, 'O1984310')
         self.assertEqual(sh.communes, ['11354', '11355', '2B021'])
@@ -193,15 +183,11 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         # check stations
         for i in range(1, 3):
             self.assertEqual(sh.stations[i - 1].code, 'O19843100%i' % i)
-            self.assertEqual(
-                sh.stations[i - 1].libelle, '%s - station %i' % (
-                    sh.libelle, i
-                )
-            )
+            self.assertEqual(sh.stations[i - 1].libelle,
+                             '%s - station %i' % (sh.libelle, i))
             self.assertEqual(sh.stations[i - 1].typestation, 'LIMNI')
-            self.assertEqual(
-                sh.stations[i - 1].libellecomplement, 'station %i' % i
-            )
+            self.assertEqual(sh.stations[i - 1].libellecomplement,
+                             'station %i' % i)
         self.assertEqual(sh.stations[0].niveauaffichage, 911)
         self.assertEqual(sh.stations[1].niveauaffichage, 0)
 
@@ -230,8 +216,7 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(site.tronconsvigilance[0].code, 'AG3')
         self.assertEqual(site.tronconsvigilance[1].code, 'AG5')
         self.assertEqual(
-            site.tronconsvigilance[1].libelle, 'Troncon Adour àvâl'
-        )
+            site.tronconsvigilance[1].libelle, 'Troncon Adour àvâl')
         # check station
         station = site.stations[0]
         self.assertEqual(station.ddcs, ['10', '1000000001'])
@@ -250,12 +235,9 @@ class TestFromXmlSitesHydros(unittest.TestCase):
     def test_error_1(self):
         """Xml file with namespace error test."""
         with self.assertRaises(ValueError):
-            from_xml._parse(
-                # *([os.path.join('data', 'xml', '1.1', 'siteshydro.xml')])
-                *([os.path.join(
-                    'data', 'xml', '1.1', 'siteshydro_with_namespace.xml'
-                )])
-            )
+            # *([os.path.join('data', 'xml', '1.1', 'siteshydro.xml')])
+            from_xml._parse(*([os.path.join(
+                'data', 'xml', '1.1', 'siteshydro_with_namespace.xml')]))
 
 
 # -- class TestFromXmlSeuilsHydro ---------------------------------------------
@@ -266,8 +248,7 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
         self.data = from_xml._parse(
-            os.path.join('data', 'xml', '1.1', 'seuilshydro.xml')
-        )
+            os.path.join('data', 'xml', '1.1', 'seuilshydro.xml'))
 
     def test_base(self):
         """Check Keys test."""
@@ -275,8 +256,7 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
                  'seuilshydro', 'modelesprevision', 'evenements',
-                 'serieshydro', 'seriesmeteo', 'simulations'))
-        )
+                 'serieshydro', 'seriesmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertNotEqual(self.data['siteshydro'], [])
@@ -295,10 +275,7 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
 
         # find the seuil
         for seuil in self.data['seuilshydro']:
-            if (
-                (seuil.sitehydro.code == 'U2655010')
-                and (seuil.code == '2214')
-            ):
+            if seuil.sitehydro.code == 'U2655010' and seuil.code == '2214':
                 break
 
         # check the seuil
@@ -321,14 +298,10 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         # self.assertEqual(seuil.valeurs[0].seuil, seuil)  # FIXME
         self.assertEqual(seuil.valeurs[0].entite, seuil.sitehydro)
         self.assertEqual(seuil.valeurs[0].tolerance, 0)
-        self.assertEqual(
-            seuil.valeurs[0].dtactivation,
-            datetime.datetime(2010, 5, 17, 13, 40, 2)
-        )
-        self.assertEqual(
-            seuil.valeurs[0].dtdesactivation,
-            datetime.datetime(2012, 2, 19, 9, 28)
-        )
+        self.assertEqual(seuil.valeurs[0].dtactivation,
+                         datetime.datetime(2010, 5, 17, 13, 40, 2))
+        self.assertEqual(seuil.valeurs[0].dtdesactivation,
+                         datetime.datetime(2012, 2, 19, 9, 28))
         self.assertEqual(seuil.valeurs[0]._strict, True)
 
     def test_seuils_sitehydro_1(self):
@@ -339,10 +312,7 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
 
         # find the seuil
         for seuil in self.data['seuilshydro']:
-            if (
-                (seuil.sitehydro.code == 'O2000040')
-                and (seuil.code == '82')
-            ):
+            if seuil.sitehydro.code == 'O2000040' and seuil.code == '82':
                 break
 
         # check the seuil
@@ -356,9 +326,8 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         self.assertEqual(seuil.commentaire, None)
         self.assertEqual(seuil.publication, False)
         self.assertEqual(seuil.valeurforcee, None)
-        self.assertEqual(
-            seuil.dtmaj, datetime.datetime(2014, 3, 23, 9, 51, 56)
-        )
+        self.assertEqual(seuil.dtmaj,
+                         datetime.datetime(2014, 3, 23, 9, 51, 56))
 
         # check the values
         self.assertEqual(len(seuil.valeurs), 4)
@@ -376,41 +345,25 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         self.assertEqual(seuil.valeurs[2].tolerance, None)
         self.assertEqual(seuil.valeurs[3].tolerance, 10)
         self.assertEqual(seuil.valeurs[0].dtactivation, None)
-        self.assertEqual(
-            seuil.valeurs[1].dtactivation,
-            datetime.datetime(2010, 6, 10, 10, 52, 57)
-        )
-        self.assertEqual(
-            seuil.valeurs[2].dtactivation,
-            datetime.datetime(2010, 6, 10, 11, 32, 57)
-        )
-        self.assertEqual(
-            seuil.valeurs[3].dtactivation,
-            datetime.datetime(2010, 6, 10, 11, 52, 57)
-        )
-        self.assertEqual(
-            seuil.valeurs[0].dtdesactivation, None
-        )
-        self.assertEqual(
-            seuil.valeurs[1].dtdesactivation, None
-        )
-        self.assertEqual(
-            seuil.valeurs[2].dtdesactivation,
-            datetime.datetime(2013, 10, 5, 5, 59, 29)
-        )
-        self.assertEqual(
-            seuil.valeurs[3].dtdesactivation, None
-        )
+        self.assertEqual(seuil.valeurs[1].dtactivation,
+                         datetime.datetime(2010, 6, 10, 10, 52, 57))
+        self.assertEqual(seuil.valeurs[2].dtactivation,
+                         datetime.datetime(2010, 6, 10, 11, 32, 57))
+        self.assertEqual(seuil.valeurs[3].dtactivation,
+                         datetime.datetime(2010, 6, 10, 11, 52, 57))
+        self.assertEqual(seuil.valeurs[0].dtdesactivation, None)
+        self.assertEqual(seuil.valeurs[1].dtdesactivation, None)
+        self.assertEqual(seuil.valeurs[2].dtdesactivation,
+                         datetime.datetime(2013, 10, 5, 5, 59, 29))
+        self.assertEqual(seuil.valeurs[3].dtdesactivation, None)
 
     def test_seuils_sitehydro_2(self):
         """Test seuils sitehydro 2."""
         # find 4 seuils
         seuils = []
         for seuil in self.data['seuilshydro']:
-            if (
-                (seuil.sitehydro.code == 'O0144020')
-                and (seuil.code in [unicode(i) for i in range(1, 5)])
-            ):
+            if seuil.sitehydro.code == 'O0144020' and \
+                    seuil.code in [unicode(i) for i in range(1, 5)]:
                 seuils.append(seuil)
 
         # check the seuils
@@ -423,10 +376,8 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         # find 2 seuils
         seuils = []
         for seuil in self.data['seuilshydro']:
-            if (
-                (seuil.sitehydro.code == 'O6793330')
-                and (seuil.code in ('338', '341'))
-            ):
+            if seuil.sitehydro.code == 'O6793330' and \
+                    seuil.code in ('338', '341'):
                 seuils.append(seuil)
 
         # sort the seuils list
@@ -467,11 +418,8 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
     def test_seuils_sitehydro_5(self):
         """Test seuils with a bad xml."""
         with self.assertRaises(ValueError):
-            from_xml._parse(
-                os.path.join(
-                    'data', 'xml', '1.1', 'seuilshydro_inconsistent.xml'
-                )
-            )
+            from_xml._parse(os.path.join(
+                    'data', 'xml', '1.1', 'seuilshydro_inconsistent.xml'))
 
 
 # -- class TestFromXmlSitesMeteo ----------------------------------------------
@@ -482,8 +430,7 @@ class TestFromXmlSitesMeteo(unittest.TestCase):
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
         self.data = from_xml._parse(
-            os.path.join('data', 'xml', '1.1', 'sitesmeteo.xml')
-        )
+            os.path.join('data', 'xml', '1.1', 'sitesmeteo.xml'))
 
     def test_base(self):
         """Check Keys test."""
@@ -491,8 +438,7 @@ class TestFromXmlSitesMeteo(unittest.TestCase):
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
                  'seuilshydro', 'modelesprevision', 'evenements',
-                 'serieshydro', 'seriesmeteo', 'simulations'))
-        )
+                 'serieshydro', 'seriesmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -511,10 +457,9 @@ class TestFromXmlSitesMeteo(unittest.TestCase):
         self.assertEqual(scenario.code, 'hydrometrie')
         self.assertEqual(scenario.version, '1.1')
         self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
-        self.assertEqual(
-            scenario.dtprod, datetime.datetime(2010, 2, 26, 8, 5, 56)
-        )
-        self.assertEqual(scenario.emetteur.contact.code, 26)
+        self.assertEqual(scenario.dtprod,
+                         datetime.datetime(2010, 2, 26, 8, 5, 56))
+        self.assertEqual(scenario.emetteur.contact.code, '26')
         self.assertEqual(scenario.emetteur.intervenant.code, 1520)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
         self.assertEqual(scenario.destinataire.intervenant.code, 1537)
@@ -546,8 +491,7 @@ class TestFromXmlModelesPrevision(unittest.TestCase):
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
         self.data = from_xml._parse(
-            os.path.join('data', 'xml', '1.1', 'modelesprevision.xml')
-        )
+            os.path.join('data', 'xml', '1.1', 'modelesprevision.xml'))
 
     def test_base(self):
         """Check Keys test."""
@@ -555,8 +499,7 @@ class TestFromXmlModelesPrevision(unittest.TestCase):
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
                  'seuilshydro', 'modelesprevision', 'evenements',
-                 'serieshydro', 'seriesmeteo', 'simulations'))
-        )
+                 'serieshydro', 'seriesmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -576,15 +519,14 @@ class TestFromXmlModelesPrevision(unittest.TestCase):
         self.assertEqual(scenario.code, 'hydrometrie')
         self.assertEqual(scenario.version, '1.1')
         self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
-        self.assertEqual(
-            scenario.dtprod, datetime.datetime(2001, 12, 17, 4, 30, 47)
-        )
+        self.assertEqual(scenario.dtprod,
+                         datetime.datetime(2001, 12, 17, 4, 30, 47))
         self.assertEqual(scenario.emetteur.intervenant.code, 825)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.emetteur.contact.code, 222)
+        self.assertEqual(scenario.emetteur.contact.code, '222')
         self.assertEqual(scenario.destinataire.intervenant.code, 1537)
         self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.destinataire.contact.code, 2)
+        self.assertEqual(scenario.destinataire.contact.code, '2')
 
     def test_modeleprevision_0(self):
         """Modeleprevision 0 test."""
@@ -611,8 +553,7 @@ class TestFromXmlEvenements(unittest.TestCase):
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
         self.data = from_xml._parse(
-            os.path.join('data', 'xml', '1.1', 'evenements.xml')
-        )
+            os.path.join('data', 'xml', '1.1', 'evenements.xml'))
 
     def test_base(self):
         """Check Keys test."""
@@ -620,8 +561,7 @@ class TestFromXmlEvenements(unittest.TestCase):
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
                  'seuilshydro', 'modelesprevision', 'evenements',
-                 'serieshydro', 'seriesmeteo', 'simulations'))
-        )
+                 'serieshydro', 'seriesmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -636,10 +576,9 @@ class TestFromXmlEvenements(unittest.TestCase):
         self.assertEqual(scenario.code, 'hydrometrie')
         self.assertEqual(scenario.version, '1.1')
         self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
-        self.assertEqual(
-            scenario.dtprod, datetime.datetime(2010, 2, 26, 7, 5)
-        )
-        self.assertEqual(scenario.emetteur.contact.code, 26)
+        self.assertEqual(scenario.dtprod,
+                         datetime.datetime(2010, 2, 26, 7, 5))
+        self.assertEqual(scenario.emetteur.contact.code, '26')
         self.assertEqual(scenario.emetteur.intervenant.code, 1520)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
         self.assertEqual(scenario.destinataire.intervenant.code, 1537)
@@ -650,43 +589,38 @@ class TestFromXmlEvenements(unittest.TestCase):
         evenement = self.data['evenements'][0]
         self.assertTrue(isinstance(evenement.entite, sitehydro.Sitehydro))
         self.assertEqual(evenement.entite.code, 'A0010101')
-        self.assertEqual(evenement.contact.code, 1)
+        self.assertEqual(evenement.contact.code, '1')
         self.assertEqual(evenement.dt, datetime.datetime(1999, 8, 12, 0, 5))
         self.assertEqual(evenement.descriptif, "Arrachement de l'échelle")
         self.assertEqual(evenement.publication, 1)
-        self.assertEqual(
-            evenement.dtmaj, datetime.datetime(2000, 5, 10, 22, 5)
-        )
+        self.assertEqual(evenement.dtmaj,
+                         datetime.datetime(2000, 5, 10, 22, 5))
 
     def test_evenement_1(self):
         """Evenement 1 test."""
         evenement = self.data['evenements'][1]
         self.assertTrue(isinstance(evenement.entite, sitehydro.Station))
         self.assertEqual(evenement.entite.code, 'Z853010101')
-        self.assertEqual(evenement.contact.code, 8563)
+        self.assertEqual(evenement.contact.code, '8563')
         self.assertEqual(evenement.dt, datetime.datetime(2010, 2, 26, 9, 5))
-        self.assertEqual(
-            evenement.descriptif, 'Déplacement de la station de 22.5m'
-        )
+        self.assertEqual(evenement.descriptif,
+                         'Déplacement de la station de 22.5m')
         self.assertEqual(evenement.publication, 20)
-        self.assertEqual(
-            evenement.dtmaj, datetime.datetime(2011, 1, 13, 10, 5)
-        )
+        self.assertEqual(evenement.dtmaj,
+                         datetime.datetime(2011, 1, 13, 10, 5))
 
     def test_evenement_2(self):
         """Evenement 2 test."""
         evenement = self.data['evenements'][2]
         self.assertTrue(isinstance(evenement.entite, sitemeteo.Sitemeteo))
         self.assertEqual(evenement.entite.code, '008530001')
-        self.assertEqual(evenement.contact.code, 1)
+        self.assertEqual(evenement.contact.code, '1')
         self.assertEqual(evenement.dt, datetime.datetime(1968, 2, 2, 23, 0))
-        self.assertEqual(
-            evenement.descriptif, 'Débouchage de la sonde de température'
-        )
+        self.assertEqual(evenement.descriptif,
+                         'Débouchage de la sonde de température')
         self.assertEqual(evenement.publication, 100)
-        self.assertEqual(
-            evenement.dtmaj, datetime.datetime(2000, 1, 1, 22, 0)
-        )
+        self.assertEqual(evenement.dtmaj,
+                         datetime.datetime(2000, 1, 1, 22, 0))
 
 
 # -- class TestFromXmlSeriesHydro ---------------------------------------------
@@ -697,8 +631,7 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
         self.data = from_xml._parse(
-            os.path.join('data', 'xml', '1.1', 'serieshydro.xml')
-        )
+            os.path.join('data', 'xml', '1.1', 'serieshydro.xml'))
 
     def test_base(self):
         """Check keys test."""
@@ -706,8 +639,7 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
                  'seuilshydro', 'modelesprevision', 'evenements',
-                 'serieshydro', 'seriesmeteo', 'simulations'))
-        )
+                 'serieshydro', 'seriesmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -723,7 +655,7 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
         self.assertEqual(scenario.version, '1.1')
         self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
         self.assertEqual(scenario.dtprod, datetime.datetime(2010, 2, 26, 7, 5))
-        self.assertEqual(scenario.emetteur.contact.code, 26)
+        self.assertEqual(scenario.emetteur.contact.code, '26')
         self.assertEqual(scenario.emetteur.intervenant.code, 1520)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
         self.assertEqual(scenario.destinataire.intervenant.code, 1537)
@@ -735,13 +667,10 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
         self.assertEqual(serie.entite.code, 'V7144010')
         self.assertEqual(serie.grandeur, 'Q')
         self.assertEqual(serie.statut, 4)
-        self.assertEqual(
-            serie.observations.iloc[0].tolist(), [20992, 0, 16, True]
-        )
-        self.assertEqual(
-            serie.observations.loc['2010-02-26 11:15'].tolist(),
-            [21176, 0, 16, True]
-        )
+        self.assertEqual(serie.observations.iloc[0].tolist(),
+                         [20992, 0, 16, True])
+        self.assertEqual(serie.observations.loc['2010-02-26 11:15'].tolist(),
+                         [21176, 0, 16, True])
 
     def test_serie_1(self):
         """Serie 1 test."""
@@ -749,13 +678,10 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
         self.assertEqual(serie.entite.code, 'V714401001')
         self.assertEqual(serie.grandeur, 'Q')
         self.assertEqual(serie.statut, 4)
-        self.assertEqual(
-            serie.observations.iloc[0].tolist(), [20, 12, 12, False]
-        )
-        self.assertEqual(
-            serie.observations.loc['2010-02-26 13:15'].tolist(),
-            [21, 12, 8, False]
-        )
+        self.assertEqual(serie.observations.iloc[0].tolist(),
+                         [20, 12, 12, False])
+        self.assertEqual(serie.observations.loc['2010-02-26 13:15'].tolist(),
+                         [21, 12, 8, False])
 
     def test_serie_2(self):
         """Serie 2 test."""
@@ -763,26 +689,17 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
         self.assertEqual(serie.entite.code, 'V71440100103')
         self.assertEqual(serie.grandeur, 'H')
         self.assertEqual(serie.statut, 4)
-        self.assertEqual(
-            serie.observations.loc['2010-02-26 13:10'].tolist(),
-            [680, 4, 20, True]
-        )
-        self.assertEqual(
-            serie.observations.loc['2010-02-26 13:15'].tolist(),
-            [684, 0, 20, True]
-        )
-        self.assertEqual(
-            serie.observations.loc['2010-02-26 14:55'].tolist(),
-            [670, 12, 20, True]
-        )
+        self.assertEqual(serie.observations.loc['2010-02-26 13:10'].tolist(),
+                         [680, 4, 20, True])
+        self.assertEqual(serie.observations.loc['2010-02-26 13:15'].tolist(),
+                         [684, 0, 20, True])
+        self.assertEqual(serie.observations.loc['2010-02-26 14:55'].tolist(),
+                         [670, 12, 20, True])
 
     def test_seriehydro_without_observation(self):
         """Test a unconventionnal seriehydro from bdhydro."""
-        data = from_xml._parse(
-            os.path.join(
-                'data', 'xml', '1.1', 'serieshydro_without_observations.xml'
-            )
-        )
+        data = from_xml._parse(os.path.join(
+                'data', 'xml', '1.1', 'serieshydro_without_observations.xml'))
         self.assertEqual(len(data['serieshydro']), 34)
 
 
@@ -794,8 +711,7 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
         self.data = from_xml._parse(
-            os.path.join('data', 'xml', '1.1', 'seriesmeteo.xml')
-        )
+            os.path.join('data', 'xml', '1.1', 'seriesmeteo.xml'))
 
     def test_base(self):
         """Check keys test."""
@@ -803,8 +719,7 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
                  'seuilshydro', 'modelesprevision', 'evenements',
-                 'serieshydro', 'seriesmeteo', 'simulations'))
-        )
+                 'serieshydro', 'seriesmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -823,10 +738,9 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
         self.assertEqual(scenario.code, 'hydrometrie')
         self.assertEqual(scenario.version, '1.1')
         self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
-        self.assertEqual(
-            scenario.dtprod, datetime.datetime(2010, 2, 26, 23, 55, 30)
-        )
-        self.assertEqual(scenario.emetteur.contact.code, 1)
+        self.assertEqual(scenario.dtprod,
+                         datetime.datetime(2010, 2, 26, 23, 55, 30))
+        self.assertEqual(scenario.emetteur.contact.code, '1')
         self.assertEqual(scenario.emetteur.intervenant.code, 1537)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
         self.assertEqual(scenario.destinataire.intervenant.code, 1537)
@@ -842,17 +756,12 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
         self.assertEqual(serie.statut, 4)
         self.assertEqual(serie.dtdeb, datetime.datetime(2010, 2, 26, 12))
         self.assertEqual(serie.dtfin, datetime.datetime(2010, 2, 26, 13))
-        self.assertEqual(
-            serie.dtprod, datetime.datetime(2010, 2, 26, 15, 13, 37)
-        )
-        self.assertEqual(
-            # (dte) res mth qal qua
-            serie.observations.iloc[0].tolist(), [2, 0, 16, 100]
-        )
-        self.assertEqual(
-            serie.observations.loc['2010-02-26 13:00'].tolist(),
-            [8, 0, 16, 75]
-        )
+        self.assertEqual(serie.dtprod,
+                         datetime.datetime(2010, 2, 26, 15, 13, 37))
+        # (dte) res mth qal qua
+        self.assertEqual(serie.observations.iloc[0].tolist(), [2, 0, 16, 100])
+        self.assertEqual(serie.observations.loc['2010-02-26 13:00'].tolist(),
+                         [8, 0, 16, 75])
 
     def test_serie_TA(self):
         """Serie TA test."""
@@ -864,27 +773,18 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
         self.assertEqual(serie.statut, 4)
         self.assertEqual(serie.dtdeb, datetime.datetime(2010, 2, 26, 14))
         self.assertEqual(serie.dtfin, datetime.datetime(2010, 2, 26, 14))
-        self.assertEqual(
-            serie.dtprod, datetime.datetime(2010, 2, 26, 15, 13, 37)
-        )
-        self.assertEqual(
-            # (dte) res mth qal qua
-            serie.observations.iloc[0].tolist()[:3], [4, 0, 16]
-        )
-        self.assertTrue(
-            math.isnan(serie.observations.iloc[0]['qua'].item())
-        )
-
-        # self.assertEqual(
-        #     serie.observations.loc['2010-02-26 13:00'].tolist(),
-        #     [8, 0, 16, 75]
-        # )
+        self.assertEqual(serie.dtprod,
+                         datetime.datetime(2010, 2, 26, 15, 13, 37))
+        # (dte) res mth qal qua
+        self.assertEqual(serie.observations.iloc[0].tolist()[:3], [4, 0, 16])
+        self.assertTrue(math.isnan(serie.observations.iloc[0]['qua'].item()))
+        # self.assertEqual(serie.observations.loc['2010-02-26 13:00'].tolist(),
+        #                  [8, 0, 16, 75])
 
     def test_POM(self):
         """Serie POM test."""
-        pom = from_xml._parse(
-            os.path.join('data', 'xml', '1.1', 'seriesmeteo_POM.xml')
-        )['seriesmeteo']
+        pom = from_xml._parse(os.path.join(
+            'data', 'xml', '1.1', 'seriesmeteo_POM.xml'))['seriesmeteo']
         # 280 observations
         self.assertEqual(sum([len(s.observations) for s in pom]), 280)
         # 4 sitesmeteo and therefore 4 series
@@ -892,23 +792,16 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
 
     def test_without_obs(self):
         """Serie without obs test."""
-        serie = from_xml._parse(
-            os.path.join(
-                'data', 'xml', '1.1', 'seriesmeteo_without_observations.xml'
-            )
-        )['seriesmeteo'][0]
-        self.assertEqual(
-            serie.observations['res'].values.tolist(),
-            [5.8, 23.0, 45.8]
-        )
+        serie = from_xml._parse(os.path.join(
+            'data', 'xml', '1.1', 'seriesmeteo_without_observations.xml'))[
+                'seriesmeteo'][0]
+        self.assertEqual(serie.observations['res'].values.tolist(),
+                         [5.8, 23.0, 45.8])
         serie.resample(datetime.timedelta(hours=1))
         l = serie.observations['res'].values.tolist()
         self.assertTrue(math.isnan(l[2]))
         l.pop(2)
-        self.assertEqual(
-            l,
-            [5.8, 23.0, 45.8]
-        )
+        self.assertEqual(l, [5.8, 23.0, 45.8])
 
 
 # -- class TestFromXmlSimulations ---------------------------------------------
@@ -919,8 +812,7 @@ class TestFromXmlSimulations(unittest.TestCase):
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
         self.data = from_xml._parse(
-            os.path.join('data', 'xml', '1.1', 'simulations.xml')
-        )
+            os.path.join('data', 'xml', '1.1', 'simulations.xml'))
 
     def test_base(self):
         """Check keys test."""
@@ -928,8 +820,7 @@ class TestFromXmlSimulations(unittest.TestCase):
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
                  'seuilshydro', 'modelesprevision', 'evenements',
-                 'serieshydro', 'seriesmeteo', 'simulations'))
-        )
+                 'serieshydro', 'seriesmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -944,10 +835,9 @@ class TestFromXmlSimulations(unittest.TestCase):
         self.assertEqual(scenario.code, 'hydrometrie')
         self.assertEqual(scenario.version, '1.1')
         self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
-        self.assertEqual(
-            scenario.dtprod, datetime.datetime(2010, 2, 26, 9, 30)
-        )
-        self.assertEqual(scenario.emetteur.contact.code, 41)
+        self.assertEqual(scenario.dtprod,
+                         datetime.datetime(2010, 2, 26, 9, 30))
+        self.assertEqual(scenario.emetteur.contact.code, '41')
         self.assertEqual(scenario.emetteur.intervenant.code, 1537)
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
         self.assertEqual(scenario.destinataire.intervenant.code, 14)
@@ -963,35 +853,25 @@ class TestFromXmlSimulations(unittest.TestCase):
         self.assertEqual(simulation.statut, 4)
         self.assertEqual(simulation.qualite, 36)
         self.assertEqual(simulation.public, False)
-        self.assertEqual(
-            simulation.commentaire, 'Biais=-14.91 Précision=36.00'
-        )
-        self.assertEqual(
-            simulation.dtprod, datetime.datetime(2010, 2, 26, 14, 45)
-        )
+        self.assertEqual(simulation.commentaire,
+                         'Biais=-14.91 Précision=36.00')
+        self.assertEqual(simulation.dtprod,
+                         datetime.datetime(2010, 2, 26, 14, 45))
         # check previsions => res
-        self.assertEqual(
-            set(simulation.previsions.tolist()),
-            set([30, 10, 50, 25, 75, 90, 23, 25])
-        )
+        self.assertEqual(set(simulation.previsions.tolist()),
+                         set([30, 10, 50, 25, 75, 90, 23, 25]))
         self.assertEqual(simulation.previsions.iloc[3], 25)
         self.assertEqual(
-            simulation.previsions.loc['2010-02-26 15:00'].tolist(), [23, 25]
-        )
+            simulation.previsions.loc['2010-02-26 15:00'].tolist(), [23, 25])
         self.assertEqual(
-            simulation.previsions.swaplevel(0, 1)[50].tolist(),
-            [30, 23]
-        )
+            simulation.previsions.swaplevel(0, 1)[50].tolist(), [30, 23])
         self.assertEqual(
-            simulation.previsions.swaplevel(0, 1)[40].tolist(),
-            [75]
-        )
+            simulation.previsions.swaplevel(0, 1)[40].tolist(), [75])
         # check previsions => index
         self.assertEqual(len(simulation.previsions.index), 8)
         self.assertEqual(
             set([x[0] for x in simulation.previsions.swaplevel(0, 1).index]),
-            set([50, 0, 100, 20, 40, 49, 50, 100])
-        )
+            set([50, 0, 100, 20, 40, 49, 50, 100]))
 
     def test_simulation_1(self):
         """Simulation 1 test."""
@@ -1003,9 +883,8 @@ class TestFromXmlSimulations(unittest.TestCase):
         self.assertEqual(simulation.statut, 4)
         self.assertEqual(simulation.qualite, 21)
         self.assertEqual(simulation.public, True)
-        self.assertEqual(
-            simulation.dtprod, datetime.datetime(2010, 2, 26, 14, 45)
-        )
+        self.assertEqual(simulation.dtprod,
+                         datetime.datetime(2010, 2, 26, 14, 45))
         # check previsions => res
         self.assertEqual(len(simulation.previsions), 8)
         self.assertEqual(simulation.previsions.tolist()[0], 371.774)
@@ -1025,9 +904,8 @@ class TestFromXmlSimulations(unittest.TestCase):
         self.assertEqual(simulation.statut, 16)
         self.assertEqual(simulation.qualite, None)
         self.assertEqual(simulation.public, False)
-        self.assertEqual(
-            simulation.dtprod, datetime.datetime(2010, 2, 26, 9, 45)
-        )
+        self.assertEqual(simulation.dtprod,
+                         datetime.datetime(2010, 2, 26, 9, 45))
         # check previsions => res
         self.assertEqual(len(simulation.previsions), 4)
         self.assertEqual(simulation.previsions.tolist(), [22, 33, 44, 55])
