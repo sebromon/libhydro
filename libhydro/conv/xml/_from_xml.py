@@ -317,6 +317,7 @@ def _contact_from_element(element, intervenant=None):
         args['prenom'] = _value(element, 'PrenomContact')
         args['civilite'] = _value(element, 'CiviliteContact', int)
         args['intervenant'] = intervenant
+        args['profilcontact'] = _value(element, 'ProfilContact')
         # build a Contact and return
         return _intervenant.Contact(**args)
 

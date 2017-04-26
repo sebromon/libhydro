@@ -225,6 +225,7 @@ class Contact(object):
         prenom (string)
         civilite (entier parmi NOMENCLATURE[538])
         intervenant (Intervenant)
+        profilcontact (entier)
 
     """
 
@@ -240,14 +241,13 @@ class Contact(object):
     # dtactivation
     # dtdesactivation
     # dtmaj
-    # profiladmin
 
     # Adresse
 
     civilite = _composant.Nomenclatureitem(nomenclature=538, required=False)
 
     def __init__(self, code=None, nom=None, prenom=None, civilite=None,
-                 intervenant=None):
+                 intervenant=None, profilcontact=None):
         """Initialisation.
 
         Arguments:
@@ -256,6 +256,7 @@ class Contact(object):
             prenom (string)
             civilite (entier parmi NOMENCLATURE[538])
             intervenant (Intervenant) = intervenant de rattachement
+            profilcontact (entier)
 
         """
 
@@ -268,9 +269,11 @@ class Contact(object):
 
         # -- full properties --
         self._code = self._civilite = self._intervenant = None
+        self._profilcontact = None
         self.code = code
         self.civilite = civilite
         self.intervenant = intervenant
+        self.profilcontact = profilcontact
 
     # -- property code --
     @property
@@ -299,6 +302,34 @@ class Contact(object):
         except:
             raise
 
+    # -- property profilcontact --
+    @property
+    def profilcontact(self):
+        """Return Profil contact."""
+        return self._profilcontact
+
+    @profilcontact.setter
+    def profilcontact(self, profilcontact):
+        """Set profilcontact."""
+        try:
+
+            # None case
+            # if code is None:
+            #     raise TypeError('code is required')
+
+            # other cases
+            if profilcontact is not None:
+                profilcontact = unicode(profilcontact)
+                if profilcontact not in ('000', '001', '010', '011',
+                                         '100', '101', '110', '111'):
+                    raise ValueError('Invalid profil contact {}'.format(profilcontact))
+
+            # all is well
+            self._profilcontact = profilcontact
+
+        except:
+            raise
+
     # -- property intervenant --
     @property
     def intervenant(self):
@@ -314,7 +345,8 @@ class Contact(object):
         self._intervenant = intervenant
 
     # -- special methods --
-    __all__attrs__ = ('code', 'nom', 'prenom', 'civilite', 'intervenant')
+    __all__attrs__ = ('code', 'nom', 'prenom', 'civilite', 'intervenant',
+                      'profilcontact')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 
@@ -339,6 +371,51 @@ class Contact(object):
             intervenant)
 
     __str__ = _composant.__str__
+    
+    # -- property adminnat --
+    @property
+    def adminnat(self):
+        """Return True si le contact est admin nat"""
+        if self.profilcontact is None:
+            return None
+        if self.profilcontact[0] == '1':
+            return True
+        else:
+            return False
+
+    # -- property profilpublic --
+    @property
+    def profilpublic(self):
+        """Return True si le profil public"""
+        if self.profilcontact is None:
+            return None
+        if self.profilcontact == '000':
+            return True
+        else:
+            return False
+
+    # -- property profilmodel --
+    @property
+    def profilmodel(self):
+        """Return True si le profil modélisateur"""
+        if self.profilcontact is None:
+            return None
+        if self.profilcontact[1] == '1':
+            return True
+        else:
+            return False
+
+    # -- property profilinst --
+    @property
+    def profilinst(self):
+        """Return True si le profil institutionnel"""
+        if self.profilcontact is None:
+            return None
+        if self.profilcontact[2] == '1':
+            return True
+        else:
+            return False
+        
 
 
 # -- Class Adresse ------------------------------------------------------------

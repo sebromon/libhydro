@@ -339,6 +339,7 @@ def _contact_to_element(contact, bdhydro=False, strict=True):
             ('NomContact', {'value': contact.nom}),
             ('PrenomContact', {'value': contact.prenom}),
             ('CiviliteContact', {'value': contact.civilite}),
+            ('ProfilContact', {'value': contact.profilcontact}),
         ))
 
         # make element <Contact> and return

@@ -44,7 +44,7 @@
             <NomContact>Nom</NomContact>
             <PrenomContact>Prenom</PrenomContact>
             <CiviliteContact>1</CiviliteContact>
-            <ProfilContact>String</ProfilContact>
+            <ProfilContact>001</ProfilContact>
             <AdContact>String</AdContact>
             <AdEtrangereContact>String</AdEtrangereContact>
             <CpContact>3.14159265358979</CpContact>
@@ -86,7 +86,7 @@
             <NomContact>Nom2</NomContact>
             <PrenomContact>Prenom2</PrenomContact>
             <CiviliteContact>2</CiviliteContact>
-            <ProfilContact>String</ProfilContact>
+            <ProfilContact>010</ProfilContact>
             <AdContact>String</AdContact>
             <AdEtrangereContact>String</AdEtrangereContact>
             <CpContact>3.14159265358979</CpContact>
@@ -160,7 +160,7 @@
             <NomContact>Nom Contaçt</NomContact>
             <PrenomContact>Prenom Contaçt</PrenomContact>
             <CiviliteContact>3</CiviliteContact>
-            <ProfilContact>String</ProfilContact>
+            <!--<ProfilContact>100</ProfilContact>-->
             <AdContact>String</AdContact>
             <AdEtrangereContact>String</AdEtrangereContact>
             <CpContact>3.14159265358979</CpContact>

@@ -98,12 +98,14 @@ class TestFromXmlIntervenants(unittest.TestCase):
         self.assertEqual(c.prenom, 'Prenom')
         self.assertEqual(c.civilite, 1)
         self.assertEqual(c.intervenant, i)
+        self.assertEqual(c.profilcontact,'001')
         c = i.contacts[1]
         self.assertEqual(c.code, '2')
         self.assertEqual(c.nom, 'Nom2')
         self.assertEqual(c.prenom, 'Prenom2')
         self.assertEqual(c.civilite, 2)
         self.assertEqual(c.intervenant, i)
+        self.assertEqual(c.profilcontact,'010')
 
     def test_intervenant_1(self):
         """intervenant 1 test."""
@@ -121,6 +123,7 @@ class TestFromXmlIntervenants(unittest.TestCase):
         self.assertEqual(c.prenom, 'Prenom Contaçt')
         self.assertEqual(c.civilite, 3)
         self.assertEqual(c.intervenant, i)
+        self.assertEqual(c.profilcontact,'100')
 
 
 # -- class TestFromXmlSitesHydro ----------------------------------------------
