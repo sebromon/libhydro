@@ -225,7 +225,7 @@ class Contact(object):
         prenom (string)
         civilite (entier parmi NOMENCLATURE[538])
         intervenant (Intervenant)
-        profilcontact (entier)
+        profilcontact (string)
 
     """
 
@@ -256,7 +256,7 @@ class Contact(object):
             prenom (string)
             civilite (entier parmi NOMENCLATURE[538])
             intervenant (Intervenant) = intervenant de rattachement
-            profilcontact (entier)
+            profilcontact (string)
 
         """
 
@@ -386,7 +386,7 @@ class Contact(object):
     # -- property profilpublic --
     @property
     def profilpublic(self):
-        """Return True si le profil public"""
+        """Return True si profil public"""
         if self.profilcontact is None:
             return None
         if self.profilcontact == '000':
@@ -397,7 +397,7 @@ class Contact(object):
     # -- property profilmodel --
     @property
     def profilmodel(self):
-        """Return True si le profil modélisateur"""
+        """Return True si profil modélisateur"""
         if self.profilcontact is None:
             return None
         if self.profilcontact[1] == '1':
@@ -408,7 +408,7 @@ class Contact(object):
     # -- property profilinst --
     @property
     def profilinst(self):
-        """Return True si le profil institutionnel"""
+        """Return True si profil institutionnel"""
         if self.profilcontact is None:
             return None
         if self.profilcontact[2] == '1':
