@@ -160,7 +160,7 @@
             <NomContact>Nom Contaçt</NomContact>
             <PrenomContact>Prenom Contaçt</PrenomContact>
             <CiviliteContact>3</CiviliteContact>
-            <!--<ProfilContact>100</ProfilContact>-->
+            <ProfilContact>100</ProfilContact>
             <AdContact>String</AdContact>
             <AdEtrangereContact>String</AdEtrangereContact>
             <CpContact>3.14159265358979</CpContact>
