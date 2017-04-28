@@ -34,10 +34,14 @@ from libhydro.core import (
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
 __contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.5.0"""
-__date__ = """2017-04-20"""
+__version__ = """0.5.1"""
+__date__ = """2017-04-28"""
 
 # HISTORY
+# V0.5.1 - 2017-04-28
+# Absence de contact dans l'émtteur et le destinataire si absence de
+# la balise CdContact
+# Balise CdContact non obigatoire pour les séries hydro
 # V0.5 - 2017-04-20
 #   fix the Contact.code type
 #   some refactoring
@@ -272,17 +276,26 @@ def _parse(src, ordered=True):
 def _scenario_from_element(element):
     """Return a xml.Scenario from a <Scenario> element."""
     if element is not None:
+        # emetteur pas de contacts si absence de balise CdContact 
+        emetteur_contacts = None
+        emetteur_cdcontact = _value(element.find('Emetteur'), 'CdContact')
+        if emetteur_cdcontact is not None:
+            emetteur_contacts = _intervenant.Contact(code=emetteur_cdcontact)
+        # destinataire pas de contacts si absence de balise CdContact 
+        dest_contacts = None
+        dest_cdcontact = _value(element.find('Destinataire'), 'CdContact')
+        if dest_cdcontact is not None:
+            dest_contacts = _intervenant.Contact(code=dest_cdcontact)
+
         return Scenario(
             emetteur=_intervenant.Intervenant(
                 code=_value(element.find('Emetteur'), 'CdIntervenant'),
                 nom=_value(element.find('Emetteur'), 'NomIntervenant'),
-                contacts=_intervenant.Contact(
-                    _value(element.find('Emetteur'), 'CdContact')),),
+                contacts=emetteur_contacts,),
             destinataire=_intervenant.Intervenant(
                 code=_value(element.find('Destinataire'), 'CdIntervenant'),
                 nom=_value(element.find('Destinataire'), 'NomIntervenant'),
-                contacts=_intervenant.Contact(
-                    _value(element.find('Destinataire'), 'CdContact')),),
+                contacts=dest_contacts,),
             dtprod=_value(element, 'DateHeureCreationFichier', _UTC))
 
 
@@ -585,7 +598,10 @@ def _seriehydro_from_element(element):
         elif element.find('CdCapteur') is not None:
             entite = _sitehydro.Capteur(code=_value(element, 'CdCapteur'))
         # build a Contact
-        contact = _intervenant.Contact(code=_value(element, 'CdContact'))
+        # balise CodeContact Non obligatoire
+        contact = None
+        if element.find('CdContact') is not None:
+            contact = _intervenant.Contact(code=_value(element, 'CdContact'))
         # build a Serie and return
         return _obshydro.Serie(
             entite=entite,

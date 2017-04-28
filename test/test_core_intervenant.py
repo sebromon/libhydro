@@ -24,7 +24,7 @@ from libhydro.core import intervenant
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2.0"""
+__version__ = """0.2.1"""
 __date__ = """2017-04-20"""
 
 # HISTORY
@@ -82,7 +82,7 @@ class TestIntervenant(unittest.TestCase):
         origine = 'SANDRE'
         nom = 'Service Central de la Pluie'
         mnemo = 'SCHAPI'
-        contacts = [intervenant.Contact()]
+        contacts = [intervenant.Contact(code='99')]
         it = intervenant.Intervenant(
             code=code, origine='A', nom=nom, mnemo=mnemo, contacts=contacts[0])
         self.assertEqual(
@@ -136,7 +136,7 @@ class TestIntervenant(unittest.TestCase):
 
     def test_error_04(self):
         """Contact error."""
-        contacts = [intervenant.Contact()]
+        contacts = [intervenant.Contact(code='5')]
         intervenant.Intervenant(contacts=contacts)
         self.assertRaises(
             TypeError, intervenant.Intervenant, **{'contacts': '---'})
@@ -163,11 +163,12 @@ class TestContact(unittest.TestCase):
 
     def test_base_01(self):
         """Empty Contact."""
-        c = intervenant.Contact()
+        code='99'
+        c = intervenant.Contact(code=code)
         self.assertEqual(
             (c.code, c.nom, c.prenom, c.civilite, c.intervenant,
              c.profilcontact),
-            (None, None, None, None, None, None))
+            (code, None, None, None, None, None))
 
     def test_base_02(self):
         """Base Contact."""
@@ -259,7 +260,7 @@ class TestContact(unittest.TestCase):
     
     def test_str_01(self):
         """Test __str__ method with None values."""
-        c = intervenant.Contact()
+        c = intervenant.Contact(code='99')
         self.assertTrue(c.__str__().rfind('Contact') > -1)
 
     def test_error_01(self):
@@ -274,20 +275,26 @@ class TestContact(unittest.TestCase):
 
     def test_error_02(self):
         """Civilite error."""
-        intervenant.Contact(civilite=1)
+        intervenant.Contact(code='99', civilite=1)
         self.assertRaises(
-            ValueError, intervenant.Contact, **{'civilite': 0})
+            ValueError, intervenant.Contact, **{'code':'99', 'civilite': 0})
 
     def test_error_03(self):
         """Intervenant error."""
         i = intervenant.Intervenant(code=5)
-        intervenant.Contact(intervenant=i)
+        intervenant.Contact(code=5, intervenant=i)
         self.assertRaises(
-            TypeError, intervenant.Contact, **{'intervenant': 5})
+            TypeError, intervenant.Contact, **{'code':'99', 'intervenant': 5})
     
     def test_error_04(self):
         """profilcontact error."""
         for profilcontact in ('88','5','200'):
             with self.assertRaises(ValueError):
                 intervenant.Contact(code='1', profilcontact=profilcontact)
-        
+
+    def test_error_05(self):
+        """absence de code contact."""
+        with self.assertRaises(TypeError):
+            intervenant.Contact()
+        with self.assertRaises(TypeError):
+            intervenant.Contact(code=None)

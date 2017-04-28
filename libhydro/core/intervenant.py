@@ -18,10 +18,12 @@ from . import _composant
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.3.0"""
+__version__ = """0.3.1"""
 __date__ = """2017-04-20"""
 
 # HISTORY
+# V0.3.1 - 2017-04-28
+# le code d'un contact est obligatoire
 # V0.3 - 2017-04-20
 #   fix Contact.code type
 #   some refactoring
@@ -287,8 +289,8 @@ class Contact(object):
         try:
 
             # None case
-            # if code is None:
-            #     raise TypeError('code is required')
+            if code is None:
+                raise TypeError('code is required')
 
             # other cases
             if code is not None:
@@ -371,17 +373,14 @@ class Contact(object):
             intervenant)
 
     __str__ = _composant.__str__
-    
+
     # -- property adminnat --
     @property
     def adminnat(self):
         """Return True si le contact est admin nat"""
         if self.profilcontact is None:
             return None
-        if self.profilcontact[0] == '1':
-            return True
-        else:
-            return False
+        return self.profilcontact[0] == '1'
 
     # -- property profilpublic --
     @property
@@ -389,10 +388,7 @@ class Contact(object):
         """Return True si profil public"""
         if self.profilcontact is None:
             return None
-        if self.profilcontact == '000':
-            return True
-        else:
-            return False
+        return self.profilcontact == '000'
 
     # -- property profilmodel --
     @property
@@ -400,10 +396,7 @@ class Contact(object):
         """Return True si profil modélisateur"""
         if self.profilcontact is None:
             return None
-        if self.profilcontact[1] == '1':
-            return True
-        else:
-            return False
+        return self.profilcontact[1] == '1'
 
     # -- property profilinst --
     @property
@@ -411,11 +404,8 @@ class Contact(object):
         """Return True si profil institutionnel"""
         if self.profilcontact is None:
             return None
-        if self.profilcontact[2] == '1':
-            return True
-        else:
-            return False
-        
+        return self.profilcontact[2] == '1'
+
 
 
 # -- Class Adresse ------------------------------------------------------------

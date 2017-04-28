@@ -54,9 +54,9 @@ class TestScenario(unittest.TestCase):
     def test_base_01(self):
         """Base case scenario."""
         destinataire = intervenant.Intervenant(
-            contacts=[intervenant.Contact()]
+            contacts=[intervenant.Contact(code='99')]
         )
-        emetteur = intervenant.Contact(intervenant=intervenant.Intervenant())
+        emetteur = intervenant.Contact(code='98', intervenant=intervenant.Intervenant())
         sce = Scenario(emetteur=emetteur, destinataire=destinataire)
         self.assertEqual(
             (
@@ -110,7 +110,7 @@ class TestScenario(unittest.TestCase):
     def test_error_01(self):
         """Emetteur error."""
         destinataire = intervenant.Intervenant()
-        emetteur = intervenant.Contact(intervenant=intervenant.Intervenant())
+        emetteur = intervenant.Contact(code='99', intervenant=intervenant.Intervenant())
         Scenario(emetteur=emetteur, destinataire=destinataire)
         with self.assertRaises(TypeError):
             Scenario(emetteur=None, destinataire=destinataire)
@@ -295,10 +295,10 @@ class TestMessage(unittest.TestCase):
         emetteur = intervenant.Intervenant()
         destinataire = intervenant.Intervenant()
         destinataire.contacts = [
-            intervenant.Contact(),
-            intervenant.Contact(),
-            intervenant.Contact(),
-            intervenant.Contact()
+            intervenant.Contact(code='99'),
+            intervenant.Contact(code='5'),
+            intervenant.Contact(code='999'),
+            intervenant.Contact(code='123')
         ]
         scenario = Scenario(emetteur=emetteur, destinataire=destinataire)
         with self.assertRaises(TypeError):
@@ -314,7 +314,7 @@ class TestMessage(unittest.TestCase):
 
     def test_error_05(self):
         """Series error."""
-        emetteur = intervenant.Contact()
+        emetteur = intervenant.Contact(code='99')
         emetteur.intervenant = intervenant.Intervenant(1845)
         destinataire = intervenant.Intervenant()
         scenario = Scenario(emetteur=emetteur, destinataire=destinataire)

@@ -47,7 +47,7 @@ class Testevenement(unittest.TestCase):
         """Minimum evenement."""
         entite = sitehydro.Sitehydro('R5330101')
         descriptif = 'some texte here'
-        contact = intervenant.Contact(nom='moi')
+        contact = intervenant.Contact(code='99', nom='moi')
         e = evenement.Evenement(
             entite=entite, descriptif=descriptif, contact=contact
         )
@@ -60,7 +60,7 @@ class Testevenement(unittest.TestCase):
         """Full evenement."""
         entite = sitehydro.Station('R533010110')
         descriptif = 'some texte here'
-        contact = intervenant.Contact(nom='moi')
+        contact = intervenant.Contact(code='99', nom='moi')
         dt = datetime.datetime(1852, 2, 8, 5, 10, 8)
         publication = 10
         e = evenement.Evenement(
@@ -76,7 +76,7 @@ class Testevenement(unittest.TestCase):
         """Test __str__ method."""
         entite = sitehydro.Station('R533010110')
         descriptif = 'some texte here'
-        contact = intervenant.Contact(nom='moi')
+        contact = intervenant.Contact(code='99', nom='moi')
         e = evenement.Evenement(
             entite=entite, contact=contact, descriptif=descriptif
         )
@@ -99,7 +99,7 @@ class Testevenement(unittest.TestCase):
         """Entite error."""
         entite = sitehydro.Station('R533010110')
         descriptif = 'some texte here'
-        contact = intervenant.Contact(nom='moi')
+        contact = intervenant.Contact(code='99', nom='moi')
         e = evenement.Evenement(
             entite=entite, contact=contact, descriptif=descriptif
         )
@@ -119,7 +119,7 @@ class Testevenement(unittest.TestCase):
         """Descriptif error."""
         entite = sitehydro.Station('R533010110')
         descriptif = 'some texte here'
-        contact = intervenant.Contact(nom='moi')
+        contact = intervenant.Contact(code='99', nom='moi')
         e = evenement.Evenement(
             entite=entite, contact=contact, descriptif=descriptif
         )
@@ -134,7 +134,7 @@ class Testevenement(unittest.TestCase):
         """Contact error."""
         entite = sitehydro.Station('R533010110')
         descriptif = 'some texte here'
-        contact = intervenant.Contact(nom='moi')
+        contact = intervenant.Contact(code='99', nom='moi')
         e = evenement.Evenement(
             entite=entite, contact=contact, descriptif=descriptif
         )
@@ -149,7 +149,7 @@ class Testevenement(unittest.TestCase):
         """Publication error."""
         entite = sitehydro.Station('R533010110')
         descriptif = 'some texte here'
-        contact = intervenant.Contact(nom='moi')
+        contact = intervenant.Contact(code='99', nom='moi')
         e = evenement.Evenement(
             entite=entite, contact=contact, descriptif=descriptif,
             publication=10

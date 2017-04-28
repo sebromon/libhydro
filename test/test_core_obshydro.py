@@ -274,7 +274,7 @@ class TestSerie(unittest.TestCase):
         dtdeb = datetime.datetime(2012, 10, 3, 5)
         dtfin = datetime.datetime(2012, 10, 3, 9)
         dtprod = datetime.datetime(2012, 10, 3, 10)
-        c = intervenant.Contact()
+        c = intervenant.Contact(code='99')
         serie = obshydro.Serie(
             entite=s, grandeur=g, observations=o,
             dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, contact=c
