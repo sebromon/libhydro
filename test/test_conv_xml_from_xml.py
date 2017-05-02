@@ -875,6 +875,18 @@ class TestFromXmlSimulations(unittest.TestCase):
         self.assertEqual(
             set([x[0] for x in simulation.previsions.swaplevel(0, 1).index]),
             set([50, 0, 100, 20, 40, 49, 50, 100]))
+        # check previsions_tend et previsions_prb
+        self.assertEqual(
+            simulation.previsions_prb.swaplevel(0, 1)[40].tolist(), [75])
+        self.assertEqual(
+            simulation.previsions_tend.swaplevel(0, 1)['moy'].tolist(), [30, 23])
+        self.assertEqual(
+            simulation.previsions_tend.swaplevel(0, 1)['min'].tolist(), [10])
+        self.assertEqual(
+            simulation.previsions_tend.swaplevel(0, 1)['max'].tolist(), [50, 25])
+        self.assertEqual(len(simulation.previsions),
+                         len(simulation.previsions_tend) +
+                         len(simulation.previsions_prb))
 
     def test_simulation_1(self):
         """Simulation 1 test."""

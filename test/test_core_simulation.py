@@ -36,6 +36,89 @@ __date__ = """2014-12-17"""
 #   first shot
 
 
+# -- class TestPrevisionTendance ----------------------------------------------
+class TestPrevisionTendance(unittest.TestCase):
+
+    """Prevision class tests."""
+
+    # def setUp(self):
+    # """Hook method for setting up the test fixture before exercising it."""
+    #     pass
+
+    # def tearDown(self):
+    # """Hook method for deconstructing the test fixture after testing it."""
+    #     pass
+
+    def test_base_01(self):
+        """Simple prevision."""
+        dte = '2012-05-18 18:36+00'
+        res = 33.5
+        p = simulation.PrevisionTendance(dte, res)
+        self.assertEqual(
+            p.item(),
+            (datetime.datetime(2012, 5, 18, 18, 36), res, 'moy')
+        )
+
+    def test_base_02(self):
+        """Prevision with tendency."""
+        dte = '2012-05-18 00:00+00'
+        res = 33.5
+        tend = 'min'
+        p = simulation.PrevisionTendance(dte=dte, res=res, tend=tend)
+        self.assertEqual(
+            p.item(),
+            (datetime.datetime(2012, 5, 18), res, tend)
+        )
+        self.assertEqual(
+            (p['dte'].item(), p['res'].item(), p['tend'].item()),
+            (datetime.datetime(2012, 5, 18), res, tend)
+        )
+
+    def test_str_01(self):
+        """Test __str__ method with minimum values."""
+        dte = '2012-05-18 00:00+00'
+        res = 33
+        p = simulation.PrevisionTendance(dte=dte, res=res)
+        self.assertTrue(p.__str__().rfind('de tendance') > -1)
+        self.assertTrue(p.__str__().rfind('UTC') > -1)
+
+    def test_error_01(self):
+        """Date error."""
+        simulation.PrevisionTendance(**{'dte': '2012-10-10 10', 'res': 25.8})
+        self.assertRaises(
+            TypeError,
+            simulation.PrevisionTendance,
+            **{'dte': '2012-10-10', 'res': 25.8}
+        )
+
+    def test_error_02(self):
+        """Test res error."""
+        simulation.PrevisionTendance(**{'dte': '2012-10-10 10:10', 'res': 10})
+        self.assertRaises(
+            ValueError,
+            simulation.PrevisionTendance,
+            **{'dte': '2012-10-10 10:10', 'res': 'xxx'}
+        )
+
+    def test_error_03(self):
+        """tendance error."""
+        simulation.PrevisionTendance(
+            **{'dte': '2012-10-10 10:10', 'res': 25.8, 'tend': 'moy'}
+        )
+        self.assertRaises(
+            ValueError,
+            simulation.PrevisionTendance,
+            **{'dte': '2012-10-10 10:10', 'res': 25.8, 'tend': 'median'}
+        )
+        self.assertRaises(
+            ValueError,
+            simulation.PrevisionTendance,
+            **{'dte': '2012-10-10 10:10', 'res': 25.8, 'tend': 'mediane'}
+        )
+
+
+
+
 # -- class TestPrevision ------------------------------------------------------
 class TestPrevision(unittest.TestCase):
 

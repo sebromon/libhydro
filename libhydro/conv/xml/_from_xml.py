@@ -69,7 +69,7 @@ __date__ = """2017-04-28"""
 
 # -- config -------------------------------------------------------------------
 PREV_PROBABILITY = {'ResMoyPrev': 50, 'ResMinPrev': 0, 'ResMaxPrev': 100}
-
+PREV_TENDANCE = {'ResMoyPrev': 'moy', 'ResMinPrev': 'min', 'ResMaxPrev': 'max'}
 
 # -- Emetteur and Destinataire named tuples -----------------------------------
 Emetteur = _collections.namedtuple('Emetteur', ['intervenant', 'contact'])
@@ -703,6 +703,7 @@ def _simulation_from_element(element):
         if qualite is not None:
             qualite = int(qualite)
         # build a Simulation and return
+        previsions = _previsions_from_element(element.find('Prevs'))
         return _simulation.Simulation(
             entite=entite,
             modeleprevision=_modeleprevision.Modeleprevision(
@@ -713,7 +714,9 @@ def _simulation_from_element(element):
             public=_value(element, 'PubliSimul', bool),
             commentaire=_value(element, 'ComSimul'),
             dtprod=_value(element, 'DtProdSimul', _UTC),
-            previsions=_previsions_from_element(element.find('Prevs')),
+            previsions=previsions['all'],
+            previsions_tend=previsions['tend'],
+            previsions_prb=previsions['prb'],
             intervenant=_intervenant.Intervenant(
                 _value(element, 'CdIntervenant')))
 
@@ -723,6 +726,8 @@ def _previsions_from_element(element):
     if element is not None:
         # prepare
         previsions = []
+        previsions_tend = []
+        previsions_prb = []
         for prev in element:
             dte = _value(prev, 'DtPrev', _UTC)
 
@@ -735,6 +740,10 @@ def _previsions_from_element(element):
                     _simulation.Prevision(
                         dte=dte, res=resprev.text,
                         prb=PREV_PROBABILITY[resprev.tag]))
+                previsions_tend.append(
+                    _simulation.PrevisionTendance(
+                        dte=dte, res=resprev.text,
+                        tend=PREV_TENDANCE[resprev.tag]))
 
             # -------------------
             # compute ProbsPrev
@@ -744,8 +753,19 @@ def _previsions_from_element(element):
                     _simulation.Prevision(
                         dte=dte, res=_value(probprev, 'ResProbPrev', float),
                         prb=_value(probprev, 'PProbPrev', int)))
+                previsions_prb.append(
+                    _simulation.Prevision(
+                        dte=dte, res=_value(probprev, 'ResProbPrev', float),
+                        prb=_value(probprev, 'PProbPrev', int)))
+
         # build a Previsions and return
-        return _simulation.Previsions(*previsions)
+        prvs_tend = _simulation.PrevisionsTendance(*previsions_tend) \
+                        if len(previsions_tend) > 0 else None
+        prvs_prb = _simulation.Previsions(*previsions_prb) \
+                        if len(previsions_prb) > 0 else None
+        return {'all':_simulation.Previsions(*previsions),
+                'tend':prvs_tend,
+                'prb':prvs_prb}
 
 
 # -- global functions ---------------------------------------------------------

@@ -145,6 +145,70 @@ class Prevision(_numpy.ndarray):
     __str__ = _composant.__str__
 
 
+# -- class PrevTendance ----------------------------------------------------------
+class PrevisionTendance(_numpy.ndarray):
+
+    """Classe prevision de tendance.
+
+    Classe pour manipuler une prevision de tendanceelementaire.
+
+    Subclasse de numpy.array('dte', 'res', 'tend'), les elements etant du
+    type DTYPE.
+
+    Date et resultat sont obligatoires, la tendance est la moyenne par defaut.
+
+    la colonne tend peut prendre une des trois chaînes suivantes :
+        # 'min'
+        # 'max'
+        # 'moy' 
+
+    Proprietes:
+        dte (numpy.datetime64) = date UTC de la prevision au format
+            ISO 8601, arrondie a la seconde. A l'initialisation par une string,
+            si le fuseau horaire n'est pas precise, la date est consideree en
+            heure locale. Pour forcer la sasie d'une date UTC utiliser
+            le fuseau +00:
+                numpy.datetime64('2000-01-01T09:28:00+00')
+        res (numpy.float) = resultat
+        tend (numpy.unicode 3 caractères) = 'moy', 'min' ou 'max'
+
+    """
+
+    DTYPE = _numpy.dtype([
+        (str('dte'), _numpy.datetime64(None, str('s'))),
+        (str('res'), _numpy.float),
+        (str('tend'), _numpy.unicode_, 3)
+    ])
+
+    def __new__(cls, dte, res, tend='moy'):
+        if not isinstance(dte, _numpy.datetime64):
+            dte = _numpy.datetime64(dte, 's')
+        try:
+            tend = unicode(tend)
+            if tend not in ('min','max','moy'):
+                raise ValueError('tendance incorrect {}'.format(tend))
+        except Exception:
+            raise
+        obj = _numpy.array(
+            (dte, res, tend),
+            dtype=PrevisionTendance.DTYPE
+        ).view(cls)
+        return obj
+
+    # def __array_finalize__(self, obj):
+    #     if obj is None:
+    #         return
+
+    def __unicode__(self):
+        """Return unicode representation."""
+        return '{0} de tendance {1} pour le {2} a {3} UTC'.format(
+            self['res'].item(),
+            self['tend'].item(),
+            *self['dte'].item().isoformat().split('T')
+        )
+
+    __str__ = _composant.__str__
+
 # -- class Previsions ---------------------------------------------------------
 class Previsions(_pandas.Series):
 
@@ -236,6 +300,97 @@ class Previsions(_pandas.Series):
         return obj
 
 
+# -- class PrevTendance ---------------------------------------------------------
+class PrevisionsTendance(_pandas.Series):
+
+    """Classe Previsions de tendance.
+
+    Classe pour manipuler un jeux de previsions de tendande,
+    sous la forme d'une Series pandas avec un double index,
+    le premier etant la date du resultat, la tendance 'moy', 'min' ou 'max'
+
+    Illustration d'une Series pandas de previsions pour 3 dates et avec 2 jeux
+    de probabilite:
+        dte                  tend
+        1972-10-01 10:00:00  moy     33
+                             max     44
+        1972-10-01 11:00:00  min     35
+                             moy    45
+                             max    55
+        1972-10-01 12:00:00  min     55
+                             moy    60
+        Name: res, dtype: float64
+
+    Se reporter a la documentation de la classe Prevision pour l'utilisation du
+    parametre tend.
+
+    Pour filtrer la serie de resultats de meme tendance, par exemple 'moy',
+    entre 2 dates:
+        previsions[:,'moy']['2013-01':'2013-01-23 01:00']
+    ou a une date precise:
+        previsions['2013-01-23 01:00']['moy']
+
+    On peut slicer une serie mais il faut que l'index soit ordonne par la
+    colonne utilisee:
+        # trier par la date
+        ordered_prev = previsions.sortlevel(0)
+        # slicer
+        ordered_prev['2013-01-23 00:00':'2013-01-23 10:00']
+        # si l'index n'est pas correctement trie on leve une exception...
+        ordered_prev = previsions.sortlevel(1)
+        ordered_prev['2013-01-23 00:00':'2013-01-23- 10:00']
+        >> KeyError: 'MultiIndex lexsort depth 0, key was length 1'
+
+    Pour agreger 2 series de previsions:
+        previsions.append(other_previsions)
+
+    """
+
+    def __new__(cls, *previsions):
+        """Constructeur.
+
+        Arguments:
+            previsions (un nombre quelconque de Prevision)
+
+        Exemples:
+            prv = Previsions(prv1)  # une seule Prevision 
+            prv = Previsions(prv1, prv2, ..., prvn)  # n PrevisionTendance
+            prv = Previsions(*previsions)  #  une liste de PrevisionTendance
+
+        """
+
+        # prepare a list of previsions
+        prvs = []
+        try:
+            for prv in previsions:
+                if not isinstance(prv, PrevisionTendance):
+                    raise TypeError('{} is not a tendency Prevision'.format(prv))
+                prvs.append(prv)
+
+        except Exception:
+            raise
+
+        # prepare a tmp numpy.array
+        array = _numpy.array(object=prvs)
+
+        # make index
+        index = _pandas.MultiIndex.from_tuples(
+            zip(array['dte'], array['tend']),
+            names=['dte', 'tend']
+        )
+
+        # get the pandas.Series
+        obj = _pandas.Series(
+            data=array['res'],
+            index=index,
+            name='res'
+        )
+
+        # return
+        # TODO - can't subclass the DataFRame object
+        # return obj.view(cls)
+        return obj
+
 # -- class Simulation ---------------------------------------------------------
 class Simulation(object):
 
@@ -253,6 +408,8 @@ class Simulation(object):
         commentaire (texte)
         dtprod (datetime.datetime) = date de production
         previsions (Previsions)
+        previsions_tend (PrevisionsTendance)
+        previsions_prb (Previsions)
         intervenant (Intervenant)
 
     """
@@ -271,7 +428,8 @@ class Simulation(object):
     def __init__(
         self, entite=None, modeleprevision=None, grandeur=None, statut=4,
         qualite=None, public=False, commentaire=None, dtprod=None,
-        previsions=None, intervenant=None, strict=True
+        previsions=None, previsions_tend=None, previsions_prb=None,
+        intervenant=None, strict=True
     ):
         """Initialisation.
 
@@ -286,6 +444,8 @@ class Simulation(object):
             dtprod (numpy.datetime64 string, datetime.datetime...) =
                 date de production
             previsions (Previsions)
+            previsions_tend (PrevisionsTendance)
+            previsions_prb (Previsions)
             intervenant (Intervenant)
             strict (bool, defaut True) = en mode permissif il n'y a pas de
                 controles de validite des parametres
@@ -309,11 +469,14 @@ class Simulation(object):
 
         # -- full properties --
         self._entite = self._modeleprevision = \
-            self._qualite = self._previsions = None
+            self._qualite = self._previsions = self._previsions_tend = \
+            self._previsions_prb = None
         self.entite = entite
         self.modeleprevision = modeleprevision
         self.qualite = qualite
         self.previsions = previsions
+        self.previsions_tend = previsions_tend
+        self.previsions_prb = previsions_prb
 
     # -- property entite --
     @property
@@ -425,10 +588,63 @@ class Simulation(object):
         except:
             raise
 
+    # -- property previsions_tend --
+    @property
+    def previsions_tend(self):
+        """Return previsions_tend."""
+        return self._previsions_tend
+
+    @previsions_tend.setter
+    def previsions_tend(self, previsions_tend):
+        """Set previsions_tend."""
+        try:
+            if previsions_tend is not None:
+                # we check we have a Series...
+                # ... and that index contains datetimes
+                if (self._strict):
+                    if (
+                        (not isinstance(previsions_tend, _pandas.Series)) or
+                        (previsions_tend.index.names != ['dte', 'tend'])
+                    ):
+
+                        raise TypeError('previsions incorrect')
+                    previsions_tend.index[0][0].isoformat()
+            # all seeem's ok :-)
+            self._previsions_tend = previsions_tend
+        except:
+            raise
+
+    # -- property previsions --
+    @property
+    def previsions_prb(self):
+        """Return previsions_prb."""
+        return self._previsions_prb
+
+    @previsions_prb.setter
+    def previsions_prb(self, previsions_prb):
+        """Set previsions_prb."""
+        try:
+            if previsions_prb is not None:
+                # we check we have a Series...
+                # ... and that index contains datetimes
+                if (self._strict):
+                    if (
+                        (not isinstance(previsions_prb, _pandas.Series)) or
+                        (previsions_prb.index.names != ['dte', 'prb'])
+                    ):
+
+                        raise TypeError('previsions incorrect')
+                    previsions_prb.index[0][0].isoformat()
+            # all seeem's ok :-)
+            self._previsions_prb = previsions_prb
+        except:
+            raise
+
     # -- special methods --
     __all__attrs__ = (
         'entite', 'modeleprevision', 'grandeur', 'statut', 'qualite',
-        'public', 'commentaire', 'dtprod', 'previsions', 'intervenant'
+        'public', 'commentaire', 'dtprod', 'previsions', 'previsions_prb',
+        'previsions_tend','intervenant'
     )
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
