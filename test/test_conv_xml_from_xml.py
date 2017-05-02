@@ -862,16 +862,16 @@ class TestFromXmlSimulations(unittest.TestCase):
                          datetime.datetime(2010, 2, 26, 14, 45))
         # check previsions => res
         self.assertEqual(set(simulation.previsions.tolist()),
-                         set([30, 10, 50, 25, 75, 90, 23, 25]))
+                         set([30, 10, 50, 25, 75, 90, 95, 23, 25]))
         self.assertEqual(simulation.previsions.iloc[3], 25)
         self.assertEqual(
             simulation.previsions.loc['2010-02-26 15:00'].tolist(), [23, 25])
         self.assertEqual(
-            simulation.previsions.swaplevel(0, 1)[50].tolist(), [30, 23])
+            simulation.previsions.swaplevel(0, 1)[50].tolist(), [30, 95, 23])
         self.assertEqual(
             simulation.previsions.swaplevel(0, 1)[40].tolist(), [75])
         # check previsions => index
-        self.assertEqual(len(simulation.previsions.index), 8)
+        self.assertEqual(len(simulation.previsions.index), 9)
         self.assertEqual(
             set([x[0] for x in simulation.previsions.swaplevel(0, 1).index]),
             set([50, 0, 100, 20, 40, 49, 50, 100]))
