@@ -86,9 +86,9 @@ class TestPrevisionTendance(unittest.TestCase):
         """Date error."""
         simulation.PrevisionTendance(**{'dte': '2012-10-10 10', 'res': 25.8})
         self.assertRaises(
-            TypeError,
+            ValueError,
             simulation.PrevisionTendance,
-            **{'dte': '2012-10-10', 'res': 25.8}
+            **{'dte': '2012-10-55', 'res': 25.8}
         )
 
     def test_error_02(self):
@@ -169,9 +169,9 @@ class TestPrevision(unittest.TestCase):
         """Date error."""
         simulation.Prevision(**{'dte': '2012-10-10 10', 'res': 25.8})
         self.assertRaises(
-            TypeError,
+            ValueError,
             simulation.Prevision,
-            **{'dte': '2012-10-10', 'res': 25.8}
+            **{'dte': '2012-10-55', 'res': 25.8}
         )
 
     def test_error_02(self):

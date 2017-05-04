@@ -31,18 +31,16 @@ from libhydro.core import (
 
 
 # -- strings ------------------------------------------------------------------
-__author__ = """Philippe Gouin """ \
-             """<philippe.gouin@developpement-durable.gouv.fr>"""
-__contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.5.1"""
-__date__ = """2017-04-28"""
+# contributor Camillo Montes (SYNAPSE)
+__version__ = '0.5.2'
+__date__ = '2017-05-03'
 
 # HISTORY
-# V0.5.1 - 2017-04-28
-# Absence de contact dans l'émtteur et le destinataire si absence de
-# la balise CdContact
-# Balise CdContact non obigatoire pour les séries hydro
 # V0.5 - 2017-04-20
+#   fix numpy deprecated warnings around sort()
+#   absence de contact dans l'emetteur et le destinataire si absence de
+#     la balise CdContact
+#   balise CdContact non obigatoire pour les series hydro
 #   fix the Contact.code type
 #   some refactoring
 # V0.4 - 2014-08-22
@@ -276,12 +274,12 @@ def _parse(src, ordered=True):
 def _scenario_from_element(element):
     """Return a xml.Scenario from a <Scenario> element."""
     if element is not None:
-        # emetteur pas de contacts si absence de balise CdContact 
+        # emetteur pas de contacts si absence de balise CdContact
         emetteur_contacts = None
         emetteur_cdcontact = _value(element.find('Emetteur'), 'CdContact')
         if emetteur_cdcontact is not None:
             emetteur_contacts = _intervenant.Contact(code=emetteur_cdcontact)
-        # destinataire pas de contacts si absence de balise CdContact 
+        # destinataire pas de contacts si absence de balise CdContact
         dest_contacts = None
         dest_cdcontact = _value(element.find('Destinataire'), 'CdContact')
         if dest_cdcontact is not None:
@@ -330,7 +328,7 @@ def _contact_from_element(element, intervenant=None):
         args['prenom'] = _value(element, 'PrenomContact')
         args['civilite'] = _value(element, 'CiviliteContact', int)
         args['intervenant'] = intervenant
-        args['profilcontact'] = _value(element, 'ProfilContact')
+        args['profil'] = _value(element, 'ProfilContact')
         # build a Contact and return
         return _intervenant.Contact(**args)
 
@@ -660,7 +658,7 @@ def _obsshydro_from_element(element):
                 args['cnt'] = continuite
             observations.append(_obshydro.Observation(**args))
         # build the Observations and return
-        return _obshydro.Observations(*observations).sort()
+        return _obshydro.Observations(*observations).sort_index()
 
 
 def _obsmeteo_from_element(element):
@@ -760,12 +758,11 @@ def _previsions_from_element(element):
 
         # build a Previsions and return
         prvs_tend = _simulation.PrevisionsTendance(*previsions_tend) \
-                        if len(previsions_tend) > 0 else None
+            if len(previsions_tend) > 0 else None
         prvs_prb = _simulation.Previsions(*previsions_prb) \
-                        if len(previsions_prb) > 0 else None
-        return {'all':_simulation.Previsions(*previsions),
-                'tend':prvs_tend,
-                'prb':prvs_prb}
+            if len(previsions_prb) > 0 else None
+        return {'all': _simulation.Previsions(*previsions),
+                'tend': prvs_tend, 'prb': prvs_prb}
 
 
 # -- global functions ---------------------------------------------------------
@@ -900,7 +897,7 @@ def _seriesmeteo_from_element(element):
 
         # update the serie
         for serie in seriesmeteo:
-            serie.observations = serie.observations.sort()
+            serie.observations = serie.observations.sort_index()
             serie.dtdeb = min(serie.observations.index)
             serie.dtfin = max(serie.observations.index)
 

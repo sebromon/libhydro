@@ -26,13 +26,13 @@ from libhydro.core import sitehydro, seuil
 
 
 # -- strings ------------------------------------------------------------------
-__author__ = 'Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>'
-__version__ = '0.4c'
-__date__ = '2017-03-01'
+__version__ = '0.4.4'
+__date__ = '2017-05-03'
 
 # HISTORY
 # V0.4 - 2014-08-04
-#   temporarily escape some instable tests (FIXME)
+#   fix some pandas failures
+#   temporarily escape some unstable tests (FIXME)
 #   separate the sandre and bdhydro tests
 # V0.3 - 2014-08-01
 #   update the ToXmlBaseTest to write all tags

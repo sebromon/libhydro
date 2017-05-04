@@ -150,7 +150,7 @@ class PrevisionTendance(_numpy.ndarray):
 
     """Classe prevision de tendance.
 
-    Classe pour manipuler une prevision de tendanceelementaire.
+    Classe pour manipuler une prevision de tendance elementaire.
 
     Subclasse de numpy.array('dte', 'res', 'tend'), les elements etant du
     type DTYPE.
@@ -160,7 +160,7 @@ class PrevisionTendance(_numpy.ndarray):
     la colonne tend peut prendre une des trois chaînes suivantes :
         # 'min'
         # 'max'
-        # 'moy' 
+        # 'moy'
 
     Proprietes:
         dte (numpy.datetime64) = date UTC de la prevision au format
@@ -353,7 +353,7 @@ class PrevisionsTendance(_pandas.Series):
             previsions (un nombre quelconque de Prevision)
 
         Exemples:
-            prv = Previsions(prv1)  # une seule Prevision 
+            prv = Previsions(prv1)  # une seule Prevision
             prv = Previsions(prv1, prv2, ..., prvn)  # n PrevisionTendance
             prv = Previsions(*previsions)  #  une liste de PrevisionTendance
 
