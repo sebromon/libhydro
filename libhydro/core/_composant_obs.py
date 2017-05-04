@@ -10,11 +10,8 @@ Il integre les classes:
 """
 # -- imports ------------------------------------------------------------------
 from __future__ import (
-    unicode_literals as _unicode_literals,
-    absolute_import as _absolute_import,
-    division as _division,
-    print_function as _print_function
-)
+    unicode_literals as _unicode_literals, absolute_import as _absolute_import,
+    division as _division, print_function as _print_function)
 
 import numpy as _numpy
 import pandas as _pandas
@@ -23,10 +20,8 @@ from . import (_composant, intervenant as _intervenant)
 
 
 # -- strings ------------------------------------------------------------------
-__author__ = """Philippe Gouin """ \
-             """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """1.0d"""
-__date__ = """2015-06-11"""
+__version__ = '1.0.5'
+__date__ = '2017-05-03'
 
 # HISTORY
 # V1.0 - 2014-07-16
@@ -67,11 +62,8 @@ class Observations(_pandas.DataFrame):
         try:
             for i, obs in enumerate(observations):
                 if not isinstance(obs, observation_class):
-                    raise TypeError(
-                        'element {} is not a {}'.format(
-                            i, observation_class
-                        )
-                    )
+                    raise TypeError('element {} is not a {}'.format(
+                        i, observation_class))
                 obss.append(obs)
 
         except Exception:
@@ -83,9 +75,7 @@ class Observations(_pandas.DataFrame):
         # get the pandas.DataFrame
         index = _pandas.Index(array['dte'], name='dte')
         obj = _pandas.DataFrame(
-            data=array[list(array.dtype.names[1:])],
-            index=index
-        )
+            data=array[list(array.dtype.names[1:])], index=index)
         # TODO - can't subclass the DataFrame object
         # obj.__eq__ = _composant.__eq__
         # obj.__ne__ = _composant.__ne__
@@ -118,14 +108,11 @@ class Observations(_pandas.DataFrame):
         if not isinstance(duplicates, (str, unicode)) or \
                 duplicates not in ('raise', 'drop'):
             raise ValueError(
-                "invalid str for duplicates: '{}'".format(duplicates)
-            )
+                "invalid str for duplicates: '{}'".format(duplicates))
 
         # action
         df = _pandas.concat(
-            observations,
-            verify_integrity=(duplicates != 'drop')
-        )
+            observations, verify_integrity=(duplicates != 'drop'))
         if duplicates == 'drop':
             # group by the datetime index and take the most recent chunk
             df = df.groupby(level=0).last()
@@ -161,10 +148,8 @@ class Serie(object):
     dtfin = _composant.Datefromeverything(required=False)
     dtprod = _composant.Datefromeverything(required=False)
 
-    def __init__(
-        self, dtdeb=None, dtfin=None, dtprod=None, contact=None,
-        observations=None, strict=True
-    ):
+    def __init__(self, dtdeb=None, dtfin=None, dtprod=None, contact=None,
+                 observations=None, strict=True):
         """Initialisation.
 
         Arguments:
@@ -200,11 +185,8 @@ class Serie(object):
     @contact.setter
     def contact(self, contact):
         """Set contact."""
-        if (
-            (self._strict) and
-            (contact is not None) and
-            (not isinstance(contact, _intervenant.Contact))
-        ):
+        if self._strict and contact is not None and \
+                not isinstance(contact, _intervenant.Contact):
             raise TypeError('contact incorrect')
         self._contact = contact
 
@@ -263,15 +245,11 @@ class Serie(object):
                 contact = serie.contact
             elif contact != serie.contact:
                 raise ValueError(
-                    "can't concatenate series, contact doesn't match"
-                )
+                    "can't concatenate series, contact doesn't match")
 
         # concatenate observations
         observations = Observations.concat(
-            [s.observations for s in series],
-            duplicates=duplicates,
-            sort=sort
-        )
+            [s.observations for s in series], duplicates=duplicates, sort=sort)
 
         # return
         return {'dtdeb': dtdeb, 'dtfin': dtfin, 'dtprod': dtprod,

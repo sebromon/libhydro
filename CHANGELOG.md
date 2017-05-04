@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning][2].
 
 # [unreleased] - yyyy-mm-dd
 ## Changed
+- Mise à jour des dépendances numpy (version 1.12) et pandas (version 0.19)
 - La classe sitehydro.Stationhydro est renommée Station
 - Refonte ou ajout des méthodes spéciales __eq__ et __ne__ pour toutes les
   classes du package libhydro.core.  Peux entraîner un changement de

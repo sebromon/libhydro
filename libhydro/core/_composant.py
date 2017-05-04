@@ -26,11 +26,8 @@ les fonctions speciales:
 """
 # -- imports ------------------------------------------------------------------
 from __future__ import (
-    unicode_literals as _unicode_literals,
-    absolute_import as _absolute_import,
-    division as _division,
-    print_function as _print_function
-)
+    unicode_literals as _unicode_literals, absolute_import as _absolute_import,
+    division as _division, print_function as _print_function)
 
 import sys as _sys
 import locale as _locale
@@ -44,10 +41,8 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
 # -- strings ------------------------------------------------------------------
-__author__ = """Philippe Gouin """ \
-             """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """1.0a"""
-__date__ = """2014-12-17"""
+__version__ = '1.0.2'
+__date__ = '2015-05-03'
 
 # HISTORY
 # V1.0 - 2014-12-17
@@ -78,8 +73,7 @@ def _strict_handler(msg, error):
 ERROR_HANDLERS = {
     "ignore": lambda *args, **kwargs: None,  # 'ignore' returns None
     "warn": _warn_handler,  # 'warn' emit 'warn(msg)'
-    "strict": _strict_handler  # 'strict' raises 'error(msg)'
-}
+    "strict": _strict_handler}  # 'strict' raises 'error(msg)'
 
 
 # -- class Rlist --------------------------------------------------------------
@@ -168,8 +162,7 @@ class Rlist(list):
                 if not isinstance(obj, self.cls):
                     error_handler(
                         msg="the object '%s' is not of %s" % (obj, self.cls),
-                        error=TypeError
-                    )
+                        error=TypeError)
                     return False
         # return
         return True
@@ -269,10 +262,8 @@ class Datefromeverything(object):
         """Set the datetime.datetime property.
 
         Args:
-            value (
-                numpy.datetime64 or string to make one
-                datetime.datetime or iterable or dict to make it
-            )
+            value (numpy.datetime64 or string to make one
+                datetime.datetime or iterable or dict to make it)
 
         String format: look at
           [http://docs.scipy.org/doc/numpy-dev/reference/arrays.datetime.html]
@@ -280,11 +271,8 @@ class Datefromeverything(object):
         """
         if self.required and (value is None):
             raise TypeError('a value other than None is required')
-        if (
-            (value is not None)
-            and not isinstance(value, _datetime.datetime)
-            and not isinstance(value, _numpy.datetime64)
-        ):
+        if (value is not None) and not isinstance(value, _datetime.datetime) \
+                and not isinstance(value, _numpy.datetime64):
             try:
                 if isinstance(value, dict):
                     value = _datetime.datetime(**value)
@@ -294,8 +282,7 @@ class Datefromeverything(object):
                     value = _datetime.datetime(*value)
             except (ValueError, TypeError, AttributeError):
                 raise ValueError(
-                    'could not convert object to datetime.datetime'
-                )
+                    'could not convert object to datetime.datetime')
 
         # all is well
         if isinstance(value, _numpy.datetime64):
@@ -365,13 +352,9 @@ class Nomenclatureitem(object):
         # other cases
         else:
             value = self.valuetype(value)
-            if (
-                (self.strict) and
-                (value not in _NOMENCLATURE[self.nomenclature])
-            ):
+            if self.strict and value not in _NOMENCLATURE[self.nomenclature]:
                 raise ValueError(
-                    'value should be in nomenclature %i' % self.nomenclature
-                )
+                    'value should be in nomenclature %i' % self.nomenclature)
 
         # all is well
         self.data[instance] = value
@@ -392,8 +375,7 @@ def is_code_hydro(code, length=8, errors='ignore'):
         # (length) chars length
         if len(code) != length:
             raise ValueError(
-                'code hydro must be {0:d} chars long'.format(length)
-            )
+                'code hydro must be {0:d} chars long'.format(length))
 
         # upper first char
         if not code[0].isupper():
@@ -402,8 +384,7 @@ def is_code_hydro(code, length=8, errors='ignore'):
         # [1:-1] digits
         if not code[1:-1].isdigit():
             raise ValueError(
-                'code hydro chars except first and last must be digits'
-            )
+                'code hydro chars except first and last must be digits')
 
         # digit or upper last char
         if not (code[-1].isdigit() or code[-1].isupper()):
@@ -455,10 +436,8 @@ def is_code_insee(code, length=5, errors='ignore'):
         # code commune must be all digit or 2(A|B)xxx
         if not code.isdigit():
             start = length is 9  # 0 or 1
-            if not (
-                (code[start:start + 2] in ('2A', '2B')) and
-                (code[start + 2:].isdigit())
-            ):
+            if not (code[start:start + 2] in ('2A', '2B') and
+                    code[start + 2:].isdigit()):
                 raise ValueError('illegal char in INSEE code')
 
         # all is well
@@ -492,8 +471,7 @@ def __eq__(self, other, attrs=None, ignore=None, lazzy=False):
     # set the final attrs list
     if not attrs:
         attrs = getattr(
-            self.__class__, '__all__attrs__', self.__dict__.keys()
-        )
+            self.__class__, '__all__attrs__', self.__dict__.keys())
     if ignore:
         for attr in ignore:
             # we make attrs mutable or a copy before removing elements
@@ -503,9 +481,7 @@ def __eq__(self, other, attrs=None, ignore=None, lazzy=False):
             except ValueError:
                 raise AttributeError(
                     "'{}' object has no attribute '{}'".format(
-                        attr, self.__class__.__name__
-                    )
-                )
+                        attr, self.__class__.__name__))
     # action !
     for attr in attrs:
         first = getattr(self, attr)
@@ -530,8 +506,7 @@ def __eq__(self, other, attrs=None, ignore=None, lazzy=False):
 
 def __ne__(self, other, attrs=[], ignore=[], lazzy=False):
     return not self.__eq__(
-        other=other, attrs=attrs, ignore=ignore, lazzy=lazzy,
-    )
+        other=other, attrs=attrs, ignore=ignore, lazzy=lazzy)
 
 
 def __str__(self):
@@ -540,8 +515,5 @@ def __str__(self):
         return self.__unicode__()
     else:  # Python 2
         return self.__unicode__().encode(
-            _sys.stdout.encoding or
-            _locale.getpreferredencoding() or
-            'ascii',
-            'replace'
-        )
+            _sys.stdout.encoding or _locale.getpreferredencoding() or 'ascii',
+            'replace')

@@ -84,10 +84,7 @@ class TestObservation(unittest.TestCase):
         """Date error."""
         obshydro.Observation(**{'dte': '2000-10-10 10:00', 'res': 10})
         self.assertRaises(
-            TypeError,
-            obshydro.Observation,
-            **{'dte': '2000-10', 'res': 10}
-        )
+            ValueError, obshydro.Observation, **{'dte': '2000-15', 'res': 10})
 
     def test_error_02(self):
         """Test Res error."""

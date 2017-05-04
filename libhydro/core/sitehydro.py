@@ -10,21 +10,16 @@ Ce module contient les classes:
 """
 # -- imports ------------------------------------------------------------------
 from __future__ import (
-    unicode_literals as _unicode_literals,
-    absolute_import as _absolute_import,
-    division as _division,
-    print_function as _print_function
-)
+    unicode_literals as _unicode_literals, absolute_import as _absolute_import,
+    division as _division, print_function as _print_function)
 
-from . import (_composant, _composant_site)
+from . import _composant, _composant_site
 
 
 # -- strings ------------------------------------------------------------------
-__author__ = """Philippe Gouin """ \
-             """<philippe.gouin@developpement-durable.gouv.fr>"""
-__contributor__ = """Camillo Montes (SYNAPSE)"""
-__version__ = """0.4a"""
-__date__ = """2015-10-30"""
+# contributor Camillo Montes (SYNAPSE)
+__version__ = '0.4.1'
+__date__ = '2015-10-30'
 
 # HISTORY
 # V0.4 - 2014-12-17
@@ -103,10 +98,8 @@ class _Entitehydro(object):
                 if self._strict and (self.__class__ in _CODE_HYDRO_LENGTH):
                     # check code hydro
                     _composant.is_code_hydro(
-                        code=code,
-                        length=_CODE_HYDRO_LENGTH[self.__class__],
-                        errors='strict'
-                    )
+                        code=code, errors='strict',
+                        length=_CODE_HYDRO_LENGTH[self.__class__])
 
             # all is well
             self._code = code
@@ -150,10 +143,8 @@ class _Site_or_station(_Entitehydro):
 
     """
 
-    def __init__(
-        self, code, codeh2=None, libelle=None,
-        coord=None, strict=True
-    ):
+    def __init__(self, code, codeh2=None, libelle=None, coord=None,
+                 strict=True):
         """Constructor.
 
         Arguments:
@@ -165,8 +156,7 @@ class _Site_or_station(_Entitehydro):
 
         # -- super --
         super(_Site_or_station, self).__init__(
-            code=code, codeh2=codeh2, libelle=libelle, strict=strict
-        )
+            code=code, codeh2=codeh2, libelle=libelle, strict=strict)
 
         # -- full properties --
         self._coord = None
@@ -253,11 +243,9 @@ class Sitehydro(_Site_or_station):
 
     typesite = _composant.Nomenclatureitem(nomenclature=530)
 
-    def __init__(
-        self, code, codeh2=None, typesite='REEL',
-        libelle=None, libelleusuel=None, coord=None, stations=None,
-        communes=None, tronconsvigilance=None, strict=True
-    ):
+    def __init__(self, code, codeh2=None, typesite='REEL', libelle=None,
+                 libelleusuel=None, coord=None, stations=None, communes=None,
+                 tronconsvigilance=None, strict=True):
         """Initialisation.
 
         Arguments:
@@ -280,8 +268,7 @@ class Sitehydro(_Site_or_station):
         # -- super --
         super(Sitehydro, self).__init__(
             code=code, codeh2=codeh2, libelle=libelle,
-            coord=coord, strict=strict
-        )
+            coord=coord, strict=strict)
 
         # -- adjust the descriptor --
         vars(Sitehydro)['typesite'].strict = self._strict
@@ -327,9 +314,7 @@ class Sitehydro(_Site_or_station):
                         _SITE_ACCEPTED_STATION[self.typesite]:
                     raise ValueError(
                         '{0} station forbidden for {1} site'.format(
-                            station.typestation, self.typesite
-                        )
-                    )
+                            station.typestation, self.typesite))
             # add station
             self._stations.append(station)
 
@@ -377,16 +362,14 @@ class Sitehydro(_Site_or_station):
                 if not isinstance(tronconvigilance, Tronconvigilance):
                     raise TypeError(
                         'tronconsvigilance must be a Tronconvigilance '
-                        'or an iterable of Tronconvigilance'
-                    )
+                        'or an iterable of Tronconvigilance')
             # add station
             self._tronconsvigilance.append(tronconvigilance)
 
     # -- special methods --
     __all__attrs__ = (
         'code', 'codeh2', 'typesite', 'libelle', 'libelleusuel', 'coord',
-        'stations', 'communes', 'tronconsvigilance'
-    )
+        'stations', 'communes', 'tronconsvigilance')
 
     def __unicode__(self):
         """Return unicode representation."""
@@ -395,8 +378,7 @@ class Sitehydro(_Site_or_station):
             self.code or '<sans code>',
             self.libelle or '<sans libelle>',
             len(self.stations),
-            '' if (len(self.stations) < 2) else 's'
-        )
+            '' if (len(self.stations) < 2) else 's')
 
     __str__ = _composant.__str__
 
@@ -455,11 +437,9 @@ class Station(_Site_or_station):
 
     typestation = _composant.Nomenclatureitem(nomenclature=531)
 
-    def __init__(
-        self, code, codeh2=None, typestation='LIMNI', libelle=None,
-        libellecomplement=None, niveauaffichage=0, coord=None, capteurs=None,
-        commune=None, ddcs=None, strict=True
-    ):
+    def __init__(self, code, codeh2=None, typestation='LIMNI', libelle=None,
+                 libellecomplement=None, niveauaffichage=0, coord=None,
+                 capteurs=None, commune=None, ddcs=None, strict=True):
         """Initialisation.
 
         Arguments:
@@ -484,8 +464,7 @@ class Station(_Site_or_station):
         # -- super --
         super(Station, self).__init__(
             code=code, codeh2=codeh2, libelle=libelle,
-            coord=coord, strict=strict
-        )
+            coord=coord, strict=strict)
 
         # -- adjust the descriptor --
         vars(Station)['typestation'].strict = self._strict
@@ -542,15 +521,12 @@ class Station(_Site_or_station):
             if self._strict:
                 if not isinstance(capteur, Capteur):
                     raise TypeError(
-                        'capteurs must be a Capteur or an iterable of Capteur'
-                    )
+                        'capteurs must be a Capteur or an iterable of Capteur')
                 elif capteur.typemesure not in \
                         _STATION_ACCEPTED_CAPTEUR[self.typestation]:
                     raise ValueError(
                         '{0} capteur forbidden for {1} station'.format(
-                            capteur.typemesure, self.typestation
-                        )
-                    )
+                            capteur.typemesure, self.typestation))
             # add capteur
             self._capteurs.append(capteur)
 
@@ -595,8 +571,7 @@ class Station(_Site_or_station):
     # -- special methods --
     __all__attrs__ = (
         'code', 'codeh2', 'typestation', 'libelle', 'libellecomplement',
-        'niveauaffichage', 'coord', 'capteurs', 'commune', 'ddcs',
-    )
+        'niveauaffichage', 'coord', 'capteurs', 'commune', 'ddcs')
 
     def __unicode__(self):
         """Return unicode representation."""
@@ -605,8 +580,7 @@ class Station(_Site_or_station):
             self.code or '<sans code>',
             self.libelle or '<sans libelle>',
             len(self.capteurs),
-            '' if (len(self.capteurs) < 2) else 's'
-        )
+            '' if (len(self.capteurs) < 2) else 's')
 
     __str__ = _composant.__str__
 
@@ -643,10 +617,8 @@ class Capteur(_Entitehydro):
 
     typemesure = _composant.Nomenclatureitem(nomenclature=520)
 
-    def __init__(
-        self, code, codeh2=None, typemesure='H', libelle=None,
-        strict=True
-    ):
+    def __init__(self, code, codeh2=None, typemesure='H', libelle=None,
+                 strict=True):
         """Initialisation.
 
         Arguments:
@@ -661,8 +633,7 @@ class Capteur(_Entitehydro):
 
         # -- super --
         super(Capteur, self).__init__(
-            code=code, codeh2=codeh2, libelle=libelle, strict=strict
-        )
+            code=code, codeh2=codeh2, libelle=libelle, strict=strict)
 
         # -- adjust the descriptor --
         vars(Capteur)['typemesure'].strict = self._strict
@@ -680,8 +651,7 @@ class Capteur(_Entitehydro):
         return 'Capteur {0} {1}::{2}'.format(
             self.typemesure or '<sans type de mesure>',
             self.code or '<sans code>',
-            self.libelle or '<sans libelle>'
-        )
+            self.libelle or '<sans libelle>')
 
     __str__ = _composant.__str__
 
@@ -719,8 +689,7 @@ class Tronconvigilance(object):
         """Return unicode representation."""
         return 'Troncon de vigilance {0}::{1}'.format(
             self.code or '<sans code>',
-            self.libelle or '<sans libelle>'
-        )
+            self.libelle or '<sans libelle>')
 
     __str__ = _composant.__str__
 
@@ -731,16 +700,14 @@ _ARTICLE = {
     # classe name: article
     Sitehydro: 'le',
     Station: 'la',
-    Capteur: 'le'
-}
+    Capteur: 'le'}
 
 # -- HYDRO CODE LENGTH --
 _CODE_HYDRO_LENGTH = {
     # class name: hydro code length
     Sitehydro: 8,
     Station: 10,
-    Capteur: 12
-}
+    Capteur: 12}
 
 # -- HYDRO ENTITY DEPEDENCY RULES --
 # rules for checking which Station a Sitehydro does accept
@@ -753,13 +720,11 @@ _SITE_ACCEPTED_STATION = {
     'FICTIF': tuple(),
     'PONCTUEL': tuple(),
     'VIRTUEL': tuple(),
-    'RECONSTITUE': tuple()
-}
+    'RECONSTITUE': tuple()}
 # rules for checking which Capteur a Station does accept
 _STATION_ACCEPTED_CAPTEUR = {
     'LIMNI': ('H',),
     'DEB': ('H', 'Q'),
     'HC': tuple(),
     'LIMNIMERE': ('H',),
-    'LIMNIFILLE': ('H',)
-}
+    'LIMNIFILLE': ('H',)}

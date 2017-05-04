@@ -13,11 +13,8 @@ To run only a specific test:
 """
 # -- imports ------------------------------------------------------------------
 from __future__ import (
-    unicode_literals as _unicode_literals,
-    absolute_import as _absolute_import,
-    division as _division,
-    print_function as _print_function
-)
+    unicode_literals as _unicode_literals, absolute_import as _absolute_import,
+    division as _division, print_function as _print_function)
 
 import os
 import csv
@@ -27,10 +24,8 @@ from libhydro.conv.csv import _from_csv as lhcsv
 
 
 # -- strings ------------------------------------------------------------------
-__author__ = """Philippe Gouin """ \
-             """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.5b"""
-__date__ = """2014-12-29"""
+__version__ = '0.5.3'
+__date__ = '2014-12-29'
 
 # HISTORY
 # V0.5 - 2014-12-20
@@ -57,34 +52,26 @@ class TestMapKeys(unittest.TestCase):
         mapper = {'a': 'aa', 'b': 'bb', 'c': 'cc', 'd': 'dd', 'n': 'nn'}
         self.assertEqual(
             lhcsv.map_keys(self.base, mapper),
-            {'aa': 1, 'bb': 2, 'cc': 3}
-        )
+            {'aa': 1, 'bb': 2, 'cc': 3})
 
     def test_none_mapper_keys(self):
         """None mapper key test."""
         mapper = {'a': 'aa', 'b': None, 'c': 'cc', 'd': 'dd'}
         self.assertEqual(
             lhcsv.map_keys(self.base, mapper),
-            {'aa': 1, 'cc': 3}
-        )
+            {'aa': 1, 'cc': 3})
         mapper = {'a': None, 'b': None, 'c': None, 'd': 'dd'}
-        self.assertEqual(
-            lhcsv.map_keys(self.base, mapper),
-            {}
-        )
+        self.assertEqual(lhcsv.map_keys(self.base, mapper), {})
 
     def test_strict_and_loose(self):
         """Strict and loose mode test."""
         mapper = {'b': 'bb', 'c': 'cc', 'd': 'dd'}
         self.assertEqual(
             lhcsv.map_keys(self.base, mapper, strict=False),
-            {'bb': 2, 'cc': 3}
-        )
+            {'bb': 2, 'cc': 3})
         mapper = {}
         self.assertEqual(
-            lhcsv.map_keys(self.base, mapper, strict=False),
-            {}
-        )
+            lhcsv.map_keys(self.base, mapper, strict=False), {})
         with self.assertRaises(csv.Error):
             lhcsv.map_keys(self.base, mapper, strict=True),
 
@@ -93,8 +80,7 @@ class TestMapKeys(unittest.TestCase):
         mapper = {'a': 'aa', 'b': 'bb', 'c': 'cc', 'd': 'dd'}
         self.assertEqual(
             lhcsv.map_keys(self.base, mapper, iterator='items'),
-            lhcsv.map_keys(self.base, mapper, iterator='iteritems'),
-        )
+            lhcsv.map_keys(self.base, mapper, iterator='iteritems'),)
         with self.assertRaises(AttributeError):
             lhcsv.map_keys(self.base, mapper, iterator='')
 
@@ -170,15 +156,11 @@ class TestSitesHydroFromCsv(unittest.TestCase):
             flag=None, second_line=None, decimal=None,
             mapper={
                 'libhydro.core.sitehydro.Sitehydro': {
-                    'code': 'code', 'label': 'libelle', 'family': 'typesite'
-                },
+                    'code': 'code', 'label': 'libelle', 'family': 'typesite'},
                 'libhydro.core.sitehydro.Sitehydro.coord': {
-                    'x': 'x', 'y': 'y', 'proj': 'proj'
-                }
-            },
+                    'x': 'x', 'y': 'y', 'proj': 'proj'}},
             delimiter=b',',  # byte !
-            escapechar=b'\\'
-        )
+            escapechar=b'\\')
         self.assertEqual(len(siteshydro), 4)
         self.assertEqual(siteshydro[3].code, 'D0137014')
         self.assertEqual(siteshydro[2].typesite, 'VIRTUEL')
@@ -191,14 +173,10 @@ class TestSitesHydroFromCsv(unittest.TestCase):
             fname,
             merge=True,
             flag=None, second_line=None, decimal=None,
-            mapper={
-                'libhydro.core.sitehydro.Sitehydro': {
-                    'code': 'code', 'label': 'libelle', 'family': 'typesite'
-                },
-            },
+            mapper={'libhydro.core.sitehydro.Sitehydro': {
+                'code': 'code', 'label': 'libelle', 'family': 'typesite'}, },
             delimiter=b',',  # byte !
-            escapechar=b'\\'
-        )
+            escapechar=b'\\')
         self.assertEqual(len(siteshydro), 4)
         self.assertEqual(siteshydro[3].code, 'D0137014')
         self.assertEqual(siteshydro[2].typesite, 'VIRTUEL')
@@ -212,15 +190,11 @@ class TestSitesHydroFromCsv(unittest.TestCase):
             flag=None, second_line=None, decimal=None,
             mapper={
                 'libhydro.core.sitehydro.Sitehydro': {
-                    'code': 'code', 'label': 'libelle', 'family': 'typesite'
-                },
+                    'code': 'code', 'label': 'libelle', 'family': 'typesite'},
                 'libhydro.core.sitehydro.Sitehydro.coord': {
-                    'x': 'x', 'y': 'y', 'proj': 'proj'
-                }
-            },
+                    'x': 'x', 'y': 'y', 'proj': 'proj'}},
             delimiter=b',',  # byte !
-            escapechar=b'\\'
-        )
+            escapechar=b'\\')
         self.assertEqual(len(siteshydro), 5)
         self.assertEqual(siteshydro[4].code, 'D0137014')
         self.assertEqual(siteshydro[3].typesite, 'VIRTUEL')
@@ -290,13 +264,9 @@ class TestSeriesHydroFromCsv(unittest.TestCase):
         self.assertEqual(serieshydro[0].grandeur, 'Q')
         self.assertEqual(serieshydro[1].grandeur, 'Q')
         self.assertEqual(
-            serieshydro[0].observations.loc['2010-10-02 05:00', 'res'],
-            55.3
-        )
+            serieshydro[0].observations.loc['2010-10-02 05:00', 'res'], 55.3)
         self.assertEqual(
-            serieshydro[0].observations.loc['2010-10-02 06:00', 'res'],
-            55.8
-        )
+            serieshydro[0].observations.loc['2010-10-02 06:00', 'res'], 55.8)
         # merge = False
         serieshydro = lhcsv.serieshydro_from_csv(fname, merge=False)
         self.assertEqual(len(serieshydro), 4)
@@ -305,9 +275,7 @@ class TestSeriesHydroFromCsv(unittest.TestCase):
         self.assertEqual(serieshydro[2].entite.code, 'A0330101')
         self.assertEqual(serieshydro[3].entite.code, 'A0330101')
         self.assertEqual(
-            serieshydro[3].observations.loc['2010-10-02 09:00', 'res'],
-            55
-        )
+            serieshydro[3].observations.loc['2010-10-02 09:00', 'res'], 55)
 
     def test_full(self):
         """Full csv file test."""
@@ -324,12 +292,9 @@ class TestSeriesHydroFromCsv(unittest.TestCase):
         self.assertEqual(serieshydro[4].statut, 4)
         self.assertEqual(
             serieshydro[0].observations.loc['1999-02-13 05', 'res'].get(0),
-            123.33
-        )
+            123.33)
         self.assertEqual(
-            serieshydro[0].observations.loc['1999-02-13 05', 'mth'].get(0),
-            0
-        )
+            serieshydro[0].observations.loc['1999-02-13 05', 'mth'].get(0), 0)
         # merge = False
         serieshydro = lhcsv.serieshydro_from_csv(fname, decimal=b',', merge=0)
         self.assertEqual(len(serieshydro), 6)
@@ -342,12 +307,9 @@ class TestSeriesHydroFromCsv(unittest.TestCase):
         self.assertEqual(serieshydro[5].statut, 8)
         self.assertEqual(
             serieshydro[0].observations.loc['1999-02-13 05', 'res'].get(0),
-            123.33
-        )
+            123.33)
         self.assertEqual(
-            serieshydro[0].observations.loc['1999-02-13 05', 'mth'].get(0),
-            0
-        )
+            serieshydro[0].observations.loc['1999-02-13 05', 'mth'].get(0), 0)
 
 
 # -- class TestSeriesMeteoFromCsv ---------------------------------------------
@@ -418,27 +380,19 @@ class TestSeriesMeteoFromCsv(unittest.TestCase):
         self.assertEqual(len(seriesmeteo[0].observations), 2)
         self.assertEqual(len(seriesmeteo[1].observations), 2)
         self.assertEqual(len(seriesmeteo[2].observations), 2)
+        # FIXME - comparing string is weak because of formatting issues
         self.assertEqual(
             seriesmeteo[0].observations.to_string().split('\n')[2:],
-            [
-                '2011-02-02 14:00:00  10.1    0   16   55',
-                '2011-02-02 14:05:00  20.0    4   16   66'
-            ]
-        )
+            ['2011-02-02 14:00:00  10.1    0   16  55.0',
+             '2011-02-02 14:05:00  20.0    4   16  66.0'])
         self.assertEqual(
             seriesmeteo[1].observations.to_string().split('\n')[2:],
-            [
-                '2011-02-02 14:00:00   30   12   16  100',
-                '2011-02-02 15:00:00   40    0   16   75'
-            ]
-        )
+            ['2011-02-02 14:00:00  30.0   12   16  100.0',
+             '2011-02-02 15:00:00  40.0    0   16   75.0'])
         self.assertEqual(
             seriesmeteo[2].observations.to_string().split('\n')[2:],
-            [
-                '2011-02-02 16:00:00  50.5    8   16  100',
-                '2011-02-02 17:00:00   0.0    8   16  100'
-            ]
-        )
+            ['2011-02-02 16:00:00  50.5    8   16  100.0',
+             '2011-02-02 17:00:00   0.0    8   16  100.0'])
         # merge = False
         seriesmeteo = lhcsv.seriesmeteo_from_csv(fname, decimal=b',', merge=0)
         self.assertEqual(len(seriesmeteo), 6)
@@ -457,25 +411,13 @@ class TestSeriesMeteoFromCsv(unittest.TestCase):
         self.assertEqual(len(seriesmeteo[5].observations), 1)
         self.assertEqual(
             seriesmeteo[0].observations.to_string().split('\n')[2:],
-            [
-                '2011-02-02 14:00:00  10.1    0   16   55',
-            ]
-        )
+            ['2011-02-02 14:00:00  10.1    0   16  55.0', ])
         self.assertEqual(
             seriesmeteo[1].observations.to_string().split('\n')[2:],
-            [
-                '2011-02-02 14:05:00   20    4   16   66'
-            ]
-        )
+            ['2011-02-02 14:05:00  20.0    4   16  66.0'])
         self.assertEqual(
             seriesmeteo[4].observations.to_string().split('\n')[2:],
-            [
-                '2011-02-02 16:00:00  50.5    8   16  100',
-            ]
-        )
+            ['2011-02-02 16:00:00  50.5    8   16  100.0', ])
         self.assertEqual(
             seriesmeteo[5].observations.to_string().split('\n')[2:],
-            [
-                '2011-02-02 17:00:00    0    8   16  100'
-            ]
-        )
+            ['2011-02-02 17:00:00  0.0    8   16  100.0'])

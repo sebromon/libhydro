@@ -13,11 +13,8 @@ To run only a specific test:
 """
 # -- imports ------------------------------------------------------------------
 from __future__ import (
-    unicode_literals as _unicode_literals,
-    absolute_import as _absolute_import,
-    division as _division,
-    print_function as _print_function
-)
+    unicode_literals as _unicode_literals, absolute_import as _absolute_import,
+    division as _division, print_function as _print_function)
 
 import os
 import unittest
@@ -29,12 +26,12 @@ from libhydro.core import sitehydro
 
 
 # -- strings ------------------------------------------------------------------
-__author__ = """Philippe Gouin """ \
-             """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2b"""
-__date__ = """2015-10-30"""
+__version__ = '0.2.3'
+__date__ = '2017-05-04'
 
 # HISTORY
+# V0.2 - 2017-05-04
+#   fix some deprecated warnings
 # V0.1 - 2013-08-16
 #   first shot
 
@@ -53,49 +50,38 @@ class TestSimulationFromHSF(unittest.TestCase):
         sim = shom.simulation_from_hfs(SRC)
         self.assertEqual(
             (sim.entite.code, sim.entite.typestation, sim.entite.libelle),
-            (None, 'LIMNI', 'LOCMARIAQUER')
-        )
+            (None, 'LIMNI', 'LOCMARIAQUER'))
         self.assertEqual(
             (sim.grandeur, sim.qualite, sim.commentaire),
-            ('H', 100, 'data SHOM')
-        )
+            ('H', 100, 'data SHOM'))
         self.assertEqual(sim.modeleprevision.code, '00nMERSHOM')
         self.assertEqual(len(sim.previsions), 144)
         self.assertEqual(
             (sim.previsions[10], sim.previsions.index[10]),
-            (3710, (datetime.datetime(2013, 1, 23, 1, 40), 50))
-        )
+            (3710, (datetime.datetime(2013, 1, 23, 1, 40), 50)))
 
     def test_base_02(self):
         """Second base test."""
         station = sitehydro.Station(code='-', libelle='LOC', strict=False)
         dtprod = datetime.datetime(2010, 12, 12, 15, 33)
         sim = shom.simulation_from_hfs(
-            src=SRC,
-            station=station,
-            begin='2013-01-23 12:00',
-            end='2013-01-23 12:25',
-            dtprod=dtprod
-        )
+            src=SRC, station=station,
+            begin='2013-01-23 12:00', end='2013-01-23 12:25',
+            dtprod=dtprod)
         self.assertEqual(sim.entite, station)
         self.assertEqual(
             (sim.grandeur, sim.qualite, sim.commentaire, sim.dtprod),
-            ('H', 100, 'data SHOM', dtprod)
-        )
+            ('H', 100, 'data SHOM', dtprod))
         self.assertEqual(sim.modeleprevision.code, '00nMERSHOM')
         self.assertEqual(len(sim.previsions), 3)
         self.assertEqual(
             (sim.previsions[1], sim.previsions.index[1]),
-            (3340, (datetime.datetime(2013, 1, 23, 12, 10), 50))
-        )
+            (3340, (datetime.datetime(2013, 1, 23, 12, 10), 50)))
 
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test."""
         sim = shom.simulation_from_hfs(
-            src=SRC,
-            station='X1',
-            strict=False
-        )
+            src=SRC, station='X1', strict=False)
         self.assertEqual(sim.entite, 'X1')
 
     def test_error_01(self):
@@ -104,8 +90,7 @@ class TestSimulationFromHSF(unittest.TestCase):
             ValueError,
             shom.simulation_from_hfs,
             # **{'src': SRC, 'dtprod': '2013-01-01'}
-            **{'src': SRC, 'dtprod': '2013-1-1'}
-        )
+            **{'src': SRC, 'dtprod': '2013-1-1'})
 
 
 # -- class TestSerieFromHFS ---------------------------------------------------
@@ -117,68 +102,46 @@ class TestSerieFromHSF(unittest.TestCase):
         """Base test."""
         serie = shom.serie_from_hfs(SRC)
         self.assertEqual(
-            (
-                serie.entite.code, serie.entite.typestation,
-                serie.entite.libelle
-            ),
-            (None, 'LIMNI', 'LOCMARIAQUER')
-        )
+            (serie.entite.code, serie.entite.typestation,
+             serie.entite.libelle),
+            (None, 'LIMNI', 'LOCMARIAQUER'))
         self.assertEqual(
             (serie.grandeur, serie.statut),
-            ('H', 0)
-        )
+            ('H', 0))
         self.assertEqual(len(serie.observations), 144)
         self.assertEqual(
-            (
-                serie.observations.irow(100).item(),
-                serie.observations.irow(100).name
-            ),
-            (3040, datetime.datetime(2013, 1, 23, 16, 40))
-        )
+            (serie.observations.iloc[100].item(),
+             serie.observations.iloc[100].name),
+            (3040, datetime.datetime(2013, 1, 23, 16, 40)))
 
     def test_base_02(self):
         """Second base test."""
         station = sitehydro.Station(code='X231101001', libelle='LOC')
         serie = shom.serie_from_hfs(
-            src=SRC,
-            station=station,
-            begin='2013-01-23 20:05',
-            end='2013-01-23 20:35'
-        )
+            src=SRC, station=station,
+            begin='2013-01-23 20:05', end='2013-01-23 20:35')
         self.assertEqual(serie.entite, station)
         self.assertEqual(
             (serie.grandeur, serie.statut),
-            ('H', 0)
-        )
+            ('H', 0))
         self.assertEqual(len(serie.observations), 3)
         self.assertEqual(
-            (
-                serie.observations.irow(1).item(),
-                serie.observations.irow(1).name
-            ),
-            (1550, datetime.datetime(2013, 1, 23, 20, 20))
-        )
+            (serie.observations.iloc[1].item(),
+             serie.observations.iloc[1].name),
+            (1550, datetime.datetime(2013, 1, 23, 20, 20)))
 
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test."""
         serie = shom.serie_from_hfs(
-            src=SRC,
-            station='X1',
-            strict=False
-        )
+            src=SRC, station='X1', strict=False)
         self.assertEqual(serie.entite, 'X1')
         self.assertEqual(
-            (serie.grandeur, serie.statut),
-            ('H', 0)
-        )
+            (serie.grandeur, serie.statut), ('H', 0))
         self.assertEqual(len(serie.observations), 144)
         self.assertEqual(
-            (
-                serie.observations.irow(73).item(),
-                serie.observations.irow(73).name
-            ),
-            (3340, datetime.datetime(2013, 1, 23, 12, 10))
-        )
+            (serie.observations.iloc[73].item(),
+             serie.observations.iloc[73].name),
+            (3340, datetime.datetime(2013, 1, 23, 12, 10)))
 
     def test_error_01(self):
         """Src error."""
@@ -191,14 +154,12 @@ class TestSerieFromHSF(unittest.TestCase):
             pandas.tseries.tools.DateParseError,
             shom.serie_from_hfs,
             # **{'src': SRC, 'begin': '2013-1-1'}
-            **{'src': SRC, 'begin': '20131'}
-        )
+            **{'src': SRC, 'begin': '20131'})
         self.assertRaises(
             pandas.tseries.tools.DateParseError,
             shom.serie_from_hfs,
             # **{'src': SRC, 'end': '2013-1-25'}
-            **{'src': SRC, 'end': '20131'}
-        )
+            **{'src': SRC, 'end': '20131'})
 
     def test_error_03(self):
         """Check dates values error."""
@@ -206,24 +167,17 @@ class TestSerieFromHSF(unittest.TestCase):
             ValueError,
             shom.serie_from_hfs,
             # **{'src': SRC, 'begin': '2013-1-1'}
-            **{'src': SRC, 'begin': '2013-1-25'}
-        )
+            **{'src': SRC, 'begin': '2013-1-25'})
         self.assertRaises(
             ValueError,
             shom.serie_from_hfs,
             # **{'src': SRC, 'end': '2013-1-25'}
-            **{'src': SRC, 'end': '2013-1-22'}
-        )
+            **{'src': SRC, 'end': '2013-1-22'})
 
     def test_error_04(self):
         """Entity error."""
         station = sitehydro.Station(code='X1', strict=False)
         shom.serie_from_hfs(
-            src=SRC,
-            station=station
-        )
+            src=SRC, station=station)
         self.assertRaises(
-            TypeError,
-            shom.serie_from_hfs,
-            **{'src': SRC, 'station': 33}
-        )
+            TypeError, shom.serie_from_hfs, **{'src': SRC, 'station': 33})

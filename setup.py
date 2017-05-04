@@ -1,23 +1,11 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Libhydro setup file."""
-# -- imports ------------------------------------------------------------------
 from setuptools import setup, find_packages
 import os
 import re
 import codecs
 
-# -- strings ------------------------------------------------------------------
-__author__ = """Philippe Gouin """ \
-             """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1.7"""
-__date__ = """2017-04-20"""
 
-# HISTORY
-# V0.1 - 2014-01-28
-#   first shot
-
-
-# -- functions ----------------------------------------------------------------
 def find_version(*file_paths):
     """Return the version number from a source file.
 
@@ -34,7 +22,6 @@ def find_version(*file_paths):
     raise RuntimeError('Unable to find version string')
 
 
-# -- main ---------------------------------------------------------------------
 here = os.path.abspath(os.path.dirname(__file__))
 
 try:
@@ -58,6 +45,8 @@ setup(
                      find_version('libhydro', '__init__.py')),
     author='Philippe Gouin',
     author_email='philippe.gouin@developpement-durable.gouv.fr',
+    maintainer='Sébastien Romon',
+    maintainer_email='sebastien.romon@developpement-durable.gouv.fr',
     platforms=('any',),
     classifiers=[
         # refer to https://pypi.python.org/pypi?:action=list_classifiers
@@ -71,4 +60,4 @@ setup(
         'Topic :: Scientific/Engineering :: Atmospheric Science :: Hydrology'],
     keywords=['hydrology'],
     packages=find_packages(exclude=["doc", "tests"]),
-    install_requires=('numpy >= 1.7.1', 'pandas == 0.16', 'lxml >= 3.2.3'))
+    install_requires=('numpy == 1.12', 'pandas == 0.19', 'lxml >= 3.2.3'))

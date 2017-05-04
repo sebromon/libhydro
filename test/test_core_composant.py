@@ -13,11 +13,8 @@ To run only a specific test:
 """
 # -- imports ------------------------------------------------------------------
 from __future__ import (
-    unicode_literals as _unicode_literals,
-    absolute_import as _absolute_import,
-    division as _division,
-    print_function as _print_function
-)
+    unicode_literals as _unicode_literals, absolute_import as _absolute_import,
+    division as _division, print_function as _print_function)
 
 import sys
 import unittest
@@ -29,10 +26,8 @@ import numpy
 
 
 # -- strings ------------------------------------------------------------------
-__author__ = """Philippe Gouin \
-             <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.5b"""
-__date__ = """2014-12-18"""
+__version__ = '0.5.3'
+__date__ = '2014-12-18'
 
 # HISTORY
 # V0.5 - 2014-12-18
@@ -57,8 +52,7 @@ class TestErrorHandler(unittest.TestCase):
         error_handler = composant.ERROR_HANDLERS['ignore']
         self.assertIsNone(error_handler())
         self.assertIsNone(
-            error_handler(msg='a message', error=TypeError)
-        )
+            error_handler(msg='a message', error=TypeError))
         self.assertIsNone(error_handler('egfsksdùkf'))
 
     def test_warn(self):
@@ -188,14 +182,12 @@ class TestDatefromeverything(unittest.TestCase):
         vrs = []
         # build various objects
         vrs.append(self.VR(
-            numpy.datetime64('2008-10-10T09:33+00:00')
-        ))
+            numpy.datetime64('2008-10-10T09:33+00:00')))
         vrs.append(self.VR('2008-10-10T09:33+00:00'))
         vrs.append(self.VR(dt))
         vrs.append(self.VR([2008, 10, 10, 9, 33]))
         vrs.append(self.VR(
-            {'year': 2008, 'month': 10, 'day': 10, 'hour': 9, 'minute': 33}
-        ))
+            {'year': 2008, 'month': 10, 'day': 10, 'hour': 9, 'minute': 33}))
         for vr in vrs:
             self.assertEqual(vr.dt, dt)
 
@@ -204,7 +196,7 @@ class TestDatefromeverything(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.VR(None)
         with self.assertRaises(ValueError):
-            self.VR('2014-10-08')
+            self.VR('2014-13-08')
         with self.assertRaises(ValueError):
             self.VR(2014)
         with self.assertRaises(ValueError):
@@ -217,18 +209,15 @@ class TestDatefromeverything(unittest.TestCase):
         vnrs = []
         # build various objects
         vnrs.append(self.VNR(
-            numpy.datetime64('2010-01-05T02:00+02:00')
-        ))
+            numpy.datetime64('2010-01-05T02:00+02:00')))
         vnrs.append(self.VNR('2010-01-05T02:00+02:00'))
         vnrs.append(self.VNR(dt))
         vnrs.append(self.VNR([2010, 1, 5, 0, 0]))
         vnrs.append(self.VNR([2010, 1, 5]))
         vnrs.append(self.VNR(
-            {'year': 2010, 'month': 1, 'day': 5, 'minute': 0}
-        ))
+            {'year': 2010, 'month': 1, 'day': 5, 'minute': 0}))
         vnrs.append(self.VNR(
-            {'year': 2010, 'month': 1, 'day': 5}
-        ))
+            {'year': 2010, 'month': 1, 'day': 5}))
         for vnr in vnrs:
             self.assertEqual(vnr.dt, dt)
 
@@ -371,17 +360,13 @@ class TestIsCodeHydro(unittest.TestCase):
         self.assertTrue(composant.is_code_hydro('A3330510', errors='ignore'))
         self.assertTrue(composant.is_code_hydro('A3330510', errors='strict'))
         self.assertTrue(
-            composant.is_code_hydro('A333051002', 10, errors='ignore')
-        )
+            composant.is_code_hydro('A333051002', 10, errors='ignore'))
         self.assertTrue(
-            composant.is_code_hydro('A333051002', 10, errors='strict')
-        )
+            composant.is_code_hydro('A333051002', 10, errors='strict'))
         self.assertTrue(
-            composant.is_code_hydro('A33305100101', 12, errors='ignore')
-        )
+            composant.is_code_hydro('A33305100101', 12, errors='ignore'))
         self.assertTrue(
-            composant.is_code_hydro('A33305100101', 12, errors='strict')
-        )
+            composant.is_code_hydro('A33305100101', 12, errors='strict'))
         # a bastard code Hydro2 !
         self.assertTrue(composant.is_code_hydro('A842020C', errors='strict'))
         self.assertTrue(composant.is_code_hydro('A842020C', errors='ignore'))
@@ -394,18 +379,14 @@ class TestIsCodeHydro(unittest.TestCase):
         self.assertFalse(composant.is_code_hydro('A330010', errors='ignore'))
         # too long
         self.assertFalse(
-            composant.is_code_hydro('A2233305100101', 12, errors='ignore')
-        )
+            composant.is_code_hydro('A2233305100101', 12, errors='ignore'))
         # wrong chars
         self.assertFalse(
-            composant.is_code_hydro('3330051002', 10, errors='ignore')
-        )
+            composant.is_code_hydro('3330051002', 10, errors='ignore'))
         self.assertFalse(
-            composant.is_code_hydro('A330C5100201', 12, errors='ignore')
-        )
+            composant.is_code_hydro('A330C5100201', 12, errors='ignore'))
         self.assertFalse(
-            composant.is_code_hydro('A33051CC', errors='ignore')
-        )
+            composant.is_code_hydro('A33051CC', errors='ignore'))
 
     def test_errors_01(self):
         """Error code test."""
@@ -418,8 +399,7 @@ class TestIsCodeHydro(unittest.TestCase):
         # too long
         with self.assertRaises(ValueError):
             composant.is_code_hydro(
-                **{'code': 'A2233305100101', 'length': 12, 'errors': 'strict'}
-            )
+                **{'code': 'A2233305100101', 'length': 12, 'errors': 'strict'})
         # wrong first char
         with self.assertRaises(ValueError):
             composant.is_code_hydro(**{'code': '33001000', 'errors': 'strict'})
@@ -450,27 +430,20 @@ class TestIsCodeInsee(unittest.TestCase):
         self.assertTrue(composant.is_code_insee('2A531', errors='ignore'))
         self.assertTrue(composant.is_code_insee('2A531', errors='strict'))
         self.assertTrue(
-            composant.is_code_insee('2B531', length=5, errors='ignore')
-        )
+            composant.is_code_insee('2B531', length=5, errors='ignore'))
         self.assertTrue(
-            composant.is_code_insee('2B531', length=5, errors='strict')
-        )
+            composant.is_code_insee('2B531', length=5, errors='strict'))
         # meteo code
         self.assertTrue(
-            composant.is_code_insee('032150010', length=9, errors='ignore')
-        )
+            composant.is_code_insee('032150010', length=9, errors='ignore'))
         self.assertTrue(
-            composant.is_code_insee(211503310, length=9, errors='ignore')
-        )
+            composant.is_code_insee(211503310, length=9, errors='ignore'))
         self.assertTrue(
-            composant.is_code_insee('025312113', length=9, errors='strict')
-        )
+            composant.is_code_insee('025312113', length=9, errors='strict'))
         self.assertTrue(
-            composant.is_code_insee('02A531979', length=9, errors='ignore')
-        )
+            composant.is_code_insee('02A531979', length=9, errors='ignore'))
         self.assertTrue(
-            composant.is_code_insee('02B531001', length=9, errors='strict')
-        )
+            composant.is_code_insee('02B531001', length=9, errors='strict'))
 
     def test_bool_false(self):
         """False test."""
@@ -479,25 +452,20 @@ class TestIsCodeInsee(unittest.TestCase):
         # too short
         self.assertFalse(composant.is_code_insee('3310', errors='ignore'))
         self.assertFalse(
-            composant.is_code_insee('3310', length=5, errors='ignore')
-        )
+            composant.is_code_insee('3310', length=5, errors='ignore'))
         self.assertFalse(
-            composant.is_code_insee('03311001', length=9, errors='ignore')
-        )
+            composant.is_code_insee('03311001', length=9, errors='ignore'))
         # too long
         self.assertFalse(composant.is_code_insee('333051', errors='ignore'))
         self.assertFalse(
-            composant.is_code_insee('333051', length=5, errors='ignore')
-        )
+            composant.is_code_insee('333051', length=5, errors='ignore'))
         self.assertFalse(
-            composant.is_code_insee('0333333333', length=9, errors='ignore')
-        )
+            composant.is_code_insee('0333333333', length=9, errors='ignore'))
         # wrong chars
         self.assertFalse(composant.is_code_insee('3A250', errors='ignore'))
         self.assertFalse(composant.is_code_insee('2C201', errors='ignore'))
         self.assertFalse(
-            composant.is_code_insee('02C201001', length=9, errors='ignore')
-        )
+            composant.is_code_insee('02C201001', length=9, errors='ignore'))
 
     def test_errors_01(self):
         """Error code test."""
@@ -518,8 +486,7 @@ class TestIsCodeInsee(unittest.TestCase):
         # wrong length
         with self.assertRaises(ValueError):
             composant.is_code_insee(
-                **{'code': '233305', 'length': -1, 'errors': 'strict'}
-            )
+                **{'code': '233305', 'length': -1, 'errors': 'strict'})
 
     def test_errors_02(self):
         """Error handler test."""

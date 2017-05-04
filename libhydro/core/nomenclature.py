@@ -15,18 +15,13 @@ Usage:
 """
 # -- imports ------------------------------------------------------------------
 from __future__ import (
-    unicode_literals as _unicode_literals,
-    absolute_import as _absolute_import,
-    division as _division,
-    print_function as _print_function
-)
+    unicode_literals as _unicode_literals, absolute_import as _absolute_import,
+    division as _division, print_function as _print_function)
 
 
 # -- strings ------------------------------------------------------------------
-__author__ = """Philippe Gouin """ \
-             """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.6a"""
-__date__ = """2014-07-15"""
+__version__ = '0.6.1'
+__date__ = '2014-07-1'
 
 # HISTORY
 # V0.6 - 2014-07-15
@@ -110,8 +105,7 @@ NOMENCLATURE = {
         60: 'ETRS89 / UTM Nord 30',
         61: 'ETRS89 / UTM Nord 31',
         62: 'ETRS89 / UTM Nord 32',
-        63: 'WGS84 Web Mercator'
-    },
+        63: 'WGS84 Web Mercator'},
 
     # Methode d'obtention du resultat de l'observation hydrometrique
     507: {0: 'Mesure', 4: 'Reconstitution', 12: 'Interpolation'},
@@ -121,8 +115,7 @@ NOMENCLATURE = {
         0: 'Inconnu',
         12: 'Valeur incertaine',
         16: 'Valeur non qualifiee',
-        20: 'Valeur bonne'
-    },
+        20: 'Valeur bonne'},
 
     # Grandeur observee de la serie
     509: {'H': 'Hauteur', 'Q': 'Debit'},
@@ -130,19 +123,15 @@ NOMENCLATURE = {
     # Statut de la serie
     510: {
         0: 'Sans validation', 4: 'Brute', 8: 'Corrige',
-        12: 'Pre-valide', 16: 'Valide'
-    },
+        12: 'Pre-valide', 16: 'Valide'},
 
     # Statut de l'observation meteorologique
-    511: {
-        0: 'Sans validation', 4: 'Brute', 8: 'Corrige'
-    },
+    511: {0: 'Sans validation', 4: 'Brute', 8: 'Corrige'},
 
     # Methode d'obtention du resultat de l'observation meteoroloqiue
     512: {
         0: 'Mesure', 4: 'Reconstitution', 8: 'Calcul',
-        12: 'Interpolation', 16: 'Forcage'
-    },
+        12: 'Interpolation', 16: 'Forcage'},
 
     # Qualification de la donnees de l'observation hydrometrique
     515: {
@@ -151,8 +140,7 @@ NOMENCLATURE = {
         8: 'Forte',
         12: 'Valeur incertaine',
         16: 'Valeur non qualifiee',
-        20: 'Valeur bonne'
-    },
+        20: 'Valeur bonne'},
 
     # Statut de la simulation
     516: {4: 'Brute', 16: 'Critiquee'},
@@ -174,8 +162,7 @@ NOMENCLATURE = {
         'EM': "Evapotranspiration maximale",
         'RA': "Rayonnement",
         'HR': "Humidite relative",
-        'HA': "Humidite absolue"
-    },
+        'HA': "Humidite absolue"},
 
     # Type du modele de prevision
     525: {
@@ -186,8 +173,7 @@ NOMENCLATURE = {
         4: "Modele hydraulique",
         5: "Modele statistique",
         6: "Enchainement de modeles",
-        7: "Modele a propagation empirique"
-    },
+        7: "Modele a propagation empirique"},
 
     # Type de seuil
     528: {1: 'Absolu', 2: 'Gradient'},
@@ -205,8 +191,7 @@ NOMENCLATURE = {
         41: 'Seuil expertise valeur basse',
         42: 'Seuil expertise valeur forte',
         101: 'Seuil inferieur de valeur aberrante',
-        102: 'Seuil superieur de valeur aberrante'
-    },
+        102: 'Seuil superieur de valeur aberrante'},
 
     # Type de site hydrometrique
     530: {
@@ -217,8 +202,7 @@ NOMENCLATURE = {
         'VIRTUEL': "Site virtuel",
         'RECONSTITUE': "Site a debit moyen mensuel reconstitue",
         'PLANDEAU': "Plan d'eau",
-        'SOURCE': "Source"
-    },
+        'SOURCE': "Source"},
 
     # Type de station hydrometrique
     531: {
@@ -226,8 +210,7 @@ NOMENCLATURE = {
         'DEB': 'Debitmetre',
         'HC': 'Hauteur calculee',
         'LIMNIMERE': 'Limnimetre station mere',
-        'LIMNIFILLE': 'Limnimetre station fille'
-    },
+        'LIMNIFILLE': 'Limnimetre station fille'},
 
     # Type de publication de l'evenement
     534: {
@@ -236,13 +219,10 @@ NOMENCLATURE = {
         20: 'Vigicrues uniquement',
         25: 'Archive',
         30: 'Tableau des dernieres valeurs',
-        100: 'Privé'
-    },
+        100: 'Privé'},
 
     # Civilite du contact
-    538: {
-        1: 'Monsieur', 2: 'Madame', 3: 'Mademoiselle'
-    }
+    538: {1: 'Monsieur', 2: 'Madame', 3: 'Mademoiselle'}
 }
 
 NOMENCLATURES = NOMENCLATURE.keys()
