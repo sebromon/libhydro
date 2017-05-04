@@ -16,15 +16,13 @@ from . import _composant
 
 
 # -- strings ------------------------------------------------------------------
-__author__ = """Philippe Gouin """ \
-             """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.3.1"""
-__date__ = """2017-04-20"""
+__version__ = '0.3.2'
+__date__ = '2017-05-04'
 
 # HISTORY
-# V0.3.1 - 2017-04-28
-# le code d'un contact est obligatoire
-# V0.3 - 2017-04-20
+# V0.3 - 2017-04-28
+#   ajout de contact.profil et des proprietes derivees
+#   le code d'un contact est obligatoire
 #   fix Contact.code type
 #   some refactoring
 # V0.2 - 2014-03-02
@@ -91,7 +89,6 @@ class Intervenant(object):
         self._contacts = None
         self.contacts = contacts
 
-    # -- property code --
     @property
     def code(self):
         """Return code intervenant."""
@@ -123,7 +120,6 @@ class Intervenant(object):
         except:
             raise
 
-    # -- property origine --
     @property
     def origine(self):
         """Return origine."""
@@ -157,7 +153,6 @@ class Intervenant(object):
         except:
             raise
 
-    # -- property contacts --
     @property
     def contacts(self):
         """Return contacts."""
@@ -189,7 +184,6 @@ class Intervenant(object):
             contact.intervenant = self
             self._contacts.append(contact)
 
-    # -- special methods --
     __all__attrs__ = ('code', 'origine', 'nom', 'mnemo', 'contacts')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
@@ -227,13 +221,21 @@ class Contact(object):
         prenom (string)
         civilite (entier parmi NOMENCLATURE[538])
         intervenant (Intervenant)
-        profilcontact (string)
+        profil (0 < int < 7) = masque de bits sur 1 octet
+            administrateur national / modelisateur / institutionnel
+        profiladminnat (bool)
+        profilmodel (bool)
+        profilinst (bool)
+        profilpublic (bool) = un contact a un profil public lorsque tous les
+            elements du profil sont False (identique a profil = 0)
+
+    Proprietes en lecture seule:
+        profilasstr (string)
 
     """
 
     # Contact other properties
 
-    # profil
     # telephone
     # portable
     # fax
@@ -249,7 +251,7 @@ class Contact(object):
     civilite = _composant.Nomenclatureitem(nomenclature=538, required=False)
 
     def __init__(self, code=None, nom=None, prenom=None, civilite=None,
-                 intervenant=None, profilcontact=None):
+                 intervenant=None, profil=0):
         """Initialisation.
 
         Arguments:
@@ -258,7 +260,7 @@ class Contact(object):
             prenom (string)
             civilite (entier parmi NOMENCLATURE[538])
             intervenant (Intervenant) = intervenant de rattachement
-            profilcontact (string)
+            profil (binary string ou entier, defaut 0)
 
         """
 
@@ -271,13 +273,12 @@ class Contact(object):
 
         # -- full properties --
         self._code = self._civilite = self._intervenant = None
-        self._profilcontact = None
+        self._profil = 0
         self.code = code
         self.civilite = civilite
         self.intervenant = intervenant
-        self.profilcontact = profilcontact
+        self.profil = profil
 
-    # -- property code --
     @property
     def code(self):
         """Return Code contact."""
@@ -294,7 +295,9 @@ class Contact(object):
 
             # other cases
             if code is not None:
-                code = unicode(code)
+                code = unicode(code).strip()
+                if len(code) == 0:
+                    raise ValueError('code is an empty string')
                 if len(code) > 5:
                     raise ValueError('maximum code length is 5')
 
@@ -304,35 +307,6 @@ class Contact(object):
         except:
             raise
 
-    # -- property profilcontact --
-    @property
-    def profilcontact(self):
-        """Return Profil contact."""
-        return self._profilcontact
-
-    @profilcontact.setter
-    def profilcontact(self, profilcontact):
-        """Set profilcontact."""
-        try:
-
-            # None case
-            # if code is None:
-            #     raise TypeError('code is required')
-
-            # other cases
-            if profilcontact is not None:
-                profilcontact = unicode(profilcontact)
-                if profilcontact not in ('000', '001', '010', '011',
-                                         '100', '101', '110', '111'):
-                    raise ValueError('Invalid profil contact {}'.format(profilcontact))
-
-            # all is well
-            self._profilcontact = profilcontact
-
-        except:
-            raise
-
-    # -- property intervenant --
     @property
     def intervenant(self):
         """Return intervenant de rattachement du contact."""
@@ -346,9 +320,108 @@ class Contact(object):
                 raise TypeError('intervenant must be an Intervenant')
         self._intervenant = intervenant
 
+    @property
+    def profil(self):
+        """Return profil."""
+        return self._profil
+
+    @profil.setter
+    def profil(self, profil):
+        """Set profil.
+
+        Argument:
+            profil (binary as string ou entier)
+
+        """
+        try:
+            if isinstance(profil, basestring):
+                profil = int(profil, 2)
+            if not (0 <= profil <= 7):
+                raise ValueError('invalid profil {}'.format(profil))
+            self._profil = profil
+
+        except:
+            raise
+
+    @property
+    def profiladminnat(self):
+        """Return profiladminnat."""
+        # return bit 1: 4=int('100', 2)
+        return self._profil & 4 != 0
+
+    @profiladminnat.setter
+    def profiladminnat(self, status):
+        """Set profiladminnat."""
+        try:
+            if bool(status):
+                # set bit 1 to True with 4=int('100', 2)
+                self._profil |= 4
+            else:
+                # set bit 1 to False with 3=int('011', 2)
+                self._profil &= 3
+        except Exception:
+            raise ValueError('status should be a boolean')
+
+    @property
+    def profilmodel(self):
+        """Return profilmodel."""
+        # return bit 2: 2=int('010', 2)
+        return self._profil & 2 != 0
+
+    @profilmodel.setter
+    def profilmodel(self, status):
+        """Set profilmodel."""
+        try:
+            if bool(status):
+                # set bit 2 to True with 2=int('010', 2)
+                self._profil |= 2
+            else:
+                # set bit 2 to False with 5=int('101', 2)
+                self._profil &= 5
+        except Exception:
+            raise ValueError('status should be a boolean')
+
+    @property
+    def profilinst(self):
+        """Return profilinst."""
+        # return bit 3: 1=int('001', 2)
+        return self._profil & 1 != 0
+
+    @profilinst.setter
+    def profilinst(self, status):
+        """Set profilinst."""
+        try:
+            if bool(status):
+                # set bit 3 to True with 1=int('001', 2)
+                self._profil |= 1
+            else:
+                # set bit 3 to False with 6=int('110', 2)
+                self._profil &= 6
+        except Exception:
+            raise ValueError('status should be a boolean')
+
+    @property
+    def profilpublic(self):
+        """Return profilpublic."""
+        return self._profil == 0
+
+    @profilpublic.setter
+    def profilpublic(self, status):
+        """Set profilpublic."""
+        try:
+            # 7=bin('111', 2)
+            self._profil = 0 if bool(status) else 7
+        except Exception:
+            raise ValueError('status should be a boolean')
+
+    @property
+    def profilasstr(self):
+        """Return profil as a 3 chars string."""
+        return '{:0=3b}'.format(self._profil)
+
     # -- special methods --
     __all__attrs__ = ('code', 'nom', 'prenom', 'civilite', 'intervenant',
-                      'profilcontact')
+                      'profil')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 
@@ -373,39 +446,6 @@ class Contact(object):
             intervenant)
 
     __str__ = _composant.__str__
-
-    # -- property adminnat --
-    @property
-    def adminnat(self):
-        """Return True si le contact est admin nat"""
-        if self.profilcontact is None:
-            return None
-        return self.profilcontact[0] == '1'
-
-    # -- property profilpublic --
-    @property
-    def profilpublic(self):
-        """Return True si profil public"""
-        if self.profilcontact is None:
-            return None
-        return self.profilcontact == '000'
-
-    # -- property profilmodel --
-    @property
-    def profilmodel(self):
-        """Return True si profil modélisateur"""
-        if self.profilcontact is None:
-            return None
-        return self.profilcontact[1] == '1'
-
-    # -- property profilinst --
-    @property
-    def profilinst(self):
-        """Return True si profil institutionnel"""
-        if self.profilcontact is None:
-            return None
-        return self.profilcontact[2] == '1'
-
 
 
 # -- Class Adresse ------------------------------------------------------------

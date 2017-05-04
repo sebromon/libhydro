@@ -22,15 +22,12 @@ from libhydro.core import intervenant
 
 
 # -- strings ------------------------------------------------------------------
-__author__ = """Philippe Gouin""" \
-             """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2.1"""
-__date__ = """2017-04-20"""
+__version__ = '0.2.2'
+__date__ = '2017-05-04'
 
 # HISTORY
-# V0.2.1 - 2017-04-26
-# Tests propriété Contact.profilcontact
 # V0.2 - 2017-04-20
+#   tests propriete Contact.profil
 #   update tests to new Contact.code type
 #   some refactoring
 # V0.1 - 2013-08-20
@@ -163,12 +160,12 @@ class TestContact(unittest.TestCase):
 
     def test_base_01(self):
         """Empty Contact."""
-        code='99'
+        code = '99'
         c = intervenant.Contact(code=code)
         self.assertEqual(
             (c.code, c.nom, c.prenom, c.civilite, c.intervenant,
-             c.profilcontact),
-            (code, None, None, None, None, None))
+             c.profil),
+            (code, None, None, None, None, 0))
 
     def test_base_02(self):
         """Base Contact."""
@@ -176,88 +173,107 @@ class TestContact(unittest.TestCase):
         nom = 'Toto'
         prenom = 'Robert'
         civilite = 3
-        profilcontact = '111'
+        profil = 7  # 0b111
         i = intervenant.Intervenant(code=5)
         c = intervenant.Contact(
             code=code, nom=nom, prenom=prenom, civilite=civilite,
-            intervenant=i, profilcontact=profilcontact)
+            intervenant=i, profil=profil)
         self.assertEqual(
             (c.code, c.nom, c.prenom, c.civilite, c.intervenant,
-             c.profilcontact),
-            (code, nom, prenom, civilite, i, profilcontact))
-       
-    def test_adminnat(self):
-        code = '99'
-        nom = 'Toto'
-        prenom = 'Robert'
-        civilite = 3
-        profilcontact = None
-        i = intervenant.Intervenant(code=5)
-        c = intervenant.Contact(
-            code=code, nom=nom, prenom=prenom, civilite=civilite,
-            intervenant=i, profilcontact=None)
-        self.assertIsNone(c.adminnat, None)
-        for profilcontact in ('100', '101', '110', '111'):
-            c.profilcontact = profilcontact
-            self.assertEqual(c.adminnat, True)
-        for profilcontact in ('000', '001', '010', '011'):
-            c.profilcontact = profilcontact
-            self.assertEqual(c.adminnat, False)
+             c.profil),
+            (code, nom, prenom, civilite, i, 7))
 
-    def test_profilpublic(self):
-        code = '99'
-        nom = 'Toto'
-        prenom = 'Robert'
-        civilite = 3
-        profilcontact = None
-        i = intervenant.Intervenant(code=5)
-        c = intervenant.Contact(
-            code=code, nom=nom, prenom=prenom, civilite=civilite,
-            intervenant=i, profilcontact=None)
-        self.assertIsNone(c.profilpublic, None)
-        for profilcontact in ('000',):
-            c.profilcontact = profilcontact
-            self.assertEqual(c.profilpublic, True)
-        for profilcontact in ('001', '010', '011', '100', '101', '110', '111'):
-            c.profilcontact = profilcontact
-            self.assertEqual(c.profilpublic, False)
+    def test_profil(self):
+        """Test profil."""
+        # base case
+        c = intervenant.Contact(code=0)
+        self.assertEqual(c.profil, 0)
+        c.profil = 5
+        self.assertEqual(c.profil, 5)
+        # errors
+        with self.assertRaises(ValueError):
+            c.profil = -1
+        with self.assertRaises(ValueError):
+            c.profil = 8
+        with self.assertRaises(ValueError):
+            c.profil = 'r'
 
-    def test_profilinst(self):
+    def test_profiladminnat(self):
+        """Test profiladminnat."""
         code = '99'
         nom = 'Toto'
         prenom = 'Robert'
         civilite = 3
-        profilcontact = None
+        profil = 3  # 0b011
         i = intervenant.Intervenant(code=5)
         c = intervenant.Contact(
             code=code, nom=nom, prenom=prenom, civilite=civilite,
-            intervenant=i, profilcontact=None)
-        self.assertIsNone(c.profilinst, None)
-        for profilcontact in ('001', '011', '101', '111'):
-            c.profilcontact = profilcontact
-            self.assertEqual(c.profilinst, True)
-        for profilcontact in ('000', '010', '100', '110'):
-            c.profilcontact = profilcontact
-            self.assertEqual(c.profilinst, False)
+            intervenant=i, profil=profil)
+        self.assertFalse(c.profiladminnat)
+        c.profiladminnat = True
+        self.assertTrue(c.profiladminnat)
+        for profil in ('100', '101', '110', '111'):
+            c.profil = profil
+            self.assertTrue(c.profiladminnat)
+        for profil in ('000', '001', '010', '011'):
+            c.profil = profil
+            self.assertFalse(c.profiladminnat)
 
     def test_profilmodel(self):
+        """Test profilmodel."""
         code = '99'
         nom = 'Toto'
         prenom = 'Robert'
         civilite = 3
-        profilcontact = None
+        profil = 3  # 0b011
         i = intervenant.Intervenant(code=5)
         c = intervenant.Contact(
             code=code, nom=nom, prenom=prenom, civilite=civilite,
-            intervenant=i, profilcontact=None)
-        self.assertIsNone(c.profilmodel, None)
-        for profilcontact in ('010', '011', '110', '111'):
-            c.profilcontact = profilcontact
-            self.assertEqual(c.profilmodel, True)
-        for profilcontact in ('000', '001', '100', '101'):
-            c.profilcontact = profilcontact
-            self.assertEqual(c.profilmodel, False)
-    
+            intervenant=i)
+        self.assertFalse(c.profilmodel)
+        c.profilmodel = profil
+        self.assertTrue(c.profilmodel)
+        for profil in ('010', '011', '110', '111'):
+            c.profil = profil
+            self.assertTrue(c.profilmodel)
+        for profil in ('000', '001', '100', '101'):
+            c.profil = profil
+            self.assertFalse(c.profilmodel)
+
+    def test_profilinst(self):
+        """Test profilinst."""
+        code = 'xxx'
+        profil = 1  # 0b001
+        i = intervenant.Intervenant(code=5)
+        c = intervenant.Contact(
+            code=code, intervenant=i, profil=profil)
+        self.assertTrue(c.profilinst)
+        c.profilinst = 0
+        self.assertFalse(c.profilinst)
+        for profil in ('001', '011', '101', '111'):
+            c.profil = profil
+            self.assertTrue(c.profilinst)
+        for profil in ('000', '010', '100', '110'):
+            c.profil = profil
+            self.assertFalse(c.profilinst)
+
+    def test_profilpublic(self):
+        """Test profilpublic."""
+        code = '!!'
+        profil = 7  # 0b111
+        i = intervenant.Intervenant(code=5)
+        c = intervenant.Contact(
+            code=code, intervenant=i, profil=profil)
+        self.assertFalse(c.profilpublic)
+        c.profilpublic = True
+        self.assertTrue(c.profilpublic)
+        for profil in ('000',):
+            c.profil = profil
+            self.assertTrue(c.profilpublic)
+        for profil in ('001', '010', '011', '100', '101', '110', '111'):
+            c.profil = profil
+            self.assertFalse(c.profilpublic)
+
     def test_str_01(self):
         """Test __str__ method with None values."""
         c = intervenant.Contact(code='99')
@@ -277,20 +293,20 @@ class TestContact(unittest.TestCase):
         """Civilite error."""
         intervenant.Contact(code='99', civilite=1)
         self.assertRaises(
-            ValueError, intervenant.Contact, **{'code':'99', 'civilite': 0})
+            ValueError, intervenant.Contact, **{'code': '99', 'civilite': 0})
 
     def test_error_03(self):
         """Intervenant error."""
         i = intervenant.Intervenant(code=5)
         intervenant.Contact(code=5, intervenant=i)
         self.assertRaises(
-            TypeError, intervenant.Contact, **{'code':'99', 'intervenant': 5})
-    
+            TypeError, intervenant.Contact, **{'code': '99', 'intervenant': 5})
+
     def test_error_04(self):
-        """profilcontact error."""
-        for profilcontact in ('88','5','200'):
+        """profil error."""
+        for profil in ('88', '5', '200'):
             with self.assertRaises(ValueError):
-                intervenant.Contact(code='1', profilcontact=profilcontact)
+                intervenant.Contact(code='1', profil=profil)
 
     def test_error_05(self):
         """absence de code contact."""
