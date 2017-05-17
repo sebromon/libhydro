@@ -53,10 +53,12 @@ from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.7f"""
+__version__ = """0.8"""
 __date__ = """2015-10-30"""
 
 # HISTORY
+# V0.8 - 2017-05-17
+# Séparation des prévisions de tendance des previsiosn probabilistes
 # V0.7 - 2014-03-02
 #   use descriptors
 # V0.1 - 2013-08-07
@@ -78,12 +80,12 @@ __date__ = """2015-10-30"""
 # TODO - add a sort argument/method ?
 
 
-# -- class Prevision ----------------------------------------------------------
-class Prevision(_numpy.ndarray):
+# -- class PrevisionPrb -------------------------------------------------------
+class PrevisionPrb(_numpy.ndarray):
 
     """Classe prevision.
 
-    Classe pour manipuler une prevision elementaire.
+    Classe pour manipuler une prevision probabiliste.
 
     Subclasse de numpy.array('dte', 'res', 'prb'), les elements etant du
     type DTYPE.
@@ -126,7 +128,7 @@ class Prevision(_numpy.ndarray):
             raise
         obj = _numpy.array(
             (dte, res, prb),
-            dtype=Prevision.DTYPE
+            dtype=PrevisionPrb.DTYPE
         ).view(cls)
         return obj
 
@@ -210,9 +212,9 @@ class PrevisionTendance(_numpy.ndarray):
     __str__ = _composant.__str__
 
 # -- class Previsions ---------------------------------------------------------
-class Previsions(_pandas.Series):
+class PrevisionsPrb(_pandas.Series):
 
-    """Classe Previsions.
+    """Classe PrevisionsPrb.
 
     Classe pour manipuler un jeux de previsions, sous la forme d'une Series
     pandas avec un double index, le premier etant la date du resultat, le
@@ -258,7 +260,7 @@ class Previsions(_pandas.Series):
         """Constructeur.
 
         Arguments:
-            previsions (un nombre quelconque de Prevision)
+            previsions (un nombre quelconque de PrevisionPrb)
 
         Exemples:
             prv = Previsions(prv1)  # une seule Prevision
@@ -271,8 +273,8 @@ class Previsions(_pandas.Series):
         prvs = []
         try:
             for prv in previsions:
-                if not isinstance(prv, Prevision):
-                    raise TypeError('{} is not a Prevision'.format(prv))
+                if not isinstance(prv, PrevisionPrb):
+                    raise TypeError('{} is not a probabilist Prevision'.format(prv))
                 prvs.append(prv)
 
         except Exception:
@@ -409,7 +411,7 @@ class Simulation(object):
         dtprod (datetime.datetime) = date de production
         previsions (Previsions)
         previsions_tend (PrevisionsTendance)
-        previsions_prb (Previsions)
+        previsions_prb (PrevisionsPrb)
         intervenant (Intervenant)
 
     """
@@ -428,7 +430,7 @@ class Simulation(object):
     def __init__(
         self, entite=None, modeleprevision=None, grandeur=None, statut=4,
         qualite=None, public=False, commentaire=None, dtprod=None,
-        previsions=None, previsions_tend=None, previsions_prb=None,
+        previsions_tend=None, previsions_prb=None,
         intervenant=None, strict=True
     ):
         """Initialisation.
@@ -443,9 +445,8 @@ class Simulation(object):
             commentaire (texte)
             dtprod (numpy.datetime64 string, datetime.datetime...) =
                 date de production
-            previsions (Previsions)
             previsions_tend (PrevisionsTendance)
-            previsions_prb (Previsions)
+            previsions_prb (PrevisionsPrb)
             intervenant (Intervenant)
             strict (bool, defaut True) = en mode permissif il n'y a pas de
                 controles de validite des parametres
@@ -469,12 +470,11 @@ class Simulation(object):
 
         # -- full properties --
         self._entite = self._modeleprevision = \
-            self._qualite = self._previsions = self._previsions_tend = \
+            self._qualite = self._previsions_tend = \
             self._previsions_prb = None
         self.entite = entite
         self.modeleprevision = modeleprevision
         self.qualite = qualite
-        self.previsions = previsions
         self.previsions_tend = previsions_tend
         self.previsions_prb = previsions_prb
 
@@ -562,31 +562,31 @@ class Simulation(object):
         except:
             raise
 
-    # -- property previsions --
-    @property
-    def previsions(self):
-        """Return previsions."""
-        return self._previsions
+    ## -- property previsions --
+    #@property
+    #def previsions(self):
+        #"""Return previsions."""
+        #return self._previsions
 
-    @previsions.setter
-    def previsions(self, previsions):
-        """Set previsions."""
-        try:
-            if previsions is not None:
-                # we check we have a Series...
-                # ... and that index contains datetimes
-                if (self._strict):
-                    if (
-                        (not isinstance(previsions, _pandas.Series)) or
-                        (previsions.index.names != ['dte', 'prb'])
-                    ):
+    #@previsions.setter
+    #def previsions(self, previsions):
+        #"""Set previsions."""
+        #try:
+            #if previsions is not None:
+                ## we check we have a Series...
+                ## ... and that index contains datetimes
+                #if (self._strict):
+                    #if (
+                        #(not isinstance(previsions, _pandas.Series)) or
+                        #(previsions.index.names != ['dte', 'prb'])
+                    #):
 
-                        raise TypeError('previsions incorrect')
-                    previsions.index[0][0].isoformat()
-            # all seeem's ok :-)
-            self._previsions = previsions
-        except:
-            raise
+                        #raise TypeError('previsions incorrect')
+                    #previsions.index[0][0].isoformat()
+            ## all seeem's ok :-)
+            #self._previsions = previsions
+        #except:
+            #raise
 
     # -- property previsions_tend --
     @property
@@ -643,7 +643,7 @@ class Simulation(object):
     # -- special methods --
     __all__attrs__ = (
         'entite', 'modeleprevision', 'grandeur', 'statut', 'qualite',
-        'public', 'commentaire', 'dtprod', 'previsions', 'previsions_prb',
+        'public', 'commentaire', 'dtprod', 'previsions_prb',
         'previsions_tend','intervenant'
     )
     __eq__ = _composant.__eq__
@@ -664,9 +664,13 @@ class Simulation(object):
         except (AttributeError, KeyError):
             entite = '<une entite inconnue>'
         try:
-            prev = self.previsions.__unicode__()
+            prev = self.previsions_tend.__unicode__()
         except Exception:
-            prev = '<sans previsions>'
+            prev = '<sans previsions de tendance>'
+        try:
+            prev = self.previsions_prb.__unicode__()
+        except Exception:
+            prev = '<sans previsions probalistes>'
         try:
             dtprod = self.dtprod.isoformat(),
         except Exception:

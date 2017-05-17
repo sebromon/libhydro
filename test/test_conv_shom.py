@@ -55,10 +55,10 @@ class TestSimulationFromHSF(unittest.TestCase):
             (sim.grandeur, sim.qualite, sim.commentaire),
             ('H', 100, 'data SHOM'))
         self.assertEqual(sim.modeleprevision.code, '00nMERSHOM')
-        self.assertEqual(len(sim.previsions), 144)
+        self.assertEqual(len(sim.previsions_tend), 144)
         self.assertEqual(
-            (sim.previsions[10], sim.previsions.index[10]),
-            (3710, (datetime.datetime(2013, 1, 23, 1, 40), 50)))
+            (sim.previsions_tend[10], sim.previsions_tend.index[10]),
+            (3710, (datetime.datetime(2013, 1, 23, 1, 40), 'moy')))
 
     def test_base_02(self):
         """Second base test."""
@@ -73,10 +73,10 @@ class TestSimulationFromHSF(unittest.TestCase):
             (sim.grandeur, sim.qualite, sim.commentaire, sim.dtprod),
             ('H', 100, 'data SHOM', dtprod))
         self.assertEqual(sim.modeleprevision.code, '00nMERSHOM')
-        self.assertEqual(len(sim.previsions), 3)
+        self.assertEqual(len(sim.previsions_tend), 3)
         self.assertEqual(
-            (sim.previsions[1], sim.previsions.index[1]),
-            (3340, (datetime.datetime(2013, 1, 23, 12, 10), 50)))
+            (sim.previsions_tend[1], sim.previsions_tend.index[1]),
+            (3340, (datetime.datetime(2013, 1, 23, 12, 10), 'moy')))
 
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test."""

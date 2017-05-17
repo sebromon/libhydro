@@ -27,10 +27,12 @@ from libhydro.core import (
 
 
 # -- strings ------------------------------------------------------------------
-__version__ = '0.4.7'
-__date__ = '2017-05-04'
+__version__ = '0.4.8'
+__date__ = '2017-05-17'
 
 # HISTORY
+# V0.4.8
+# export des prévisons de tendance puis des prévisions probabilistes
 # V0.4 - 2014-07-31
 #   factorize the global functions
 #   replace isoformat() by strftime()
@@ -59,6 +61,12 @@ PREV_PROBABILITY = {
     50: 'ResMoyPrev',
     0: 'ResMinPrev',
     100: 'ResMaxPrev'}
+
+PREV_TENDANCE = {
+    'moy': 'ResMoyPrev',
+    'min': 'ResMinPrev',
+    'max': 'ResMaxPrev'
+}
 
 # some tags mappings
 CLS_MAPPINGS = {
@@ -871,9 +879,17 @@ def _simulation_to_element(simulation, bdhydro=False, strict=True):
         element = _factory(root=_etree.Element('Simul'), story=story)
 
         # add the previsions
-        if simulation.previsions is not None:
+#        if simulation.previsions is not None:
+#            element.append(
+#                _previsions_to_element(simulation.previsions, strict=strict))
+        
+        if simulation.previsions_tend is not None \
+            or simulation.previsions_prb is not None:
+            previsions = {'tend': simulation.previsions_tend,
+                          'prb': simulation.previsions_prb}
             element.append(
-                _previsions_to_element(simulation.previsions, strict=strict))
+                _previsions_to_element(previsions, strict=strict)
+            )
 
         # return
         return element
@@ -982,15 +998,46 @@ def _seuilshydro_to_element(seuilshydro, ordered=False,
 def _previsions_to_element(previsions, bdhydro=False, strict=True):
     """Return a <Prevs> element from a simulation.Previsions."""
 
+    # make element <Prevs>
+    element = _etree.Element('Prevs')
+    
     # this one is very VERY painful #:~/
-
-    if previsions is not None:
-
-        # make element <Prevs>
-        element = _etree.Element('Prevs')
-
+    if previsions['tend'] is not None:
         # iter by date and add the previsions
-        for dte in previsions.index.levels[0].values:
+        for dte in previsions['tend'].index.levels[0].values:
+            prev_elem = _etree.SubElement(element, 'Prev')
+            # dte is mandatory...
+            prev_elem.append(
+                _make_element(
+                    tag_name='DtPrev',
+                    # dte is a numpy.datetime64 with perhaps nanoseconds
+                    # it is better to cast it before getting the isoformat
+                    text=_numpy.datetime64(dte, 's').item().strftime(
+                        '%Y-%m-%dT%H:%M:%S'
+                    )
+                )
+            )
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            # for one date we can have multiple values
+            # we put all of them in a dict {prb: res, ...}
+            # so that we can pop them on by one
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            prevs = previsions['tend'][dte].to_dict()
+
+            # we begin to deal with the direct tags...
+            # order matters: moy, min and max !!
+            for tend in ('moy', 'min', 'max'):
+                if tend in prevs:
+                    prev_elem.append(
+                        _make_element(
+                            tag_name=PREV_TENDANCE[tend],
+                            text=prevs.pop(tend)
+                        )
+                    )
+
+    if previsions['prb'] is not None:
+        # iter by date and add the previsions
+        for dte in previsions['prb'].index.levels[0].values:
             prev_elem = _etree.SubElement(element, 'Prev')
             # dte is mandatory...
             prev_elem.append(
@@ -1005,16 +1052,8 @@ def _previsions_to_element(previsions, bdhydro=False, strict=True):
             # we put all of them in a dict {prb: res, ...}
             # so that we can pop them on by one
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            prevs = previsions[dte].to_dict()
+            prevs = previsions['prb'][dte].to_dict()
 
-            # we begin to deal with the direct tags...
-            # order matters: moy, min and max !!
-            for prob in (50, 0, 100):
-                if prob in prevs:
-                    prev_elem.append(
-                        _make_element(
-                            tag_name=PREV_PROBABILITY[prob],
-                            text=prevs.pop(prob)))
             # ... and then with the remaining <ProbPrev> elements
             if len(prevs) > 0:
                 probsprev_elem = _etree.SubElement(prev_elem, 'ProbsPrev')
@@ -1031,9 +1070,8 @@ def _previsions_to_element(previsions, bdhydro=False, strict=True):
                         _make_element(
                             tag_name='ResProbPrev', text=prevs.pop(prob)))
 
-        # return
-        return element
-
+    # return
+    return element
 
 # -- utility functions --------------------------------------------------------
 def _factory(root, story):

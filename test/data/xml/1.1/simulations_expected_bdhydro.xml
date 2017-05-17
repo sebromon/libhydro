@@ -33,6 +33,14 @@
             <ResMoyPrev>30.0</ResMoyPrev>
             <ResMinPrev>10.0</ResMinPrev>
             <ResMaxPrev>50.0</ResMaxPrev>
+          </Prev>
+          <Prev>
+            <DtPrev>2010-02-26T15:00:00</DtPrev>
+            <ResMoyPrev>23.0</ResMoyPrev>
+            <ResMaxPrev>25.0</ResMaxPrev>
+          </Prev>
+          <Prev>
+            <DtPrev>2010-02-26T14:00:00</DtPrev>
             <ProbsPrev>
               <ProbPrev>
                 <PProbPrev>20</PProbPrev>
@@ -46,12 +54,11 @@
                 <PProbPrev>49</PProbPrev>
                 <ResProbPrev>90.0</ResProbPrev>
               </ProbPrev>
+              <ProbPrev> 
+                 <PProbPrev>50</PProbPrev> 
+                 <ResProbPrev>95.0</ResProbPrev> 
+              </ProbPrev>
             </ProbsPrev>
-          </Prev>
-          <Prev>
-            <DtPrev>2010-02-26T15:00:00</DtPrev>
-            <ResMoyPrev>23.0</ResMoyPrev>
-            <ResMaxPrev>25.0</ResMaxPrev>
           </Prev>
         </Prevs>
       </Simul>

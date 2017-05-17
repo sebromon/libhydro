@@ -48,10 +48,13 @@ from ...core import (
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2c"""
+__version__ = """0.3"""
 __date__ = """2015-09-23"""
 
 # HISTORY
+# V0.3 - 2017-05-17
+# Les prévisions du SHOM sont considérés comme étant des prévisons de tendance
+# afin que le résultat se trouve dans la balise <ResMoyPrev>
 # V0.2 - 2014-09-25
 #   configure and update the code model
 #   fix conversion to mm
@@ -94,9 +97,9 @@ def simulation_from_hfs(
     index = _pandas.MultiIndex.from_tuples(
         zip(
             serie.observations.index.tolist(),
-            [50] * len(serie.observations)
+            ['moy'] * len(serie.observations)
         ),
-        names=['dte', 'prb']
+        names=['dte', 'tend']
     )
 
     # make a pandas.Series
@@ -120,7 +123,7 @@ def simulation_from_hfs(
         public=False,
         commentaire='data SHOM',
         dtprod=dtprod,
-        previsions=prev,
+        previsions_tend=prev,
         strict=strict
     )
 

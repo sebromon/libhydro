@@ -861,26 +861,34 @@ class TestFromXmlSimulations(unittest.TestCase):
         # check previsions => res
         # FIXME  #1 - restore the full list when the duplicate pandas index is
         #   fixed. Restore also lines 52-55 in test/data/xml/1.1/simulation.xml
-        self.assertEqual(set(simulation.previsions.tolist()),
-                         set([30, 10, 50, 25, 75, 90, 23, 25]))
+        #self.assertEqual(set(simulation.previsions.tolist()),
+        #                 set([30, 10, 50, 25, 75, 90, 23, 25]))
+        self.assertEqual(set(simulation.previsions_prb.tolist()),
+                         set([25, 75, 90, 95]))
+        self.assertEqual(set(simulation.previsions_tend.tolist()),
+                         set([30, 10, 50, 23, 25]))
         # self.assertEqual(set(simulation.previsions.tolist()),
         #                  set([30, 10, 50, 25, 75, 90, 95, 23, 25]))
-        self.assertEqual(simulation.previsions.iloc[3], 25)
+        self.assertEqual(simulation.previsions_prb.iloc[0], 25)
         self.assertEqual(
-            simulation.previsions['2010-02-26 15:00'].tolist(), [23, 25])
+            simulation.previsions_tend['2010-02-26 15:00'].tolist(), [23, 25])
         self.assertEqual(
             # FIXME #1
             # simulation.previsions.swaplevel(0, 1)[50].tolist(), [30, 95, 23])
-            simulation.previsions.swaplevel(0, 1)[50].tolist(), [30, 23])
+            simulation.previsions_prb.swaplevel(0, 1)[50].tolist(), [95])
         self.assertEqual(
-            simulation.previsions.swaplevel(0, 1)[40].tolist(), [75])
+            simulation.previsions_prb.swaplevel(0, 1)[40].tolist(), [75])
         # check previsions => index
         # FIXME #1
         # self.assertEqual(len(simulation.previsions.index), 9)
-        self.assertEqual(len(simulation.previsions.index), 8)
+        self.assertEqual(len(simulation.previsions_prb.index), 4)
+        self.assertEqual(len(simulation.previsions_tend.index), 5)
         self.assertEqual(
-            set([x[0] for x in simulation.previsions.swaplevel(0, 1).index]),
-            set([50, 0, 100, 20, 40, 49, 50, 100]))
+            set([x[0] for x in simulation.previsions_prb.swaplevel(0, 1).index]),
+            set([20, 40, 49, 50]))
+        self.assertEqual(
+            set([x[0] for x in simulation.previsions_tend.swaplevel(0, 1).index]),
+            set(['moy', 'min', 'max', 'moy', 'max']))
         # check previsions_tend et previsions_prb
         self.assertEqual(
             simulation.previsions_prb.swaplevel(0, 1)[40].tolist(), [75])
@@ -892,9 +900,6 @@ class TestFromXmlSimulations(unittest.TestCase):
         self.assertEqual(
             simulation.previsions_tend.swaplevel(0, 1)['max'].tolist(),
             [50, 25])
-        self.assertEqual(len(simulation.previsions),
-                         len(simulation.previsions_tend) +
-                         len(simulation.previsions_prb))
 
     def test_simulation_1(self):
         """Simulation 1 test."""
@@ -909,13 +914,13 @@ class TestFromXmlSimulations(unittest.TestCase):
         self.assertEqual(simulation.dtprod,
                          datetime.datetime(2010, 2, 26, 14, 45))
         # check previsions => res
-        self.assertEqual(len(simulation.previsions), 8)
-        self.assertEqual(simulation.previsions.tolist()[0], 371.774)
-        self.assertEqual(simulation.previsions.tolist()[3], 422.280)
-        self.assertEqual(simulation.previsions.tolist()[7], 358.71)
+        self.assertEqual(len(simulation.previsions_tend), 8)
+        self.assertEqual(simulation.previsions_tend.tolist()[0], 371.774)
+        self.assertEqual(simulation.previsions_tend.tolist()[3], 422.280)
+        self.assertEqual(simulation.previsions_tend.tolist()[7], 358.71)
         # check previsions => index
-        self.assertEqual(len(simulation.previsions.index), 8)
-        self.assertEqual(len(simulation.previsions.swaplevel(0, 1)[50]), 8)
+        self.assertEqual(len(simulation.previsions_tend.index), 8)
+        self.assertEqual(len(simulation.previsions_tend.swaplevel(0, 1)['moy']), 8)
 
     def test_simulation_2(self):
         """Simulation 2 test."""
@@ -930,9 +935,9 @@ class TestFromXmlSimulations(unittest.TestCase):
         self.assertEqual(simulation.dtprod,
                          datetime.datetime(2010, 2, 26, 9, 45))
         # check previsions => res
-        self.assertEqual(len(simulation.previsions), 4)
-        self.assertEqual(simulation.previsions.tolist(), [22, 33, 44, 55])
+        self.assertEqual(len(simulation.previsions_tend), 4)
+        self.assertEqual(simulation.previsions_tend.tolist(), [22, 33, 44, 55])
         # check previsions => index
-        self.assertEqual(len(simulation.previsions.index), 4)
-        self.assertEqual(len(simulation.previsions.swaplevel(0, 1)[0]), 2)
-        self.assertEqual(len(simulation.previsions.swaplevel(0, 1)[100]), 2)
+        self.assertEqual(len(simulation.previsions_tend.index), 4)
+        self.assertEqual(len(simulation.previsions_tend.swaplevel(0, 1)['min']), 2)
+        self.assertEqual(len(simulation.previsions_tend.swaplevel(0, 1)['max']), 2)

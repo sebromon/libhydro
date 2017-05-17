@@ -32,10 +32,13 @@ from libhydro.core import (
 
 # -- strings ------------------------------------------------------------------
 # contributor Camillo Montes (SYNAPSE)
-__version__ = '0.5.2'
+__version__ = '0.5.3'
 __date__ = '2017-05-03'
 
 # HISTORY
+# V0.5.3
+# Séparation des prévisions en deux pandas : prévisions de tendande et
+# et prévisions probabilistes
 # V0.5 - 2017-04-20
 #   fix numpy deprecated warnings around sort()
 #   absence de contact dans l'emetteur et le destinataire si absence de
@@ -712,7 +715,7 @@ def _simulation_from_element(element):
             public=_value(element, 'PubliSimul', bool),
             commentaire=_value(element, 'ComSimul'),
             dtprod=_value(element, 'DtProdSimul', _UTC),
-            previsions=previsions['all'],
+            #previsions=previsions['all'],
             previsions_tend=previsions['tend'],
             previsions_prb=previsions['prb'],
             intervenant=_intervenant.Intervenant(
@@ -723,7 +726,6 @@ def _previsions_from_element(element):
     """Return a simulation.Previsions from a <Prevs> element."""
     if element is not None:
         # prepare
-        previsions = []
         previsions_tend = []
         previsions_prb = []
         for prev in element:
@@ -734,10 +736,6 @@ def _previsions_from_element(element):
             # -------------------
             # xpath syntax: p.xpath('ResMoyPrev|ResMinPrev|ResMaxPrev')
             for resprev in prev.xpath('|'.join(PREV_PROBABILITY)):
-                previsions.append(
-                    _simulation.Prevision(
-                        dte=dte, res=resprev.text,
-                        prb=PREV_PROBABILITY[resprev.tag]))
                 previsions_tend.append(
                     _simulation.PrevisionTendance(
                         dte=dte, res=resprev.text,
@@ -747,22 +745,17 @@ def _previsions_from_element(element):
             # compute ProbsPrev
             # -------------------
             for probprev in prev.findall('.//ProbPrev'):
-                previsions.append(
-                    _simulation.Prevision(
-                        dte=dte, res=_value(probprev, 'ResProbPrev', float),
-                        prb=_value(probprev, 'PProbPrev', int)))
                 previsions_prb.append(
-                    _simulation.Prevision(
+                    _simulation.PrevisionPrb(
                         dte=dte, res=_value(probprev, 'ResProbPrev', float),
                         prb=_value(probprev, 'PProbPrev', int)))
 
         # build a Previsions and return
         prvs_tend = _simulation.PrevisionsTendance(*previsions_tend) \
             if len(previsions_tend) > 0 else None
-        prvs_prb = _simulation.Previsions(*previsions_prb) \
+        prvs_prb = _simulation.PrevisionsPrb(*previsions_prb) \
             if len(previsions_prb) > 0 else None
-        return {'all': _simulation.Previsions(*previsions),
-                'tend': prvs_tend, 'prb': prvs_prb}
+        return {'tend': prvs_tend, 'prb': prvs_prb}
 
 
 # -- global functions ---------------------------------------------------------
