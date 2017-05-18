@@ -137,6 +137,17 @@
           </Prev>
         </Prevs>
       </Simul>
+      <!-- simulation 3 -->
+      <Simul>
+        <GrdSimul>Q</GrdSimul>
+        <DtProdSimul>2010-02-27T16:45:00+05:00</DtProdSimul>
+        <!-- <IndiceQualiteSimul></IndiceQualiteSimul> -->
+        <StatutSimul>16</StatutSimul>
+        <CdSiteHydro>Y1612020</CdSiteHydro>
+        <CdModelePrevision>13_09</CdModelePrevision>
+        <CdContact schemeAgencyID="SANDRE">41</CdContact>
+        <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      </Simul>
     </Simuls>
   </Donnees>
 </hydrometrie>

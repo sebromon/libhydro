@@ -723,11 +723,12 @@ def _simulation_from_element(element):
 
 
 def _previsions_from_element(element):
+    # prepare
+    previsions_tend = []
+    previsions_prb = []
     """Return a simulation.Previsions from a <Prevs> element."""
     if element is not None:
-        # prepare
-        previsions_tend = []
-        previsions_prb = []
+
         for prev in element:
             dte = _value(prev, 'DtPrev', _UTC)
 
@@ -750,12 +751,12 @@ def _previsions_from_element(element):
                         dte=dte, res=_value(probprev, 'ResProbPrev', float),
                         prb=_value(probprev, 'PProbPrev', int)))
 
-        # build a Previsions and return
-        prvs_tend = _simulation.PrevisionsTendance(*previsions_tend) \
-            if len(previsions_tend) > 0 else None
-        prvs_prb = _simulation.PrevisionsPrb(*previsions_prb) \
-            if len(previsions_prb) > 0 else None
-        return {'tend': prvs_tend, 'prb': prvs_prb}
+    # build a Previsions and return
+    prvs_tend = _simulation.PrevisionsTendance(*previsions_tend) \
+        if len(previsions_tend) > 0 else None
+    prvs_prb = _simulation.PrevisionsPrb(*previsions_prb) \
+        if len(previsions_prb) > 0 else None
+    return {'tend': prvs_tend, 'prb': prvs_prb}
 
 
 # -- global functions ---------------------------------------------------------
