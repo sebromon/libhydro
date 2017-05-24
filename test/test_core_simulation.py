@@ -13,11 +13,8 @@ To run only a specific test:
 """
 # -- imports ------------------------------------------------------------------
 from __future__ import (
-    unicode_literals as _unicode_literals,
-    absolute_import as _absolute_import,
-    division as _division,
-    print_function as _print_function
-)
+    unicode_literals as _unicode_literals, absolute_import as _absolute_import,
+    division as _division, print_function as _print_function)
 
 import unittest
 import datetime
@@ -26,10 +23,8 @@ from libhydro.core import (simulation, modeleprevision, sitehydro)
 
 
 # -- strings ------------------------------------------------------------------
-__author__ = """Philippe Gouin """ \
-             """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1h"""
-__date__ = """2014-12-17"""
+__version__ = '0.1.8'
+__date__ = '2015-05-24'
 
 # HISTORY
 # V0.1 - 2013-08-07
@@ -39,15 +34,7 @@ __date__ = """2014-12-17"""
 # -- class TestPrevisionTendance ----------------------------------------------
 class TestPrevisionTendance(unittest.TestCase):
 
-    """Prevision class tests."""
-
-    # def setUp(self):
-    # """Hook method for setting up the test fixture before exercising it."""
-    #     pass
-
-    # def tearDown(self):
-    # """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
+    """PrevisionTendance class tests."""
 
     def test_base_01(self):
         """Simple prevision."""
@@ -56,8 +43,7 @@ class TestPrevisionTendance(unittest.TestCase):
         p = simulation.PrevisionTendance(dte, res)
         self.assertEqual(
             p.item(),
-            (datetime.datetime(2012, 5, 18, 18, 36), res, 'moy')
-        )
+            (datetime.datetime(2012, 5, 18, 18, 36), res, 'moy'))
 
     def test_base_02(self):
         """Prevision with tendency."""
@@ -67,12 +53,10 @@ class TestPrevisionTendance(unittest.TestCase):
         p = simulation.PrevisionTendance(dte=dte, res=res, tend=tend)
         self.assertEqual(
             p.item(),
-            (datetime.datetime(2012, 5, 18), res, tend)
-        )
+            (datetime.datetime(2012, 5, 18), res, tend))
         self.assertEqual(
             (p['dte'].item(), p['res'].item(), p['tend'].item()),
-            (datetime.datetime(2012, 5, 18), res, tend)
-        )
+            (datetime.datetime(2012, 5, 18), res, tend))
 
     def test_str_01(self):
         """Test __str__ method with minimum values."""
@@ -88,8 +72,7 @@ class TestPrevisionTendance(unittest.TestCase):
         self.assertRaises(
             ValueError,
             simulation.PrevisionTendance,
-            **{'dte': '2012-10-55', 'res': 25.8}
-        )
+            **{'dte': '2012-10-55', 'res': 25.8})
 
     def test_error_02(self):
         """Test res error."""
@@ -97,40 +80,26 @@ class TestPrevisionTendance(unittest.TestCase):
         self.assertRaises(
             ValueError,
             simulation.PrevisionTendance,
-            **{'dte': '2012-10-10 10:10', 'res': 'xxx'}
-        )
+            **{'dte': '2012-10-10 10:10', 'res': 'xxx'})
 
     def test_error_03(self):
         """tendance error."""
         simulation.PrevisionTendance(
-            **{'dte': '2012-10-10 10:10', 'res': 25.8, 'tend': 'moy'}
-        )
+            **{'dte': '2012-10-10 10:10', 'res': 25.8, 'tend': 'moy'})
         self.assertRaises(
             ValueError,
             simulation.PrevisionTendance,
-            **{'dte': '2012-10-10 10:10', 'res': 25.8, 'tend': 'median'}
-        )
+            **{'dte': '2012-10-10 10:10', 'res': 25.8, 'tend': 'median'})
         self.assertRaises(
             ValueError,
             simulation.PrevisionTendance,
-            **{'dte': '2012-10-10 10:10', 'res': 25.8, 'tend': 'mediane'}
-        )
-
-
+            **{'dte': '2012-10-10 10:10', 'res': 25.8, 'tend': 'mediane'})
 
 
 # -- class TestPrevisionPrb ---------------------------------------------------
 class TestPrevisionPrb(unittest.TestCase):
 
     """PrevisionPrb class tests."""
-
-    # def setUp(self):
-    # """Hook method for setting up the test fixture before exercising it."""
-    #     pass
-
-    # def tearDown(self):
-    # """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
 
     def test_base_01(self):
         """Simple prevision."""
@@ -139,8 +108,7 @@ class TestPrevisionPrb(unittest.TestCase):
         p = simulation.PrevisionPrb(dte, res)
         self.assertEqual(
             p.item(),
-            (datetime.datetime(2012, 5, 18, 18, 36), res, 50)
-        )
+            (datetime.datetime(2012, 5, 18, 18, 36), res, 50))
 
     def test_base_02(self):
         """Prevision with probability."""
@@ -150,12 +118,10 @@ class TestPrevisionPrb(unittest.TestCase):
         p = simulation.PrevisionPrb(dte=dte, res=res, prb=prb)
         self.assertEqual(
             p.item(),
-            (datetime.datetime(2012, 5, 18), res, int(prb))
-        )
+            (datetime.datetime(2012, 5, 18), res, int(prb)))
         self.assertEqual(
             (p['dte'].item(), p['res'].item(), p['prb'].item()),
-            (datetime.datetime(2012, 5, 18), res, int(prb))
-        )
+            (datetime.datetime(2012, 5, 18), res, int(prb)))
 
     def test_str_01(self):
         """Test __str__ method with minimum values."""
@@ -171,8 +137,7 @@ class TestPrevisionPrb(unittest.TestCase):
         self.assertRaises(
             ValueError,
             simulation.PrevisionPrb,
-            **{'dte': '2012-10-55', 'res': 25.8}
-        )
+            **{'dte': '2012-10-55', 'res': 25.8})
 
     def test_error_02(self):
         """Test res error."""
@@ -180,38 +145,26 @@ class TestPrevisionPrb(unittest.TestCase):
         self.assertRaises(
             ValueError,
             simulation.PrevisionPrb,
-            **{'dte': '2012-10-10 10:10', 'res': 'xxx'}
-        )
+            **{'dte': '2012-10-10 10:10', 'res': 'xxx'})
 
     def test_error_03(self):
         """Prb error."""
         simulation.PrevisionPrb(
-            **{'dte': '2012-10-10 10:10', 'res': 25.8, 'prb': 22.3}
-        )
+            **{'dte': '2012-10-10 10:10', 'res': 25.8, 'prb': 22.3})
         self.assertRaises(
             ValueError,
             simulation.PrevisionPrb,
-            **{'dte': '2012-10-10 10:10', 'res': 25.8, 'prb': -1}
-        )
+            **{'dte': '2012-10-10 10:10', 'res': 25.8, 'prb': -1})
         self.assertRaises(
             ValueError,
             simulation.PrevisionPrb,
-            **{'dte': '2012-10-10 10:10', 'res': 25.8, 'prb': 111}
-        )
+            **{'dte': '2012-10-10 10:10', 'res': 25.8, 'prb': 111})
 
 
-# -- class TestPrevisionsPrb -----------------------------------------------------
+# -- class TestPrevisionsPrb --------------------------------------------------
 class TestPrevisionsPrb(unittest.TestCase):
 
     """PrevisionsPrb class tests."""
-
-    # def setUp(self):
-    # """Hook method for setting up the test fixture before exercising it."""
-    #     pass
-
-    # def tearDown(self):
-    # """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
 
     def test_base_01(self):
         """Test previsions with one prevision."""
@@ -219,63 +172,38 @@ class TestPrevisionsPrb(unittest.TestCase):
         res = 8956321.2569
         prb = 75
         prvs = simulation.PrevisionsPrb(
-            simulation.PrevisionPrb(dte=dte, res=res, prb=prb)
-        )
+            simulation.PrevisionPrb(dte=dte, res=res, prb=prb))
         self.assertEqual(prvs.tolist(), [res])
-        self.assertEqual(
-            prvs.index.tolist(),
-            [(dte, prb), ]
-        )
+        self.assertEqual(prvs.index.tolist(), [(dte, prb), ])
 
     def test_base_02(self):
         """Base previsions."""
-        d = [
-            datetime.datetime(2012, 5, 18, 18, 0),
-            datetime.datetime(2012, 5, 18, 18, 5),
-            datetime.datetime(2012, 5, 18, 18, 10)
-        ]
+        d = [datetime.datetime(2012, 5, 18, 18, 0),
+             datetime.datetime(2012, 5, 18, 18, 5),
+             datetime.datetime(2012, 5, 18, 18, 10)]
         r = [33.5, 35, 40]
         p = simulation.PrevisionsPrb(
             simulation.PrevisionPrb(d[0], r[0]),
             simulation.PrevisionPrb(d[1], r[1]),
-            simulation.PrevisionPrb(d[2], r[2])
-        )
+            simulation.PrevisionPrb(d[2], r[2]))
         self.assertEqual(p.tolist(), r)
+        self.assertEqual([t[0] for t in p.index.tolist()], d)
         self.assertEqual(
-            [t[0] for t in p.index.tolist()],
-            d
-        )
-        self.assertEqual(
-            [t[1] for t in p.index.tolist()],
-            [50, 50, 50]
-        )
+            [t[1] for t in p.index.tolist()], [50, 50, 50])
 
     def test_error_01(self):
         """Prevision error."""
         prv = simulation.PrevisionPrb(
-            **{'dte': '2012-10-10 10', 'res': 25.8, 'prb': 3}
-        )
+            **{'dte': '2012-10-10 10', 'res': 25.8, 'prb': 3})
         simulation.PrevisionsPrb(prv)
         simulation.PrevisionsPrb(*[prv, prv, prv])
-        self.assertRaises(
-            TypeError,
-            simulation.PrevisionsPrb,
-            44
-        )
+        self.assertRaises(TypeError, simulation.PrevisionsPrb, 44)
 
 
 # -- class TestSimulation -----------------------------------------------------
 class TestSimulation(unittest.TestCase):
 
     """Simulation class tests."""
-
-    # def setUp(self):
-    # """Hook method for setting up the test fixture before exercising it."""
-    #     pass
-
-    # def tearDown(self):
-    # """Hook method for deconstructing the test fixture after testing it."""
-    #     pass
 
     def test_base_01(self):
         """Empty simulation."""
@@ -288,9 +216,8 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(sim.public, False)
         self.assertEqual(sim.commentaire, None)
         self.assertEqual(sim.dtprod, None)
-        #self.assertEqual(sim.previsions, None)
         self.assertEqual(sim.previsions_tend, None)
-        self.assertEqual(sim.previsions_prb, None) 
+        self.assertEqual(sim.previsions_prb, None)
 
     def test_base_02(self):
         """Full simulation."""
@@ -305,9 +232,7 @@ class TestSimulation(unittest.TestCase):
         dtprod = datetime.datetime(2012, 5, 18, 18, 36)
         previsions_prb = simulation.PrevisionsPrb(
             simulation.PrevisionPrb(
-                **{'dte': '2012-10-10 10', 'res': 25.8, 'prb': 3}
-            )
-        )
+                **{'dte': '2012-10-10 10', 'res': 25.8, 'prb': 3}))
         sim = simulation.Simulation(
             entite=entite,
             modeleprevision=modele,
@@ -317,8 +242,7 @@ class TestSimulation(unittest.TestCase):
             public=public,
             commentaire=commentaire,
             dtprod=dtprod,
-            previsions_prb=previsions_prb
-        )
+            previsions_prb=previsions_prb)
         self.assertEqual(sim.entite, entite)
         self.assertEqual(sim.modeleprevision, modele)
         self.assertEqual(sim.grandeur, grandeur)
@@ -355,16 +279,12 @@ class TestSimulation(unittest.TestCase):
         """Test __str__ method with basic values."""
         previsions_prb = simulation.PrevisionsPrb(
             simulation.PrevisionPrb(
-                **{'dte': '2012-10-10 10', 'res': 25.8, 'prb': 3}
-            )
-        )
+                **{'dte': '2012-10-10 10', 'res': 25.8, 'prb': 3}))
         sim = simulation.Simulation(
             dtprod='2012-05-18T18:36Z',
             entite=sitehydro.Station(
-                code=0, libelle='Toulouse', strict=False
-            ),
-            previsions_prb=previsions_prb
-        )
+                code=0, libelle='Toulouse', strict=False),
+            previsions_prb=previsions_prb)
         self.assertTrue(sim.__str__().rfind('Simulation') > -1)
         self.assertTrue(sim.__str__().rfind('Date de production') > -1)
         self.assertTrue(sim.__str__().rfind('Commentaire') > -1)
@@ -374,13 +294,11 @@ class TestSimulation(unittest.TestCase):
         """Test __str__ method with big Previsions."""
         previsions_prb = simulation.PrevisionsPrb(
             *[simulation.PrevisionPrb(dte='20%i-10-10 10' % x, res=x)
-              for x in range(10, 50)]
-        )
+              for x in range(10, 50)])
         sim = simulation.Simulation(
             dtprod='2012-05-18T18:36Z',
             entite=sitehydro.Station(code=0, strict=False),
-            previsions_prb=previsions_prb
-        )
+            previsions_prb=previsions_prb)
         self.assertTrue(sim.__str__().rfind('Simulation') > -1)
         self.assertTrue(sim.__str__().rfind('Date de production') > -1)
         self.assertTrue(sim.__str__().rfind('Commentaire') > -1)
@@ -407,8 +325,7 @@ class TestSimulation(unittest.TestCase):
             commentaire=commentaire,
             dtprod=dtprod,
             previsions_prb=previsions_prb,
-            strict=False
-        )
+            strict=False)
         self.assertEqual(sim.entite, entite)
         self.assertEqual(sim.modeleprevision, modele)
         self.assertEqual(sim.grandeur, grandeur)
@@ -425,28 +342,24 @@ class TestSimulation(unittest.TestCase):
         site = sitehydro.Sitehydro(code='A0440101')
         station = sitehydro.Station(code='A044010101')
         simul = simulation.Simulation(
-            **{'entite': station, 'grandeur': 'H'}
-        )
+            **{'entite': station, 'grandeur': 'H'})
         self.assertEqual(simul.grandeur, 'H')
         # wrong entite
         self.assertRaises(
             TypeError,
             simulation.Simulation,
             # **{'entite': entite}
-            **{'entite': 25}
-        )
+            **{'entite': 25})
         # site with a H simulation
         self.assertRaises(
             TypeError,
             simulation.Simulation,
-            **{'entite': site, 'grandeur': 'H'}
-        )
+            **{'entite': site, 'grandeur': 'H'})
         # station with a Q simulation
         self.assertRaises(
             TypeError,
             simulation.Simulation,
-            **{'entite': station, 'grandeur': 'Q'}
-        )
+            **{'entite': station, 'grandeur': 'Q'})
 
     def test_error_02(self):
         """Modeleprevision error."""
@@ -456,8 +369,7 @@ class TestSimulation(unittest.TestCase):
             TypeError,
             simulation.Simulation,
             # **{'modeleprevision': modele}
-            **{'modeleprevision': 'gloup !'}
-        )
+            **{'modeleprevision': 'gloup !'})
 
     def test_error_03(self):
         """Grandeur error."""
@@ -467,8 +379,7 @@ class TestSimulation(unittest.TestCase):
             ValueError,
             simulation.Simulation,
             # **{'grandeur': 'H'}
-            **{'grandeur': 'RR'}
-        )
+            **{'grandeur': 'RR'})
 
     def test_error_04(self):
         """Statut error."""
@@ -477,14 +388,12 @@ class TestSimulation(unittest.TestCase):
             ValueError,
             simulation.Simulation,
             # **{'statut': 16}
-            **{'statut': None}
-        )
+            **{'statut': None})
         self.assertRaises(
             ValueError,
             simulation.Simulation,
             # **{'statut': 16}
-            **{'statut': 111111}
-        )
+            **{'statut': 111111})
 
     def test_error_05(self):
         """Qualite error."""
@@ -493,8 +402,7 @@ class TestSimulation(unittest.TestCase):
             ValueError,
             simulation.Simulation,
             # **{'qualite': 45}
-            **{'qualite': -1}
-        )
+            **{'qualite': -1})
 
     def test_error_06(self):
         """Dtprod error."""
@@ -506,20 +414,16 @@ class TestSimulation(unittest.TestCase):
             (TypeError, ValueError),
             simulation.Simulation,
             # **{'dtprod': dtprod}
-            **{'dtprod': '2020-10 10:00'}
-        )
+            **{'dtprod': '2020-10 10:00'})
 
     def test_error_07(self):
         """Test previsions error."""
         prvs = simulation.PrevisionsPrb(
             simulation.PrevisionPrb(
-                **{'dte': '2012-10-10 10', 'res': 25.8, 'prb': 3}
-            )
-        )
+                **{'dte': '2012-10-10 10', 'res': 25.8, 'prb': 3}))
         simulation.Simulation(**{'previsions_prb': prvs})
         self.assertRaises(
             TypeError,
             simulation.Simulation,
             # **{'previsions': prvs}
-            **{'previsions_prb': [110, 20, 30]}
-        )
+            **{'previsions_prb': [110, 20, 30]})

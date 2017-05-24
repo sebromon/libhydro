@@ -36,29 +36,24 @@ d'une pandas.Series a double index, un timestamp et une probabilite.
 
 # -- imports ------------------------------------------------------------------
 from __future__ import (
-    unicode_literals as _unicode_literals,
-    absolute_import as _absolute_import,
-    division as _division,
-    print_function as _print_function
-)
+    unicode_literals as _unicode_literals, absolute_import as _absolute_import,
+    division as _division, print_function as _print_function)
 
 import numpy as _numpy
 import pandas as _pandas
 
 from . import _composant
-from . import (sitehydro as _sitehydro, modeleprevision as _modeleprevision)
+from . import sitehydro as _sitehydro, modeleprevision as _modeleprevision
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
 # -- strings ------------------------------------------------------------------
-__author__ = """Philippe Gouin """ \
-             """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.8"""
-__date__ = """2015-10-30"""
+__version__ = '0.8.0'
+__date__ = '2017-05-24'
 
 # HISTORY
 # V0.8 - 2017-05-17
-# Séparation des prévisions de tendance des previsiosn probabilistes
+#  séparation des prévisions de tendance des previsions probabilistes
 # V0.7 - 2014-03-02
 #   use descriptors
 # V0.1 - 2013-08-07
@@ -83,7 +78,7 @@ __date__ = """2015-10-30"""
 # -- class PrevisionPrb -------------------------------------------------------
 class PrevisionPrb(_numpy.ndarray):
 
-    """Classe prevision.
+    """Classe PrevisionPrb.
 
     Classe pour manipuler une prevision probabiliste.
 
@@ -91,13 +86,6 @@ class PrevisionPrb(_numpy.ndarray):
     type DTYPE.
 
     Date et resultat sont obligatoires, la probabilite vaut 50 par defaut.
-
-    L'implementation differe de celle du modele de donnees car on utilise une
-    seule classe pour les previsions deterministes (min ,moy et max) et les
-    previsions probabilistes (probabilite + valeur) en applicant la regle:
-        # la valeur min est celle de probabilite 0
-        # la valeur moyenne est celle de probabilite 50
-        # la valeur maximum est celle de probabilite 100
 
     Proprietes:
         dte (numpy.datetime64) = date UTC de la prevision au format
@@ -113,9 +101,7 @@ class PrevisionPrb(_numpy.ndarray):
 
     DTYPE = _numpy.dtype([
         (str('dte'), _numpy.datetime64(None, str('s'))),
-        (str('res'), _numpy.float),
-        (str('prb'), _numpy.int8)
-    ])
+        (str('res'), _numpy.float), (str('prb'), _numpy.int8)])
 
     def __new__(cls, dte, res, prb=50):
         if not isinstance(dte, _numpy.datetime64):
@@ -126,43 +112,30 @@ class PrevisionPrb(_numpy.ndarray):
                 raise ValueError('probabilite incorrect')
         except Exception:
             raise
-        obj = _numpy.array(
-            (dte, res, prb),
-            dtype=PrevisionPrb.DTYPE
-        ).view(cls)
+        obj = _numpy.array((dte, res, prb), dtype=PrevisionPrb.DTYPE).view(cls)
         return obj
-
-    # def __array_finalize__(self, obj):
-    #     if obj is None:
-    #         return
 
     def __unicode__(self):
         """Return unicode representation."""
         return '{0} avec une probabilite de {1}% pour le {2} a {3} UTC'.format(
-            self['res'].item(),
-            self['prb'].item(),
-            *self['dte'].item().isoformat().split('T')
-        )
+            self['res'].item(), self['prb'].item(),
+            *self['dte'].item().isoformat().split('T'))
 
     __str__ = _composant.__str__
 
 
-# -- class PrevTendance ----------------------------------------------------------
+# -- class PrevisionTendance --------------------------------------------------
 class PrevisionTendance(_numpy.ndarray):
 
-    """Classe prevision de tendance.
+    """Classe PrevisionTendance.
 
     Classe pour manipuler une prevision de tendance elementaire.
 
     Subclasse de numpy.array('dte', 'res', 'tend'), les elements etant du
     type DTYPE.
 
-    Date et resultat sont obligatoires, la tendance est la moyenne par defaut.
-
-    la colonne tend peut prendre une des trois chaînes suivantes :
-        # 'min'
-        # 'max'
-        # 'moy'
+    Date et resultat sont obligatoires. La tendance peut prendre la valeur
+    'min', 'moy' (valeur par defaut) ou 'max'
 
     Proprietes:
         dte (numpy.datetime64) = date UTC de la prevision au format
@@ -172,15 +145,14 @@ class PrevisionTendance(_numpy.ndarray):
             le fuseau +00:
                 numpy.datetime64('2000-01-01T09:28:00+00')
         res (numpy.float) = resultat
-        tend (numpy.unicode 3 caractères) = 'moy', 'min' ou 'max'
+        tend (numpy.unicode 3 caractères parmi 'min', 'moy' ou 'max') =
+            tendance de la prevision
 
     """
 
     DTYPE = _numpy.dtype([
         (str('dte'), _numpy.datetime64(None, str('s'))),
-        (str('res'), _numpy.float),
-        (str('tend'), _numpy.unicode_, 3)
-    ])
+        (str('res'), _numpy.float), (str('tend'), _numpy.unicode_, 3)])
 
     def __new__(cls, dte, res, tend='moy'):
         if not isinstance(dte, _numpy.datetime64):
@@ -192,26 +164,19 @@ class PrevisionTendance(_numpy.ndarray):
         except Exception:
             raise
         obj = _numpy.array(
-            (dte, res, tend),
-            dtype=PrevisionTendance.DTYPE
-        ).view(cls)
+            (dte, res, tend), dtype=PrevisionTendance.DTYPE).view(cls)
         return obj
-
-    # def __array_finalize__(self, obj):
-    #     if obj is None:
-    #         return
 
     def __unicode__(self):
         """Return unicode representation."""
         return '{0} de tendance {1} pour le {2} a {3} UTC'.format(
-            self['res'].item(),
-            self['tend'].item(),
-            *self['dte'].item().isoformat().split('T')
-        )
+            self['res'].item(), self['tend'].item(),
+            *self['dte'].item().isoformat().split('T'))
 
     __str__ = _composant.__str__
 
-# -- class Previsions ---------------------------------------------------------
+
+# -- class PrevisionsPrb ------------------------------------------------------
 class PrevisionsPrb(_pandas.Series):
 
     """Classe PrevisionsPrb.
@@ -231,8 +196,8 @@ class PrevisionsPrb(_pandas.Series):
                              40     60
         Name: res, dtype: float64
 
-    Se reporter a la documentation de la classe Prevision pour l'utilisation du
-    parametre prb.
+    Se reporter a la documentation de la classe PrevisionPrb pour l'utilisation
+    du parametre prb.
 
     Pour filtrer la serie de resultats de meme probabilite, par exemple 50%,
     entre 2 dates:
@@ -274,7 +239,8 @@ class PrevisionsPrb(_pandas.Series):
         try:
             for prv in previsions:
                 if not isinstance(prv, PrevisionPrb):
-                    raise TypeError('{} is not a probabilist Prevision'.format(prv))
+                    raise TypeError(
+                        '{} is not a probabilist Prevision'.format(prv))
                 prvs.append(prv)
 
         except Exception:
@@ -285,31 +251,25 @@ class PrevisionsPrb(_pandas.Series):
 
         # make index
         index = _pandas.MultiIndex.from_tuples(
-            zip(array['dte'], array['prb']),
-            names=['dte', 'prb']
-        )
+            zip(array['dte'], array['prb']), names=['dte', 'prb'])
 
         # get the pandas.Series
-        obj = _pandas.Series(
-            data=array['res'],
-            index=index,
-            name='res'
-        )
+        obj = _pandas.Series(data=array['res'], index=index, name='res')
 
         # return
-        # TODO - can't subclass the DataFRame object
+        # TODO - we can't subclass the DataFrame object
         # return obj.view(cls)
         return obj
 
 
-# -- class PrevTendance ---------------------------------------------------------
+# -- class PrevisionsTendance -------------------------------------------------
 class PrevisionsTendance(_pandas.Series):
 
-    """Classe Previsions de tendance.
+    """Classe PrevisionsTendance.
 
-    Classe pour manipuler un jeux de previsions de tendande,
-    sous la forme d'une Series pandas avec un double index,
-    le premier etant la date du resultat, la tendance 'moy', 'min' ou 'max'
+    Classe pour manipuler un jeux de previsions de tendande, sous la forme
+    d'une Series pandas avec un double index, le premier etant la date du
+    resultat, le second la tendance ('moy', 'min' ou 'max').
 
     Illustration d'une Series pandas de previsions pour 3 dates et avec 2 jeux
     de probabilite:
@@ -317,14 +277,14 @@ class PrevisionsTendance(_pandas.Series):
         1972-10-01 10:00:00  moy     33
                              max     44
         1972-10-01 11:00:00  min     35
-                             moy    45
-                             max    55
+                             moy     45
+                             max     55
         1972-10-01 12:00:00  min     55
-                             moy    60
+                             moy     60
         Name: res, dtype: float64
 
-    Se reporter a la documentation de la classe Prevision pour l'utilisation du
-    parametre tend.
+    Se reporter a la documentation de la classe PrevisionTendance pour
+    l'utilisation du parametre tend.
 
     Pour filtrer la serie de resultats de meme tendance, par exemple 'moy',
     entre 2 dates:
@@ -352,7 +312,7 @@ class PrevisionsTendance(_pandas.Series):
         """Constructeur.
 
         Arguments:
-            previsions (un nombre quelconque de Prevision)
+            previsions (un nombre quelconque de PrevisionTendance)
 
         Exemples:
             prv = Previsions(prv1)  # une seule Prevision
@@ -366,7 +326,8 @@ class PrevisionsTendance(_pandas.Series):
         try:
             for prv in previsions:
                 if not isinstance(prv, PrevisionTendance):
-                    raise TypeError('{} is not a tendency Prevision'.format(prv))
+                    raise TypeError(
+                        '{} is not a tendency Prevision'.format(prv))
                 prvs.append(prv)
 
         except Exception:
@@ -377,21 +338,16 @@ class PrevisionsTendance(_pandas.Series):
 
         # make index
         index = _pandas.MultiIndex.from_tuples(
-            zip(array['dte'], array['tend']),
-            names=['dte', 'tend']
-        )
+            zip(array['dte'], array['tend']), names=['dte', 'tend'])
 
         # get the pandas.Series
-        obj = _pandas.Series(
-            data=array['res'],
-            index=index,
-            name='res'
-        )
+        obj = _pandas.Series(data=array['res'], index=index, name='res')
 
         # return
         # TODO - can't subclass the DataFRame object
         # return obj.view(cls)
         return obj
+
 
 # -- class Simulation ---------------------------------------------------------
 class Simulation(object):
@@ -427,12 +383,10 @@ class Simulation(object):
     # refalti
     # courbetarage
 
-    def __init__(
-        self, entite=None, modeleprevision=None, grandeur=None, statut=4,
-        qualite=None, public=False, commentaire=None, dtprod=None,
-        previsions_tend=None, previsions_prb=None,
-        intervenant=None, strict=True
-    ):
+    def __init__(self, entite=None, modeleprevision=None, grandeur=None,
+                 statut=4, qualite=None, public=False, commentaire=None,
+                 dtprod=None, previsions_tend=None, previsions_prb=None,
+                 intervenant=None, strict=True):
         """Initialisation.
 
         Arguments:
@@ -488,31 +442,23 @@ class Simulation(object):
     def entite(self, entite):
         """Set entite hydro."""
         try:
-            if (self._strict) and (entite is not None):
+            if self._strict and (entite is not None):
 
                 # entite must be a site or a station
                 if not isinstance(
-                    entite,
-                    (_sitehydro.Sitehydro, _sitehydro.Station)
-                ):
-                    raise TypeError(
-                        'entite must be a Sitehydro or a Station'
-                    )
+                        entite, (_sitehydro.Sitehydro, _sitehydro.Station)):
+                    raise TypeError('entite must be a Sitehydro or a Station')
 
                 # Q prevs on Sitehydro only, H prevs on Station
                 if (self.grandeur is not None):
                     if (self.grandeur == 'Q') and \
                             not isinstance(entite, _sitehydro.Sitehydro):
                         raise TypeError(
-                            'Q previsions, entite must be a Sitehydro'
-                        )
-                    if (self.grandeur == 'H') and \
-                            not isinstance(
-                                entite, _sitehydro.Station
-                            ):
+                            'Q previsions, entite must be a Sitehydro')
+                    if self.grandeur == 'H' and \
+                            not isinstance(entite, _sitehydro.Station):
                         raise TypeError(
-                            'H previsions, entite must be a Station'
-                        )
+                            'H previsions, entite must be a Station')
 
             # all is well
             self._entite = entite
@@ -530,14 +476,11 @@ class Simulation(object):
     def modeleprevision(self, modeleprevision):
         """Set modele de prevision."""
         try:
-            if (self._strict) and (modeleprevision is not None):
+            if self._strict and (modeleprevision is not None):
                 if not isinstance(
-                    modeleprevision,
-                    _modeleprevision.Modeleprevision
-                ):
+                        modeleprevision, _modeleprevision.Modeleprevision):
                     raise TypeError(
-                        'modeleprevision must be a Modeleprevision'
-                    )
+                        'modeleprevision must be a Modeleprevision')
             self._modeleprevision = modeleprevision
 
         except:
@@ -555,38 +498,12 @@ class Simulation(object):
         try:
             if qualite is not None:
                 qualite = int(qualite)
-                if (qualite < 0) or (qualite > 100):
+                if qualite < 0 or qualite > 100:
                     raise ValueError('qualite is not in 0-100 range')
             self._qualite = qualite
 
         except:
             raise
-
-    ## -- property previsions --
-    #@property
-    #def previsions(self):
-        #"""Return previsions."""
-        #return self._previsions
-
-    #@previsions.setter
-    #def previsions(self, previsions):
-        #"""Set previsions."""
-        #try:
-            #if previsions is not None:
-                ## we check we have a Series...
-                ## ... and that index contains datetimes
-                #if (self._strict):
-                    #if (
-                        #(not isinstance(previsions, _pandas.Series)) or
-                        #(previsions.index.names != ['dte', 'prb'])
-                    #):
-
-                        #raise TypeError('previsions incorrect')
-                    #previsions.index[0][0].isoformat()
-            ## all seeem's ok :-)
-            #self._previsions = previsions
-        #except:
-            #raise
 
     # -- property previsions_tend --
     @property
@@ -601,12 +518,9 @@ class Simulation(object):
             if previsions_tend is not None:
                 # we check we have a Series...
                 # ... and that index contains datetimes
-                if (self._strict):
-                    if (
-                        (not isinstance(previsions_tend, _pandas.Series)) or
-                        (previsions_tend.index.names != ['dte', 'tend'])
-                    ):
-
+                if self._strict:
+                    if not isinstance(previsions_tend, _pandas.Series) or \
+                            previsions_tend.index.names != ['dte', 'tend']:
                         raise TypeError('previsions incorrect')
                     previsions_tend.index[0][0].isoformat()
             # all seeem's ok :-)
@@ -627,12 +541,9 @@ class Simulation(object):
             if previsions_prb is not None:
                 # we check we have a Series...
                 # ... and that index contains datetimes
-                if (self._strict):
-                    if (
-                        (not isinstance(previsions_prb, _pandas.Series)) or
-                        (previsions_prb.index.names != ['dte', 'prb'])
-                    ):
-
+                if self._strict:
+                    if not isinstance(previsions_prb, _pandas.Series) or \
+                            previsions_prb.index.names != ['dte', 'prb']:
                         raise TypeError('previsions incorrect')
                     previsions_prb.index[0][0].isoformat()
             # all seeem's ok :-)
@@ -641,11 +552,9 @@ class Simulation(object):
             raise
 
     # -- special methods --
-    __all__attrs__ = (
-        'entite', 'modeleprevision', 'grandeur', 'statut', 'qualite',
-        'public', 'commentaire', 'dtprod', 'previsions_prb',
-        'previsions_tend','intervenant'
-    )
+    __all__attrs__ = ('entite', 'modeleprevision', 'grandeur', 'statut',
+                      'qualite', 'public', 'commentaire', 'dtprod',
+                      'previsions_prb', 'previsions_tend','intervenant')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
 
@@ -659,8 +568,7 @@ class Simulation(object):
         try:
             entite = '{} {}'.format(
                 _sitehydro._ARTICLE[self.entite.__class__],
-                self.entite.__unicode__()
-            )
+                self.entite.__unicode__())
         except (AttributeError, KeyError):
             entite = '<une entite inconnue>'
         try:
@@ -697,7 +605,6 @@ class Simulation(object):
                    '-' * 72,
                    self.modeleprevision or '<modele inconnu>',
                    '-' * 72,
-                   prev
-               )
+                   prev)
 
     __str__ = _composant.__str__
