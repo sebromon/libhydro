@@ -32,10 +32,12 @@ from libhydro.core import (
 
 # -- strings ------------------------------------------------------------------
 # contributor Camillo Montes (SYNAPSE)
-__version__ = '0.5.3'
-__date__ = '2017-05-03'
+__version__ = '0.5.4'
+__date__ = '2017-06-09'
 
 # HISTORY
+# V0.5.4 - SR - 2017-06-09
+# add SysAltiSerie and SeriePerim elements
 # V0.5.3
 # Séparation des prévisions en deux pandas : prévisions de tendande et
 # et prévisions probabilistes
@@ -603,6 +605,10 @@ def _seriehydro_from_element(element):
         contact = None
         if element.find('CdContact') is not None:
             contact = _intervenant.Contact(code=_value(element, 'CdContact'))
+        # balise sysalti
+        sysalti = _value(element, 'SysAltiSerie', int)
+        if sysalti is None:
+            sysalti = 31
         # build a Serie and return
         return _obshydro.Serie(
             entite=entite,
@@ -611,6 +617,8 @@ def _seriehydro_from_element(element):
             dtdeb=_value(element, 'DtDebSerie', _UTC),
             dtfin=_value(element, 'DtFinSerie', _UTC),
             dtprod=_value(element, 'DtProdSerie', _UTC),
+            sysalti=sysalti,
+            perime=_value(element, 'SeriePerim', bool),
             contact=contact,
             observations=_obsshydro_from_element(element.find('ObssHydro')))
 

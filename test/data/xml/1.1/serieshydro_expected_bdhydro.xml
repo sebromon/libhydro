@@ -23,6 +23,7 @@
         <DtFinSerie>2010-02-26T12:55:00</DtFinSerie>
         <StatutSerie>4</StatutSerie>
         <DtProdSerie>2010-02-26T14:55:00</DtProdSerie>
+        <SysAltiSerie>31</SysAltiSerie>
         <ObssHydro>
           <ObsHydro>
             <DtObsHydro>2010-02-26T11:10:00</DtObsHydro>
@@ -47,6 +48,8 @@
         <DtFinSerie>2010-02-26T14:55:00</DtFinSerie>
         <StatutSerie>4</StatutSerie>
         <DtProdSerie>2010-02-26T14:55:00</DtProdSerie>
+        <SysAltiSerie>0</SysAltiSerie>
+        <SeriePerim>true</SeriePerim>
         <CdContact>233</CdContact>
         <ObssHydro>
           <ObsHydro>
@@ -72,6 +75,8 @@
         <DtFinSerie>2010-02-26T14:55:00</DtFinSerie>
         <StatutSerie>4</StatutSerie>
         <DtProdSerie>2010-02-26T14:55:00</DtProdSerie>
+        <SysAltiSerie>31</SysAltiSerie>
+        <SeriePerim>false</SeriePerim>
         <ObssHydro>
           <ObsHydro>
             <DtObsHydro>2010-02-26T13:10:00</DtObsHydro>

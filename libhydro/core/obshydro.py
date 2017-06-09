@@ -48,10 +48,12 @@ from . import sitehydro as _sitehydro
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2e"""
-__date__ = """2015-10-30"""
+__version__ = """0.3"""
+__date__ = """2017-06-09"""
 
 # HISTORY
+# V0.3 - SR - 2016-06-09
+# add sysalti and perim properties
 # V0.2 - 2014-07-15
 #   add the Serie.concat static method
 #   use the composant_obs module
@@ -219,6 +221,8 @@ class Serie(_composant_obs.Serie):
         dtdeb (datetime.datetime)
         dtfin (datetime.datetime)
         dtprod (datetime.datetime)
+        sysalti (int parmi NOMENCLATURE[76])
+        perim (booleen ou None)
         contact (intervenant.Contact)
         observations (Observations)
 
@@ -226,17 +230,16 @@ class Serie(_composant_obs.Serie):
 
     # TODO - Serie others attributes
 
-    # sysalti
-    # perime
     # refalti OU courbetarage
 
     grandeur = _composant.Nomenclatureitem(nomenclature=509)
     statut = _composant.Nomenclatureitem(nomenclature=510)
+    sysalti = _composant.Nomenclatureitem(nomenclature=76)
 
     def __init__(
-        self, entite=None, grandeur=None, statut=0,
-        dtdeb=None, dtfin=None, dtprod=None, contact=None,
-        observations=None, strict=True
+            self, entite=None, grandeur=None, statut=0,
+            dtdeb=None, dtfin=None, dtprod=None, sysalti=31, perime=None,
+            contact=None, observations=None, strict=True
     ):
         """Initialisation.
 
@@ -248,6 +251,8 @@ class Serie(_composant_obs.Serie):
             dtdeb (numpy.datetime64)
             dtfin (numpy.datetime64)
             dtprod (numpy.datetime64)
+            sysalti (int parmi NOMENCLATURE[76])
+            perim (booleen ou None)
             contact (intervenant.Contact)
             observations (Observations)
             strict (bool, defaut True) = en mode permissif il n'y a pas de
@@ -265,14 +270,18 @@ class Serie(_composant_obs.Serie):
         vars(Serie)['grandeur'].strict = self._strict
         vars(Serie)['grandeur'].required = self._strict
         vars(Serie)['statut'].strict = self._strict
+        vars(Serie)['sysalti'].strict = self._strict
 
         # -- descriptors --
         self.grandeur = grandeur
         self.statut = statut
+        self.sysalti = sysalti
 
         # -- full properties --
         self._entite = None
         self.entite = entite
+        self._perime = None
+        self.perime = perime
 
     # -- property entite --
     @property
@@ -302,6 +311,17 @@ class Serie(_composant_obs.Serie):
             self._entite = entite
         except:
             raise
+
+    # -- property perime --
+    @property
+    def perime(self):
+        """Return perime."""
+        return self._perime
+
+    @perime.setter
+    def perime(self, perime):
+        """Set perime."""
+        self._perime = bool(perime) if (perime is not None) else None
 
     # -- static methods --
     @staticmethod
@@ -370,8 +390,14 @@ class Serie(_composant_obs.Serie):
         except Exception:
             obs = '<sans observations>'
 
+        perime = ''
+        if self.perime is not None:
+            if self.perime:
+                perime = ' perime'
+            else:
+                perime = ' non perime'
         # action !
-        return 'Serie {0} sur {1}\n'\
+        return 'Serie {0}{6} sur {1}\n'\
                'Statut {2}::{3}\n'\
                '{4}\n'\
                'Observations:\n{5}'.format(
@@ -380,7 +406,8 @@ class Serie(_composant_obs.Serie):
                    self.statut,
                    _NOMENCLATURE[510][self.statut].lower(),
                    '-' * 72,
-                   obs
+                   obs,
+                   perime
                )
 
     __str__ = _composant.__str__

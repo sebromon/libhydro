@@ -20,10 +20,12 @@ from __future__ import (
 
 
 # -- strings ------------------------------------------------------------------
-__version__ = '0.6.1'
-__date__ = '2014-07-1'
+__version__ = '0.6.2'
+__date__ = '2015-06-09'
 
 # HISTORY
+# V0.6.2 - SR - 2015-06-09
+# add nomenclature 76
 # V0.6 - 2014-07-15
 #   add a bunch of nomenclatures
 # V0.1 - 2013-07-12
@@ -106,6 +108,42 @@ NOMENCLATURE = {
         61: 'ETRS89 / UTM Nord 31',
         62: 'ETRS89 / UTM Nord 32',
         63: 'WGS84 Web Mercator'},
+
+    # Système altimétrique
+    76: {
+        0: 'Système altimétrique inconnu',
+        1: 'Bourdeloue 1857',
+        2: 'NGF84',
+        3: 'IGN 1969',
+        4: 'NGC48',
+        5: 'IGN 1978 (Corse)',
+        6: 'IGN 1958 (Réunion)',
+        7: 'IGN 1989 (Réunion)',
+        8: 'IGN 1955 (Martinique)',
+        9: 'IGN 1987 (Martinique)',
+        10: 'IGN 1951 (Guadeloupe)',
+        11: 'IGN 1988 (Guadeloupe)',
+        12: 'IGN 1988 (Guadeloupe Les Saintes)',
+        13: 'IGN 1988 (Guadeloupe Marie Galante)',
+        14: 'IGN 1988 (Guadeloupe St Martin)',
+        15: 'IGN 1988 (Guadeloupe St Barthelemy)',
+        16: 'IGN 1942 (Guyane)',
+        17: 'Niv. Général de la Guyane 1977',
+        18: 'IGN 1950 (Mayotte)',
+        19: 'Equipe 1979 (Mayotte)',
+        20: 'Danger 1950 (St Pierre et Miquelon)',
+        21: 'NGNC 1969 (Nelle Calédonie)',
+        22: 'IGN 1984 (Wallis et Futuna)',
+        23: 'SHOM 1953 (Mayotte)',
+        24: 'Tahiti IGN 1966 (Polynésie)',
+        25: 'SHOM 1981 (Iles Loyauté)',
+        26: 'SHOM 1976 (Iles Loyauté)',
+        27: 'SHOM 1970 (Iles Loyauté)',
+        28: 'IGN 1962 (Iles Kerguelen)',
+        29: 'EPF 1952 (Terre Adélie)',
+        30: 'SHOM 1977 (Ile du canal du Mozambique)',
+        31: 'TN'
+    },
 
     # Methode d'obtention du resultat de l'observation hydrometrique
     507: {0: 'Mesure', 4: 'Reconstitution', 12: 'Interpolation'},

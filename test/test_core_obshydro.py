@@ -29,10 +29,12 @@ from libhydro.core import (sitehydro, obshydro, intervenant)
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1i"""
-__date__ = """2014-12-17"""
+__version__ = """0.1j"""
+__date__ = """2015-06-09"""
 
 # HISTORY
+# V0.1j
+# Add test for sysalti and perim Serie properties
 # V0.1 - 2013-07-15
 #   first shot
 
@@ -240,16 +242,20 @@ class TestSerie(unittest.TestCase):
         dtfin = '2012-10-03 09:00+00'
         dtprod = '2012-10-03 10:00+00'
         i = True
+        sysalti = 0
+        perime = False
         serie = obshydro.Serie(
             entite=s, grandeur=g, statut=t, observations=o, strict=i,
-            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod
+            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, sysalti=sysalti,
+            perime=perime
         )
         self.assertEqual(
             (
                 serie.entite, serie.grandeur, serie.statut,
-                serie.observations, serie._strict, serie.contact
+                serie.observations, serie._strict, serie.contact,
+                serie.sysalti, serie.perime
             ),
-            (s, g, t, o, i, None)
+            (s, g, t, o, i, None, sysalti, perime)
         )
         self.assertEqual(
             (serie.dtdeb, serie.dtfin, serie.dtprod),
@@ -279,9 +285,10 @@ class TestSerie(unittest.TestCase):
         self.assertEqual(
             (
                 serie.entite, serie.grandeur, serie.statut,
-                serie.observations, serie._strict, serie.contact
+                serie.observations, serie._strict, serie.contact,
+                serie.sysalti, serie.perime
             ),
-            (s, g, 0, o, True, c)
+            (s, g, 0, o, True, c, 31, None)
         )
         self.assertEqual(
             (serie.dtdeb, serie.dtfin, serie.dtprod),
@@ -377,6 +384,24 @@ class TestSerie(unittest.TestCase):
         self.assertTrue(serie.__str__().rfind('Statut') > -1)
         self.assertTrue(serie.__str__().rfind('Observations') > -1)
 
+    def test_str_04(self):
+        """Test __str__ method with perime property."""
+        s = sitehydro.Station(code='A044581001', libelle='Toulouse')
+        o = obshydro.Observations(
+            *[obshydro.Observation('20%i-01-01 00:00' % x, x)
+              for x in xrange(10, 50)]
+        )
+        serie = obshydro.Serie(entite=s, grandeur='H', observations=o)
+        self.assertTrue(serie.__str__().rfind('Serie H sur') > -1)
+
+        serie = obshydro.Serie(entite=s, grandeur='H', observations=o,
+                               perime=True)
+        self.assertTrue(serie.__str__().rfind('Serie H perime sur') > -1)
+
+        serie = obshydro.Serie(entite=s, grandeur='H', observations=o,
+                               perime=False)
+        self.assertTrue(serie.__str__().rfind('Serie H non perime sur') > -1)
+
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test."""
         s = 4
@@ -464,3 +489,23 @@ class TestSerie(unittest.TestCase):
                 'strict': True
             }
         )
+
+    def test_error_05(self):
+        """Test sysalti error."""
+        s = sitehydro.Station(code='A044581001', strict=False)
+        o = obshydro.Observations(obshydro.Observation('2012-10-03 06:00', 33))
+        obshydro.Serie(
+            **{
+                'entite': s, 'grandeur': 'H', 'observations': o,
+                'sysalti': 50,
+                'strict': False
+            }
+        )
+        with self.assertRaises(ValueError):
+            obshydro.Serie(
+                **{
+                    'entite': s, 'grandeur': 'H', 'observations': o,
+                    'sysalti': 50,
+                    'strict': True
+                }
+            )

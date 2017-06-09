@@ -16,10 +16,10 @@ from __future__ import (
     division as _division, print_function as _print_function)
 
 import collections as _collections
-
-import numpy as _numpy
-from lxml import etree as _etree
 import math as _math
+
+from lxml import etree as _etree
+import numpy as _numpy
 
 from libhydro.core import (
     _composant, sitehydro as _sitehydro, sitemeteo as _sitemeteo,
@@ -27,10 +27,12 @@ from libhydro.core import (
 
 
 # -- strings ------------------------------------------------------------------
-__version__ = '0.4.8'
-__date__ = '2017-05-17'
+__version__ = '0.4.9'
+__date__ = '2017-06-09'
 
 # HISTORY
+# V0.4.9 - SR - 2017-06-09
+# export sysalti and perim Serie properties
 # V0.4.8
 # export des prévisons de tendance puis des prévisions probabilistes
 # V0.4 - 2014-07-31
@@ -744,6 +746,11 @@ def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True):
         story['StatutSerie'] = {'value': unicode(seriehydro.statut)}
         story['DtProdSerie'] = {
             'value': seriehydro.dtprod.strftime('%Y-%m-%dT%H:%M:%S')}
+        if seriehydro.sysalti is not None:
+            story['SysAltiSerie'] = {'value': unicode(seriehydro.sysalti)}
+        if seriehydro.perime is not None:
+            story['SeriePerim'] = {
+                'value': unicode(seriehydro.perime).lower()}
         story['CdContact'] = {
             'value': getattr(
                 getattr(seriehydro, 'contact', None), 'code', None)}
@@ -882,7 +889,7 @@ def _simulation_to_element(simulation, bdhydro=False, strict=True):
 #        if simulation.previsions is not None:
 #            element.append(
 #                _previsions_to_element(simulation.previsions, strict=strict))
-        
+
         if simulation.previsions_tend is not None \
             or simulation.previsions_prb is not None:
             previsions = {'tend': simulation.previsions_tend,
@@ -1000,7 +1007,7 @@ def _previsions_to_element(previsions, bdhydro=False, strict=True):
 
     # make element <Prevs>
     element = _etree.Element('Prevs')
-    
+
     # this one is very VERY painful #:~/
     if previsions['tend'] is not None:
         # iter by date and add the previsions
