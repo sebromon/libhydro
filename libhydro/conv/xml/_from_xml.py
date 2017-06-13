@@ -591,7 +591,6 @@ def _seriehydro_from_element(element):
     if element is not None:
         # prepare args
         # entite can be a Sitehydro, a Station or a Capteur
-        entite = None
         if element.find('CdSiteHydro') is not None:
             entite = _sitehydro.Sitehydro(
                 code=_value(element, 'CdSiteHydro'))
@@ -605,22 +604,35 @@ def _seriehydro_from_element(element):
         contact = None
         if element.find('CdContact') is not None:
             contact = _intervenant.Contact(code=_value(element, 'CdContact'))
+        # utilisation d'un dictionnaire afin que sysalti ne soit pas transmis
+        # au constructeur si la balide n'existe pas
+        args = {
+            'entite': entite,
+            'grandeur': _value(element, 'GrdSerie'),
+            'statut': _value(element, 'StatutSerie'),
+            'dtdeb': _value(element, 'DtDebSerie', _UTC),
+            'dtfin': _value(element, 'DtFinSerie', _UTC),
+            'dtprod': _value(element, 'DtProdSerie', _UTC),
+            'perime': _value(element, 'SeriePerim', bool),
+            'contact': contact,
+            'observations': _obsshydro_from_element(element.find('ObssHydro'))}
         # balise sysalti
         sysalti = _value(element, 'SysAltiSerie', int)
-        if sysalti is None:
-            sysalti = 31
+        if sysalti is not None:
+            args['sysalti'] = sysalti
         # build a Serie and return
-        return _obshydro.Serie(
-            entite=entite,
-            grandeur=_value(element, 'GrdSerie'),
-            statut=_value(element, 'StatutSerie'),
-            dtdeb=_value(element, 'DtDebSerie', _UTC),
-            dtfin=_value(element, 'DtFinSerie', _UTC),
-            dtprod=_value(element, 'DtProdSerie', _UTC),
-            sysalti=sysalti,
-            perime=_value(element, 'SeriePerim', bool),
-            contact=contact,
-            observations=_obsshydro_from_element(element.find('ObssHydro')))
+        return _obshydro.Serie(**args)
+#        return _obshydro.Serie(
+#            entite=entite,
+#            grandeur=_value(element, 'GrdSerie'),
+#            statut=_value(element, 'StatutSerie'),
+#            dtdeb=_value(element, 'DtDebSerie', _UTC),
+#            dtfin=_value(element, 'DtFinSerie', _UTC),
+#            dtprod=_value(element, 'DtProdSerie', _UTC),
+#            sysalti=sysalti,
+#            perime=_value(element, 'SeriePerim', bool),
+#            contact=contact,
+#            observations=_obsshydro_from_element(element.find('ObssHydro')))
 
 
 def _seriemeteo_from_element(element):
