@@ -27,15 +27,18 @@ from libhydro.core import (
     _composant, intervenant as _intervenant, sitehydro as _sitehydro,
     sitemeteo as _sitemeteo, seuil as _seuil,
     modeleprevision as _modeleprevision, obshydro as _obshydro,
-    obsmeteo as _obsmeteo, simulation as _simulation, evenement as _evenement)
+    obsmeteo as _obsmeteo, simulation as _simulation, evenement as _evenement,
+    courbetarage as _courbetarage)
 
 
 # -- strings ------------------------------------------------------------------
 # contributor Camillo Montes (SYNAPSE)
-__version__ = '0.5.4'
-__date__ = '2017-06-09'
+__version__ = '0.6'
+__date__ = '2017-06-20'
 
 # HISTORY
+# V0.6 - SR - 2017-06-20
+# importation courbes de tarage
 # V0.5.4 - SR - 2017-06-09
 # add SysAltiSerie and SeriePerim elements
 # V0.5.3
@@ -262,7 +265,8 @@ def _parse(src, ordered=True):
             tree.find('RefHyd/ModelesPrevision')),
         'evenements': _evenements_from_element(
             tree.find('Donnees/Evenements')),
-        # 'courbestarage'
+        'courbestarage': _courbestarage_from_element(
+            tree.find('Donnees/CourbesTarage')),
         # 'jaugeages'
         # 'courbescorrection'
         'serieshydro': _serieshydro_from_element(tree.find('Donnees/Series')),
@@ -585,6 +589,76 @@ def _evenement_from_element(element):
             publication=_value(element, 'TypPublicationEvenement'),
             dtmaj=_value(element, 'DtMajEvenement', _UTC))
 
+def _courbetarage_from_element(element):
+    """Return a courbetarage.CourbeTarage from a <CourbeTarage> element."""
+    if element is None:
+        raise TypeError("CourbesTarage must not be empty")
+    # build a Contact
+    # balise CodeContact Non obligatoire
+    contact = None
+    if element.find('CdContact') is not None:
+        contact = _intervenant.Contact(code=_value(element, 'CdContact'))
+    typect = _value(element, 'TypCourbeTarage', int)
+    args = {
+        'code': _value(element, 'CdCourbeTarage'),
+        'libelle': _value(element, 'LbCourbeTarage'),
+        'typect': typect,
+        'limiteinf': _value(element, 'LimiteInfCourbeTarage', float),
+        'limitesup': _value(element, 'LimiteSupCourbeTarage', float),
+        'dn': _value(element, 'DnCourbeTarage', float),
+        'alpha': _value(element, 'AlphaCourbeTarage', float),
+        'beta': _value(element, 'BetaCourbeTarage', float),
+        'commentaire': _value(element, 'ComCourbeTarage'),
+        'station': _sitehydro.Station(code=_value(element, 'CdStationHydro')),
+        'contact': contact,
+        'pivots': [_pivotct_from_element(e, typect)
+            for e in element.findall('PivotsCourbeTarage/PivotCourbeTarage')],
+        'periodes': [_periodect_from_element(e)
+            for e in element.findall(('PeriodesUtilisationCourbeTarage/'
+                                      'PeriodeUtilisationCourbeTarage'))],
+        'dtmaj': _value(element, 'DtMajCourbeTarage', _UTC)
+        }
+
+    return _courbetarage.CourbeTarage(**args)
+
+def _pivotct_from_element(element, typect):
+    """Return PivotCTPuissance if typect = 4
+       or PivotCTPoly if typect = 0
+       from  <PivotsCourbeTarage> element.
+
+    """
+    if typect == 0:
+        return _courbetarage.PivotCTPoly(
+            hauteur=_value(element, 'HtPivotCourbeTarage', float),
+            qualif=_value(element, 'QualifPivotCourbeTarage', int),
+            debit=_value(element, 'QPivotCourbeTarage', float))
+    elif typect == 4:
+        return _courbetarage.PivotCTPuissance(
+            hauteur=_value(element, 'HtPivotCourbeTarage', float),
+            qualif=_value(element, 'QualifPivotCourbeTarage', int),
+            vara=_value(element, 'VarAPivotCourbeTarage', float),
+            varb=_value(element, 'VarBPivotCourbeTarage', float),
+            varh=_value(element, 'VarHPivotCourbeTarage', float),)
+    else:
+        print("type ct:{}".format(typect))
+        raise ValueError('TypCourbeTarage must be 0 or 4')
+
+def _periodect_from_element(element):
+    """Return a PeriodeCT from  <PeriodeUtilisationCourbeTarage> element."""
+    return _courbetarage.PeriodeCT(
+        dtdeb=_value(element, 'DtDebutPeriodeUtilisationCourbeTarage', _UTC),
+        dtfin=_value(element, 'DtFinPeriodeUtilisationCourbeTarage', _UTC),
+        etat=_value(element, 'EtatPeriodeUtilisationCourbeTarage', int),
+        histos=[_histoactiveperiode_from_element(e)
+            for e in element.findall('HistosActivPeriod/HistoActivPeriod')]
+        )
+
+def _histoactiveperiode_from_element(element):
+    """Return HistoActivePeriode from <HistoActivPeriod>"""
+    return _courbetarage.HistoActivePeriode(
+        dtactivation=_value(element, 'DtActivHistoActivPeriod', _UTC),
+        dtdesactivation=_value(element, 'DtDesactivHistoActivPeriod', _UTC)
+        )
 
 def _seriehydro_from_element(element):
     """Return a obshydro.Serie from a <Serie> element."""
@@ -813,6 +887,8 @@ _modelesprevision_from_element = _global_function_builder(
 # return a list of evenement.Evenement from a <Evenements> element
 _evenements_from_element = _global_function_builder(
     './Evenement', _evenement_from_element)
+_courbestarage_from_element = _global_function_builder(
+    './CourbeTarage', _courbetarage_from_element)
 # return a list of obshydro.Serie from a <Series> element
 _serieshydro_from_element = _global_function_builder(
     './Serie', _seriehydro_from_element)

@@ -26,10 +26,12 @@ from libhydro.core import sitehydro, seuil
 
 
 # -- strings ------------------------------------------------------------------
-__version__ = '0.4.4'
-__date__ = '2017-05-03'
+__version__ = '0.5'
+__date__ = '2017-06-20'
 
 # HISTORY
+# V0.5 - SR - 2017-06-20
+# Ajout xml contenant des courbes de tarage
 # V0.4 - 2014-08-04
 #   fix some pandas failures
 #   temporarily escape some unstable tests (FIXME)
@@ -231,7 +233,7 @@ class TestAllXmlBaseTests(unittest.TestCase):
     """
     suite = unittest.TestSuite()
     for unit in ('intervenants', 'siteshydro', 'sitesmeteo', 'seuilshydro',
-                 'modelesprevision', 'evenements',
+                 'modelesprevision', 'evenements', 'courbestarage',
                  'serieshydro', 'seriesmeteo', 'simulations'):
         suite.addTest(
             ParametrizedTestCase.parametrize(ToXmlBaseTest, param=unit))

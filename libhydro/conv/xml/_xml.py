@@ -24,6 +24,7 @@ from libhydro.core import (
     seuil as _seuil,
     modeleprevision as _modeleprevision,
     evenement as _evenement,
+    courbetarage as _courbetarage,
     obshydro as _obshydro,
     obsmeteo as _obsmeteo,
     simulation as _simulation)
@@ -60,6 +61,7 @@ class Message(object):
         seuilshydro (liste de seuil.Seuilhydro)
         modelesprevision (liste de modeleprevision.Modeleprevision)
         evenements (liste de evenement.Evenement)
+        courbestarage (liste de courbetarage.CourbeTarage)
         serieshydro (liste de obshydro.Serie)
         seriesmeteo (liste de obsmeteo.Serie)
         simulations (liste de simulation.Simulation)
@@ -81,6 +83,7 @@ class Message(object):
     modelesprevision = _composant.Rlistproperty(
         cls=_modeleprevision.Modeleprevision)
     evenements = _composant.Rlistproperty(cls=_evenement.Evenement)
+    courbestarage = _composant.Rlistproperty(cls=_courbetarage.CourbeTarage)
     serieshydro = _composant.Rlistproperty(cls=_obshydro.Serie)
     seriesmeteo = _composant.Rlistproperty(cls=_obsmeteo.Serie)
     simulations = _composant.Rlistproperty(cls=_simulation.Simulation)

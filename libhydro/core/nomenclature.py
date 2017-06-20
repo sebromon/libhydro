@@ -145,6 +145,15 @@ NOMENCLATURE = {
         31: 'TN'
     },
 
+    # Type de courbe de tarage
+    503: {0: 'Polyligne', 4:'Fonction puissance'},
+    
+    # Etat de la courbe de tarage
+    504: {0: 'Non utilisable', 4:'Utilisable', 8: 'Utilisée', 12: 'Travail'},
+    
+    # Qualification du pivot de la courbe de tarage
+    505:{12: 'Incertain', 16: 'Non qualifié' ,20: 'Bon'},
+
     # Methode d'obtention du resultat de l'observation hydrometrique
     507: {0: 'Mesure', 4: 'Reconstitution', 12: 'Interpolation'},
 

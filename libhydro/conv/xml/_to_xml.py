@@ -23,14 +23,16 @@ import numpy as _numpy
 
 from libhydro.core import (
     _composant, sitehydro as _sitehydro, sitemeteo as _sitemeteo,
-    seuil as _seuil)
+    seuil as _seuil, courbetarage as _courbetarage)
 
 
 # -- strings ------------------------------------------------------------------
-__version__ = '0.4.9'
-__date__ = '2017-06-09'
+__version__ = '0.5'
+__date__ = '2017-06-20'
 
 # HISTORY
+# V0.5 - SR - 2017-06-20
+# export CourbeTarage
 # V0.4.9 - SR - 2017-06-09
 # export sysalti and perim Serie properties
 # V0.4.8
@@ -57,7 +59,7 @@ ORDERED_ACCEPTED_KEYS = [
     'intervenants', 'siteshydro', 'sitesmeteo',
     'seuilshydro', 'modelesprevision',
     # line 180: [6:]
-    'evenements', 'serieshydro', 'seriesmeteo', 'simulations']
+    'evenements', 'courbestarage', 'serieshydro', 'seriesmeteo', 'simulations']
 
 PREV_PROBABILITY = {
     50: 'ResMoyPrev',
@@ -91,8 +93,8 @@ NS_ATTR = {
 # -- testsfunction ------------------------------------------------------------
 def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
             seuilshydro=None, modelesprevision=None, evenements=None,
-            serieshydro=None, seriesmeteo=None, simulations=None,
-            bdhydro=False, strict=True, ordered=False):
+            courbestarage=None, serieshydro=None, seriesmeteo=None,
+            simulations=None, bdhydro=False, strict=True, ordered=False):
     """Return a etree.Element a partir des donnees passes en argument.
 
     Cette fonction est privee et les utilisateurs sont invites a utiliser la
@@ -107,6 +109,7 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
         modelesprevision (modeleprevision.Modeleprevision collection) =
             iterable or None
         evenements (evenement.Evenement collection) = iterable ou None
+        courbestarage (courbetarage.CourbeTarage collection) = iterable ou None
         serieshydro (obshydro.Serie collection) = iterable or None
         seriesmeteo (obsmeteo.Serie collection) = iterable or None
         simulations (simulation.Simulation collection) = iterable or None
@@ -721,6 +724,123 @@ def _evenement_to_element(evenement, bdhydro=False, strict=True):
         return _factory(root=_etree.Element('Evenement'), story=story)
 
 
+def _courbetarage_to_element(courbe, bdhydro=False, strict=True):
+    """Return a <CourbeTarage> element from a courbetarage.CourbeTarage."""
+
+    if courbe is not None:
+
+        # prerequisite
+        _required(courbe, ['code', 'libelle', 'typect', 'station'])
+        if strict:
+            pass
+#            _required(courbe.contact, ['code'])
+#            _required(courbe.entite, ['code'])
+#            _required(courbe, ['descriptif'])
+
+        # template for serie simple elements
+        story = _collections.OrderedDict()
+        story['CdCourbeTarage'] = {'value': courbe.code}
+        story['LbCourbeTarage'] = {'value': courbe.libelle}
+        story['TypCourbeTarage'] = {'value': courbe.typect}
+        story['LimiteInfCourbeTarage'] = {'value': courbe.limiteinf}
+        story['LimiteSupCourbeTarage'] = {'value': courbe.limitesup}
+        story['DnCourbeTarage'] = {'value': courbe.dn}
+        story['AlphaCourbeTarage'] = {'value': courbe.alpha}
+        story['BetaCourbeTarage'] = {'value': courbe.beta}
+        story['ComCourbeTarage'] = {'value': courbe.commentaire}
+        story['CdStationHydro'] = {'value': courbe.station.code}
+        story['CdContact'] = {
+            'value': getattr(
+                getattr(courbe, 'contact', None), 'code', None)}
+        story['PivotsCourbeTarage'] = {'value': None,
+            'force': True if (len(courbe.pivots) > 0) else False}
+        story['PeriodesUtilisationCourbeTarage'] = {'value': None,
+            'force': True if (len(courbe.periodes) > 0) else False}
+        story['DtMajCourbeTarage'] = {
+            'value': None if courbe.dtmaj is None
+            else courbe.dtmaj.strftime('%Y-%m-%dT%H:%M:%S')}
+
+        # make element <CourbeTarage>
+        element = _factory(root=_etree.Element('CourbeTarage'), story=story)
+
+        # add pivots if necessary
+        if len(courbe.pivots) == 1:
+            raise ValueError('Courbe cannot have only one pivot')
+        if len(courbe.pivots) > 0:
+            child = element.find('PivotsCourbeTarage')
+            for pivot in courbe.pivots:
+                child.append(
+                    _pivotct_to_element(
+                        pivot, strict=strict))
+
+        # add periodes if necssary
+        if len(courbe.periodes) > 0:
+            child = element.find('PeriodesUtilisationCourbeTarage')
+            for periode in courbe.periodes:
+                child.append(
+                    _periodect_to_element(
+                        periode, strict=strict))
+                # return
+        return element
+
+def _pivotct_to_element(pivot, strict=True):
+    _required(pivot, ['hauteur'])
+    story = _collections.OrderedDict()
+    story['HtPivotCourbeTarage'] = {'value': pivot.hauteur}
+    story['QualifPivotCourbeTarage'] = {'value': pivot.qualif}
+
+    if isinstance(pivot, _courbetarage.PivotCTPoly):
+        _required(pivot, ['debit'])
+        story['QPivotCourbeTarage'] = {'value': pivot.debit}
+        pass
+    elif isinstance(pivot, _courbetarage.PivotCTPuissance):
+        _required(pivot, ['vara', 'varb', 'varh'])
+        story['VarAPivotCourbeTarage'] = {'value': pivot.vara}
+        story['VarBPivotCourbeTarage'] = {'value': pivot.varb}
+        story['VarHPivotCourbeTarage'] = {'value': pivot.varh}
+
+    else:
+        raise TypeError('pivot is not a PivotCTPoly or a PivotCTPuissance')
+
+    return _factory(root=_etree.Element('PivotCourbeTarage'), story=story)
+
+def _periodect_to_element(periode, strict=True):
+    _required(periode, ['dtdeb', 'etat'])
+    story = _collections.OrderedDict()
+    story['DtDebutPeriodeUtilisationCourbeTarage'] = {
+        'value': periode.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')}
+    if periode.dtfin is not None:
+        story['DtFinPeriodeUtilisationCourbeTarage'] = {
+            'value': periode.dtfin.strftime('%Y-%m-%dT%H:%M:%S')}
+    if periode.etat is not None:
+        story['EtatPeriodeUtilisationCourbeTarage'] = {
+            'value': periode.etat}
+    if len(periode.histos) > 0:
+        story['HistosActivPeriod'] = {
+            'value': None, 'force': True}
+    element = _factory(root=_etree.Element('PeriodeUtilisationCourbeTarage'), story=story)
+
+    # Add histos if necessary
+    if len(periode.histos) > 0:
+        child = element.find('HistosActivPeriod')
+        for histo in periode.histos:
+            child.append(
+                _histoperiode_to_element(
+                    histo, strict=strict))
+    return element
+
+def _histoperiode_to_element(histo, strict=True):
+    _required(histo, ['dtactivation'])
+    story = _collections.OrderedDict()
+    story['DtActivHistoActivPeriod'] = {
+        'value': histo.dtactivation.strftime('%Y-%m-%dT%H:%M:%S')}
+    if histo.dtdesactivation is not None:
+        story['DtDesactivHistoActivPeriod'] = {
+            'value': histo.dtdesactivation.strftime('%Y-%m-%dT%H:%M:%S')}
+
+    return _factory(root=_etree.Element('HistoActivPeriod'), story=story)
+
+
 def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True):
     """Return a <Serie> element from a obshydro.Serie."""
 
@@ -936,6 +1056,9 @@ _modelesprevision_to_element = _global_function_builder(
 # return a <Evenements> element from a list of evenement.Evenement
 _evenements_to_element = _global_function_builder(
     'Evenements', _evenement_to_element)
+# return a <CourbesTarage> element from a list of courbetarage.CourbeTarage
+_courbestarage_to_element = _global_function_builder(
+    'CourbesTarage', _courbetarage_to_element)
 # return a <Series> element from a list of obshydro.Serie
 _serieshydro_to_element = _global_function_builder(
     'Series', _seriehydro_to_element)
