@@ -337,6 +337,7 @@ class CourbeTarage(object):
         periodes (PeriodeCT or an iterable of PeriodeCT)
             or PivotCTPoly (typect = 4)
         dtmaj (datetime.datetime) = date de mise à jour
+        tri_pivots (bool) = tri de spoints pivots par hauteur si True
     """
 
     typect = _composant.Nomenclatureitem(nomenclature=503)
@@ -608,9 +609,16 @@ class CourbeTarage(object):
                         )
             # add pivot
             self._pivots.append(pivot)
-        # tri des pivots
+
+        # Sort pivots if necessary
         if self._tri_pivots:
-            self._pivots.sort()
+            # fuzzy mode sorting may not be possible
+            # raise Exception only if strict = True
+            try:
+                self._pivots.sort()
+            except:
+                if self._strict:
+                    raise
 
     # -- property dtmaj --
     @property
