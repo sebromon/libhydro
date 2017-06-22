@@ -25,16 +25,19 @@ from libhydro.core import (
     modeleprevision as _modeleprevision,
     evenement as _evenement,
     courbetarage as _courbetarage,
+    courbecorrection as _courbecorrection,
     obshydro as _obshydro,
     obsmeteo as _obsmeteo,
     simulation as _simulation)
 
 
 # -- strings ------------------------------------------------------------------
-__version__ = '0.5.5'
-__date__ = '2017-05-03'
+__version__ = '0.6'
+__date__ = '2017-06-22'
 
 # HISTORY
+# V0.6 - SR - 2017-06-22
+# Ajout des courbes de correction et de targe au message
 # V0.5 - 2014-08-22
 #   expose pretty_print in show and write methods
 #   add the intervenants
@@ -62,15 +65,14 @@ class Message(object):
         modelesprevision (liste de modeleprevision.Modeleprevision)
         evenements (liste de evenement.Evenement)
         courbestarage (liste de courbetarage.CourbeTarage)
+        courbescorrection (liste de courbecorrection.CourbeCorrection)
         serieshydro (liste de obshydro.Serie)
         seriesmeteo (liste de obsmeteo.Serie)
         simulations (liste de simulation.Simulation)
 
     """
 
-    # 'courbestarage'
     # 'jaugeages'
-    # 'courbescorrection'
     # 'obsselab'
     # 'gradshydro'
     # 'qualifsannee'
@@ -84,13 +86,15 @@ class Message(object):
         cls=_modeleprevision.Modeleprevision)
     evenements = _composant.Rlistproperty(cls=_evenement.Evenement)
     courbestarage = _composant.Rlistproperty(cls=_courbetarage.CourbeTarage)
+    courbescorrection = _composant.Rlistproperty(cls=_courbecorrection.CourbeCorrection)
     serieshydro = _composant.Rlistproperty(cls=_obshydro.Serie)
     seriesmeteo = _composant.Rlistproperty(cls=_obsmeteo.Serie)
     simulations = _composant.Rlistproperty(cls=_simulation.Simulation)
 
     def __init__(self, scenario, intervenants=None, siteshydro=None,
                  sitesmeteo=None, seuilshydro=None, modelesprevision=None,
-                 evenements=None, serieshydro=None, seriesmeteo=None,
+                 evenements=None, courbestarage=None, courbescorrection=None,
+                 serieshydro=None, seriesmeteo=None,
                  simulations=None, strict=True):
         """Initialisation.
 
@@ -102,6 +106,8 @@ class Message(object):
             seuilshydro (seuil.Seuilhydro iterable ou None)
             modelesprevision (modeleprevision.Modeleprevision iterable ou None)
             evenements (evenement.Evenement iterable ou None)
+            courbestarage (courbetarage.CourbeTarage iterable ou None)
+            courbescorrection (courbecorrection.CourbeCorrection ou None)
             serieshydro (obshydro.Serie iterable ou None)
             seriesmeteo (obsmeteo.Serie iterable ou None)
             simulations (simulation.Simulation iterable ou None)
@@ -125,6 +131,8 @@ class Message(object):
         self.seuilshydro = seuilshydro or []
         self.modelesprevision = modelesprevision or []
         self.evenements = evenements or []
+        self.courbestarage = courbestarage or []
+        self.courbescorrection = courbescorrection or []
         self.serieshydro = serieshydro or []
         self.seriesmeteo = seriesmeteo or []
         self.simulations = simulations or []
@@ -203,6 +211,10 @@ class Message(object):
                 tree.find('RefHyd/ModelesPrevision')),
             evenements=_from_xml._evenements_from_element(
                 tree.find('Donnees/Evenements')),
+            courbestarage=_from_xml._courbestarage_from_element(
+                tree.find('Donnees/CourbesTarage')),
+            courbescorrection=_from_xml._courbescorrection_from_element(
+                tree.find('Donnees/CourbesCorrH')),
             serieshydro=_from_xml._serieshydro_from_element(
                 tree.find('Donnees/Series')),
             seriesmeteo=_from_xml._seriesmeteo_from_element(
@@ -210,9 +222,7 @@ class Message(object):
             simulations=_from_xml._simulations_from_element(
                 tree.find('Donnees/Simuls')))
 
-        # 'courbestarage'
         # 'jaugeages'
-        # 'courbescorrection'
         # 'obsselab'
         # 'gradshydro'
         # 'qualifsannee'
@@ -233,6 +243,8 @@ class Message(object):
             seuilshydro  = iterable de seuil.Seuilhydro
             modelesprevision = iterable de modeleprevision.Modeleprevision
             evenements   = iterable d'evenement.Evenement
+            courbestarage = iterable de courbetarage.CourbeTarage
+            courbescorrection = iterable de courbecorrection.CourbeCorrection
             serieshydro  = iterable de obshydro.Serie
             seriesmeteo  = iterable de obsmeteo.Serie
             simulations  = iterable de simulation.Simulation
@@ -283,6 +295,8 @@ class Message(object):
                 seuilshydro=self.seuilshydro,
                 modelesprevision=self.modelesprevision,
                 evenements=self.evenements,
+                courbestarage=self.courbestarage,
+                courbescorrection=self.courbescorrection,
                 serieshydro=self.serieshydro,
                 seriesmeteo=self.seriesmeteo,
                 simulations=self.simulations,
@@ -313,6 +327,8 @@ class Message(object):
                 seuilshydro=self.seuilshydro,
                 modelesprevision=self.modelesprevision,
                 evenements=self.evenements,
+                courbestarage=self.courbestarage,
+                courbescorrection=self.courbescorrection,
                 serieshydro=self.serieshydro,
                 seriesmeteo=self.seriesmeteo,
                 simulations=self.simulations,
@@ -337,6 +353,8 @@ class Message(object):
                '{space}{seuilshydro} seuilshydro\n' \
                '{space}{modelesprevision} modelesprevision\n' \
                '{space}{evenements} evenements\n' \
+               '{space}{courbestarage} courbestarage\n' \
+               '{space}{courbescorrection} courbescorrection\n' \
                '{space}{serieshydro} serieshydro\n' \
                '{space}{seriesmeteo} seriesmeteo\n' \
                '{space}{simulations} simulations'.format(
@@ -354,6 +372,10 @@ class Message(object):
                    else len(self.modelesprevision),
                    evenements=0 if self.evenements is None
                    else len(self.evenements),
+                   courbestarage=0 if self.courbestarage is None
+                   else len(self.courbestarage),
+                   courbescorrection=0 if self.courbescorrection is None
+                   else len(self.courbescorrection),
                    serieshydro=0 if self.serieshydro is None
                    else len(self.serieshydro),
                    seriesmeteo=0 if self.seriesmeteo is None

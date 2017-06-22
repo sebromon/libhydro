@@ -28,15 +28,17 @@ from libhydro.core import (
     sitemeteo as _sitemeteo, seuil as _seuil,
     modeleprevision as _modeleprevision, obshydro as _obshydro,
     obsmeteo as _obsmeteo, simulation as _simulation, evenement as _evenement,
-    courbetarage as _courbetarage)
+    courbetarage as _courbetarage, courbecorrection as _courbecorrection)
 
 
 # -- strings ------------------------------------------------------------------
 # contributor Camillo Montes (SYNAPSE)
-__version__ = '0.6'
-__date__ = '2017-06-20'
+__version__ = '0.7'
+__date__ = '2017-06-22'
 
 # HISTORY
+# V0.7 - SR - 2017-06-22
+# importation des courbes de correction
 # V0.6 - SR - 2017-06-20
 # importation courbes de tarage
 # V0.5.4 - SR - 2017-06-09
@@ -230,6 +232,8 @@ def _parse(src, ordered=True):
             # seuilshydro: liste de seuil.Seuilhydro
             # modelesprevision: liste de modelesprevision.Modeleprevision
             # evenements: liste d'evenements
+            # courbestarage: liste de courbes de tarage
+            # courbescorrection: liste de courbes de correction
             # serieshydro: liste de obshydro.Serie
             # seriesmeteo: liste de obsmeteo.Serie
             # simulations: liste de simulation.Simulation
@@ -268,7 +272,8 @@ def _parse(src, ordered=True):
         'courbestarage': _courbestarage_from_element(
             tree.find('Donnees/CourbesTarage')),
         # 'jaugeages'
-        # 'courbescorrection'
+        'courbescorrection': _courbescorrection_from_element(
+            tree.find('Donnees/CourbesCorrH')),
         'serieshydro': _serieshydro_from_element(tree.find('Donnees/Series')),
         'seriesmeteo': _seriesmeteo_from_element(
             tree.find('Donnees/ObssMeteo')),
@@ -660,6 +665,30 @@ def _histoactiveperiode_from_element(element):
         dtdesactivation=_value(element, 'DtDesactivHistoActivPeriod', _UTC)
         )
 
+def _courbecorrection_from_element(element):
+    """Return a courbecorrection.CourbeCorrection from a <CourbeCorrH> element."""
+    if element is None:
+        raise TypeError("CourbesCorrH must not be empty")
+    args = {
+        'station': _sitehydro.Station(code=_value(element, 'CdStationHydro')),
+        'libelle': _value(element, 'LbCourbeCorrH'),
+        'commentaire': _value(element, 'ComCourbeCorrH'),
+        'pivots': [_pivotcc_from_element(e)
+            for e in element.findall('PointsPivot/PointPivot')],
+        'dtmaj': _value(element, 'DtMajCourbeCorrH', _UTC)
+        }
+
+    return _courbecorrection.CourbeCorrection(**args)
+
+def _pivotcc_from_element(element):
+    """Return courbecorrection.PivotCC from a <PointPivot> element."""
+    return _courbecorrection.PivotCC(
+        dte=_value(element, 'DtPointPivot', _UTC),
+        deltah=_value(element, 'DeltaHPointPivot', float),
+        dtactivation=_value(element, 'DtActivationPointPivot', _UTC),
+        dtdesactivation=_value(element, 'DtDesactivPointPivot', _UTC)
+        )
+
 def _seriehydro_from_element(element):
     """Return a obshydro.Serie from a <Serie> element."""
     if element is not None:
@@ -887,8 +916,12 @@ _modelesprevision_from_element = _global_function_builder(
 # return a list of evenement.Evenement from a <Evenements> element
 _evenements_from_element = _global_function_builder(
     './Evenement', _evenement_from_element)
+# return a list of courbetarage.CourbeTarage from a <CourbesTarage> element
 _courbestarage_from_element = _global_function_builder(
     './CourbeTarage', _courbetarage_from_element)
+# return a list of courbecorrection.CourbeCorrection from a <CourbesCorrH> element
+_courbescorrection_from_element = _global_function_builder(
+    './CourbeCorrH', _courbecorrection_from_element)
 # return a list of obshydro.Serie from a <Series> element
 _serieshydro_from_element = _global_function_builder(
     './Serie', _seriehydro_from_element)

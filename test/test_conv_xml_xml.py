@@ -35,10 +35,12 @@ from libhydro.conv.xml import (Scenario, Message)
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1i"""
-__date__ = """2014-08-26"""
+__version__ = """0.2"""
+__date__ = """2017-06-22"""
 
 # HISTORY
+# V0.2 - SR - 2017-06-22
+# Ajout tests courbes de correction et de tarage
 # V0.1 - 2013-08-22
 #   first shot
 
@@ -169,6 +171,8 @@ class TestMessage(unittest.TestCase):
         self.file_sitm = os.path.join(FILES_PATH, 'sitesmeteo.xml')
         self.file_seu = os.path.join(FILES_PATH, 'seuilshydro.xml')
         self.file_eve = os.path.join(FILES_PATH, 'evenements.xml')
+        self.file_ct = os.path.join(FILES_PATH, 'courbestarage.xml')
+        self.file_cc = os.path.join(FILES_PATH, 'courbescorrection.xml')
         self.file_serh = os.path.join(FILES_PATH, 'serieshydro.xml')
         self.file_serm = os.path.join(FILES_PATH, 'seriesmeteo.xml')
         self.file_sim = os.path.join(FILES_PATH, 'simulations.xml')
@@ -251,6 +255,18 @@ class TestMessage(unittest.TestCase):
         fname = os.path.join(FILES_PATH, 'siteshydro_with_namespace.xml')
         msg = Message.from_file(fname)
         msg.write(self.tmp_file, force=True)
+
+    def test_base_10(self):
+        """Message from file courbestarage."""
+        msg = Message.from_file(self.file_ct)
+        msg.write(self.tmp_file, force=True)
+        msg.courbestarage.insert(0, msg.courbestarage[0])
+
+    def test_base_11(self):
+        """Message from file courbescorrection."""
+        msg = Message.from_file(self.file_cc)
+        msg.write(self.tmp_file, force=True)
+        msg.courbescorrection.insert(0, msg.courbescorrection[0])
 
     def test_str_01(self):
         """Test __str__ method with basic values."""

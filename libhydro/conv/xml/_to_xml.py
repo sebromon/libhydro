@@ -27,10 +27,12 @@ from libhydro.core import (
 
 
 # -- strings ------------------------------------------------------------------
-__version__ = '0.5'
-__date__ = '2017-06-20'
+__version__ = '0.6'
+__date__ = '2017-06-22'
 
 # HISTORY
+# V0.6 - SR - 2017-06-20
+# export des courbes de correction
 # V0.5 - SR - 2017-06-20
 # export CourbeTarage
 # V0.4.9 - SR - 2017-06-09
@@ -59,7 +61,8 @@ ORDERED_ACCEPTED_KEYS = [
     'intervenants', 'siteshydro', 'sitesmeteo',
     'seuilshydro', 'modelesprevision',
     # line 180: [6:]
-    'evenements', 'courbestarage', 'serieshydro', 'seriesmeteo', 'simulations']
+    'evenements', 'courbestarage', 'courbescorrection',
+    'serieshydro', 'seriesmeteo', 'simulations']
 
 PREV_PROBABILITY = {
     50: 'ResMoyPrev',
@@ -93,7 +96,7 @@ NS_ATTR = {
 # -- testsfunction ------------------------------------------------------------
 def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
             seuilshydro=None, modelesprevision=None, evenements=None,
-            courbestarage=None, serieshydro=None, seriesmeteo=None,
+            courbestarage=None, courbescorrection=None, serieshydro=None, seriesmeteo=None,
             simulations=None, bdhydro=False, strict=True, ordered=False):
     """Return a etree.Element a partir des donnees passes en argument.
 
@@ -110,6 +113,8 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
             iterable or None
         evenements (evenement.Evenement collection) = iterable ou None
         courbestarage (courbetarage.CourbeTarage collection) = iterable ou None
+        courbescorrection (courbecorrection.CourbeCorrection collection) = 
+            iterable ou None
         serieshydro (obshydro.Serie collection) = iterable or None
         seriesmeteo (obsmeteo.Serie collection) = iterable or None
         simulations (simulation.Simulation collection) = iterable or None
@@ -841,6 +846,57 @@ def _histoperiode_to_element(histo, strict=True):
     return _factory(root=_etree.Element('HistoActivPeriod'), story=story)
 
 
+def _courbecorrection_to_element(courbe, bdhydro=False, strict=True):
+    """Return a <CourbeCorrH> element from a courbecorrection.CourbeCorrection."""
+    if courbe is not None:
+        # prerequisite
+        _required(courbe, ['station'])
+        if strict:
+            _required(courbe.station, ['code'])
+        # template for seriehydro simple elements
+        story = _collections.OrderedDict()
+        #TODO fuzzy mode 
+        story['CdStationHydro'] = {'value': courbe.station.code}
+        story['LbCourbeCorrH'] = {'value': courbe.libelle}
+        story['ComCourbeCorrH'] = {'value': courbe.commentaire}
+        #story['PointsPivot']
+        story['PointsPivot'] = {'value': None,
+            'force': True if (len(courbe.pivots) > 0) else False}
+        if courbe.dtmaj is not None:
+            story['DtMajCourbeCorrH'] = {'value':
+                courbe.dtmaj.strftime('%Y-%m-%dT%H:%M:%S')}
+        
+        # make element <CourbeTarage>
+        element = _factory(root=_etree.Element('CourbeCorrH'), story=story)
+        
+        # add pivots if necessary
+        if len(courbe.pivots) == 1:
+            raise ValueError('Courbe cannot have only one pivot')
+        if len(courbe.pivots) > 1:
+            child = element.find('PointsPivot')
+            for pivot in courbe.pivots:
+                child.append(
+                    _pivotcc_to_element(
+                        pivot, strict=strict))        
+        return element
+
+def _pivotcc_to_element(pivotcc, strict=True):
+    _required(pivotcc, ['dte','deltah'])
+    
+    story = _collections.OrderedDict()
+    
+    story['DtPointPivot'] = {'value': pivotcc.dte.strftime('%Y-%m-%dT%H:%M:%S')}
+    story['DeltaHPointPivot'] = {'value': pivotcc.deltah}
+    if pivotcc.dtactivation is not None:
+        story['DtActivationPointPivot'] = {'value':
+            pivotcc.dtactivation.strftime('%Y-%m-%dT%H:%M:%S')}
+    if pivotcc.dtdesactivation is not None:
+        story['DtDesactivPointPivot'] = {'value':
+            pivotcc.dtdesactivation.strftime('%Y-%m-%dT%H:%M:%S')}
+    
+    return _factory(root=_etree.Element('PointPivot'), story=story)
+        
+
 def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True):
     """Return a <Serie> element from a obshydro.Serie."""
 
@@ -1059,6 +1115,9 @@ _evenements_to_element = _global_function_builder(
 # return a <CourbesTarage> element from a list of courbetarage.CourbeTarage
 _courbestarage_to_element = _global_function_builder(
     'CourbesTarage', _courbetarage_to_element)
+# return a <CourbesTarage> element from a list of courbetarage.CourbeTarage
+_courbescorrection_to_element = _global_function_builder(
+    'CourbesCorrH', _courbecorrection_to_element)
 # return a <Series> element from a list of obshydro.Serie
 _serieshydro_to_element = _global_function_builder(
     'Series', _seriehydro_to_element)
