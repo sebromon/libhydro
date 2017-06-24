@@ -52,9 +52,9 @@ class PivotCC(object):
             strict (bool, defaut True) = strict or fuzzy mode
 
         """
-        
+
         self._strict = bool(strict)
-        
+
         self.dte = dte
         self.dtactivation = dtactivation
         self.dtdesactivation = dtdesactivation
@@ -89,7 +89,7 @@ class PivotCC(object):
         )
 
     __str__ = _composant.__str__
-    
+
     # pivot ordered by dte
     def __lt__(self, other):
         return self.dte < other.dte
@@ -175,6 +175,7 @@ class CourbeCorrection(object):
         # an iterable of pivots
         if self._strict and len(pivots) == 1:
             raise TypeError('pivots must be an iterable of minimum 2 PivotCC')
+        dtes = set()
         for pivot in pivots:
             # some checks
             if self._strict:
@@ -182,6 +183,12 @@ class CourbeCorrection(object):
                     raise TypeError(
                         'pivots must be a PivotCC or an iterable of PivotCC'
                     )
+
+            if self._strict:
+                if pivot.dte in dtes:
+                    raise ValueError('pivots contains 2 pivots with same date')
+                dtes.add(pivot.dte)
+
             # add pivot
             self._pivots.append(pivot)
 

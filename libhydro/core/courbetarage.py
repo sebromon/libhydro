@@ -173,12 +173,13 @@ class PivotCTPuissance(PivotCT):
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
-        return 'Point pivot de hauteur {0} et de coefficients a={1} b={2} et h0={3}'.format(
-            self.hauteur or '<sans hauteur>',
-            self.vara or '<sans coef a>',
-            self.varb or '<sans coef b>',
-            self.varh or '<sans coef h0>'
-            )
+        return 'Point pivot de hauteur {0}'\
+               ' et de coefficients a={1} b={2} et h0={3}'.format(
+                   self.hauteur or '<sans hauteur>',
+                   self.vara or '<sans coef a>',
+                   self.varb or '<sans coef b>',
+                   self.varh or '<sans coef h0>'
+                   )
 
     __str__ = _composant.__str__
 
@@ -235,7 +236,7 @@ class HistoActivePeriode(object):
 
     Classe pour manipuler l'historique d'activation des periodes
     d'une courbe de tarage.
-    Vérification que la date de désactivation si elle est définit
+    Vérification que la date de désactivation si elle est définie
     est ultérieure à la date d'activation
 
     Proprietes:
@@ -572,7 +573,8 @@ class CourbeTarage(object):
                     self._periodes.append(periode)
                 else:
                     if self._strict:
-                        raise TypeError('periodes is not a PeriodeCT or an iterable of PeriodeCT')
+                        raise TypeError('periodes is not a PeriodeCT'\
+                                        ' or an iterable of PeriodeCT')
 
     # -- property pivots --
     @property
@@ -587,26 +589,33 @@ class CourbeTarage(object):
         # None case
         if pivots is None:
             return
-        if (self.typect == 0 and isinstance(pivots, PivotCTPoly)) or \
-                (self.typect == 4 and isinstance(pivots, PivotCTPuissance)):
-            self._pivots.append(pivots)
-            return
+        if not self._strict:
+            if (self.typect == 0 and isinstance(pivots, PivotCTPoly)) or \
+                    (self.typect == 4 and isinstance(pivots, PivotCTPuissance)):
+                self._pivots.append(pivots)
+                return
         if len(pivots) == 1:
             raise ValueError('pivots must not contain only one pivot')
         # an iterable of pivots
+        hauteurs = set()
         for pivot in pivots:
             # some checks
             if self._strict:
                 if self.typect == 0:
                     if not isinstance(pivot, PivotCTPoly):
                         raise TypeError(
-                            'pivots must be a PivotCTPoly or an iterable of PivotCTPoly'
+                            'pivots must be a PivotCTPoly'\
+                            ' or an iterable of PivotCTPoly'
                         )
                 if self.typect == 4:
                     if not isinstance(pivot, PivotCTPuissance):
                         raise TypeError(
-                            'pivots must be a PivotCTPuissance or an iterable of PivotCTPuissance'
+                            'pivots must be a PivotCTPuissance'\
+                            ' or an iterable of PivotCTPuissance'
                         )
+                if pivot.hauteur in hauteurs:
+                    raise ValueError("pivots contains pivots with same hauteur")
+                hauteurs.add(pivot.hauteur)
             # add pivot
             self._pivots.append(pivot)
 

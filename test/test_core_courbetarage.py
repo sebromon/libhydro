@@ -37,22 +37,25 @@ class TestPivotCT(unittest.TestCase):
     """PivotCT class tests."""
 
     def test_base_01(self):
+        """PivotCC with hauteur"""
         hauteur = 158.9
-        PivotCT(hauteur=hauteur)
-    
+        pivot = PivotCT(hauteur=hauteur)
+        self.assertEqual((pivot.hauteur, pivot.qualif),
+                         (hauteur, 16))
+
 
     def test_base_02(self):
         """ operators < and > """
-        h1 = 15.5
-        pivot1 = PivotCT(hauteur=h1)
-        h2 = 18.4
-        pivot2 = PivotCT(hauteur=h2)
+        hauteur1 = 15.5
+        pivot1 = PivotCT(hauteur=hauteur1)
+        hauteur2 = 18.4
+        pivot2 = PivotCT(hauteur=hauteur2)
         self.assertTrue(pivot1 < pivot2)
         self.assertFalse(pivot2 < pivot1)
-        
+
         self.assertFalse(pivot1 > pivot2)
         self.assertTrue(pivot2 > pivot1)
-        
+
 
 class TestPivotCTPoly(unittest.TestCase):
     """PivotCTPoly class tests."""
@@ -82,7 +85,7 @@ class TestPivotCTPoly(unittest.TestCase):
         debit = 3.4
         pivot = PivotCTPoly(hauteur=hauteur, debit=debit)
         str_expected = "Point pivot de hauteur {0} et de debit {1}".format(hauteur, debit)
-        self.assertEqual(pivot.__str__(),str_expected)
+        self.assertEqual(pivot.__str__(), str_expected)
 #        self.assertTrue(obs.__str__().rfind('UTC') > -1)
 #        self.assertTrue(obs.__str__().rfind('continue') > -1)
 
@@ -91,12 +94,12 @@ class TestPivotCTPoly(unittest.TestCase):
         hauteur = 1.5
         debit = 3.4
         PivotCTPoly(hauteur=hauteur, debit=debit)
-        
+
         hauteur = None
         with self.assertRaises(TypeError) as context:
             PivotCTPoly(hauteur=hauteur, debit=debit)
         self.assertEqual(context.exception.message,
-                         'hauteur is required')        
+                         'hauteur is required')
 
         hauteur = 'ab'
         with self.assertRaises(ValueError):
@@ -111,8 +114,8 @@ class TestPivotCTPoly(unittest.TestCase):
         with self.assertRaises(TypeError) as context:
             PivotCTPoly(hauteur=hauteur, debit=debit)
         self.assertEqual(context.exception.message,
-                         'debit is required') 
-        
+                         'debit is required')
+
         debit = 'ab'
         with self.assertRaises(ValueError):
             PivotCTPoly(hauteur=hauteur, debit=debit)
@@ -139,7 +142,8 @@ class TestPivotCTPuissance(unittest.TestCase):
         varb = 4.5
         varh = 154.3
         pivot = PivotCTPuissance(hauteur=hauteur, vara=vara, varb=varb, varh=varh)
-        self.assertEqual((pivot.hauteur, pivot.qualif, pivot.vara, pivot.varb, pivot.varh),
+        self.assertEqual(
+            (pivot.hauteur, pivot.qualif, pivot.vara, pivot.varb, pivot.varh),
             (hauteur, 16, vara, varb, varh))
 
     def test_base_02(self):
@@ -150,20 +154,22 @@ class TestPivotCTPuissance(unittest.TestCase):
         varh = 154.3
         qualif = 20
         pivot = PivotCTPuissance(hauteur=hauteur, qualif=qualif, vara=vara, varb=varb, varh=varh)
-        self.assertEqual((pivot.hauteur, pivot.qualif, pivot.vara, pivot.varb, pivot.varh),
-            (hauteur, qualif, vara, varb, varh))
+        self.assertEqual((pivot.hauteur, pivot.qualif,
+                          pivot.vara, pivot.varb, pivot.varh),
+                         (hauteur, qualif, vara, varb, varh))
 
 
     def test_str_02(self):
         """Test __str__ method"""
-        hauteur=15.6
+        hauteur = 15.6
         vara = 0.5
         varb = 0.7
         varh = 1.1
-        pivot = PivotCTPuissance(hauteur=hauteur, 
+        pivot = PivotCTPuissance(hauteur=hauteur,
                                  vara=vara, varb=varb, varh=varh)
-        
-        expected = "Point pivot de hauteur {} et de coefficients a={} b={} et h0={}".format(hauteur,vara, varb, varh)
+
+        expected = 'Point pivot de hauteur {}'\
+                   ' et de coefficients a={} b={} et h0={}'.format(hauteur, vara, varb, varh)
         self.assertEqual(pivot.__str__(), expected)
 
     def test_str_01(self):
@@ -184,12 +190,12 @@ class TestPivotCTPuissance(unittest.TestCase):
         varh = 154.3
         qualif = 20
         PivotCTPuissance(hauteur=hauteur, qualif=qualif, vara=vara, varb=varb, varh=varh)
-        
+
         hauteur = None
         with self.assertRaises(TypeError) as context:
             PivotCTPuissance(hauteur=hauteur, qualif=qualif, vara=vara, varb=varb, varh=varh)
         self.assertEqual(context.exception.message, 'hauteur is required')
-        
+
         hauteur = 'ab'
         with self.assertRaises(ValueError) as context:
             PivotCTPuissance(hauteur=hauteur, qualif=qualif, vara=vara, varb=varb, varh=varh)
@@ -209,11 +215,11 @@ class TestPivotCTPuissance(unittest.TestCase):
                              vara=vara, varb=varb, varh=varh)
 
         self.assertEqual(context.exception.message,
-                         'vara is required') 
+                         'vara is required')
         vara = 'ab'
         with self.assertRaises(ValueError):
             PivotCTPuissance(hauteur=hauteur, qualif=qualif,
-                vara=vara, varb=varb, varh=varh)
+                             vara=vara, varb=varb, varh=varh)
 
     def test_error_03(self):
         """varb error"""
@@ -230,11 +236,11 @@ class TestPivotCTPuissance(unittest.TestCase):
                              vara=vara, varb=varb, varh=varh)
 
         self.assertEqual(context.exception.message,
-                         'varb is required') 
+                         'varb is required')
         varb = 'ab'
         with self.assertRaises(ValueError):
             PivotCTPuissance(hauteur=hauteur, qualif=qualif,
-                vara=vara, varb=varb, varh=varh)
+                             vara=vara, varb=varb, varh=varh)
 
     def test_error_04(self):
         """varh error"""
@@ -251,11 +257,11 @@ class TestPivotCTPuissance(unittest.TestCase):
                              vara=vara, varb=varb, varh=varh)
 
         self.assertEqual(context.exception.message,
-                         'varh is required') 
+                         'varh is required')
         varh = 'ab'
         with self.assertRaises(ValueError):
             PivotCTPuissance(hauteur=hauteur, qualif=qualif,
-                vara=vara, varb=varb, varh=varh)
+                             vara=vara, varb=varb, varh=varh)
 
     def test_error_05(self):
         """qualif not in nomenclature"""
@@ -266,12 +272,12 @@ class TestPivotCTPuissance(unittest.TestCase):
 
         qualif = 12
         PivotCTPuissance(hauteur=hauteur, qualif=qualif,
-            vara=vara, varb=varb, varh=varh)
+                         vara=vara, varb=varb, varh=varh)
 
         qualif = 0
         with self.assertRaises(ValueError) as context:
             PivotCTPuissance(hauteur=hauteur, qualif=qualif,
-                vara=vara, varb=varb, varh=varh)
+                             vara=vara, varb=varb, varh=varh)
         self.assertEqual(context.exception.message,
                          'value should be in nomenclature 505')
 
@@ -298,7 +304,7 @@ class TestCourbeTarage(unittest.TestCase):
 
     def test_base_02(self):
         """CourbeTarage with 2 pivots"""
-        
+
         hauteur1 = 1.5
         debit1 = 2.3
         pivot1 = PivotCTPoly(hauteur=hauteur1, debit=debit1)
@@ -338,7 +344,7 @@ class TestCourbeTarage(unittest.TestCase):
         self.assertTrue(ct.pivots[0].hauteur <= ct.pivots[1].hauteur)
         self.assertEqual(ct.pivots[0], pivots[1])
         self.assertEqual(ct.pivots[1], pivots[0])
-    
+
     def test_base_04(self):
         """CourbeTarge de type puissance without points"""
         code = 'tre'
@@ -355,46 +361,46 @@ class TestCourbeTarage(unittest.TestCase):
         libelle = 'libellé'
         station = _sitehydro.Station(code='O123456789')
         typect = 4
-        
+
         hauteur = (10.5, 16.4)
         vara = (0.5, 0.8)
         varb = (1.5, 1.4)
-        varh = (15.4,19.4)
-        pivots = [PivotCTPuissance(hauteur=hauteur[i], vara=vara[i],
-                                   varb=varb[i], varh=varh[i])
-                  for i in xrange(0,2)]
-        self.assertEqual(len(pivots),2)
-
-        ct = CourbeTarage(code=code, libelle=libelle, station=station, typect=typect, pivots=pivots)
-        self.assertEqual((ct.code,ct.station,ct.typect),
-                         (code,station,typect))
-        self.assertEqual(len(ct.pivots), len(pivots))
-        self.assertEqual(ct.pivots[0], pivots[0])
-        self.assertEqual(ct.pivots[1], pivots[1])
-    
-    def test_base_06(self):
-        """CourbeTarge de type puissance with 2 unsorted points"""
-        code = 'tre'
-        libelle = 'libellé'
-        station = _sitehydro.Station(code='O123456789')
-        typect = 4
-        
-        hauteur = (16.4, 10.8)
-        vara = (0.5, 0.8)
-        varb = (1.5, 1.4)
-        varh = (15.4,19.4)
+        varh = (15.4, 19.4)
         pivots = [PivotCTPuissance(hauteur=hauteur[i], vara=vara[i],
                                    varb=varb[i], varh=varh[i])
                   for i in xrange(0, 2)]
         self.assertEqual(len(pivots), 2)
 
         ct = CourbeTarage(code=code, libelle=libelle, station=station, typect=typect, pivots=pivots)
-        self.assertEqual((ct.code,ct.station,ct.typect),
-                         (code,station,typect))
+        self.assertEqual((ct.code, ct.station, ct.typect),
+                         (code, station, typect))
+        self.assertEqual(len(ct.pivots), len(pivots))
+        self.assertEqual(ct.pivots[0], pivots[0])
+        self.assertEqual(ct.pivots[1], pivots[1])
+
+    def test_base_06(self):
+        """CourbeTarge de type puissance with 2 unsorted points"""
+        code = 'tre'
+        libelle = 'libellé'
+        station = _sitehydro.Station(code='O123456789')
+        typect = 4
+
+        hauteur = (16.4, 10.8)
+        vara = (0.5, 0.8)
+        varb = (1.5, 1.4)
+        varh = (15.4, 19.4)
+        pivots = [PivotCTPuissance(hauteur=hauteur[i], vara=vara[i],
+                                   varb=varb[i], varh=varh[i])
+                  for i in xrange(0, 2)]
+        self.assertEqual(len(pivots), 2)
+
+        ct = CourbeTarage(code=code, libelle=libelle, station=station, typect=typect, pivots=pivots)
+        self.assertEqual((ct.code, ct.station, ct.typect),
+                         (code, station, typect))
         self.assertEqual(len(ct.pivots), len(pivots))
         self.assertEqual(ct.pivots[0], pivots[1])
         self.assertEqual(ct.pivots[1], pivots[0])
-    
+
     def test_base_07(self):
         """courbeTarage with periodes"""
         code = 'tre'
@@ -405,11 +411,11 @@ class TestCourbeTarage(unittest.TestCase):
         periode2 = PeriodeCT(dtdeb=datetime(2016, 2, 1),
                              dtfin=datetime(2017, 1, 1))
         periodes = [periode1, periode2]
-        ct = CourbeTarage(code=code, libelle=libelle,station=station, periodes=periodes)
-        self.assertEqual(len(ct.periodes),len(periodes))
-        self.assertEqual(ct.periodes[0],periodes[0])
+        ct = CourbeTarage(code=code, libelle=libelle, station=station, periodes=periodes)
+        self.assertEqual(len(ct.periodes), len(periodes))
+        self.assertEqual(ct.periodes[0], periodes[0])
         self.assertEqual(ct.periodes[1], periodes[1])
-        
+
 
     def test_base_08(self):
         """CourbeTarage"""
@@ -424,12 +430,12 @@ class TestCourbeTarage(unittest.TestCase):
         beta = 1.2
         commentaire = 'courbe test'
         contact = _intervenant.Contact('159')
-        
+
         pivots = [PivotCTPoly(hauteur=189.6, debit=103254.2),
                   PivotCTPoly(hauteur=1110.4, debit=1151543.9)]
-        periodes = [PeriodeCT(dtdeb=datetime(2015,1,1),
-                             dtfin=datetime(2016,1,1))]
-        
+        periodes = [PeriodeCT(dtdeb=datetime(2015, 1, 1),
+                              dtfin=datetime(2016, 1, 1))]
+
         dtmaj = datetime.utcnow()
         ct = CourbeTarage(code=code, station=station, libelle=libelle,
                           typect=typect, limiteinf=limiteinf,
@@ -437,11 +443,11 @@ class TestCourbeTarage(unittest.TestCase):
                           commentaire=commentaire, contact=contact,
                           pivots=pivots, periodes=periodes, dtmaj=dtmaj)
         self.assertEqual((ct.code, ct.station, ct.libelle, ct.typect,
-                         ct.limiteinf, ct.limitesup, ct.dn, ct.alpha, ct.beta,
-                         ct.commentaire, ct.contact, ct.pivots, ct.periodes, ct.dtmaj),
+                          ct.limiteinf, ct.limitesup, ct.dn, ct.alpha, ct.beta,
+                          ct.commentaire, ct.contact, ct.pivots, ct.periodes, ct.dtmaj),
                          (code, station, libelle, typect,
-                         limiteinf, limitesup, dn, alpha, beta,
-                         commentaire, contact, pivots, periodes, dtmaj))
+                          limiteinf, limitesup, dn, alpha, beta,
+                          commentaire, contact, pivots, periodes, dtmaj))
 
     def test_str_01(self):
         code = 'courbe 123'
@@ -478,7 +484,7 @@ class TestCourbeTarage(unittest.TestCase):
             CourbeTarage(libelle=libelle, station=station)
         self.assertEqual(context.exception.message,
                          'code is required')
-    
+
     def test_error_011(self):
         """libelle error"""
         code = 'courbe 123'
@@ -503,7 +509,7 @@ class TestCourbeTarage(unittest.TestCase):
             CourbeTarage(code=code, libelle=libelle, station=station)
         self.assertEqual(context.exception.message,
                          'station is not a sitehydro.Station')
-        
+
         with self.assertRaises(TypeError) as context:
             CourbeTarage(code=code, libelle=libelle)
         self.assertEqual(context.exception.message,
@@ -530,8 +536,16 @@ class TestCourbeTarage(unittest.TestCase):
         libelle = 'libellé'
         station = _sitehydro.Station(code='O123456789')
         pivot = PivotCTPoly(hauteur=1.5, qualif=20, debit=2.3)
+        
+        pivots = pivot
+        with self.assertRaises(Exception):
+            CourbeTarage(code=code, libelle=libelle, station=station,
+                         pivots=pivots)
+       
+        pivots = [pivot]         
         with self.assertRaises(ValueError) as context:
-            CourbeTarage(code=code, libelle=libelle, station=station, pivots=[pivot])
+            CourbeTarage(code=code, libelle=libelle, station=station,
+                         pivots=[pivot])
         self.assertEqual(context.exception.message,
                          'pivots must not contain only one pivot')
 
@@ -542,13 +556,13 @@ class TestCourbeTarage(unittest.TestCase):
         station = _sitehydro.Station(code='O123456789')
         limiteinf = 15.5
         ct = CourbeTarage(code=code, libelle=libelle, station=station, limiteinf=limiteinf)
-        
+
         ct.limitesup = 30.1
         with self.assertRaises(ValueError) as context:
             ct.limiteinf = 35.2
         self.assertEqual(context.exception.message,
                          'limiteinf must be smaller than limitesup')
-        
+
         limiteinf = 156.4
         limitesup = 155.1
         with self.assertRaises(ValueError) as context:
@@ -564,13 +578,13 @@ class TestCourbeTarage(unittest.TestCase):
         station = _sitehydro.Station(code='O123456789')
         limitesup = 15.5
         ct = CourbeTarage(code=code, libelle=libelle, station=station, limitesup=limitesup)
-        
+
         ct.limiteinf = 10.0
         with self.assertRaises(ValueError) as context:
             ct.limitesup = 5.6
         self.assertEqual(context.exception.message,
                          'limiteinf must be smaller than limitesup')
-        
+
         limiteinf = 156.4
         limitesup = 155.1
         with self.assertRaises(ValueError) as context:
@@ -578,7 +592,7 @@ class TestCourbeTarage(unittest.TestCase):
                          limiteinf=limiteinf, limitesup=limitesup)
         self.assertEqual(context.exception.message,
                          'limiteinf must be smaller than limitesup')
-        
+
     def test_error_05(self):
         """beta error"""
         code = 'courbe 123'
@@ -588,7 +602,7 @@ class TestCourbeTarage(unittest.TestCase):
         beta = 1
         dn = 1
         CourbeTarage(code=code, libelle=libelle, station=station,
-                          dn=dn, alpha=alpha, beta=beta)
+                     dn=dn, alpha=alpha, beta=beta)
 
         beta = -0.5
 
@@ -605,77 +619,55 @@ class TestCourbeTarage(unittest.TestCase):
         station = _sitehydro.Station(code='O123456789')
         contact = _intervenant.Contact(code='156')
         CourbeTarage(code=code, libelle=libelle, station=station,
-                          contact = contact)
+                     contact=contact)
 
         contact = '156'
 
         with self.assertRaises(TypeError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station,
-                          contact = contact)
+                         contact=contact)
         self.assertEqual(context.exception.message,
                          'contact incorrect')
 
 
     def test_error_07(self):
         """pivots error"""
-        code='jjff'
+        code = 'jjff'
         libelle = 'libellé'
         station = _sitehydro.Station(code='O123456789')
         pivotpuissance1 = PivotCTPuissance(hauteur=15.6,
-                                           vara = 1.1,
-                                           varb = 1.2,
-                                           varh= 19.5)
+                                           vara=1.1,
+                                           varb=1.2,
+                                           varh=19.5)
         pivotpuissance2 = PivotCTPuissance(hauteur=115.6,
-                                           vara = 0.8,
-                                           varb = 0.9,
-                                           varh= 119.5)
+                                           vara=0.8,
+                                           varb=0.9,
+                                           varh=119.5)
         pivotpoly1 = PivotCTPoly(hauteur=15.6,
                                  debit=1598.23)
         pivotpoly2 = PivotCTPoly(hauteur=19.6,
                                  debit=1142.3)
         pivots = [pivotpoly1, pivotpoly2]
-        CourbeTarage(code=code, libelle=libelle, station=station,typect=0,
+        CourbeTarage(code=code, libelle=libelle, station=station, typect=0,
                      pivots=pivots)
-        pivots = pivotpoly1
-        CourbeTarage(code=code, libelle=libelle, station=station,typect=0,
-                     pivots=pivots)
-        
+
         pivots = [pivotpoly1, pivotpuissance2]
         with self.assertRaises(TypeError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station, typect=0,
                          pivots=pivots)
         self.assertEqual(context.exception.message,
                          'pivots must be a PivotCTPoly or an iterable of PivotCTPoly')
-        
-        pivots = pivotpuissance1
-        
-        # CourbeTarage kaunch ValueError instead of TypeError
-        with self.assertRaises(Exception) as context:
-            CourbeTarage(code=code, libelle=libelle, station=station, typect=0,
-                         pivots=pivots)
-#        self.assertEqual(context.exception.message,
-#                         'pivots must be a PivotCTPoly or an iterable of PivotCTPoly')
-        
-        
+
         pivots = [pivotpuissance1, pivotpuissance2]
-        CourbeTarage(code=code, libelle=libelle, station=station,typect=4,
+        CourbeTarage(code=code, libelle=libelle, station=station, typect=4,
                      pivots=pivots)
-        
+
         pivots = [pivotpuissance1, pivotpoly1]
         with self.assertRaises(TypeError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station, typect=4,
                          pivots=pivots)
         self.assertEqual(context.exception.message,
                          'pivots must be a PivotCTPuissance or an iterable of PivotCTPuissance')
-
-        pivots = pivotpoly1
-        # CourbeTarage kaunch ValueError instead of TypeError
-        with self.assertRaises(Exception) as context:
-            CourbeTarage(code=code, libelle=libelle, station=station, typect=4,
-                         pivots=pivots)
-#        self.assertEqual(context.exception.message,
-#                         'pivots must be a PivotCTPuissance or an iterable of PivotCTPuissance')
-        
 
     def test_error_08(self):
         """periodes error"""
@@ -684,22 +676,22 @@ class TestCourbeTarage(unittest.TestCase):
         station = _sitehydro.Station(code='O123456789')
         periodes = PeriodeCT(dtdeb=datetime(2015, 1, 1),
                              dtfin=datetime(2016, 1, 1))
-        
+
         CourbeTarage(code=code, libelle=libelle, station=station,
-                     periodes = periodes)
+                     periodes=periodes)
 
         periodes = 'periode'
 
         with self.assertRaises(TypeError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station,
-                         periodes = periodes)
+                         periodes=periodes)
         self.assertEqual(context.exception.message,
                          'periodes is not a PeriodeCT or an iterable of PeriodeCT')
 
         periodes = ['a', 'b']
         with self.assertRaises(TypeError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station,
-                         periodes = periodes)
+                         periodes=periodes)
         self.assertEqual(context.exception.message,
                          'periodes is not a PeriodeCT or an iterable of PeriodeCT')
 
@@ -708,17 +700,17 @@ class TestCourbeTarage(unittest.TestCase):
         code = 'courbe 123'
         libelle = 'libellé'
         station = _sitehydro.Station(code='O123456789')
-        dtmaj = datetime(2017,1,1)
+        dtmaj = datetime(2017, 1, 1)
         ct = CourbeTarage(code=code, libelle=libelle, station=station,
                           dtmaj=dtmaj)
-        self.assertEqual(dtmaj,ct.dtmaj)
-        
-        dtmaj='ab'
+        self.assertEqual(dtmaj, ct.dtmaj)
+
+        dtmaj = 'ab'
         with self.assertRaises(ValueError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station, dtmaj=dtmaj)
         self.assertEqual(context.exception.message,
                          'could not convert object to datetime.datetime')
-        
+
         dtmaj = datetime.utcnow() + timedelta(minutes=1)
         with self.assertRaises(ValueError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station, dtmaj=dtmaj)
@@ -729,14 +721,39 @@ class TestCourbeTarage(unittest.TestCase):
             ct.dtmaj = datetime.utcnow() + timedelta(minutes=1)
         self.assertEqual(context.exception.message,
                          'dtmaj cannot be in the future')
-        
+
+    def test_error_10(self):
+        """pivots with same hauteur"""
+        code = 'courbe 123'
+        libelle = 'libellé'
+        station = _sitehydro.Station(code='O123456789')
+        typect = 0
+        pivot1 = PivotCTPoly(hauteur=150.65, debit=14789.2)
+        pivot2 = PivotCTPoly(hauteur=178.12, debit=15473.8)
+        pivots = [pivot1, pivot2]
+        CourbeTarage(code=code, libelle=libelle, station=station,
+                     typect=typect, pivots=pivots)
+
+        pivot2.hauteur = pivot1.hauteur
+        with self.assertRaises(ValueError) as context:
+            CourbeTarage(code=code, libelle=libelle, station=station,
+                         typect=typect, pivots=pivots)
+        self.assertEqual(context.exception.message,
+                         'pivots contains pivots with same hauteur')
+
+        pivots = [pivot1, pivot1]
+        with self.assertRaises(ValueError) as context:
+            CourbeTarage(code=code, libelle=libelle, station=station,
+                         typect=typect, pivots=pivots)
+        self.assertEqual(context.exception.message,
+                         'pivots contains pivots with same hauteur')
 
 class TestHistoActivePeriode(unittest.TestCase):
-    
+
     def test_base_01(self):
         """HistoActivePeriode with only dtactivation"""
         dtactivation = datetime(2017, 1, 1)
-        histo = HistoActivePeriode(dtactivation = dtactivation)
+        histo = HistoActivePeriode(dtactivation=dtactivation)
         self.assertEqual((histo.dtactivation, histo.dtdesactivation),
                          (dtactivation, None))
 
@@ -752,13 +769,13 @@ class TestHistoActivePeriode(unittest.TestCase):
         """dtactivation error"""
         dtactivation = datetime(2017, 1, 1)
         HistoActivePeriode(dtactivation=dtactivation)
-        
+
         dtactivation = None
         with self.assertRaises(TypeError) as context:
             HistoActivePeriode(dtactivation=dtactivation)
         self.assertEqual(context.exception.message,
                          'a value other than None is required')
-        
+
         dtactivation = 'aa'
         with self.assertRaises(ValueError) as context:
             HistoActivePeriode(dtactivation=dtactivation)
@@ -769,7 +786,7 @@ class TestHistoActivePeriode(unittest.TestCase):
         dtactivation = datetime(2017, 1, 1)
         dtdesactivation = '2017-05-01'
         HistoActivePeriode(dtactivation=dtactivation, dtdesactivation=dtdesactivation)
-        
+
         dtdesactivation = '2016-05-01'
         with self.assertRaises(ValueError) as context:
             HistoActivePeriode(dtactivation=dtactivation, dtdesactivation=dtdesactivation)
@@ -803,20 +820,20 @@ class TestPeriodeCT(unittest.TestCase):
 
         histo1 = HistoActivePeriode(dtactivation=datetime(2015, 1, 1),
                                     dtdesactivation=datetime(2016, 1, 1))
-                                    
+
         histo2 = HistoActivePeriode(dtactivation=datetime(2016, 2, 1),
                                     dtdesactivation=datetime(2017, 1, 1))
-        
+
         histos = histo1
         periode = PeriodeCT(dtdeb=dtdeb, dtfin=dtfin, etat=etat, histos=histos)
         self.assertEqual((periode.dtdeb, periode.dtfin, periode.etat, periode.histos),
                          (dtdeb, dtfin, etat, [histos]))
-        
+
         histos = [histo1, histo2]
         periode = PeriodeCT(dtdeb=dtdeb, dtfin=dtfin, etat=etat, histos=histos)
         self.assertEqual((periode.dtdeb, periode.dtfin, periode.etat, periode.histos),
                          (dtdeb, dtfin, etat, histos))
-        
+
 
     def test_error_01(self):
         """dtfin error"""
@@ -848,25 +865,25 @@ class TestPeriodeCT(unittest.TestCase):
 
         histo1 = HistoActivePeriode(dtactivation=datetime(2015, 1, 1),
                                     dtdesactivation=datetime(2016, 1, 1))
-                                    
+
         histo2 = HistoActivePeriode(dtactivation=datetime(2016, 2, 1),
                                     dtdesactivation=datetime(2017, 1, 1))
-        
+
         histos = histo1
         periode = PeriodeCT(dtdeb=dtdeb, dtfin=dtfin, etat=etat, histos=histos)
         self.assertEqual((periode.dtdeb, periode.dtfin, periode.etat, periode.histos),
                          (dtdeb, dtfin, etat, [histos]))
-        
-        histos = datetime(2015, 1 ,1)
-        
+
+        histos = datetime(2015, 1, 1)
+
         with self.assertRaises(Exception):
             PeriodeCT(dtdeb=dtdeb, dtfin=dtfin, etat=etat, histos=histos)
-        
+
         histos = [histo1, histo2]
         periode = PeriodeCT(dtdeb=dtdeb, dtfin=dtfin, etat=etat, histos=histos)
         self.assertEqual((periode.dtdeb, periode.dtfin, periode.etat, periode.histos),
                          (dtdeb, dtfin, etat, histos))
-        
+
         histos = [histo1, 2017]
         with self.assertRaises(TypeError) as context:
             PeriodeCT(dtdeb=dtdeb, dtfin=dtfin, etat=etat, histos=histos)
