@@ -283,7 +283,6 @@ class TestPivotCTPuissance(unittest.TestCase):
 
 # -- class TestCourbeTarage ----------------------------------------------------
 class TestCourbeTarage(unittest.TestCase):
-
     """CourbeTarage class tests."""
 
     def test_base_01(self):
@@ -449,18 +448,138 @@ class TestCourbeTarage(unittest.TestCase):
                           limiteinf, limitesup, dn, alpha, beta,
                           commentaire, contact, pivots, periodes, dtmaj))
 
+    def test_base_09(self):
+        """test function get_used_actived_periodes"""
+        code = 'code'
+        station = _sitehydro.Station(code='O123456789')
+        libelle = 'libelle'
+
+        histo1 = HistoActivePeriode(dtactivation=datetime(2015, 1, 1),
+                                    dtdesactivation=datetime(2016, 1, 1))
+
+        histo2 = HistoActivePeriode(dtactivation=datetime(2016, 2, 1),
+                                    dtdesactivation=datetime(2017, 1, 1))
+
+        histos = [histo1, histo2]
+
+        periode1 = PeriodeCT(dtdeb=datetime(2014, 1, 1),
+                             dtfin=datetime(2014, 2, 1),
+                             etat=8)
+
+        periode2 = PeriodeCT(dtdeb=datetime(2015, 1, 1),
+                             dtfin=datetime(2016, 1, 1),
+                             etat=8)
+        periode3 = PeriodeCT(dtdeb=datetime(2016, 2, 1),
+                             dtfin=datetime(2017, 1, 1))
+
+        # par défaut periodes utilisées
+        periodes = [periode1, periode2, periode3]
+        ctar = CourbeTarage(code=code, station=station, libelle=libelle,
+                            periodes=periodes)
+        self.assertEqual(ctar.get_used_actived_periodes(),
+                         periodes)
+
+        # periode non utilisée
+        periode2.etat = 0
+        ctar = CourbeTarage(code=code, station=station, libelle=libelle,
+                            periodes=periodes)
+        self.assertEqual(ctar.get_used_actived_periodes(),
+                         [periode1, periode3])
+
+        # periode3 non active
+        periode3.histos = histos
+        ctar = CourbeTarage(code=code, station=station, libelle=libelle,
+                            periodes=periodes)
+        self.assertEqual(ctar.get_used_actived_periodes(),
+                         [periode1])
+
+        # periode3 active
+        periode3.histos[1].dtdesactivation = None
+        ctar = CourbeTarage(code=code, station=station, libelle=libelle,
+                            periodes=periodes)
+        self.assertEqual(ctar.get_used_actived_periodes(),
+                         [periode1, periode3])
+
+    def test_base_10(self):
+        """test function is_used"""
+        code = 'code'
+        station = _sitehydro.Station(code='O123456789')
+        libelle = 'libelle'
+
+        histo1 = HistoActivePeriode(dtactivation=datetime(2015, 1, 1),
+                                    dtdesactivation=datetime(2016, 1, 1))
+
+        histo2 = HistoActivePeriode(dtactivation=datetime(2016, 2, 1),
+                                    dtdesactivation=datetime(2017, 1, 1))
+
+        histos = [histo1, histo2]
+
+        periode1 = PeriodeCT(dtdeb=datetime(2014, 1, 1),
+                             dtfin=datetime(2014, 2, 1),
+                             etat=8)
+
+        periode2 = PeriodeCT(dtdeb=datetime(2015, 1, 1),
+                             dtfin=datetime(2016, 1, 1),
+                             etat=8)
+        periode3 = PeriodeCT(dtdeb=datetime(2016, 2, 1),
+                             dtfin=datetime(2017, 1, 1))
+
+        periode4 = PeriodeCT(dtdeb=datetime(2017, 6, 3, 1, 11, 4))
+
+        periodes = [periode1, periode2, periode3, periode4]
+        ctar = CourbeTarage(code=code, station=station, libelle=libelle,
+                            periodes=periodes)
+        self.assertFalse(ctar.is_used(dte=datetime(2013, 1, 1)))
+        self.assertTrue(ctar.is_used(dte=datetime(2014, 1, 1)))
+        self.assertTrue(ctar.is_used(dte=datetime(2014, 1, 1)))
+        self.assertFalse(ctar.is_used(dte=datetime(2014, 3, 1)))
+
+        self.assertTrue(ctar.is_used(dte=datetime(2015, 4, 14, 14, 15, 17)))
+        self.assertTrue(ctar.is_used(dte=datetime(2016, 1, 1)))
+
+        self.assertFalse(ctar.is_used(dte=datetime(2016, 1, 10, 2, 4, 5)))
+        self.assertTrue(ctar.is_used(dte=datetime(2016, 4, 14, 14, 15, 17)))
+        self.assertTrue(ctar.is_used(dte=datetime(2017, 1, 1)))
+        self.assertFalse(ctar.is_used(dte=datetime(2017, 1, 1, 0, 0, 1)))
+
+        self.assertTrue(ctar.is_used(dte=datetime(2017, 6, 4, 0, 0, 1)))
+        self.assertTrue(ctar.is_used(dte=datetime(2050, 1, 1)))
+
+        periode2.etat = 0
+        self.assertFalse(ctar.is_used(dte=datetime(2015, 4, 14, 14, 15, 17)))
+
+        periode3.histos = histos
+        self.assertFalse(ctar.is_used(dte=datetime(2016, 4, 14, 14, 15, 17)))
+
+        histo2.dtdesactivation = None
+        self.assertTrue(ctar.is_used(dte=datetime(2016, 4, 14, 14, 15, 17)))
+
+    def test_base_11(self):
+        """fuzzy mode"""
+        code = 'code'
+        station = 'O123456789'
+        libelle = 'libelle'
+        pivots = PivotCTPoly(hauteur=1, debit=2)
+        CourbeTarage(code=code, station=station, libelle=libelle,
+                     pivots=pivots, strict=False)
+
+
     def test_str_01(self):
+        """test __str__ strict mode"""
         code = 'courbe 123'
         libelle = 'libelle'
         station = _sitehydro.Station(code='O123456789')
         typect = 0
-        ct = CourbeTarage(code=code, libelle=libelle, station=station, typect=typect)
+        ct = CourbeTarage(code=code, libelle=libelle, station=station,
+                          typect=typect)
         self.assertTrue(ct.__str__().rfind('polyligne') > -1)
         typect = 4
-        ct = CourbeTarage(code=code, libelle=libelle, station=station, typect=typect)
+        ct = CourbeTarage(code=code, libelle=libelle, station=station,
+                          typect=typect)
         self.assertTrue(ct.__str__().rfind('fonction puissance') > -1)
 
     def test_str_02(self):
+        """test __str__ fuzzy mode"""
         code = 'courbe 123'
         libelle = 'libelle'
         station = _sitehydro.Station(code='O123456789')
@@ -536,14 +655,14 @@ class TestCourbeTarage(unittest.TestCase):
         libelle = 'libellé'
         station = _sitehydro.Station(code='O123456789')
         pivot = PivotCTPoly(hauteur=1.5, qualif=20, debit=2.3)
-        
+
         pivots = pivot
-        with self.assertRaises(Exception):
+        with self.assertRaises(TypeError):
             CourbeTarage(code=code, libelle=libelle, station=station,
                          pivots=pivots)
-       
-        pivots = [pivot]         
-        with self.assertRaises(ValueError) as context:
+
+        pivots = [pivot]
+        with self.assertRaises(TypeError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station,
                          pivots=[pivot])
         self.assertEqual(context.exception.message,
@@ -749,6 +868,7 @@ class TestCourbeTarage(unittest.TestCase):
                          'pivots contains pivots with same hauteur')
 
 class TestHistoActivePeriode(unittest.TestCase):
+    """HistoActivePeriode class tests."""
 
     def test_base_01(self):
         """HistoActivePeriode with only dtactivation"""
@@ -783,6 +903,7 @@ class TestHistoActivePeriode(unittest.TestCase):
                          'could not convert object to datetime.datetime')
 
     def test_error_02(self):
+        """dtdesactivation < dtactivation error"""
         dtactivation = datetime(2017, 1, 1)
         dtdesactivation = '2017-05-01'
         HistoActivePeriode(dtactivation=dtactivation, dtdesactivation=dtdesactivation)
@@ -794,6 +915,7 @@ class TestHistoActivePeriode(unittest.TestCase):
                          'deactivation date must be later than activation date')
 
 class TestPeriodeCT(unittest.TestCase):
+    """PeriodeCT class tests."""
 
     def test_base_01(self):
         """simple PeriodeCT"""

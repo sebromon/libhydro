@@ -288,7 +288,7 @@ class PeriodeCT(object):
 
         self.dtdeb = dtdeb
         self.dtfin = dtfin
-        if self.dtfin < self.dtdeb:
+        if self.dtfin is not None and self.dtfin < self.dtdeb:
             raise ValueError('dtfin must be later than dtdeb')
         self.etat = etat
 
@@ -346,8 +346,8 @@ class CourbeTarage(object):
 
     def __init__(self, code=None, libelle=None, station=None,
                  typect=0, limiteinf=None, limitesup=None, dn=None, alpha=None,
-                 beta=None, commentaire=None, contact=None,
-                 pivots=None, periodes=None, dtmaj=None, tri_pivots=True, strict=True):
+                 beta=None, commentaire=None, contact=None, pivots=None,
+                 periodes=None, dtmaj=None, tri_pivots=True, strict=True):
         """
             tri_pivots (bool) tri des points en fonction de la hauteur
         """
@@ -456,7 +456,7 @@ class CourbeTarage(object):
                 raise TypeError('station is required')
         else:
             # other cases
-            if not isinstance(station, _sitehydro.Station):
+            if self._strict and not isinstance(station, _sitehydro.Station):
                 raise TypeError('station is not a sitehydro.Station')
         # all is well
         self._station = station
@@ -589,13 +589,15 @@ class CourbeTarage(object):
         # None case
         if pivots is None:
             return
-        if not self._strict:
-            if (self.typect == 0 and isinstance(pivots, PivotCTPoly)) or \
-                    (self.typect == 4 and isinstance(pivots, PivotCTPuissance)):
-                self._pivots.append(pivots)
+        if not hasattr(pivots, '__iter__'):
+            if self._strict:
+                raise TypeError('pivots is not iterable')
+            else:
+                self._pivots = [pivots]
                 return
-        if len(pivots) == 1:
-            raise ValueError('pivots must not contain only one pivot')
+
+        if self._strict and len(pivots) == 1:
+            raise TypeError('pivots must not contain only one pivot')
         # an iterable of pivots
         hauteurs = set()
         for pivot in pivots:
@@ -613,21 +615,17 @@ class CourbeTarage(object):
                             'pivots must be a PivotCTPuissance'\
                             ' or an iterable of PivotCTPuissance'
                         )
-                if pivot.hauteur in hauteurs:
-                    raise ValueError("pivots contains pivots with same hauteur")
-                hauteurs.add(pivot.hauteur)
+                if self._strict: #and pivot.dtdesactivation is None:
+                    if pivot.hauteur in hauteurs:
+                        raise ValueError(
+                            "pivots contains pivots with same hauteur")
+                    hauteurs.add(pivot.hauteur)
             # add pivot
             self._pivots.append(pivot)
 
         # Sort pivots if necessary
         if self._tri_pivots:
-            # fuzzy mode sorting may not be possible
-            # raise Exception only if strict = True
-            try:
-                self._pivots.sort()
-            except:
-                if self._strict:
-                    raise
+            self._pivots.sort()
 
     # -- property dtmaj --
     @property
@@ -641,6 +639,34 @@ class CourbeTarage(object):
         if self._dtmaj is not None and \
                 self._dtmaj > _datetime.datetime.utcnow():
             raise ValueError('dtmaj cannot be in the future')
+
+    def get_used_actived_periodes(self):
+        """Return periodes used (periode.etat=8) and not deactived """
+        periodes = []
+        for periode in self.periodes:
+            if periode.etat == 8:
+                actived = False
+                if len(periode.histos) == 0:
+                    actived = True
+                for histo in periode.histos:
+                    if histo.dtdesactivation is None:
+                        actived = True
+                        break
+                if actived:
+                    periodes.append(periode)
+        return periodes
+
+    def is_used(self, dte):
+        """check if the CourbeTarge is used and actived at dte"""
+        for periode in self.periodes:
+            if periode.etat == 8 and periode.dtdeb <= dte and \
+                    (periode.dtfin is None or periode.dtfin >= dte):
+                if len(periode.histos) == 0:
+                    return True
+                for histo in periode.histos:
+                    if histo.dtdesactivation is None:
+                        return True
+        return False
 
     # -- other methods --
     def __unicode__(self):

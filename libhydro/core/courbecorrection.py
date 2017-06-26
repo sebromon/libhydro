@@ -168,9 +168,14 @@ class CourbeCorrection(object):
         # None case
         if pivots is None: #pivots facultatifs
             return
-        # one Pivot, we make a list with it
-        if not self._strict and isinstance(pivots, PivotCC):
-            pivots = [pivots]
+
+        # one Pivot, we make a list if not strict
+        if not hasattr(pivots, '__iter__'):
+            if self._strict:
+                raise TypeError('pivots is not iterable')
+            else:
+                self._pivots = [pivots]
+                return
 
         # an iterable of pivots
         if self._strict and len(pivots) == 1:
@@ -184,7 +189,7 @@ class CourbeCorrection(object):
                         'pivots must be a PivotCC or an iterable of PivotCC'
                     )
 
-            if self._strict:
+            if self._strict and pivot.dtdesactivation is None:
                 if pivot.dte in dtes:
                     raise ValueError('pivots contains 2 pivots with same date')
                 dtes.add(pivot.dte)
@@ -194,13 +199,24 @@ class CourbeCorrection(object):
 
         # Sort pivots if necessary
         if self._tri_pivots:
-            # fuzzy mode sorting may not be possible
-            # raise Exception only if strict = True
+            # pivots my not be sorted if fuzzy mode
             try:
                 self._pivots.sort()
-            except:
-                if self._strict:
-                    raise
+            except TypeError:
+                pass
+
+
+    def remove_deactived_pivots(self):
+        """remove pivots which dtdesactivation is not None"""
+        self.pivots = self.get_actived_pivots()
+
+    def get_actived_pivots(self):
+        """remove pivots which dtdesactivation is not None"""
+        pivots = []
+        for pivot in self.pivots:
+            if pivot.dtdesactivation is None:
+                pivots.append(pivot)
+        return pivots
 
     def __unicode__(self):
         """Return unicode representation."""

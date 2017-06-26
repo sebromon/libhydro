@@ -160,7 +160,6 @@ class TestCourbeCorrection(unittest.TestCase):
 
     def test_base_03(self):
         """Sorting pivots"""
-
         station = _sitehydro.Station(code='O123456789')
         commentaire = 'no comment'
         libelle = 'courbe bidon'
@@ -207,7 +206,51 @@ class TestCourbeCorrection(unittest.TestCase):
         pivots = [datetime(2015, 1, 9, 14, 21, 41),
                   'ABC']
         ct = CourbeCorrection(station=station, pivots=pivots, strict=False)
-        self.assertEqual((ct.station, ct.pivots), (station, pivots))
+        #self.assertEqual((ct.station, ct.pivots), (station, pivots))
+
+    def test_base_06(self):
+        """test function get_actived_pivot"""
+        station = _sitehydro.Station(code='O123456789')
+        pivot1 = PivotCC(dte=datetime(2010, 1, 2, 3, 4, 5),
+                         deltah=-10.5)
+
+        pivot2 = PivotCC(dte=datetime(2011, 4, 5, 23, 12, 56), deltah=20.8,
+                         dtactivation=datetime(2015, 3, 14, 11, 56, 12),
+                         dtdesactivation=datetime(2016, 4, 19, 5, 17, 42))
+
+        pivot3 = PivotCC(dte=datetime(2014, 10, 15, 22, 10, 4),
+                         deltah=48.4)
+
+        pivots = [pivot1, pivot2, pivot3]
+        ccor = CourbeCorrection(station=station, pivots=pivots)
+        self.assertEqual(ccor.pivots, pivots)
+
+        actived_pivots = ccor.get_actived_pivots()
+        self.assertEqual(ccor.pivots, pivots)
+        self.assertNotEqual(actived_pivots, pivots)
+        expected_actived_pivots = [pivot1, pivot3]
+        self.assertEqual(actived_pivots, expected_actived_pivots)
+
+
+    def test_base_07(self):
+        """ test function remove_deactived_pivots"""
+        station = _sitehydro.Station(code='O123456789')
+        pivot1 = PivotCC(dte=datetime(2010, 1, 2, 3, 4, 5),
+                         deltah=-10.5)
+
+        pivot2 = PivotCC(dte=datetime(2011, 4, 5, 23, 12, 56), deltah=20.8,
+                         dtactivation=datetime(2015, 3, 14, 11, 56, 12),
+                         dtdesactivation=datetime(2016, 4, 19, 5, 17, 42))
+
+        pivot3 = PivotCC(dte=datetime(2014, 10, 15, 22, 10, 4),
+                         deltah=48.4)
+        pivots = [pivot1, pivot2, pivot3]
+        ccor = CourbeCorrection(station=station, pivots=pivots)
+        self.assertEqual(ccor.pivots, pivots)
+        ccor.remove_deactived_pivots()
+        self.assertNotEqual(ccor.pivots, pivots)
+        actived_pivots = [pivot1, pivot3]
+        self.assertEqual(ccor.pivots, actived_pivots)
 
     def test_str_01(self):
         """ test __str__ method without pivots and libelle """
@@ -308,8 +351,13 @@ class TestCourbeCorrection(unittest.TestCase):
                              'pivots contains 2 pivots with same date')
 
         pivot2.dte = pivot1.dte
-        pivots = [pivot1, pivot1]
+        pivots = [pivot1, pivot2]
         with self.assertRaises(ValueError) as context:
             CourbeCorrection(station=station, pivots=pivots)
         self.assertEqual(context.exception.message,
                          'pivots contains 2 pivots with same date')
+
+        # pivot deactived
+        pivot2.dtdesactivation = datetime(2016, 1, 2, 11, 49, 54)
+        pivots = [pivot1, pivot2]
+        CourbeCorrection(station=station, pivots=pivots)
