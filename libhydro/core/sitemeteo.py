@@ -97,9 +97,9 @@ class Sitemeteo(object):
 
         # -- simple properties --
         self._strict = bool(strict)
-        self.libelle = unicode(libelle) \
+        self.libelle = str(libelle) \
             if (libelle is not None) else None
-        self.libelleusuel = unicode(libelleusuel) \
+        self.libelleusuel = str(libelleusuel) \
             if (libelleusuel is not None) else None
 
         # -- full properties --
@@ -127,7 +127,7 @@ class Sitemeteo(object):
 
             else:
                 # other cases
-                code = unicode(code)
+                code = str(code)
                 if self._strict:
                     if len(code) == 8:
                         code = '0{}'.format(code)
@@ -175,7 +175,7 @@ class Sitemeteo(object):
     def commune(self, commune):
         """Set code commune."""
         if commune is not None:
-            commune = unicode(commune)
+            commune = str(commune)
             _composant.is_code_insee(commune, length=5, errors='strict')
         self._commune = commune
 
@@ -296,6 +296,7 @@ class Grandeur(object):
     __all__attrs__ = ('typemesure', 'sitemeteo')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
 
     def __unicode__(self):
         """Return unicode representation."""

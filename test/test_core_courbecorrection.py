@@ -95,13 +95,13 @@ class TestPivotCC(unittest.TestCase):
         dte = None
         with self.assertRaises(TypeError) as context:
             PivotCC(dte=dte, deltah=deltah)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'a value other than None is required')
 
         dte = 'ABC'
         with self.assertRaises(ValueError) as context:
             PivotCC(dte=dte, deltah=deltah)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'could not convert object to datetime.datetime')
 
     def test_error_02(self):
@@ -114,13 +114,13 @@ class TestPivotCC(unittest.TestCase):
         deltah = None
         with self.assertRaises(TypeError) as context:
             PivotCC(dte=dte, deltah=deltah)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'deltah is required')
 
         deltah = 'ABC'
         with self.assertRaises(ValueError) as context:
             PivotCC(dte=dte, deltah=deltah)
-        pos = context.exception.message.rfind('could not convert')
+        pos = str(context.exception).rfind('could not convert')
         self.assertTrue(pos > -1)
 
 # -- class TestCourbeCorrection ----------------------------------------------------
@@ -303,12 +303,12 @@ class TestCourbeCorrection(unittest.TestCase):
         station = None
         with self.assertRaises(TypeError) as context:
             CourbeCorrection(station=station)
-        self.assertEqual(context.exception.message, 'station is required')
+        self.assertEqual(str(context.exception), 'station is required')
 
         station = 'O123456789'
         with self.assertRaises(TypeError) as context:
             CourbeCorrection(station=station)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'station is not a sitehydro.Station')
 
     def test_error_02(self):
@@ -324,13 +324,13 @@ class TestCourbeCorrection(unittest.TestCase):
         pivots = [pivot1]
         with self.assertRaises(TypeError) as context:
             CourbeCorrection(station=station, pivots=pivots)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'pivots must be an iterable of minimum 2 PivotCC')
 
         pivots = [pivot1, 'pivot2']
         with self.assertRaises(TypeError) as context:
             CourbeCorrection(station=station, pivots=pivots)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'pivots must be a PivotCC or an iterable of PivotCC')
 
     def test_error_03(self):
@@ -347,14 +347,14 @@ class TestCourbeCorrection(unittest.TestCase):
         pivots = [pivot1, pivot1]
         with self.assertRaises(ValueError) as context:
             CourbeCorrection(station=station, pivots=pivots)
-            self.assertEqual(context.exception.message,
+            self.assertEqual(str(context.exception),
                              'pivots contains 2 pivots with same date')
 
         pivot2.dte = pivot1.dte
         pivots = [pivot1, pivot2]
         with self.assertRaises(ValueError) as context:
             CourbeCorrection(station=station, pivots=pivots)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'pivots contains 2 pivots with same date')
 
         # pivot deactived

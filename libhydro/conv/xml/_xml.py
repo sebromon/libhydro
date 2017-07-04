@@ -260,7 +260,7 @@ class Message(object):
                 items.extend(kargs[key])
                 self.__setattr__(key, items)
 
-            except Exception, e:
+            except Exception as e:
                 raise ValueError('bad element, {}'.format(e))
 
     def write(self, file, encoding='utf-8', compression=0, force=False,
@@ -282,7 +282,7 @@ class Message(object):
 
         """
         # check for an exisitng file
-        if not force and isinstance(file, basestring) and \
+        if not force and isinstance(file, str) and \
                 _os.path.isfile(file):
             raise IOError('file already exists')
         # procede !

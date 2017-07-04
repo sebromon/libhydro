@@ -84,7 +84,7 @@ class TestSitehydro(unittest.TestCase):
             ),
             (
                 code, codeh2, typesite, libelle, libelleusuel,
-                composant_site.Coord(*coord), [station], [unicode(commune)],
+                composant_site.Coord(*coord), [station], [str(commune)],
                 [tronconvigilance]
             )
         )
@@ -131,7 +131,7 @@ class TestSitehydro(unittest.TestCase):
             (
                 code, typesite, libelle, composant_site.Coord(**coord),
                 [st for st in stations],
-                [unicode(commune) for commune in communes],
+                [str(commune) for commune in communes],
                 [tronconvigilance for tronconvigilance in tronconsvigilance]
             )
         )
@@ -354,7 +354,7 @@ class TestStation(unittest.TestCase):
             ),
             (
                 code, typestation, libelle, libellecomplement,
-                capteurs, commune, [unicode(ddcs)]
+                capteurs, commune, [str(ddcs)]
             )
         )
 

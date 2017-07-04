@@ -100,7 +100,7 @@ class TestSeuilhydro(unittest.TestCase):
                 seuil.dtmaj, seuil.valeurs
             ),
             (
-                unicode(code), site, typeseuil, duree, nature, libelle,
+                str(code), site, typeseuil, duree, nature, libelle,
                 mnemo, gravite, commentaire, publication, valeurforcee,
                 dtmaj, valeurs
             )

@@ -10,7 +10,7 @@ from __future__ import (
 
 import csv as _csv
 import codecs as _codecs
-import cStringIO as _cStringIO
+import io as _cStringIO
 
 # from ._config import (DIALECT, MAPPING)
 # from libhydro.core import sitehydro as _sitehydro

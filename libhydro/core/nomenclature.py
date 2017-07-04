@@ -269,7 +269,22 @@ NOMENCLATURE = {
         100: 'Privé'},
 
     # Civilite du contact
-    538: {1: 'Monsieur', 2: 'Madame', 3: 'Mademoiselle'}
+    538: {1: 'Monsieur', 2: 'Madame', 3: 'Mademoiselle'},
+
+    # Mode de jaugeage du site hydrométrique
+    873: {0: 'Inconnu',
+          1: 'Saumon point par point',
+          2: 'Saumon par integration',
+          3: 'Perche point par point',
+          4: 'Perche par integration',
+          5: 'Dilution par integration',
+          6: 'Dilution a debit constant',
+          7: 'Flotteur',
+          8: 'Debit mesure directement',
+          9: 'Jaugeage par mesure de vitesse en surface',
+          10: 'Mesure par ADCP',
+          11: 'Autres'
+          }
 }
 
-NOMENCLATURES = NOMENCLATURE.keys()
+NOMENCLATURES = list(NOMENCLATURE.keys())

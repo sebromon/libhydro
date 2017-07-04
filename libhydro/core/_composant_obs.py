@@ -64,14 +64,19 @@ class Observations(_pandas.DataFrame):
                 if not isinstance(obs, observation_class):
                     raise TypeError('element {} is not a {}'.format(
                         i, observation_class))
-                obss.append(obs)
-
+                # python 3 avois error provide tuple instead array
+                # dtype is specified after
+                #obss.append(obs)
+                obss.append(obs.tolist())
         except Exception:
             raise
 
         # prepare a tmp numpy.array
-        array = _numpy.array(object=obss)
-
+        # python 3 error: ValueError: cannot include dtype 'M' in a buffer
+        # to avoid this error provide tuple instead of _numpy.array
+        # and dtype
+        #array = _numpy.array(object=obss)
+        array = _numpy.array(object=obss, dtype=observation_class.DTYPE)
         # get the pandas.DataFrame
         index = _pandas.Index(array['dte'], name='dte')
         obj = _pandas.DataFrame(
@@ -105,7 +110,7 @@ class Observations(_pandas.DataFrame):
         #        (can't subclass DataFrame !)
 
         # pre-conditions
-        if not isinstance(duplicates, (str, unicode)) or \
+        if not isinstance(duplicates, str) or \
                 duplicates not in ('raise', 'drop'):
             raise ValueError(
                 "invalid str for duplicates: '{}'".format(duplicates))

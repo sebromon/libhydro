@@ -70,7 +70,7 @@ class _Entitehydro(object):
 
         # -- simple properties --
         self._strict = bool(strict)
-        self.libelle = unicode(libelle) if (libelle is not None) else None
+        self.libelle = str(libelle) if (libelle is not None) else None
 
         # -- full properties --
         self._code = self._codeh2 = None
@@ -94,7 +94,7 @@ class _Entitehydro(object):
 
             else:
                 # other cases
-                code = unicode(code)
+                code = str(code)
                 if self._strict and (self.__class__ in _CODE_HYDRO_LENGTH):
                     # check code hydro
                     _composant.is_code_hydro(
@@ -118,7 +118,7 @@ class _Entitehydro(object):
         """Set code hydro2."""
         try:
             if code is not None:
-                code = unicode(code)
+                code = str(code)
                 _composant.is_code_hydro(code, 8, errors='strict')
 
             # all is well
@@ -130,6 +130,7 @@ class _Entitehydro(object):
     # -- special methods --
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
 
 
 # -- class _Site_or_station --------------------------------------------------
@@ -274,7 +275,7 @@ class Sitehydro(_Site_or_station):
         vars(Sitehydro)['typesite'].strict = self._strict
 
         # -- simple properties --
-        self.libelleusuel = unicode(libelleusuel) \
+        self.libelleusuel = str(libelleusuel) \
             if (libelleusuel is not None) else None
 
         # -- descriptors --
@@ -337,7 +338,7 @@ class Sitehydro(_Site_or_station):
         # an iterable of communes
         for commune in communes:
             if _composant.is_code_insee(commune, length=5, errors='strict'):
-                self._communes.append(unicode(commune))
+                self._communes.append(str(commune))
 
     # -- property tronconsvigilance --
     @property
@@ -470,7 +471,7 @@ class Station(_Site_or_station):
         vars(Station)['typestation'].strict = self._strict
 
         # -- simple properties --
-        self.libellecomplement = unicode(libellecomplement) \
+        self.libellecomplement = str(libellecomplement) \
             if (libellecomplement is not None) else None
 
         # -- descriptors --
@@ -540,7 +541,7 @@ class Station(_Site_or_station):
     def commune(self, commune):
         """Set code commune."""
         if commune is not None:
-            commune = unicode(commune)
+            commune = str(commune)
             _composant.is_code_insee(commune, length=5, errors='strict')
         self._commune = commune
 
@@ -560,9 +561,12 @@ class Station(_Site_or_station):
         # one ddc, we make a list with it
         if not hasattr(ddcs, '__iter__'):
             ddcs = [ddcs]
+        # python3 strings are iterable
+        if isinstance(ddcs, (str, bytes)):
+            ddcs = [ddcs]
         # an iterable of ddcs
         for ddc in ddcs:
-            ddc = unicode(ddc)
+            ddc = str(ddc)
             # if len(ddc) != 10:
             if len(ddc) > 10:
                 raise ValueError('ddc code must be 10 chars long')
@@ -677,8 +681,8 @@ class Tronconvigilance(object):
             libelle (string) = libelle du troncon
 
         """
-        self.code = unicode(code) if (code is not None) else None
-        self.libelle = unicode(libelle) if (libelle is not None) else None
+        self.code = str(code) if (code is not None) else None
+        self.libelle = str(libelle) if (libelle is not None) else None
 
     # -- special methods --
     __all__attrs__ = ('code', 'libelle')

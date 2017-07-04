@@ -95,10 +95,10 @@ def simulation_from_hfs(
 
     # make a multiindex with probability 50 for every value
     index = _pandas.MultiIndex.from_tuples(
-        zip(
+        list(zip(
             serie.observations.index.tolist(),
             ['moy'] * len(serie.observations)
-        ),
+        )),
         names=['dte', 'tend']
     )
 
@@ -110,7 +110,7 @@ def simulation_from_hfs(
     )
 
     # make dtprod a datetime
-    if isinstance(dtprod, (unicode, str)):
+    if isinstance(dtprod, str):
         dtprod = _numpy.datetime64(dtprod)
 
     # return Simulation

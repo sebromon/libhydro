@@ -366,7 +366,7 @@ class CourbeTarage(object):
         self.dtmaj = dtmaj
 
         # -- simple properties --
-        self.commentaire = unicode(commentaire) \
+        self.commentaire = str(commentaire) \
             if (commentaire is not None) else None
 
         # -- full properties --
@@ -418,7 +418,7 @@ class CourbeTarage(object):
                 raise TypeError('code is required')
         else:
             # other cases
-            code = unicode(code)
+            code = str(code)
         # all is well
         self._code = code
 
@@ -437,7 +437,7 @@ class CourbeTarage(object):
                 raise TypeError('libelle is required')
         else:
             # other cases
-            libelle = unicode(libelle)
+            libelle = str(libelle)
         # all is well
         self._libelle = libelle
 

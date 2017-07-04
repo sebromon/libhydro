@@ -75,8 +75,8 @@ class Modeleprevision(object):
 
         # -- adjust the descriptor --
         vars(Modeleprevision)['typemodele'].strict = self._strict
-        self.libelle = unicode(libelle) if (libelle is not None) else None
-        self.description = unicode(description) if \
+        self.libelle = str(libelle) if (libelle is not None) else None
+        self.description = str(description) if \
             (description is not None) else None
 
         # -- descriptors --
@@ -97,7 +97,7 @@ class Modeleprevision(object):
         """Set code hydro."""
         try:
             if code is not None:
-                code = unicode(code)
+                code = str(code)
                 if (self._strict and (len(code) > 10)):
                     raise ValueError('code incorrect')
             self._code = code
@@ -110,6 +110,7 @@ class Modeleprevision(object):
     )
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
 
     def __unicode__(self):
         """Return unicode representation."""

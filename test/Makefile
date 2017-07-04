@@ -30,7 +30,7 @@ _tests_title:
 	@echo '---------------------------'
 	@echo
 ${TESTS_FILES}:
-	@python -m unittest $(basename ${@})
+	@python3 -m unittest $(basename ${@})
 
 .PHONY: d discover _discover
 # The discover sub-command has the following options:
@@ -45,7 +45,7 @@ _discover:
 	@echo 'Run all tests with discover'
 	@echo '---------------------------'
 	@echo
-	@python -m unittest discover -p 'test*.py'
+	@python3 -m unittest discover -p 'test*.py'
 
 .PHONY: c coverage _coverage
 c: coverage

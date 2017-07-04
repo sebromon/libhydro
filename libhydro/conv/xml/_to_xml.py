@@ -128,7 +128,7 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
     # keep only Message items
     # and replace default empty lists with None
     args = {
-        k: (v if v != [] else None) for k, v in locals().iteritems()
+        k: (v if v != [] else None) for k, v in locals().items()
         if k in ORDERED_ACCEPTED_KEYS}
 
     # init the tree
@@ -234,13 +234,13 @@ def _scenario_to_element(scenario, bdhydro=False, strict=True):
             story[tag] = {
                 'sub': _collections.OrderedDict((
                     ('CdIntervenant', {
-                        'value': unicode(item.intervenant.code),
+                        'value': str(item.intervenant.code),
                         'attr': {'schemeAgencyID': item.intervenant.origine}}),
                     ('NomIntervenant', {
-                        'value': unicode(item.intervenant.nom)
+                        'value': str(item.intervenant.nom)
                         if item.intervenant.nom is not None else None}),
                     ('CdContact', {
-                        'value': unicode(item.contact.code)
+                        'value': str(item.contact.code)
                         if (
                             (item.contact is not None) and
                             (item.contact.code is not None)
@@ -265,7 +265,7 @@ def _intervenant_to_element(intervenant, bdhydro=False, strict=True):
         # template for intervenant simple elements
         story = _collections.OrderedDict((
             ('CdIntervenant', {
-                'value': unicode(intervenant.code),
+                'value': str(intervenant.code),
                 'attr': {'schemeAgencyID': intervenant.origine}}),
             ('NomIntervenant', {'value': intervenant.nom}),
             ('MnIntervenant', {'value': intervenant.mnemo}),
@@ -491,11 +491,11 @@ def _seuilhydro_to_element(seuilhydro, bdhydro=False, strict=True):
             ('LbUsuelSeuilSiteHydro', {'value': seuilhydro.libelle}),
             ('MnemoSeuilSiteHydro', {'value': seuilhydro.mnemo}),
             ('DroitPublicationSeuilSiteHydro', {
-                'value': unicode(seuilhydro.publication).lower() if
+                'value': str(seuilhydro.publication).lower() if
                 seuilhydro.publication is not None else None}),
             ('IndiceGraviteSeuilSiteHydro', {'value': seuilhydro.gravite}),
             ('ValForceeSeuilSiteHydro', {
-                'value': unicode(seuilhydro.valeurforcee).lower()
+                'value': str(seuilhydro.valeurforcee).lower()
                 if seuilhydro.valeurforcee is not None else None}),
             ('ComSeuilSiteHydro', {'value': seuilhydro.commentaire})))
 
@@ -919,14 +919,14 @@ def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True):
             'value': seriehydro.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')}
         story['DtFinSerie'] = {
             'value': seriehydro.dtfin.strftime('%Y-%m-%dT%H:%M:%S')}
-        story['StatutSerie'] = {'value': unicode(seriehydro.statut)}
+        story['StatutSerie'] = {'value': str(seriehydro.statut)}
         story['DtProdSerie'] = {
             'value': seriehydro.dtprod.strftime('%Y-%m-%dT%H:%M:%S')}
         if seriehydro.sysalti is not None:
-            story['SysAltiSerie'] = {'value': unicode(seriehydro.sysalti)}
+            story['SysAltiSerie'] = {'value': str(seriehydro.sysalti)}
         if seriehydro.perime is not None:
             story['SeriePerim'] = {
-                'value': unicode(seriehydro.perime).lower()}
+                'value': str(seriehydro.perime).lower()}
         story['CdContact'] = {
             'value': getattr(
                 getattr(seriehydro, 'contact', None), 'code', None)}
@@ -957,17 +957,17 @@ def _observations_to_element(observations, bdhydro=False, strict=True):
             child = _etree.SubElement(obs, 'DtObsHydro')
             child.text = observation[0].strftime('%Y-%m-%dT%H:%M:%S')
             child = _etree.SubElement(obs, 'ResObsHydro')
-            child.text = unicode(observation[1]['res'])
+            child.text = str(observation[1]['res'])
             # while mth, qal and cnt aren't
             if 'mth' in observation[1].index:
                 child = _etree.SubElement(obs, 'MethObsHydro')
-                child.text = unicode(observation[1]['mth'])
+                child.text = str(observation[1]['mth'])
             if 'qal' in observation[1].index:
                 child = _etree.SubElement(obs, 'QualifObsHydro')
-                child.text = unicode(observation[1]['qal'])
+                child.text = str(observation[1]['qal'])
             if 'cnt' in observation[1].index:
                 child = _etree.SubElement(obs, 'ContObsHydro')
-                child.text = unicode(observation[1]['cnt']).lower()
+                child.text = str(observation[1]['cnt']).lower()
 
         # return
         return element
@@ -1040,13 +1040,13 @@ def _simulation_to_element(simulation, bdhydro=False, strict=True):
             ('DtProdSimul', {
                 'value': simulation.dtprod.strftime('%Y-%m-%dT%H:%M:%S')}),
             ('IndiceQualiteSimul', {
-                'value': unicode(simulation.qualite)
+                'value': str(simulation.qualite)
                 if simulation.qualite is not None else None}),
             ('StatutSimul', {
-                'value': unicode(simulation.statut)
+                'value': str(simulation.statut)
                 if simulation.statut is not None else None}),
             ('PubliSimul', {
-                'value': unicode(simulation.public).lower()
+                'value': str(simulation.public).lower()
                 if simulation.public is not None else 'false'}),
             ('ComSimul', {'value': simulation.commentaire})))
         # entite can be a Sitehydro or a Station
@@ -1055,7 +1055,7 @@ def _simulation_to_element(simulation, bdhydro=False, strict=True):
         # suite
         story['CdModelePrevision'] = {'value': simulation.modeleprevision.code}
         story['CdIntervenant'] = {
-            'value': unicode(simulation.intervenant.code),
+            'value': str(simulation.intervenant.code),
             'attr': {"schemeAgencyID": simulation.intervenant.origine}}
 
         # make element <Simul>
@@ -1247,7 +1247,7 @@ def _previsions_to_element(previsions, bdhydro=False, strict=True):
             if len(prevs) > 0:
                 probsprev_elem = _etree.SubElement(prev_elem, 'ProbsPrev')
                 # we sort the result by prob ascending order
-                probs = prevs.keys()
+                probs = list(prevs.keys())
                 probs.sort()
                 # add elems
                 for prob in probs:
@@ -1293,7 +1293,7 @@ def _factory(root, story):
 
     """
     # parse story
-    for tag, rule in story.iteritems():
+    for tag, rule in story.items():
 
         # DEBUG - print(rule)
 
@@ -1332,7 +1332,7 @@ def _make_element(tag_name, text, tag_attrib=None):
     # DEBUG - print(locals())
     element = _etree.Element(_tag=tag_name, attrib=tag_attrib)
     if text is not None:
-        element.text = unicode(text)
+        element.text = str(text)
     return element
 
 
@@ -1352,5 +1352,5 @@ def _required(obj, attrs):
             raise ValueError(
                 'attribute {attr} is requested with a value other '
                 'than None for object {obj}'.format(
-                    attr=attr, obj=unicode(obj)))
+                    attr=attr, obj=str(obj)))
     return True

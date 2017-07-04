@@ -130,7 +130,7 @@ class Evenement(object):
         if descriptif is None:
             if self._strict:
                 raise TypeError('descriptif is required')
-        self._descriptif = unicode(descriptif)
+        self._descriptif = str(descriptif)
 
     # -- property contact --
     @property
@@ -152,6 +152,7 @@ class Evenement(object):
     )
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
 
     def __unicode__(self):
         """Return unicode representation."""

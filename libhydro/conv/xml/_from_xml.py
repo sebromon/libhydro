@@ -203,10 +203,10 @@ class Scenario(object):
         return 'Message du {dt}\n Emetteur: {ei} [{ec}]\n' \
                'Destinataire: {di} [{dc}]'.format(
                    dt=self.dtprod,
-                   ei=unicode(self.emetteur.intervenant),
-                   ec=unicode(self.emetteur.contact) or '<sans contact>',
-                   di=unicode(self.destinataire.intervenant),
-                   dc=unicode(self.destinataire.contact) or '<sans contact>')
+                   ei=str(self.emetteur.intervenant),
+                   ec=str(self.emetteur.contact) or '<sans contact>',
+                   di=str(self.destinataire.intervenant),
+                   dc=str(self.destinataire.contact) or '<sans contact>')
 
     __str__ = _composant.__str__
 
@@ -365,7 +365,7 @@ def _sitehydro_from_element(element):
             _station_from_element(e)
             for e in element.findall('StationsHydro/StationHydro')]
         args['communes'] = [
-            unicode(e.text) for e in element.findall('CdCommune')]
+            str(e.text) for e in element.findall('CdCommune')]
         args['tronconsvigilance'] = [
             _tronconvigilance_from_element(e)
             for e in element.findall(
@@ -429,7 +429,7 @@ def _station_from_element(element):
             _capteur_from_element(e)
             for e in element.findall('Capteurs/Capteur')]
         args['commune'] = _value(element, 'CdCommune')
-        args['ddcs'] = [unicode(e.text) for e in element.findall(
+        args['ddcs'] = [str(e.text) for e in element.findall(
             'ReseauxMesureStationHydro/CodeSandreRdd')]
         # build a Station and return
         return _sitehydro.Station(**args)
@@ -645,7 +645,7 @@ def _pivotct_from_element(element, typect):
             varb=_value(element, 'VarBPivotCourbeTarage', float),
             varh=_value(element, 'VarHPivotCourbeTarage', float),)
     else:
-        print("type ct:{}".format(typect))
+        print(("type ct:{}".format(typect)))
         raise ValueError('TypCourbeTarage must be 0 or 4')
 
 def _periodect_from_element(element):
@@ -982,7 +982,7 @@ def _seuilshydro_from_element(element, ordered=False):
                     (sitehydro.code, seuilhydro.code)] = seuilhydro
 
     # return a list of seuils
-    return seuilshydro.values()
+    return list(seuilshydro.values())
 
 
 def _seriesmeteo_from_element(element):
@@ -1036,14 +1036,14 @@ def _UTC(dte):
         return dte
 
 
-def _value(element, tag, cast=unicode):
+def _value(element, tag, cast=str):
     """Return cast(element/tag.text) or None."""
     if element is not None:
         e = element.find(tag)
         if (e is not None) and (e.text is not None):
             if cast == bool:
                 # return wether text is a kind of True... or not
-                return (unicode(e.text).lower() in ('true', 'vrai', '1'))
+                return (str(e.text).lower() in ('true', 'vrai', '1'))
             # else
             return cast(e.text)
     # return None

@@ -72,8 +72,12 @@ class _UTF8Recoder:
     def __iter__(self):
         return self
 
-    def next(self):
-        return self.reader.next().encode("utf-8")
+    def __next__(self):
+        line = self.reader.readline()
+        if len(line) == 0:
+            raise StopIteration
+        return line
+        #return self.reader.next().encode("utf-8")
 
 
 class _UnicodeReader:
@@ -88,9 +92,10 @@ class _UnicodeReader:
         f = _UTF8Recoder(f, encoding)
         self.reader = _csv.reader(f, dialect=dialect, **kwds)
 
-    def next(self):
-        row = self.reader.next()
-        return [unicode(s, "utf-8") for s in row]
+    def __next__(self):
+        row = next(self.reader)
+        return row
+        #return [str(s, "utf-8") for s in row]
 
     def __iter__(self):
         return self
@@ -167,23 +172,23 @@ def parse_csv(fname, encoding='utf-8', dialect='hydrometrie',
     """
     # init
     if dtype not in DTYPE:
-        raise ValueError('dtype should be in {}'.format(DTYPE.keys()))
+        raise ValueError('dtype should be in {}'.format(list(DTYPE.keys())))
 
     # parse the CSV file
     with open(fname, 'rb') as f:
-
+    #with open(fname, newline='') as f:
         # init
         csv = _UnicodeReader(f=f, dialect=dialect, encoding=encoding, **kwds)
         collection = []
 
         # fieldnames
-        fieldnames = csv.next()
+        fieldnames = next(csv)
         if flag and not flag['header'] == fieldnames.pop():
             raise _csv.Error('header flag not found')
 
         # second line
         if second_line:
-            csv.next()
+            next(csv)
 
         # main loop
         for i, row in enumerate(csv):
@@ -193,7 +198,7 @@ def parse_csv(fname, encoding='utf-8', dialect='hydrometrie',
                 if flag and not flag['row'] == row.pop():
                     raise _csv.Error('flag not found')
                 # emulate the csv.DictReader
-                row = dict(zip(fieldnames, row))
+                row = dict(list(zip(fieldnames, row)))
                 # append the row item
                 # calling 'site_from_row' or 'serie_from_row'
                 collection.append(
@@ -481,9 +486,11 @@ def map_keys(base, mapper, strict=True, iterator='items'):
         strict (bool, default True) = if mapper[k] is not found, an error is
             raised in strict mode, otherwise the entry is erased from the
             returned dict
-        iterator (str in 'items', 'iteritems') = iter method
-
+        iterator (str = 'items') = iter method
+                                   python2 iterator can be iteritems 
     """
+    # Python3  object has no attribute 'iteritem
+    # so iterator = 'items'
     if strict:
         # strict is True
         try:
@@ -506,7 +513,7 @@ def map_keys(base, mapper, strict=True, iterator='items'):
         return {
             mapper[k]: v for k, v in getattr(base, iterator)()
             if v != ''
-            if k in mapper.keys()
+            if k in list(mapper.keys())
             if mapper[k] is not None
         }
 

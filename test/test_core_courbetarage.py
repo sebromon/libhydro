@@ -98,7 +98,7 @@ class TestPivotCTPoly(unittest.TestCase):
         hauteur = None
         with self.assertRaises(TypeError) as context:
             PivotCTPoly(hauteur=hauteur, debit=debit)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'hauteur is required')
 
         hauteur = 'ab'
@@ -113,7 +113,7 @@ class TestPivotCTPoly(unittest.TestCase):
         debit = None
         with self.assertRaises(TypeError) as context:
             PivotCTPoly(hauteur=hauteur, debit=debit)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'debit is required')
 
         debit = 'ab'
@@ -194,7 +194,7 @@ class TestPivotCTPuissance(unittest.TestCase):
         hauteur = None
         with self.assertRaises(TypeError) as context:
             PivotCTPuissance(hauteur=hauteur, qualif=qualif, vara=vara, varb=varb, varh=varh)
-        self.assertEqual(context.exception.message, 'hauteur is required')
+        self.assertEqual(str(context.exception), 'hauteur is required')
 
         hauteur = 'ab'
         with self.assertRaises(ValueError) as context:
@@ -214,7 +214,7 @@ class TestPivotCTPuissance(unittest.TestCase):
             PivotCTPuissance(hauteur=hauteur, qualif=qualif,
                              vara=vara, varb=varb, varh=varh)
 
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'vara is required')
         vara = 'ab'
         with self.assertRaises(ValueError):
@@ -235,7 +235,7 @@ class TestPivotCTPuissance(unittest.TestCase):
             PivotCTPuissance(hauteur=hauteur, qualif=qualif,
                              vara=vara, varb=varb, varh=varh)
 
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'varb is required')
         varb = 'ab'
         with self.assertRaises(ValueError):
@@ -256,7 +256,7 @@ class TestPivotCTPuissance(unittest.TestCase):
             PivotCTPuissance(hauteur=hauteur, qualif=qualif,
                              vara=vara, varb=varb, varh=varh)
 
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'varh is required')
         varh = 'ab'
         with self.assertRaises(ValueError):
@@ -278,7 +278,7 @@ class TestPivotCTPuissance(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             PivotCTPuissance(hauteur=hauteur, qualif=qualif,
                              vara=vara, varb=varb, varh=varh)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'value should be in nomenclature 505')
 
 # -- class TestCourbeTarage ----------------------------------------------------
@@ -367,7 +367,7 @@ class TestCourbeTarage(unittest.TestCase):
         varh = (15.4, 19.4)
         pivots = [PivotCTPuissance(hauteur=hauteur[i], vara=vara[i],
                                    varb=varb[i], varh=varh[i])
-                  for i in xrange(0, 2)]
+                  for i in range(0, 2)]
         self.assertEqual(len(pivots), 2)
 
         ct = CourbeTarage(code=code, libelle=libelle, station=station, typect=typect, pivots=pivots)
@@ -390,7 +390,7 @@ class TestCourbeTarage(unittest.TestCase):
         varh = (15.4, 19.4)
         pivots = [PivotCTPuissance(hauteur=hauteur[i], vara=vara[i],
                                    varb=varb[i], varh=varh[i])
-                  for i in xrange(0, 2)]
+                  for i in range(0, 2)]
         self.assertEqual(len(pivots), 2)
 
         ct = CourbeTarage(code=code, libelle=libelle, station=station, typect=typect, pivots=pivots)
@@ -601,7 +601,7 @@ class TestCourbeTarage(unittest.TestCase):
 
         with self.assertRaises(TypeError) as context:
             CourbeTarage(libelle=libelle, station=station)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'code is required')
 
     def test_error_011(self):
@@ -613,7 +613,7 @@ class TestCourbeTarage(unittest.TestCase):
 
         with self.assertRaises(TypeError) as context:
             CourbeTarage(code=code, station=station)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'libelle is required')
 
     def test_error_02(self):
@@ -626,12 +626,12 @@ class TestCourbeTarage(unittest.TestCase):
         station = 'O123456789'
         with self.assertRaises(TypeError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'station is not a sitehydro.Station')
 
         with self.assertRaises(TypeError) as context:
             CourbeTarage(code=code, libelle=libelle)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'station is required')
 
     def test_error_03(self):
@@ -646,7 +646,7 @@ class TestCourbeTarage(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station, typect=typect)
 
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'value should be in nomenclature 503')
 
     def test_error_04(self):
@@ -665,7 +665,7 @@ class TestCourbeTarage(unittest.TestCase):
         with self.assertRaises(TypeError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station,
                          pivots=[pivot])
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'pivots must not contain only one pivot')
 
     def test_error_041(self):
@@ -679,7 +679,7 @@ class TestCourbeTarage(unittest.TestCase):
         ct.limitesup = 30.1
         with self.assertRaises(ValueError) as context:
             ct.limiteinf = 35.2
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'limiteinf must be smaller than limitesup')
 
         limiteinf = 156.4
@@ -687,7 +687,7 @@ class TestCourbeTarage(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station,
                          limiteinf=limiteinf, limitesup=limitesup)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'limiteinf must be smaller than limitesup')
 
     def test_error_042(self):
@@ -701,7 +701,7 @@ class TestCourbeTarage(unittest.TestCase):
         ct.limiteinf = 10.0
         with self.assertRaises(ValueError) as context:
             ct.limitesup = 5.6
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'limiteinf must be smaller than limitesup')
 
         limiteinf = 156.4
@@ -709,7 +709,7 @@ class TestCourbeTarage(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station,
                          limiteinf=limiteinf, limitesup=limitesup)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'limiteinf must be smaller than limitesup')
 
     def test_error_05(self):
@@ -728,7 +728,7 @@ class TestCourbeTarage(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station,
                          dn=dn, alpha=alpha, beta=beta)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'beta must be positive')
 
     def test_error_06(self):
@@ -745,7 +745,7 @@ class TestCourbeTarage(unittest.TestCase):
         with self.assertRaises(TypeError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station,
                          contact=contact)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'contact incorrect')
 
 
@@ -774,7 +774,7 @@ class TestCourbeTarage(unittest.TestCase):
         with self.assertRaises(TypeError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station, typect=0,
                          pivots=pivots)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'pivots must be a PivotCTPoly or an iterable of PivotCTPoly')
 
         pivots = [pivotpuissance1, pivotpuissance2]
@@ -785,7 +785,7 @@ class TestCourbeTarage(unittest.TestCase):
         with self.assertRaises(TypeError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station, typect=4,
                          pivots=pivots)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'pivots must be a PivotCTPuissance or an iterable of PivotCTPuissance')
 
     def test_error_08(self):
@@ -804,14 +804,14 @@ class TestCourbeTarage(unittest.TestCase):
         with self.assertRaises(TypeError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station,
                          periodes=periodes)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'periodes is not a PeriodeCT or an iterable of PeriodeCT')
 
         periodes = ['a', 'b']
         with self.assertRaises(TypeError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station,
                          periodes=periodes)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'periodes is not a PeriodeCT or an iterable of PeriodeCT')
 
     def test_error_09(self):
@@ -827,18 +827,18 @@ class TestCourbeTarage(unittest.TestCase):
         dtmaj = 'ab'
         with self.assertRaises(ValueError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station, dtmaj=dtmaj)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'could not convert object to datetime.datetime')
 
         dtmaj = datetime.utcnow() + timedelta(minutes=1)
         with self.assertRaises(ValueError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station, dtmaj=dtmaj)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'dtmaj cannot be in the future')
 
         with self.assertRaises(ValueError) as context:
             ct.dtmaj = datetime.utcnow() + timedelta(minutes=1)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'dtmaj cannot be in the future')
 
     def test_error_10(self):
@@ -857,14 +857,14 @@ class TestCourbeTarage(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station,
                          typect=typect, pivots=pivots)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'pivots contains pivots with same hauteur')
 
         pivots = [pivot1, pivot1]
         with self.assertRaises(ValueError) as context:
             CourbeTarage(code=code, libelle=libelle, station=station,
                          typect=typect, pivots=pivots)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'pivots contains pivots with same hauteur')
 
 class TestHistoActivePeriode(unittest.TestCase):
@@ -893,13 +893,13 @@ class TestHistoActivePeriode(unittest.TestCase):
         dtactivation = None
         with self.assertRaises(TypeError) as context:
             HistoActivePeriode(dtactivation=dtactivation)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'a value other than None is required')
 
         dtactivation = 'aa'
         with self.assertRaises(ValueError) as context:
             HistoActivePeriode(dtactivation=dtactivation)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'could not convert object to datetime.datetime')
 
     def test_error_02(self):
@@ -911,7 +911,7 @@ class TestHistoActivePeriode(unittest.TestCase):
         dtdesactivation = '2016-05-01'
         with self.assertRaises(ValueError) as context:
             HistoActivePeriode(dtactivation=dtactivation, dtdesactivation=dtdesactivation)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'deactivation date must be later than activation date')
 
 class TestPeriodeCT(unittest.TestCase):
@@ -963,7 +963,7 @@ class TestPeriodeCT(unittest.TestCase):
         dtfin = datetime(2014, 1, 1)
         with self.assertRaises(ValueError) as context:
             PeriodeCT(dtdeb=dtdeb, dtfin=dtfin)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'dtfin must be later than dtdeb')
 
     def test_error_02(self):
@@ -976,7 +976,7 @@ class TestPeriodeCT(unittest.TestCase):
         etat = 1
         with self.assertRaises(ValueError) as context:
             PeriodeCT(dtdeb=dtdeb, dtfin=dtfin, etat=etat)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'value should be in nomenclature 504')
 
     def test_error_03(self):
@@ -1009,5 +1009,5 @@ class TestPeriodeCT(unittest.TestCase):
         histos = [histo1, 2017]
         with self.assertRaises(TypeError) as context:
             PeriodeCT(dtdeb=dtdeb, dtfin=dtfin, etat=etat, histos=histos)
-        self.assertEqual(context.exception.message,
+        self.assertEqual(str(context.exception),
                          'histos is not a HistoActivePeriode or an iterable of HistoActivePeriode')

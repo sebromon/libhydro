@@ -66,9 +66,11 @@ def xml_to_unicode(fname):
 
         # make the string and return
         lines = [
-            l.decode(encoding).strip()
+            #l.decode(encoding).strip()
+            l.strip()
             for l in f.readlines()
-            if not l.decode(encoding).lstrip().startswith('<!--')]
+            if not l.lstrip().startswith('<!--')]
+            #if not l.decode(encoding).lstrip().startswith('<!--')]
         return ''.join(lines)
 
 
@@ -254,11 +256,11 @@ class TestFunctions(unittest.TestCase):
         story = {'SubRoot': {'value': 'toto'}}
         element = to_xml._factory(root=root, story=story)
         firstpass = True
-        for child in element.find(story.keys()[0]):
+        for child in element.find(list(story.keys())[0]):
             self.assertTrue(firstpass)
             firstpass = False
-            self.assertEqual(child.tag, story.keys()[0])
-            self.assertEqual(child.text, story.values()[0]['value'])
+            self.assertEqual(child.tag, list(story.keys())[0])
+            self.assertEqual(child.text, list(story.values())[0]['value'])
             self.asserEqual(child.attrib, None)
 
     def test_factory_single_element_02(self):
@@ -267,12 +269,12 @@ class TestFunctions(unittest.TestCase):
         story = {'SubRoot': {'value': 'toto', 'attr': {'a': '1', 'b': '2'}}}
         element = to_xml._factory(root=root, story=story)
         firstpass = True
-        for child in element.find(story.keys()[0]):
+        for child in element.find(list(story.keys())[0]):
             self.assertTrue(firstpass)
             firstpass = False
-            self.assertEqual(child.tag, story.keys()[0])
-            self.assertEqual(child.text, story.values()[0]['value'])
-            self.assertEqual(child.attrib, story.values()[0]['attr'])
+            self.assertEqual(child.tag, list(story.keys())[0])
+            self.assertEqual(child.text, list(story.values())[0]['value'])
+            self.assertEqual(child.attrib, list(story.values())[0]['attr'])
 
     def test_factory_single_element_03(self):
         """Factory single element with force test."""
@@ -280,15 +282,15 @@ class TestFunctions(unittest.TestCase):
         # force is False, element should not be appended
         story = {'SubRoot': {'value': None}}
         element = to_xml._factory(root=root, story=story)
-        self.assertIsNone(element.find(story.keys()[0]))
+        self.assertIsNone(element.find(list(story.keys())[0]))
         # force is True, element should be appended
         story = {'SubRoot': {'value': None, 'force': True}}
         element = to_xml._factory(root=root, story=story)
         firstpass = True
-        for child in element.find(story.keys()[0]):
+        for child in element.find(list(story.keys())[0]):
             self.assertTrue(firstpass)
             firstpass = False
-            self.assertEqual(child.tag, story.keys()[0])
+            self.assertEqual(child.tag, list(story.keys())[0])
             self.assertEqual(child.text, None)
 
     def test_factory_multi_element(self):
@@ -297,10 +299,10 @@ class TestFunctions(unittest.TestCase):
         story = {'SubRoot': {'value': ('toto', 'tata', 'titi')}}
         element = to_xml._factory(root=root, story=story)
         passes = 0
-        for child in element.findall(story.keys()[0]):
+        for child in element.findall(list(story.keys())[0]):
             passes += 1
-            self.assertEqual(child.tag, story.keys()[0])
-            self.assertTrue(child.text in story.values()[0]['value'])
+            self.assertEqual(child.tag, list(story.keys())[0])
+            self.assertTrue(child.text in list(story.values())[0]['value'])
         self.assertEqual(passes, 3)
 
     def test_factory_sub_story(self):
@@ -312,8 +314,8 @@ class TestFunctions(unittest.TestCase):
         for child in element:
             self.assertTrue(firstpass)
             firstpass = False
-            self.assertEqual(child.tag, story.keys()[0])
-            self.assertEqual(child.text, story.values()[0]['value'])
+            self.assertEqual(child.tag, list(story.keys())[0])
+            self.assertEqual(child.text, list(story.values())[0]['value'])
 
     def test_make_element(self):
         """Make element base test."""

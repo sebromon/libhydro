@@ -77,8 +77,8 @@ class Intervenant(object):
         """
 
         # -- simple properties --
-        self.nom = unicode(nom) if (nom is not None) else None
-        self.mnemo = unicode(mnemo) if (mnemo is not None) else None
+        self.nom = str(nom) if (nom is not None) else None
+        self.mnemo = str(mnemo) if (mnemo is not None) else None
 
         # -- full properties --
         self._code = 0
@@ -134,7 +134,7 @@ class Intervenant(object):
 
         # other cases
         try:
-            origine = unicode(origine.upper())
+            origine = str(origine.upper())
             # check origine
             if origine == 'I':
                 origine = "SIRET"
@@ -265,8 +265,8 @@ class Contact(object):
         """
 
         # -- simple properties --
-        self.nom = unicode(nom) if (nom is not None) else None
-        self.prenom = unicode(prenom) if (prenom is not None) else None
+        self.nom = str(nom) if (nom is not None) else None
+        self.prenom = str(prenom) if (prenom is not None) else None
 
         # -- descriptors --
         self.civilite = civilite
@@ -295,7 +295,7 @@ class Contact(object):
 
             # other cases
             if code is not None:
-                code = unicode(code).strip()
+                code = str(code).strip()
                 if len(code) == 0:
                     raise ValueError('code is an empty string')
                 if len(code) > 5:
@@ -334,7 +334,7 @@ class Contact(object):
 
         """
         try:
-            if isinstance(profil, basestring):
+            if isinstance(profil, str):
                 profil = int(profil, 2)
             if not (0 <= profil <= 7):
                 raise ValueError('invalid profil {}'.format(profil))
@@ -424,6 +424,7 @@ class Contact(object):
                       'profil')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
 
     def __unicode__(self):
         """Return unicode representation."""

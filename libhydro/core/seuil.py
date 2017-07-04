@@ -89,9 +89,9 @@ class _Seuil(object):
 
         """
         # -- simple properties --
-        self.libelle = unicode(libelle) if libelle else None
-        self.mnemo = unicode(mnemo) if mnemo else None
-        self.commentaire = unicode(commentaire) if commentaire else None
+        self.libelle = str(libelle) if libelle else None
+        self.mnemo = str(mnemo) if mnemo else None
+        self.commentaire = str(commentaire) if commentaire else None
         self._strict = bool(strict)
 
         # -- descriptors --
@@ -123,7 +123,7 @@ class _Seuil(object):
             raise TypeError('code is required')
 
         # other cases
-        self._code = unicode(code)
+        self._code = str(code)
 
     # -- property duree --
     @property
@@ -211,7 +211,7 @@ class _Seuil(object):
             nature = '<nature inconnue>'
         try:
             valeurs = '\n'.join(
-                ['  %s' % unicode(v) for v in self.valeurs]
+                ['  %s' % str(v) for v in self.valeurs]
             )
         except Exception:
             valeurs = '%s<sans valeurs>' % (' ' * 4)
@@ -310,6 +310,7 @@ class Seuilhydro(_Seuil):
     )
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
 
 
 # -- class Valeurseuil --------------------------------------------------------
@@ -372,6 +373,7 @@ class Valeurseuil (object):
     )
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
 
     def __unicode__(self):
         """Return unicode representation."""

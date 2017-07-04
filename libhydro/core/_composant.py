@@ -134,13 +134,19 @@ class Rlist(list):
 
     def __setitem__(self, i, y):
         """Setitem method."""
-        self.checkiterable([y])
+        # Used for slicing in python 3
+        if isinstance(i, slice):
+            # check type of each element in y 
+            self.checkiterable(y)
+        else:
+            # check type of y
+            self.checkiterable([y])
         super(Rlist, self).__setitem__(i, y)
 
-    def __setslice__(self, i, j, y):
-        """Setitem method."""
-        self.checkiterable(y)
-        super(Rlist, self).__setslice__(i, j, y)
+#    def __setslice__(self, i, j, y):
+#        """Setitem method."""
+#        self.checkiterable(y)
+#        super(Rlist, self).__setslice__(i, j, y)
 
     # -- other methods --
     def checkiterable(self, iterable, errors='strict'):
@@ -168,11 +174,21 @@ class Rlist(list):
         return True
 
 # reset docstrings to their original 'list' values
-Rlist.append.__func__.__doc__ = list.append.__doc__
-Rlist.extend.__func__.__doc__ = list.extend.__doc__
-Rlist.insert.__func__.__doc__ = list.insert.__doc__
-Rlist.__setitem__.__func__.__doc__ = list.__setitem__.__doc__
-Rlist.__setslice__.__func__.__doc__ = list.__setslice__.__doc__
+# python2 Rlist.append <unbound method Rlist.append>
+# python2 Rlist.append __func__ <function append at 0x7fd89991a2a8>
+# python3 Rlist.append <function __main__.Rlist.append>
+#Rlist.append.__func__.__doc__ = list.append.__doc__
+#Rlist.extend.__func__.__doc__ = list.extend.__doc__
+#Rlist.insert.__func__.__doc__ = list.insert.__doc__
+#Rlist.__setitem__.__func__.__doc__ = list.__setitem__.__doc__
+#Rlist.__setslice__.__func__.__doc__ = list.__setslice__.__doc__
+Rlist.append.__doc__ = list.append.__doc__
+Rlist.extend.__doc__ = list.extend.__doc__
+Rlist.insert.__doc__ = list.insert.__doc__
+Rlist.__setitem__.__doc__ = list.__setitem__.__doc__
+# __set_slice depretacted python2.6 use __setitem__ isntead
+#Rlist.__setslice__.__doc__ = list.__setslice__.__doc__
+
 
 
 # -- class  Rlistproperty -----------------------------------------------------
@@ -276,7 +292,7 @@ class Datefromeverything(object):
             try:
                 if isinstance(value, dict):
                     value = _datetime.datetime(**value)
-                elif isinstance(value, (str, unicode)):
+                elif isinstance(value, str):
                     value = _numpy.datetime64(value, 's')
                 else:  # can be an iterable for datetime.datetime
                     value = _datetime.datetime(*value)
@@ -332,7 +348,7 @@ class Nomenclatureitem(object):
         self.nomenclature = int(nomenclature)
         if self.nomenclature not in _NOMENCLATURE:
             raise ValueError('unknown nomenclature')
-        self.valuetype = type(_NOMENCLATURE[self.nomenclature].keys()[0])
+        self.valuetype = type(list(_NOMENCLATURE[self.nomenclature].keys())[0])
         self.strict = bool(strict)
         self.required = bool(required)
         self.default = default
@@ -396,7 +412,8 @@ def is_code_hydro(code, length=8, errors='ignore'):
     except Exception as err:
         if errors not in ('ignore', 'strict'):
             raise ValueError("unknown error handler name '%s'" % errors)
-        ERROR_HANDLERS[errors](msg=err.message, error=type(err))
+        #ERROR_HANDLERS[errors](msg=err.message, error=type(err))
+        ERROR_HANDLERS[errors](msg=str(err), error=type(err))
 
 
 def is_code_insee(code, length=5, errors='ignore'):
@@ -427,7 +444,7 @@ def is_code_insee(code, length=5, errors='ignore'):
 
     try:
         # prepare
-        code = unicode(code)
+        code = str(code)
 
         # chars length
         if len(code) != length:
@@ -446,7 +463,8 @@ def is_code_insee(code, length=5, errors='ignore'):
     except Exception as err:
         if errors not in ('ignore', 'strict'):
             raise ValueError("unknown error handler name '%s'" % errors)
-        ERROR_HANDLERS[errors](msg=err.message, error=type(err))
+        #ERROR_HANDLERS[errors](msg=err.message, error=type(err))
+        ERROR_HANDLERS[errors](msg=str(err), error=type(err))
 
 
 def __eq__(self, other, attrs=None, ignore=None, lazzy=False):
@@ -471,7 +489,7 @@ def __eq__(self, other, attrs=None, ignore=None, lazzy=False):
     # set the final attrs list
     if not attrs:
         attrs = getattr(
-            self.__class__, '__all__attrs__', self.__dict__.keys())
+            self.__class__, '__all__attrs__', list(self.__dict__.keys()))
     if ignore:
         for attr in ignore:
             # we make attrs mutable or a copy before removing elements
@@ -507,6 +525,9 @@ def __eq__(self, other, attrs=None, ignore=None, lazzy=False):
 def __ne__(self, other, attrs=[], ignore=[], lazzy=False):
     return not self.__eq__(
         other=other, attrs=attrs, ignore=ignore, lazzy=lazzy)
+
+def __hash__(self):
+    return id(self)
 
 
 def __str__(self):

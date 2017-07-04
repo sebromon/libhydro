@@ -45,7 +45,7 @@ class TestWrite2tty(unittest.TestCase):
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
         # init
-        self.libelle = u'Essaye ça: ℓα gαяσηηє à тσυℓσυѕє'
+        self.libelle = 'Essaye ça: ℓα gαяσηηє à тσυℓσυѕє'
         self.fname = '~written_test_file_for_encoding_tests.tmp'
 
         # DEBUG - give some context

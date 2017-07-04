@@ -377,7 +377,7 @@ class TestSerie(unittest.TestCase):
         s = sitehydro.Station(code='A044581001', libelle='Toulouse')
         o = obshydro.Observations(
             *[obshydro.Observation('20%i-01-01 00:00' % x, x)
-              for x in xrange(10, 50)]
+              for x in range(10, 50)]
         )
         serie = obshydro.Serie(entite=s, grandeur='H', observations=o)
         self.assertTrue(serie.__str__().rfind('Serie') > -1)
@@ -389,7 +389,7 @@ class TestSerie(unittest.TestCase):
         s = sitehydro.Station(code='A044581001', libelle='Toulouse')
         o = obshydro.Observations(
             *[obshydro.Observation('20%i-01-01 00:00' % x, x)
-              for x in xrange(10, 50)]
+              for x in range(10, 50)]
         )
         serie = obshydro.Serie(entite=s, grandeur='H', observations=o)
         self.assertTrue(serie.__str__().rfind('Serie H sur') > -1)

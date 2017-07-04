@@ -368,7 +368,7 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         seuils = []
         for seuil in self.data['seuilshydro']:
             if seuil.sitehydro.code == 'O0144020' and \
-                    seuil.code in [unicode(i) for i in range(1, 5)]:
+                    seuil.code in [str(i) for i in range(1, 5)]:
                 seuils.append(seuil)
 
         # check the seuils

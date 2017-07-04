@@ -18,7 +18,8 @@ from __future__ import (
 
 import sys
 import unittest
-import StringIO
+# python3
+import io
 
 from libhydro.core import _composant as composant
 import datetime
@@ -58,7 +59,7 @@ class TestErrorHandler(unittest.TestCase):
     def test_warn(self):
         """Warn error test."""
         # we need stderr to be a string
-        f = StringIO.StringIO()
+        f = io.StringIO()
         sys.stderr = f
         error_handler = composant.ERROR_HANDLERS['warn']
         error_handler('message')
@@ -92,17 +93,19 @@ class TestRlist(unittest.TestCase):
 
     def test_02(self):
         """Rlist other test."""
-        strl = composant.Rlist(unicode, ['0', '1', '2', '3'])
+        strl = composant.Rlist(str, ['0', '1', '2', '3'])
         strl.extend(['444'])
         strl[0:2] = ['000', '111']
-        self.assertEqual(strl.cls, unicode)
+        self.assertEqual(strl.cls, str)
         self.assertEqual(len(strl), 5)
 
     def test_checkiterable(self):
         """Test checkiterable."""
         strl = composant.Rlist(str, [str('aa'), str('bb')])
         self.assertTrue(strl.checkiterable([str('c'), str('d')]))
-        self.assertFalse(strl.checkiterable(['c', 'd'], errors='ignore'))
+        # Replace this test 
+        #self.assertFalse(strl.checkiterable(['c', 'd'], errors='ignore'))
+        self.assertFalse(strl.checkiterable(['c', 8], errors='ignore'))
 
     def test_error_01(self):
         """Error handler test."""

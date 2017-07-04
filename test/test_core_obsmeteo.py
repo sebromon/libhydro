@@ -343,7 +343,7 @@ class TestSerie(unittest.TestCase):
         g = sitemeteo.Grandeur('ER')
         o = obsmeteo.Observations(
             *[obsmeteo.Observation('20%i-01-01 00:00' % x, x)
-              for x in xrange(10, 50)])
+              for x in range(10, 50)])
         serie = obsmeteo.Serie(grandeur=g, observations=o)
         self.assertTrue(serie.__str__().rfind('Serie') > -1)
         self.assertTrue(serie.__str__().rfind('Statut') > -1)

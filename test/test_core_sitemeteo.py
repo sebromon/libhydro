@@ -80,7 +80,7 @@ class TestSitemeteo(unittest.TestCase):
             ),
             (
                 code, libelle, libelleusuel,
-                composant_site.Coord(*coord), unicode(commune),
+                composant_site.Coord(*coord), str(commune),
                 [grandeur]
             )
         )
@@ -113,7 +113,7 @@ class TestSitemeteo(unittest.TestCase):
             ),
             (
                 code, libelle, libelleusuel,
-                composant_site.Coord(*coord), unicode(commune),
+                composant_site.Coord(*coord), str(commune),
                 list(grandeurs)
             )
         )
@@ -147,7 +147,7 @@ class TestSitemeteo(unittest.TestCase):
         self.assertEqual(m.coord, composant_site.Coord(*coord))
         m.coord = (10, 20, 25)
         m.coord = composant_site.Coord(*coord)
-        self.assertEqual(m.commune, unicode(commune))
+        self.assertEqual(m.commune, str(commune))
         m.commune = 32150
         m.commune = None
 
@@ -170,7 +170,7 @@ class TestSitemeteo(unittest.TestCase):
         m = sitemeteo.Sitemeteo(code=code,  grandeurs=grandeurs, strict=False)
         self.assertEqual(
             (m.code, m.grandeurs),
-            (unicode(code), grandeurs)
+            (str(code), grandeurs)
         )
 
     def test_error_01(self):
@@ -234,6 +234,22 @@ class TestGrandeur(unittest.TestCase):
         )
         self.assertEqual(g.typemesure, typemesure)
         self.assertEqual(g.sitemeteo.code, codeinsee)
+
+    def test_base_01(self):
+        codeinsee = '013008110'
+        s = sitemeteo.Sitemeteo(codeinsee)
+        typemesure = 'EP'
+        g = sitemeteo.Grandeur(
+            typemesure=typemesure,
+            sitemeteo=s
+        )
+        g2 = sitemeteo.Grandeur(
+            typemesure=typemesure,
+            sitemeteo=s
+        )
+        g2.typemesure = 'RR'
+        self.assertEqual(g.typemesure,'EP')
+        self.assertEqual(g2.typemesure, 'RR')
 
     def test_str(self):
         """Test __str__ method with None values."""

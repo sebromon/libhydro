@@ -75,6 +75,7 @@ class Coord(object):
     __all__attrs__ = ('x', 'y', 'proj')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
 
     def __unicode__(self):
         """Return unicode representation."""

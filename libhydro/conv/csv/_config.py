@@ -15,7 +15,7 @@ disponibles sur le site du SANDRE <http://www.sandre.eaufrance.fr/>.
 
 """
 # -- imports ------------------------------------------------------------------
-from __future__ import unicode_literals as _unicode_literals
+
 import csv
 
 # -----------------------------------------------------------------------------
@@ -29,15 +29,18 @@ import csv
 # WARNING: le csv.register_dialect ne tolere pas les valeurs en unicode en
 #          Python 2 :-(
 #
+# Python 3 supression bytes b
 csv.register_dialect(
     'hydrometrie',
     **{
-        'delimiter': b';',
+        #'delimiter': b';',
+        'delimiter': ';',
         'doublequote': False,
         'escapechar': None,  # b'\\',
-        'lineterminator': b'\r\n',
+        #'lineterminator': b'\r\n',
+        'lineterminator': '\r\n',
         'quoting': csv.QUOTE_NONE,
-        # 'quotechar': b'"',
+        # 'quotechar': '"',
         'skipinitialspace': True,
         'strict': False
     }

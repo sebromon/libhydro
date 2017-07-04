@@ -78,9 +78,15 @@ class TestMapKeys(unittest.TestCase):
     def test_ietrator(self):
         """Iterator test."""
         mapper = {'a': 'aa', 'b': 'bb', 'c': 'cc', 'd': 'dd'}
+#        self.assertEqual(
+#            lhcsv.map_keys(self.base, mapper, iterator='items'),
+#            lhcsv.map_keys(self.base, mapper, iterator='iteritems'),)
         self.assertEqual(
             lhcsv.map_keys(self.base, mapper, iterator='items'),
-            lhcsv.map_keys(self.base, mapper, iterator='iteritems'),)
+            {'aa': 1, 'bb': 2, 'cc': 3})
+        # python3 'dict' object has no attribute 'iteritems'
+        with self.assertRaises(AttributeError):
+            lhcsv.map_keys(self.base, mapper, iterator='iteritems')
         with self.assertRaises(AttributeError):
             lhcsv.map_keys(self.base, mapper, iterator='')
 
@@ -159,8 +165,8 @@ class TestSitesHydroFromCsv(unittest.TestCase):
                     'code': 'code', 'label': 'libelle', 'family': 'typesite'},
                 'libhydro.core.sitehydro.Sitehydro.coord': {
                     'x': 'x', 'y': 'y', 'proj': 'proj'}},
-            delimiter=b',',  # byte !
-            escapechar=b'\\')
+            delimiter=',',  # byte !
+            escapechar='\\')
         self.assertEqual(len(siteshydro), 4)
         self.assertEqual(siteshydro[3].code, 'D0137014')
         self.assertEqual(siteshydro[2].typesite, 'VIRTUEL')
@@ -175,8 +181,8 @@ class TestSitesHydroFromCsv(unittest.TestCase):
             flag=None, second_line=None, decimal=None,
             mapper={'libhydro.core.sitehydro.Sitehydro': {
                 'code': 'code', 'label': 'libelle', 'family': 'typesite'}, },
-            delimiter=b',',  # byte !
-            escapechar=b'\\')
+            delimiter=',',  # byte !
+            escapechar='\\')
         self.assertEqual(len(siteshydro), 4)
         self.assertEqual(siteshydro[3].code, 'D0137014')
         self.assertEqual(siteshydro[2].typesite, 'VIRTUEL')
@@ -193,8 +199,8 @@ class TestSitesHydroFromCsv(unittest.TestCase):
                     'code': 'code', 'label': 'libelle', 'family': 'typesite'},
                 'libhydro.core.sitehydro.Sitehydro.coord': {
                     'x': 'x', 'y': 'y', 'proj': 'proj'}},
-            delimiter=b',',  # byte !
-            escapechar=b'\\')
+            delimiter=',',  # byte !
+            escapechar='\\')
         self.assertEqual(len(siteshydro), 5)
         self.assertEqual(siteshydro[4].code, 'D0137014')
         self.assertEqual(siteshydro[3].typesite, 'VIRTUEL')
@@ -281,7 +287,7 @@ class TestSeriesHydroFromCsv(unittest.TestCase):
         """Full csv file test."""
         fname = os.path.join(CSV_DIR, 'serieshydro_full.csv')
         # merge = True
-        serieshydro = lhcsv.serieshydro_from_csv(fname, decimal=b',')
+        serieshydro = lhcsv.serieshydro_from_csv(fname, decimal=',')
         self.assertEqual(len(serieshydro), 5)
         self.assertEqual(serieshydro[0].entite.code, 'A2331020')
         self.assertEqual(serieshydro[1].entite.code, 'R789122010')
@@ -296,7 +302,7 @@ class TestSeriesHydroFromCsv(unittest.TestCase):
         self.assertEqual(
             serieshydro[0].observations.loc['1999-02-13 05', 'mth'].get(0), 0)
         # merge = False
-        serieshydro = lhcsv.serieshydro_from_csv(fname, decimal=b',', merge=0)
+        serieshydro = lhcsv.serieshydro_from_csv(fname, decimal=',', merge=0)
         self.assertEqual(len(serieshydro), 6)
         self.assertEqual(serieshydro[0].entite.code, 'A2331020')
         self.assertEqual(serieshydro[1].entite.code, 'R789122010')
@@ -366,7 +372,7 @@ class TestSeriesMeteoFromCsv(unittest.TestCase):
         """Full csv file test."""
         fname = os.path.join(CSV_DIR, 'seriesmeteo_full.csv')
         # merge = True
-        seriesmeteo = lhcsv.seriesmeteo_from_csv(fname, decimal=b',')
+        seriesmeteo = lhcsv.seriesmeteo_from_csv(fname, decimal=',')
         self.assertEqual(len(seriesmeteo), 3)
         self.assertEqual(seriesmeteo[0].grandeur.typemesure, 'VV')
         self.assertEqual(seriesmeteo[1].grandeur.typemesure, 'RR')
@@ -394,7 +400,7 @@ class TestSeriesMeteoFromCsv(unittest.TestCase):
             ['2011-02-02 16:00:00  50.5    8   16  100.0',
              '2011-02-02 17:00:00   0.0    8   16  100.0'])
         # merge = False
-        seriesmeteo = lhcsv.seriesmeteo_from_csv(fname, decimal=b',', merge=0)
+        seriesmeteo = lhcsv.seriesmeteo_from_csv(fname, decimal=',', merge=0)
         self.assertEqual(len(seriesmeteo), 6)
         self.assertEqual(seriesmeteo[0].grandeur.typemesure, 'VV')
         self.assertEqual(seriesmeteo[1].grandeur.typemesure, 'VV')

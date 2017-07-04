@@ -158,7 +158,7 @@ class PrevisionTendance(_numpy.ndarray):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
         try:
-            tend = unicode(tend)
+            tend = str(tend)
             if tend not in ('min','max','moy'):
                 raise ValueError('tendance incorrect {}'.format(tend))
         except Exception:
@@ -241,17 +241,24 @@ class PrevisionsPrb(_pandas.Series):
                 if not isinstance(prv, PrevisionPrb):
                     raise TypeError(
                         '{} is not a probabilist Prevision'.format(prv))
-                prvs.append(prv)
+                # python 3 avois error provide tuple instead array
+                # dtype is specified after
+                #prvs.append(prv)
+                prvs.append(prv.tolist())
 
         except Exception:
             raise
 
         # prepare a tmp numpy.array
-        array = _numpy.array(object=prvs)
+        # python 3 error: ValueError: cannot include dtype 'M' in a buffer
+        # to avoid this error provide tuple instead of _numpy.array
+        # and dtype
+        #array = _numpy.array(object=prvs)
+        array = _numpy.array(object=prvs, dtype=PrevisionPrb.DTYPE)
 
         # make index
         index = _pandas.MultiIndex.from_tuples(
-            zip(array['dte'], array['prb']), names=['dte', 'prb'])
+            list(zip(array['dte'], array['prb'])), names=['dte', 'prb'])
 
         # get the pandas.Series
         obj = _pandas.Series(data=array['res'], index=index, name='res')
@@ -328,17 +335,23 @@ class PrevisionsTendance(_pandas.Series):
                 if not isinstance(prv, PrevisionTendance):
                     raise TypeError(
                         '{} is not a tendency Prevision'.format(prv))
-                prvs.append(prv)
+                # python 3 avois error provide tuple instead array
+                # dtype is specified after
+                #prvs.append(prv)
+                prvs.append(prv.tolist())
 
         except Exception:
             raise
 
         # prepare a tmp numpy.array
-        array = _numpy.array(object=prvs)
-
+        # python 3 error: ValueError: cannot include dtype 'M' in a buffer
+        # to avoid this error provide tuple instead of _numpy.array
+        # and dtype
+        #array = _numpy.array(object=prvs)
+        array = _numpy.array(object=prvs, dtype=PrevisionTendance.DTYPE)
         # make index
         index = _pandas.MultiIndex.from_tuples(
-            zip(array['dte'], array['tend']), names=['dte', 'tend'])
+            list(zip(array['dte'], array['tend'])), names=['dte', 'tend'])
 
         # get the pandas.Series
         obj = _pandas.Series(data=array['res'], index=index, name='res')
@@ -410,7 +423,7 @@ class Simulation(object):
         # -- simple properties --
         self._strict = bool(strict)
         self.public = bool(public)
-        self.commentaire = unicode(commentaire) if commentaire else None
+        self.commentaire = str(commentaire) if commentaire else None
         self.intervenant = intervenant
 
         # -- adjust the descriptors --
@@ -557,6 +570,7 @@ class Simulation(object):
                       'previsions_prb', 'previsions_tend','intervenant')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
 
     def __unicode__(self):
         """Return unicode representation."""

@@ -121,9 +121,9 @@ class CourbeCorrection(object):
         self._tri_pivots = bool(tri_pivots)
 
         # -- simple properties --
-        self.libelle = unicode(libelle) \
+        self.libelle = str(libelle) \
             if (libelle is not None) else None
-        self.commentaire = unicode(commentaire) \
+        self.commentaire = str(commentaire) \
             if (commentaire is not None) else None
 
         self.dtmaj = dtmaj
@@ -225,7 +225,7 @@ class CourbeCorrection(object):
         elif hasattr(self.station, 'code'):
             codestation = self.station.code
         else:
-            codestation = unicode(self.station.__str__())
+            codestation = str(self.station.__str__())
 #        elif hasattr(self.station, '__str__'):
 #            codestation = unicode(self.station.__str__())
 #        else:
