@@ -26,10 +26,12 @@ from libhydro.core import sitehydro, seuil
 
 
 # -- strings ------------------------------------------------------------------
-__version__ = '0.6'
-__date__ = '2017-06-22'
+__version__ = '0.6.1'
+__date__ = '2017-07-05'
 
 # HISTORY
+# V0.6.1 - SR - 2017-07-05
+# Add xml fim with jaugeages
 # V0.6 - SR - 2017-06-22
 # Ajout xml contenant des courbes de correction
 # V0.5 - SR - 2017-06-20
@@ -238,8 +240,8 @@ class TestAllXmlBaseTests(unittest.TestCase):
     suite = unittest.TestSuite()
     for unit in ('intervenants', 'siteshydro', 'sitesmeteo', 'seuilshydro',
                  'modelesprevision', 'evenements', 'courbestarage',
-                 'courbescorrection', 'serieshydro', 'seriesmeteo',
-                 'simulations'):
+                 'jaugeages', 'courbescorrection', 'serieshydro',
+                 'seriesmeteo', 'simulations'):
         suite.addTest(
             ParametrizedTestCase.parametrize(ToXmlBaseTest, param=unit))
     unittest.TextTestRunner(verbosity=1).run(suite)

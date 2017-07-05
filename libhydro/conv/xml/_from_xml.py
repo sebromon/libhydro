@@ -28,15 +28,18 @@ from libhydro.core import (
     sitemeteo as _sitemeteo, seuil as _seuil,
     modeleprevision as _modeleprevision, obshydro as _obshydro,
     obsmeteo as _obsmeteo, simulation as _simulation, evenement as _evenement,
-    courbetarage as _courbetarage, courbecorrection as _courbecorrection)
+    courbetarage as _courbetarage, courbecorrection as _courbecorrection,
+    jaugeage as _jaugeage)
 
 
 # -- strings ------------------------------------------------------------------
 # contributor Camillo Montes (SYNAPSE)
-__version__ = '0.7'
-__date__ = '2017-06-22'
+__version__ = '0.7.1'
+__date__ = '2017-07-05'
 
 # HISTORY
+# V0.7.1 - SR - 2017-07-05
+# import jaugeages
 # V0.7 - SR - 2017-06-22
 # importation des courbes de correction
 # V0.6 - SR - 2017-06-20
@@ -233,6 +236,7 @@ def _parse(src, ordered=True):
             # modelesprevision: liste de modelesprevision.Modeleprevision
             # evenements: liste d'evenements
             # courbestarage: liste de courbes de tarage
+            # jaugeages: liste des jaugeages
             # courbescorrection: liste de courbes de correction
             # serieshydro: liste de obshydro.Serie
             # seriesmeteo: liste de obsmeteo.Serie
@@ -271,7 +275,8 @@ def _parse(src, ordered=True):
             tree.find('Donnees/Evenements')),
         'courbestarage': _courbestarage_from_element(
             tree.find('Donnees/CourbesTarage')),
-        # 'jaugeages'
+        'jaugeages': _jaugeages_from_element(
+            tree.find('Donnees/Jaugeages')),
         'courbescorrection': _courbescorrection_from_element(
             tree.find('Donnees/CourbesCorrH')),
         'serieshydro': _serieshydro_from_element(tree.find('Donnees/Series')),
@@ -665,6 +670,64 @@ def _histoactiveperiode_from_element(element):
         dtdesactivation=_value(element, 'DtDesactivHistoActivPeriod', _UTC)
         )
 
+
+def _jaugeage_from_element(element):
+    """Return a jaugeage.Jaugeage from a <Jaugeage> element."""
+    if element is None:
+        raise TypeError("Jaugeages must not be empty")
+
+    codesite = _value(element, 'CdSiteHydro')
+    site = _sitehydro.Sitehydro(code=codesite)
+    # mode not mandatory -> constructor default value
+    mode = _value(element, 'ModeJaugeage', int)
+    args = {
+        'code': _value(element, 'CdJaugeage'),
+        'dte': _value(element, 'DtJaugeage', _UTC),
+        'debit': _value(element, 'DebitJaugeage', float),
+        'dtdeb': _value(element, 'DtDebJaugeage', _UTC),
+        'dtfin': _value(element, 'DtFinJaugeage', _UTC),
+        'section_mouillee': _value(element, 'SectionMouilJaugeage', float),
+        'perimetre_mouille': _value(element, 'PerimMouilleJaugeage', float),
+        'largeur_miroir': _value(element, 'LargMiroirJaugeage', float),
+        'commentaire': _value(element, 'ComJaugeage'),
+        'vitessemoy': _value(element, 'VitesseMoyJaugeage', float),
+        'vitessemax': _value(element, 'VitesseMaxJaugeage', float),
+        'vitessemoy_surface': _value(element, 'VitesseMoySurfaceJaugeage',
+                                     float),
+        'site': site,
+        'hauteurs': [_hjaug_from_element(e)
+            for e in element.findall('HauteursJaugeage/HauteurJaugeage')],
+        'dtmaj': _value(element, 'DtMajJaugeage', _UTC)
+        }
+    if mode is not None:
+        args['mode'] = mode
+
+    return _jaugeage.Jaugeage(**args)
+
+
+def _hjaug_from_element(element):
+    """Return a jaugeage.HauteurJaugeage from a <HauteurJaugeage> element."""
+    codestation = _value(element, 'CdStationHydro')
+    station = _sitehydro.Station(code=codestation)
+    stationfille = None
+    element_fille = element.find('StationFille')
+    if element_fille is not None:
+        codestationfille = _value(element_fille, 'CdStationHydro')
+        stationfille = _sitehydro.Station(code=codestationfille)
+    args = {
+        'station': station,
+        'sysalti': _value(element, 'SysAltiStationJaugeage'),
+        'coteretenue': _value(element, 'CoteRetenueStationJaugeage'),
+        'cotedeb': _value(element, 'CoteDebutStationJaugeage'),
+        'cotefin': _value(element, 'CoteFinStationJaugeage'),
+        'denivele': _value(element, 'DnStationJaugeage'),
+        'distancestation': _value(element, 'DistanceStationJaugeage'),
+        'stationfille': stationfille,
+        'dtdeb_refalti': _value(element, 'DtDebutRefAlti')
+        }
+    return _jaugeage.HauteurJaugeage(**args)
+
+
 def _courbecorrection_from_element(element):
     """Return a courbecorrection.CourbeCorrection from a <CourbeCorrH> element."""
     if element is None:
@@ -919,6 +982,9 @@ _evenements_from_element = _global_function_builder(
 # return a list of courbetarage.CourbeTarage from a <CourbesTarage> element
 _courbestarage_from_element = _global_function_builder(
     './CourbeTarage', _courbetarage_from_element)
+# return a list of jaugeage.Jaugeage from a <Jaugeage> element
+_jaugeages_from_element = _global_function_builder(
+    './Jaugeage', _jaugeage_from_element)
 # return a list of courbecorrection.CourbeCorrection from a <CourbesCorrH> element
 _courbescorrection_from_element = _global_function_builder(
     './CourbeCorrH', _courbecorrection_from_element)

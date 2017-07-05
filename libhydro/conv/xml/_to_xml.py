@@ -27,10 +27,12 @@ from libhydro.core import (
 
 
 # -- strings ------------------------------------------------------------------
-__version__ = '0.6'
-__date__ = '2017-06-22'
+__version__ = '0.6.1'
+__date__ = '2017-07-05'
 
 # HISTORY
+# V0.6.1 - SR - 2017-07-05
+# export jaugeages
 # V0.6 - SR - 2017-06-20
 # export des courbes de correction
 # V0.5 - SR - 2017-06-20
@@ -61,7 +63,7 @@ ORDERED_ACCEPTED_KEYS = [
     'intervenants', 'siteshydro', 'sitesmeteo',
     'seuilshydro', 'modelesprevision',
     # line 180: [6:]
-    'evenements', 'courbestarage', 'courbescorrection',
+    'evenements', 'courbestarage', 'jaugeages', 'courbescorrection',
     'serieshydro', 'seriesmeteo', 'simulations']
 
 PREV_PROBABILITY = {
@@ -96,7 +98,8 @@ NS_ATTR = {
 # -- testsfunction ------------------------------------------------------------
 def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
             seuilshydro=None, modelesprevision=None, evenements=None,
-            courbestarage=None, courbescorrection=None, serieshydro=None, seriesmeteo=None,
+            courbestarage=None, jaugeages=None, courbescorrection=None,
+            serieshydro=None, seriesmeteo=None,
             simulations=None, bdhydro=False, strict=True, ordered=False):
     """Return a etree.Element a partir des donnees passes en argument.
 
@@ -113,7 +116,8 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
             iterable or None
         evenements (evenement.Evenement collection) = iterable ou None
         courbestarage (courbetarage.CourbeTarage collection) = iterable ou None
-        courbescorrection (courbecorrection.CourbeCorrection collection) = 
+        jaugeages (jaugeage.Jaugeage collection) = iterable ou None
+        courbescorrection (courbecorrection.CourbeCorrection collection) =
             iterable ou None
         serieshydro (obshydro.Serie collection) = iterable or None
         seriesmeteo (obsmeteo.Serie collection) = iterable or None
@@ -846,6 +850,91 @@ def _histoperiode_to_element(histo, strict=True):
     return _factory(root=_etree.Element('HistoActivPeriod'), story=story)
 
 
+def _jaugeage_to_element(jaugeage, bdhydro=False, strict=True):
+    """Return a <Jaugeage> element from a jaugeage.Jaugeage."""
+    if jaugeage is not None:
+        _required(jaugeage, ['code', 'site'])
+        if strict:
+            _required(jaugeage.site, ['code'])
+        # template for seriehydro simple elements
+        story = _collections.OrderedDict()
+        story['CdJaugeage'] = {'value': jaugeage.code}
+        if jaugeage.dte is not None:
+            story['DtJaugeage'] = {
+                'value': jaugeage.dte.strftime('%Y-%m-%dT%H:%M:%S')}
+        story['DebitJaugeage'] = {'value': jaugeage.debit}
+        if jaugeage.dtdeb is not None:
+            story['DtDebJaugeage'] = {
+                'value': jaugeage.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')}
+        if jaugeage.dtfin is not None:
+            story['DtFinJaugeage'] = {
+                'value': jaugeage.dtfin.strftime('%Y-%m-%dT%H:%M:%S')}
+        story['SectionMouilJaugeage'] = {'value': jaugeage.section_mouillee}
+        story['PerimMouilleJaugeage'] = {'value': jaugeage.perimetre_mouille}
+        story['LargMiroirJaugeage'] = {'value': jaugeage.largeur_miroir}
+        story['ModeJaugeage'] = {'value': jaugeage.mode}
+        story['ComJaugeage'] = {'value': jaugeage.commentaire}
+        story['VitesseMoyJaugeage'] = {'value': jaugeage.vitessemoy}
+        story['VitesseMaxJaugeage'] = {'value': jaugeage.vitessemax}
+        story['VitesseMoySurfaceJaugeage'] = {
+            'value': jaugeage.vitessemoy_surface}
+        # TODO fuzzy mode
+        story['CdSiteHydro'] = {'value': jaugeage.site.code}
+
+        #story['HauteursJaugeage']
+        if len(jaugeage.hauteurs) > 0:
+            story['HauteursJaugeage'] = {'value': None,
+                                         'force': True}
+
+        if jaugeage.dtmaj is not None:
+            story['DtMajJaugeage'] = {
+                'value': jaugeage.dtmaj.strftime('%Y-%m-%dT%H:%M:%S')}
+
+        # make element <CourbeTarage>
+        element = _factory(root=_etree.Element('Jaugeage'), story=story)
+
+        if len(jaugeage.hauteurs) > 0:
+            child = element.find('HauteursJaugeage')
+            for hauteur in jaugeage.hauteurs:
+                child.append(
+                    _hjaug_to_element(
+                        hauteur, strict=strict))
+
+        return element
+
+
+def _hjaug_to_element(hjaug, strict=True):
+    _required(hjaug, ['station', 'sysalti', 'coteretenue'])
+    if strict:
+        _required(hjaug.station, ['code'])
+        if hjaug.stationfille is not None:
+            _required(hjaug.stationfille, ['code'])
+    # template for seriehydro simple elements
+    story = _collections.OrderedDict()
+    story['CdStationHydro'] = {'value': hjaug.station.code}
+    story['SysAltiStationJaugeage'] = {'value': hjaug.sysalti}
+    story['CoteRetenueStationJaugeage'] = {'value': hjaug.coteretenue}
+    story['CoteDebutStationJaugeage'] = {'value': hjaug.cotedeb}
+    story['CoteFinStationJaugeage'] = {'value': hjaug.cotefin}
+    story['DnStationJaugeage'] = {'value': hjaug.denivele}
+    story['DistanceStationJaugeage'] = {'value': hjaug.distancestation}
+    if hjaug.stationfille is not None:
+        story['StationFille'] = {'value': None, 'force': True}
+
+    if hjaug.dtdeb_refalti is not None:
+        story['DtDebutRefAlti'] = {
+            'value': hjaug.dtdeb_refalti.strftime('%Y-%m-%dT%H:%M:%S')}
+
+    # make element <StationFille>
+    element = _factory(root=_etree.Element('HauteurJaugeage'), story=story)
+    if hjaug.stationfille is not None:
+        child = element.find('StationFille')
+        child.append(_make_element(tag_name='CdStationHydro',
+                                   text=hjaug.stationfille.code))
+
+    return element
+
+
 def _courbecorrection_to_element(courbe, bdhydro=False, strict=True):
     """Return a <CourbeCorrH> element from a courbecorrection.CourbeCorrection."""
     if courbe is not None:
@@ -855,20 +944,20 @@ def _courbecorrection_to_element(courbe, bdhydro=False, strict=True):
             _required(courbe.station, ['code'])
         # template for seriehydro simple elements
         story = _collections.OrderedDict()
-        #TODO fuzzy mode 
+        # TODO fuzzy mode
         story['CdStationHydro'] = {'value': courbe.station.code}
         story['LbCourbeCorrH'] = {'value': courbe.libelle}
         story['ComCourbeCorrH'] = {'value': courbe.commentaire}
-        #story['PointsPivot']
+        # story['PointsPivot']
         story['PointsPivot'] = {'value': None,
             'force': True if (len(courbe.pivots) > 0) else False}
         if courbe.dtmaj is not None:
             story['DtMajCourbeCorrH'] = {'value':
                 courbe.dtmaj.strftime('%Y-%m-%dT%H:%M:%S')}
-        
+
         # make element <CourbeTarage>
         element = _factory(root=_etree.Element('CourbeCorrH'), story=story)
-        
+
         # add pivots if necessary
         if len(courbe.pivots) == 1:
             raise ValueError('Courbe cannot have only one pivot')
@@ -877,7 +966,7 @@ def _courbecorrection_to_element(courbe, bdhydro=False, strict=True):
             for pivot in courbe.pivots:
                 child.append(
                     _pivotcc_to_element(
-                        pivot, strict=strict))        
+                        pivot, strict=strict))
         return element
 
 def _pivotcc_to_element(pivotcc, strict=True):
@@ -1115,6 +1204,9 @@ _evenements_to_element = _global_function_builder(
 # return a <CourbesTarage> element from a list of courbetarage.CourbeTarage
 _courbestarage_to_element = _global_function_builder(
     'CourbesTarage', _courbetarage_to_element)
+# return a <Jaugeages> element from a list of jaugeage.Jaugeage
+_jaugeages_to_element = _global_function_builder(
+    'Jaugeages', _jaugeage_to_element)
 # return a <CourbesTarage> element from a list of courbetarage.CourbeTarage
 _courbescorrection_to_element = _global_function_builder(
     'CourbesCorrH', _courbecorrection_to_element)

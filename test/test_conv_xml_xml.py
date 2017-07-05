@@ -35,10 +35,12 @@ from libhydro.conv.xml import (Scenario, Message)
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin""" \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2"""
-__date__ = """2017-06-22"""
+__version__ = """0.2.1"""
+__date__ = """2017-07-05"""
 
 # HISTORY
+# V0.2.1 - SR - 2017-07-05
+# Ajout tests jaugeages
 # V0.2 - SR - 2017-06-22
 # Ajout tests courbes de correction et de tarage
 # V0.1 - 2013-08-22
@@ -172,6 +174,7 @@ class TestMessage(unittest.TestCase):
         self.file_seu = os.path.join(FILES_PATH, 'seuilshydro.xml')
         self.file_eve = os.path.join(FILES_PATH, 'evenements.xml')
         self.file_ct = os.path.join(FILES_PATH, 'courbestarage.xml')
+        self.file_jaug = os.path.join(FILES_PATH, 'jaugeages.xml')
         self.file_cc = os.path.join(FILES_PATH, 'courbescorrection.xml')
         self.file_serh = os.path.join(FILES_PATH, 'serieshydro.xml')
         self.file_serm = os.path.join(FILES_PATH, 'seriesmeteo.xml')
@@ -267,6 +270,13 @@ class TestMessage(unittest.TestCase):
         msg = Message.from_file(self.file_cc)
         msg.write(self.tmp_file, force=True)
         msg.courbescorrection.insert(0, msg.courbescorrection[0])
+
+    def test_base_12(self):
+        """Message from file jaugeages."""
+        msg = Message.from_file(self.file_jaug)
+        self.assertTrue(len(msg.jaugeages) > 0)
+        msg.write(self.tmp_file, force=True)
+        msg.jaugeages.insert(0, msg.jaugeages[0])
 
     def test_str_01(self):
         """Test __str__ method with basic values."""

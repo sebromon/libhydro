@@ -28,14 +28,17 @@ from libhydro.core import (
     courbecorrection as _courbecorrection,
     obshydro as _obshydro,
     obsmeteo as _obsmeteo,
-    simulation as _simulation)
+    simulation as _simulation,
+    jaugeage as _jaugeage)
 
 
 # -- strings ------------------------------------------------------------------
-__version__ = '0.6'
-__date__ = '2017-06-22'
+__version__ = '0.6.1'
+__date__ = '2017-07-05'
 
 # HISTORY
+# V0.6.1 - SR - 2017-06-22
+# Add jaugeages
 # V0.6 - SR - 2017-06-22
 # Ajout des courbes de correction et de targe au message
 # V0.5 - 2014-08-22
@@ -65,6 +68,7 @@ class Message(object):
         modelesprevision (liste de modeleprevision.Modeleprevision)
         evenements (liste de evenement.Evenement)
         courbestarage (liste de courbetarage.CourbeTarage)
+        jaugeages (liste de jaugeage.Jaugeage)
         courbescorrection (liste de courbecorrection.CourbeCorrection)
         serieshydro (liste de obshydro.Serie)
         seriesmeteo (liste de obsmeteo.Serie)
@@ -86,6 +90,7 @@ class Message(object):
         cls=_modeleprevision.Modeleprevision)
     evenements = _composant.Rlistproperty(cls=_evenement.Evenement)
     courbestarage = _composant.Rlistproperty(cls=_courbetarage.CourbeTarage)
+    jaugeages = _composant.Rlistproperty(cls=_jaugeage.Jaugeage)
     courbescorrection = _composant.Rlistproperty(cls=_courbecorrection.CourbeCorrection)
     serieshydro = _composant.Rlistproperty(cls=_obshydro.Serie)
     seriesmeteo = _composant.Rlistproperty(cls=_obsmeteo.Serie)
@@ -93,8 +98,8 @@ class Message(object):
 
     def __init__(self, scenario, intervenants=None, siteshydro=None,
                  sitesmeteo=None, seuilshydro=None, modelesprevision=None,
-                 evenements=None, courbestarage=None, courbescorrection=None,
-                 serieshydro=None, seriesmeteo=None,
+                 evenements=None, courbestarage=None, jaugeages=None,
+                 courbescorrection=None, serieshydro=None, seriesmeteo=None,
                  simulations=None, strict=True):
         """Initialisation.
 
@@ -107,6 +112,7 @@ class Message(object):
             modelesprevision (modeleprevision.Modeleprevision iterable ou None)
             evenements (evenement.Evenement iterable ou None)
             courbestarage (courbetarage.CourbeTarage iterable ou None)
+            jaugeages (jaugeage.Jaugeage iterable ou None)
             courbescorrection (courbecorrection.CourbeCorrection ou None)
             serieshydro (obshydro.Serie iterable ou None)
             seriesmeteo (obsmeteo.Serie iterable ou None)
@@ -132,6 +138,7 @@ class Message(object):
         self.modelesprevision = modelesprevision or []
         self.evenements = evenements or []
         self.courbestarage = courbestarage or []
+        self.jaugeages = jaugeages or []
         self.courbescorrection = courbescorrection or []
         self.serieshydro = serieshydro or []
         self.seriesmeteo = seriesmeteo or []
@@ -213,6 +220,8 @@ class Message(object):
                 tree.find('Donnees/Evenements')),
             courbestarage=_from_xml._courbestarage_from_element(
                 tree.find('Donnees/CourbesTarage')),
+            jaugeages=_from_xml._jaugeages_from_element(
+                tree.find('Donnees/Jaugeages')),
             courbescorrection=_from_xml._courbescorrection_from_element(
                 tree.find('Donnees/CourbesCorrH')),
             serieshydro=_from_xml._serieshydro_from_element(
@@ -244,6 +253,7 @@ class Message(object):
             modelesprevision = iterable de modeleprevision.Modeleprevision
             evenements   = iterable d'evenement.Evenement
             courbestarage = iterable de courbetarage.CourbeTarage
+            jaugeages = iterable de Jaugeage.Jaugeage
             courbescorrection = iterable de courbecorrection.CourbeCorrection
             serieshydro  = iterable de obshydro.Serie
             seriesmeteo  = iterable de obsmeteo.Serie
@@ -296,6 +306,7 @@ class Message(object):
                 modelesprevision=self.modelesprevision,
                 evenements=self.evenements,
                 courbestarage=self.courbestarage,
+                jaugeages=self.jaugeages,
                 courbescorrection=self.courbescorrection,
                 serieshydro=self.serieshydro,
                 seriesmeteo=self.seriesmeteo,
@@ -328,6 +339,7 @@ class Message(object):
                 modelesprevision=self.modelesprevision,
                 evenements=self.evenements,
                 courbestarage=self.courbestarage,
+                jaugeages=self.jaugeages,
                 courbescorrection=self.courbescorrection,
                 serieshydro=self.serieshydro,
                 seriesmeteo=self.seriesmeteo,
@@ -354,6 +366,7 @@ class Message(object):
                '{space}{modelesprevision} modelesprevision\n' \
                '{space}{evenements} evenements\n' \
                '{space}{courbestarage} courbestarage\n' \
+               '{space}{jaugeages} jaugeages\n' \
                '{space}{courbescorrection} courbescorrection\n' \
                '{space}{serieshydro} serieshydro\n' \
                '{space}{seriesmeteo} seriesmeteo\n' \
@@ -374,6 +387,8 @@ class Message(object):
                    else len(self.evenements),
                    courbestarage=0 if self.courbestarage is None
                    else len(self.courbestarage),
+                   jaugeages=0 if self.jaugeages is None
+                   else len(self.jaugeages),
                    courbescorrection=0 if self.courbescorrection is None
                    else len(self.courbescorrection),
                    serieshydro=0 if self.serieshydro is None
