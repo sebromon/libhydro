@@ -18,10 +18,14 @@ from . import _composant, _composant_site
 
 # -- strings ------------------------------------------------------------------
 # contributor Camillo Montes (SYNAPSE)
-__version__ = '0.4.1'
-__date__ = '2015-10-30'
+# contributor Sébastien ROMON
+__version__ = '0.4.2'
+__date__ = '2017-07-18'
 
 # HISTORY
+# V 0.4.2 - SR -2017-07-18
+# add descriptif,dtmaj,dtmiseservice, dtfermeture,surveillance properties
+# to class Station
 # V0.4 - 2014-12-17
 #   change the class Stationhydro name to Station which is far better for
 #       metaprogramming regarding the Sitehydro stations list name
@@ -397,10 +401,15 @@ class Station(_Site_or_station):
         typestation (string parmi NOMENCLATURE[531])
         libelle (string)
         libellecomplement (string)
+        descriptif (string)
         niveauaffichage (int) = niveau d'affichage
         coord (Coord) =
             x, y (float)
             proj (int parmi NOMENCLATURE[22]) = systeme de projection
+        pointk (float) = point kilomètrique
+        dtmiseservice (datetime.datetime) = Date de mise en service
+        dtfermeture (datetime.datetime) = Date de fermeture
+        surveillance (boolean) = statin à surveiller
         capteurs (une liste de Capteur)
         commune (string(5)) = code INSEE commune
         ddcs (liste de string(10)) = liste de reseaux de mesure SANDRE
@@ -412,9 +421,6 @@ class Station(_Site_or_station):
 
     # sitehydro
 
-    # descriptif
-    # dtmaj
-    # pk
     # dtes
     # dths
     # surveillance
@@ -437,10 +443,16 @@ class Station(_Site_or_station):
     # plageutilisation
 
     typestation = _composant.Nomenclatureitem(nomenclature=531)
+    dtmaj = _composant.Datefromeverything(required=False)
+    dtmiseservice = _composant.Datefromeverything(required=False)
+    dtfermeture = _composant.Datefromeverything(required=False)
 
     def __init__(self, code, codeh2=None, typestation='LIMNI', libelle=None,
-                 libellecomplement=None, niveauaffichage=0, coord=None,
-                 capteurs=None, commune=None, ddcs=None, strict=True):
+                 libellecomplement=None, descriptif=None, dtmaj=None,
+                 pointk=None, dtmiseservice=None, dtfermeture=None,
+                 surveillance=None, niveauaffichage=0,
+                 coord=None, capteurs=None, commune=None, ddcs=None,
+                 strict=True):
         """Initialisation.
 
         Arguments:
@@ -449,10 +461,16 @@ class Station(_Site_or_station):
             typestation (string parmi NOMENCLATURE[531], defaut LIMNI)
             libelle (string)
             libellecomplement (string)
+            descriptif (string)
+            dtmaj (datetime.datetime)
             niveauaffichage (int) = niveau d'affichage
             coord (list ou dict) =
                 (x, y, proj) ou {'x': x, 'y': y, 'proj': proj}
                 avec proj (int parmi NOMENCLATURE[22]) = systeme de projection
+            pointk (float) = point kilomètrique
+            dtmiseservice (datetime.datetime) = Date de mise en service
+            dtfermeture (datetime.datetime) = Date de fermeture
+            surveillance (boolean) = statin à surveiller
             capteurs (un Capteur ou un iterable de Capteur)
             commune (string(5)) = code INSEE commune
             ddcs (un code string(10) ou un iterable de string(10)) = reseaux de
@@ -474,12 +492,20 @@ class Station(_Site_or_station):
         self.libellecomplement = str(libellecomplement) \
             if (libellecomplement is not None) else None
 
+        self.descriptif = str(descriptif) \
+            if descriptif is not None else None
         # -- descriptors --
         self.typestation = typestation
-
+        self.dtmaj = dtmaj
+        self.dtmiseservice = dtmiseservice
+        self.dtfermeture = dtfermeture
         # -- full properties --
         self._niveauaffichage = 0
         self.niveauaffichage = niveauaffichage
+        self._pointk = None
+        self.pointk = pointk
+        self._surveillance = None
+        self.surveillance = surveillance
         self._capteurs = []
         self.capteurs = capteurs
         self._commune = None
@@ -499,6 +525,34 @@ class Station(_Site_or_station):
         # FIXME - Bd Hydro requires one of (0 111 191 311 391 511 591 911 991)
         #         but it is not a SANDRE nomencature
         self._niveauaffichage = int(niveauaffichage)
+
+    # -- property pointk --
+    @property
+    def pointk(self):
+        """Return pointk."""
+        return self._pointk
+
+    @pointk.setter
+    def pointk(self, pointk):
+        """Set pointk."""
+        self._pointk = None
+        if pointk is None:
+            return
+        self._pointk = float(pointk)
+
+    # -- property surveillance --
+    @property
+    def surveillance(self):
+        """Return surveillance."""
+        return self._surveillance
+
+    @surveillance.setter
+    def surveillance(self, surveillance):
+        """Set pointk."""
+        self._surveillance = None
+        if surveillance is None:
+            return
+        self._surveillance = bool(surveillance)
 
     # -- property capteurs --
     @property
@@ -575,6 +629,7 @@ class Station(_Site_or_station):
     # -- special methods --
     __all__attrs__ = (
         'code', 'codeh2', 'typestation', 'libelle', 'libellecomplement',
+        'descriptif',
         'niveauaffichage', 'coord', 'capteurs', 'commune', 'ddcs')
 
     def __unicode__(self):

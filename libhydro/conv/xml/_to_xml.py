@@ -27,10 +27,13 @@ from libhydro.core import (
 
 
 # -- strings ------------------------------------------------------------------
-__version__ = '0.6.1'
-__date__ = '2017-07-05'
+# contributor Sébastien ROMON
+__version__ = '0.6.2'
+__date__ = '2017-07-18'
 
 # HISTORY
+# V0.6.2 - SR- 2017-07-18
+# export some properties of station to xml
 # V0.6.1 - SR - 2017-07-05
 # export jaugeages
 # V0.6 - SR - 2017-06-20
@@ -592,6 +595,14 @@ def _station_to_element(station, bdhydro=False, strict=True):
         if strict:
             _required(station, ['code'])
 
+        dtmaj = station.dtmaj.strftime('%Y-%m-%dT%H:%M:%S') \
+            if station.dtmaj is not None else None
+        dtmiseservice = station.dtmiseservice.strftime('%Y-%m-%dT%H:%M:%S') \
+            if station.dtmiseservice is not None else None
+        dtfermeture = station.dtfermeture.strftime('%Y-%m-%dT%H:%M:%S') \
+            if station.dtfermeture is not None else None
+        surveillance = str(station.surveillance).lower() \
+            if station.surveillance is not None else None
         # template for station simple element
         story = _collections.OrderedDict((
             ('CdStationHydro', {'value': station.code}),
@@ -599,9 +610,15 @@ def _station_to_element(station, bdhydro=False, strict=True):
             ('TypStationHydro', {'value': station.typestation}),
             ('ComplementLibelleStationHydro', {
                 'value': station.libellecomplement}),
+            ('DescriptifStationHydro', {'value': station.descriptif}),
+            ('DtMAJStationHydro', {'value': dtmaj}),
             ('CoordStationHydro', {
                 'value': None,
                 'force': True if station.coord is not None else False}),
+            ('PkStationHydro', {'value': station.pointk}),
+            ('DtMiseServiceStationHydro', {'value': dtmiseservice}),
+            ('DtFermetureStationHydro', {'value': dtfermeture}),
+            ('ASurveillerStationHydro', {'value': surveillance}),
             ('NiveauAffichageStationHydro', {
                 'value': station.niveauaffichage}),
             ('ReseauxMesureStationHydro', {

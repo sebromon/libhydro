@@ -26,10 +26,13 @@ from libhydro.core import (sitehydro, sitemeteo)
 
 
 # -- strings ------------------------------------------------------------------
-__version__ = '0.5.1'
-__date__ = '2017-07-05'
+# contributor Sébastien ROMON
+__version__ = '0.5.2'
+__date__ = '2017-07-18'
 
 # HISTORY
+# V0.5.2 - SR - 2017-07-18
+# Add tests on new properties of Station
 # V0.5.1 - SR - 2017-07-05
 # Add test <Jaugeages>
 # V0.5 SR - 2017-06-20
@@ -232,6 +235,16 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(station.commune, '11354')
         self.assertEqual(station.codeh2, 'O1712510')
         self.assertEqual(station.niveauaffichage, 1)
+        self.assertEqual(station.libellecomplement, 'Complément du libellé')
+        self.assertEqual(station.descriptif, 'Station située à Auterive')
+        self.assertEqual(station.dtmaj,
+                         datetime.datetime(2017, 7, 17, 11, 23, 34))
+        self.assertEqual(station.pointk, 153.71)
+        self.assertEqual(station.dtmiseservice,
+                         datetime.datetime(1991, 10, 7, 14, 15, 16))
+        self.assertEqual(station.dtfermeture,
+                         datetime.datetime(2012, 4, 21, 19, 58, 3))
+        self.assertEqual(station.surveillance, True)
         # checkcapteurs
         capteurs = station.capteurs
         self.assertEqual(len(capteurs), 2)

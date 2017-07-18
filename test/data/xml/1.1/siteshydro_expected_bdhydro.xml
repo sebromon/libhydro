@@ -66,6 +66,7 @@
               <CoordYStationHydro>16.0</CoordYStationHydro>
               <ProjCoordStationHydro>26</ProjCoordStationHydro>
             </CoordStationHydro>
+            <PkStationHydro>1.0</PkStationHydro>
             <NiveauAffichageStationHydro>0</NiveauAffichageStationHydro>
           </StationHydro>
         </StationsHydro>
@@ -95,11 +96,18 @@
             <CdStationHydro>O171251001</CdStationHydro>
             <LbStationHydro>L'Ariège à Auterive - station de secours</LbStationHydro>
             <TypStationHydro>LIMNI</TypStationHydro>
+            <ComplementLibelleStationHydro>Complément du libellé</ComplementLibelleStationHydro>
+            <DescriptifStationHydro>Station située à Auterive</DescriptifStationHydro>
+            <DtMAJStationHydro>2017-07-17T11:23:34</DtMAJStationHydro>
             <CoordStationHydro>
               <CoordXStationHydro>15.0</CoordXStationHydro>
               <CoordYStationHydro>16.0</CoordYStationHydro>
               <ProjCoordStationHydro>26</ProjCoordStationHydro>
             </CoordStationHydro>
+            <PkStationHydro>153.71</PkStationHydro>
+            <DtMiseServiceStationHydro>1991-10-07T14:15:16</DtMiseServiceStationHydro>
+            <DtFermetureStationHydro>2012-04-21T19:58:03</DtFermetureStationHydro>
+            <ASurveillerStationHydro>true</ASurveillerStationHydro>
             <NiveauAffichageStationHydro>1</NiveauAffichageStationHydro>
             <ReseauxMesureStationHydro>
               <CodeSandreRdd>10</CodeSandreRdd>

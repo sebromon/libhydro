@@ -19,6 +19,7 @@ from __future__ import (
     print_function as _print_function
 )
 
+import datetime as _datetime
 import unittest
 
 from libhydro.core import sitehydro
@@ -28,10 +29,13 @@ from libhydro.core import _composant_site as composant_site
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2b"""
-__date__ = """2015-10-30"""
+__version__ = """0.3"""
+__date__ = """2017-07-18"""
+# contributor Sébastien ROMON
 
 # HISTORY
+# V0.3 - SR - 2017-07-18
+# Tests on properies of class Station
 # V0.2 - 2014-12-17
 #  replace Stationhydro with Station
 # V0.1 - 2013-07-15
@@ -328,9 +332,11 @@ class TestStation(unittest.TestCase):
         self.assertEqual(
             (
                 s.code, s.typestation, s.libelle, s.libellecomplement,
-                s.commune, s.ddcs
+                s.descriptif, s.dtmaj, s.pointk, s.dtmiseservice,
+                s.dtfermeture, s.surveillance, s.commune, s.ddcs
             ),
-            (code, 'LIMNI', None, None, None, [])
+            (code, 'LIMNI', None, None, None, None, None, None, None, None,
+             None, [])
         )
 
     def test_base_02(self):
@@ -339,22 +345,32 @@ class TestStation(unittest.TestCase):
         typestation = 'LIMNI'
         libelle = 'La Seine a Paris - rive droite'
         libellecomplement = 'rive droite'
+        descriptif = 'descriptif'
+        dtmaj = _datetime.datetime(2017, 7, 17, 9, 31, 15)
+        dtmiseservice = _datetime.datetime(1990, 4, 5, 11, 45, 21)
+        dtfermeture = _datetime.datetime(2007, 10, 1, 9, 36, 58)
+        pointk = 35.68
+        surveillance = True
         capteurs = [sitehydro.Capteur(code='V83310100101')]
         commune = '03150'
         ddcs = 33  # a numeric rezo
         s = sitehydro.Station(
             code=code, typestation=typestation,
             libelle=libelle, libellecomplement=libellecomplement,
+            descriptif=descriptif, dtmaj=dtmaj, dtmiseservice=dtmiseservice,
+            dtfermeture=dtfermeture, pointk=pointk, surveillance=surveillance,
             capteurs=capteurs, commune=commune, ddcs=ddcs
         )
         self.assertEqual(
             (
                 s.code, s.typestation, s.libelle, s.libellecomplement,
-                s.capteurs, s.commune, s.ddcs
+                s.descriptif, s.dtmaj, s.pointk, s.dtmiseservice,
+                s.dtfermeture, s.surveillance, s.capteurs, s.commune, s.ddcs
             ),
             (
                 code, typestation, libelle, libellecomplement,
-                capteurs, commune, [str(ddcs)]
+                descriptif, dtmaj, pointk, dtmiseservice, dtfermeture,
+                surveillance, capteurs, commune, [str(ddcs)]
             )
         )
 

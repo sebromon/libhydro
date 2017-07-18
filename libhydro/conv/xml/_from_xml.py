@@ -34,10 +34,13 @@ from libhydro.core import (
 
 # -- strings ------------------------------------------------------------------
 # contributor Camillo Montes (SYNAPSE)
-__version__ = '0.7.1'
-__date__ = '2017-07-05'
+# contributor Sébastien ROMON
+__version__ = '0.7.2'
+__date__ = '2017-07-18'
 
 # HISTORY
+# V0.7.2 - SR - 2017-07-18
+# get some properties of station from xml
 # V0.7.1 - SR - 2017-07-05
 # import jaugeages
 # V0.7 - SR - 2017-06-22
@@ -425,6 +428,13 @@ def _station_from_element(element):
         args['libelle'] = _value(element, 'LbStationHydro')
         args['libellecomplement'] = _value(
             element, 'ComplementLibelleStationHydro')
+        args['descriptif'] = _value(element, 'DescriptifStationHydro')
+        args['dtmaj'] = _value(element, 'DtMAJStationHydro', _UTC)
+        args['pointk'] = _value(element, 'PkStationHydro', float)
+        args['dtmiseservice'] = _value(
+            element, 'DtMiseServiceStationHydro', _UTC)
+        args['dtfermeture'] = _value(element, 'DtFermetureStationHydro', _UTC)
+        args['surveillance'] = _value(element, 'ASurveillerStationHydro', bool)
         niveauaffichage = _value(element, 'NiveauAffichageStationHydro')
         if niveauaffichage is not None:
             args['niveauaffichage'] = niveauaffichage
