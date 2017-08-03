@@ -364,6 +364,9 @@ class TestIsCodeHydro(unittest.TestCase):
         self.assertTrue(composant.is_code_hydro('A3330510', errors='strict'))
         self.assertTrue(
             composant.is_code_hydro('A333051002', 10, errors='ignore'))
+        # code hydro can begin with a digit
+        self.assertTrue(
+            composant.is_code_hydro('1333051002', 10, errors='ignore'))
         self.assertTrue(
             composant.is_code_hydro('A333051002', 10, errors='strict'))
         self.assertTrue(
@@ -385,7 +388,7 @@ class TestIsCodeHydro(unittest.TestCase):
             composant.is_code_hydro('A2233305100101', 12, errors='ignore'))
         # wrong chars
         self.assertFalse(
-            composant.is_code_hydro('3330051002', 10, errors='ignore'))
+            composant.is_code_hydro('a330051002', 10, errors='ignore'))
         self.assertFalse(
             composant.is_code_hydro('A330C5100201', 12, errors='ignore'))
         self.assertFalse(
@@ -405,7 +408,7 @@ class TestIsCodeHydro(unittest.TestCase):
                 **{'code': 'A2233305100101', 'length': 12, 'errors': 'strict'})
         # wrong first char
         with self.assertRaises(ValueError):
-            composant.is_code_hydro(**{'code': '33001000', 'errors': 'strict'})
+            composant.is_code_hydro(**{'code': 'z3001000', 'errors': 'strict'})
         # wrong last char
         with self.assertRaises(ValueError):
             composant.is_code_hydro(**{'code': 'A333101a', 'errors': 'strict'})
