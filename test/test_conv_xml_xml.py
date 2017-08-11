@@ -278,6 +278,24 @@ class TestMessage(unittest.TestCase):
         msg.write(self.tmp_file, force=True)
         msg.jaugeages.insert(0, msg.jaugeages[0])
 
+    def test_base_13(self):
+        """Message from string (str) serieshydro"""
+        with open(self.file_serh, 'r') as f:
+            content = f.read()
+        self.assertTrue(isinstance(content, str))
+        msg = Message.from_string(content)
+        msg.write(self.tmp_file, force=True)
+        msg.serieshydro[:] = (msg.serieshydro[0],)
+
+    def test_base_14(self):
+        """Message from string (bytes) serieshydro"""
+        with open(self.file_serh, 'r') as f:
+            content = f.read().encode('utf8')
+        self.assertTrue(isinstance(content, bytes))
+        msg = Message.from_string(content)
+        msg.write(self.tmp_file, force=True)
+        msg.serieshydro[:] = (msg.serieshydro[0],)
+
     def test_str_01(self):
         """Test __str__ method with basic values."""
         emetteur = intervenant.Contact(

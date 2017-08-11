@@ -191,6 +191,35 @@ class Message(object):
         parser = _etree.XMLParser(
             remove_blank_text=True, remove_comments=True, ns_clean=True)
         tree = _etree.parse(src, parser=parser)
+        return Message._from_element_tree(tree, ordered)
+
+    @staticmethod
+    def from_string(strxml, ordered=False):
+        """Parse le xml fournis sous forme de string et retourne un xml.Message.
+
+        Supprime les eventuels namespaces.
+
+        Arguments:
+            strxml (str(unicode) ou bytes) = source de donnee.
+            ordered (bool, defaut False) = si True essaie de conserver l'ordre
+                de certains elements
+
+        """
+        # etree.fromstring cannot parse unicode
+        if isinstance(strxml, str):
+            root = _etree.fromstring(strxml.encode('utf-8'))
+        else:
+            root = _etree.fromstring(strxml)
+
+        tree = _etree.ElementTree(root)
+        return Message._from_element_tree(tree, ordered)
+
+    @staticmethod
+    def _from_element_tree(tree, ordered=False):
+        if tree is None:
+            return None
+        if not isinstance(tree, _etree._ElementTree):
+            raise TypeError('tree is not an instance of ElementTree')
 
         # remove all existing namespaces
         # standard nsmap should be: {
