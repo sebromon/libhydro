@@ -296,6 +296,15 @@ class TestMessage(unittest.TestCase):
         msg.write(self.tmp_file, force=True)
         msg.serieshydro[:] = (msg.serieshydro[0],)
 
+    def test_base_15(self):
+        """test Message.to_string"""
+        msg = Message.from_file(self.file_serh)
+        content = msg.to_string()
+        self.assertTrue(isinstance(content, str))
+        msg2 = Message.from_string(content)
+        for i in range(0, len(msg.serieshydro)):
+            self.assertEqual(msg.serieshydro[i], msg2.serieshydro[i])
+
     def test_str_01(self):
         """Test __str__ method with basic values."""
         emetteur = intervenant.Contact(

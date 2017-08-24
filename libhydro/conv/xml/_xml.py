@@ -302,6 +302,26 @@ class Message(object):
             except Exception as e:
                 raise ValueError('bad element, {}'.format(e))
 
+    def _to_element(self, bdhydro=False, ordered=False):
+        """Return etree.Element from Message"""
+        return _to_xml._to_xml(
+                scenario=self.scenario,
+                intervenants=self.intervenants,
+                siteshydro=self.siteshydro,
+                sitesmeteo=self.sitesmeteo,
+                seuilshydro=self.seuilshydro,
+                modelesprevision=self.modelesprevision,
+                evenements=self.evenements,
+                courbestarage=self.courbestarage,
+                jaugeages=self.jaugeages,
+                courbescorrection=self.courbescorrection,
+                serieshydro=self.serieshydro,
+                seriesmeteo=self.seriesmeteo,
+                simulations=self.simulations,
+                bdhydro=bdhydro,
+                ordered=ordered,
+                strict=self._strict)
+
     def write(self, file, encoding='utf-8', compression=0, force=False,
               bdhydro=False, ordered=False, pretty_print=False):
         """Ecrit le Message dans le fichier <file>.
@@ -326,23 +346,7 @@ class Message(object):
             raise IOError('file already exists')
         # procede !
         tree = _etree.ElementTree(
-            _to_xml._to_xml(
-                scenario=self.scenario,
-                intervenants=self.intervenants,
-                siteshydro=self.siteshydro,
-                sitesmeteo=self.sitesmeteo,
-                seuilshydro=self.seuilshydro,
-                modelesprevision=self.modelesprevision,
-                evenements=self.evenements,
-                courbestarage=self.courbestarage,
-                jaugeages=self.jaugeages,
-                courbescorrection=self.courbescorrection,
-                serieshydro=self.serieshydro,
-                seriesmeteo=self.seriesmeteo,
-                simulations=self.simulations,
-                bdhydro=bdhydro,
-                ordered=ordered,
-                strict=self._strict))
+            self._to_element(bdhydro, ordered))
         tree.write(
             file=file, encoding=encoding, method='xml',
             pretty_print=pretty_print, xml_declaration=True,
@@ -359,26 +363,19 @@ class Message(object):
 
         """
         return _etree.tostring(
-            _to_xml._to_xml(
-                scenario=self.scenario,
-                intervenants=self.intervenants,
-                siteshydro=self.siteshydro,
-                sitesmeteo=self.sitesmeteo,
-                seuilshydro=self.seuilshydro,
-                modelesprevision=self.modelesprevision,
-                evenements=self.evenements,
-                courbestarage=self.courbestarage,
-                jaugeages=self.jaugeages,
-                courbescorrection=self.courbescorrection,
-                serieshydro=self.serieshydro,
-                seriesmeteo=self.seriesmeteo,
-                simulations=self.simulations,
-                strict=self._strict,
-                bdhydro=bdhydro,
-                ordered=ordered),
+            self._to_element(bdhydro, ordered),
             encoding=_sys.stdout.encoding,
             xml_declaration=True,
             pretty_print=pretty_print)
+
+    def to_string(self, bdhydro=False, ordered=False):
+        """Return an unicode xml"""
+        # encoding=unicode doesn't support xml_declaration
+        return _etree.tostring(
+                       self._to_element(bdhydro, ordered),
+                       encoding='UTF-8',
+                       xml_declaration=True,
+                       pretty_print=False).decode('utf-8')
 
     def __unicode__(self):
         """Return unicode representation."""
