@@ -164,8 +164,8 @@ class TestContact(unittest.TestCase):
         c = intervenant.Contact(code=code)
         self.assertEqual(
             (c.code, c.nom, c.prenom, c.civilite, c.intervenant,
-             c.profil),
-            (code, None, None, None, None, 0))
+             c.profil, c.motdepasse),
+            (code, None, None, None, None, 0, None))
 
     def test_base_02(self):
         """Base Contact."""
@@ -174,14 +174,15 @@ class TestContact(unittest.TestCase):
         prenom = 'Robert'
         civilite = 3
         profil = 7  # 0b111
+        motdepasse = 'mdp'
         i = intervenant.Intervenant(code=5)
         c = intervenant.Contact(
             code=code, nom=nom, prenom=prenom, civilite=civilite,
-            intervenant=i, profil=profil)
+            intervenant=i, profil=profil, motdepasse=motdepasse)
         self.assertEqual(
             (c.code, c.nom, c.prenom, c.civilite, c.intervenant,
-             c.profil),
-            (code, nom, prenom, civilite, i, 7))
+             c.profil, c.motdepasse),
+            (code, nom, prenom, civilite, i, 7, motdepasse))
 
     def test_profil(self):
         """Test profil."""

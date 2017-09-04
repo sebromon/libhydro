@@ -319,7 +319,8 @@ def _contact_to_element(contact, bdhydro=False, strict=True):
             ('NomContact', {'value': contact.nom}),
             ('PrenomContact', {'value': contact.prenom}),
             ('CiviliteContact', {'value': contact.civilite}),
-            ('ProfilContact', {'value': contact.profilasstr})))
+            ('ProfilContact', {'value': contact.profilasstr}),
+            ('MotPassContact', {'value': contact.motdepasse})))
 
         # make element <Contact> and return
         return _factory(root=_etree.Element('Contact'), story=story)

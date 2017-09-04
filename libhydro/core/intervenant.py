@@ -17,9 +17,11 @@ from . import _composant
 
 # -- strings ------------------------------------------------------------------
 __version__ = '0.3.2'
-__date__ = '2017-05-04'
+__date__ = '2017-09-00'
 
 # HISTORY
+# V0.3.3 - SR - 2017-09-01
+# add porperty motdepasse to Contact
 # V0.3 - 2017-04-28
 #   ajout de contact.profil et des proprietes derivees
 #   le code d'un contact est obligatoire
@@ -228,6 +230,7 @@ class Contact(object):
         profilinst (bool)
         profilpublic (bool) = un contact a un profil public lorsque tous les
             elements du profil sont False (identique a profil = 0)
+        motdepasse (string)
 
     Proprietes en lecture seule:
         profilasstr (string)
@@ -251,7 +254,7 @@ class Contact(object):
     civilite = _composant.Nomenclatureitem(nomenclature=538, required=False)
 
     def __init__(self, code=None, nom=None, prenom=None, civilite=None,
-                 intervenant=None, profil=0):
+                 intervenant=None, profil=0, motdepasse=None):
         """Initialisation.
 
         Arguments:
@@ -261,12 +264,15 @@ class Contact(object):
             civilite (entier parmi NOMENCLATURE[538])
             intervenant (Intervenant) = intervenant de rattachement
             profil (binary string ou entier, defaut 0)
+            motdepasse (string)
 
         """
 
         # -- simple properties --
         self.nom = str(nom) if (nom is not None) else None
         self.prenom = str(prenom) if (prenom is not None) else None
+        self.motdepasse = str(motdepasse) if (motdepasse is not None) \
+            else None
 
         # -- descriptors --
         self.civilite = civilite
@@ -421,7 +427,7 @@ class Contact(object):
 
     # -- special methods --
     __all__attrs__ = ('code', 'nom', 'prenom', 'civilite', 'intervenant',
-                      'profil')
+                      'profil', 'motdepasse')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
     __hash__ = _composant.__hash__
