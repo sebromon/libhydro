@@ -28,10 +28,12 @@ from libhydro.core import (
 
 # -- strings ------------------------------------------------------------------
 # contributor Sébastien ROMON
-__version__ = '0.6.2'
-__date__ = '2017-07-18'
+__version__ = '0.6.3'
+__date__ = '2017-09-05'
 
 # HISTORY
+# V0.6.3 - SR- 2017-09-05
+# export plages d'utilisatin of station to xml
 # V0.6.2 - SR- 2017-07-18
 # export some properties of station to xml
 # V0.6.1 - SR - 2017-07-05
@@ -622,6 +624,10 @@ def _station_to_element(station, bdhydro=False, strict=True):
             ('ASurveillerStationHydro', {'value': surveillance}),
             ('NiveauAffichageStationHydro', {
                 'value': station.niveauaffichage}),
+            ('PlagesUtilStationHydro', {
+                'value': None,
+                'force': True if (len(station.plages_utilisation) > 0)
+                    else False}),
             ('ReseauxMesureStationHydro', {
                 'value': None,
                 'force': True if (len(station.ddcs) > 0) else False}),
@@ -656,8 +662,44 @@ def _station_to_element(station, bdhydro=False, strict=True):
                     _capteur_to_element(
                         capteur, bdhydro=bdhydro, strict=strict))
 
+        if len(station.plages_utilisation) > 0:
+            child = element.find('PlagesUtilStationHydro')
+            for plage in station.plages_utilisation:
+                child.append(_plage_to_element(
+                    plage, 'StationHydro'))
+
         # return
         return element
+
+
+def _plage_to_element(plage, entite):
+    """Return a PlageUtilStationHydro or PlageUtilCapteur
+
+    according to entite (StationHydro or Capteur)
+
+    """
+    if plage is None:
+        return None
+
+    story = _collections.OrderedDict()
+    story['DtDebPlageUtil{}'.format(entite)] = {
+            'value': plage.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')}
+    if plage.dtfin is not None:
+        story['DtFinPlageUtil{}'.format(entite)] = {
+            'value': plage.dtfin.strftime('%Y-%m-%dT%H:%M:%S')}
+    if plage.dtactivation is not None:
+        story['DtActivationPlageUtil{}'.format(entite)] = {
+            'value': plage.dtactivation.strftime('%Y-%m-%dT%H:%M:%S')}
+    if plage.dtdesactivation is not None:
+        story['DtDesactivationPlageUtil{}'.format(entite)] = {
+            'value': plage.dtdesactivation.strftime('%Y-%m-%dT%H:%M:%S')}
+    if plage.active is not None:
+        story['ActivePlageUtil{}'.format(entite)] = {
+            'value': str(plage.active).lower()}
+
+    # action !
+    return _factory(root=_etree.Element('PlageUtil{}'.format(entite)),
+                    story=story)
 
 
 def _capteur_to_element(capteur, bdhydro=False, strict=True):

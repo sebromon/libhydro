@@ -606,3 +606,78 @@ class TestTronconvigilance(unittest.TestCase):
         libelle = 'Loire amont'
         t = sitehydro.Tronconvigilance(code=code, libelle=libelle)
         self.assertTrue(t.__str__().rfind('Troncon') > -1)
+
+
+# -- class TestPlageUtilisation -----------------------------------------------
+class TestPlageUtilisation(unittest.TestCase):
+    """PlageUtilisation class tests."""
+
+    def test_base_01(self):
+        """Base case with ."""
+        dtdeb = _datetime.datetime(2016, 2, 3, 4, 5, 6)
+        plage = sitehydro.PlageUtilisation(dtdeb=dtdeb)
+        self.assertEqual(
+            (plage.dtdeb, plage.dtfin, plage.dtactivation,
+             plage.dtdesactivation, plage.active),
+            (dtdeb, None, None, None, True)
+        )
+
+    def test_base_02(self):
+        """Base case test."""
+        dtdeb = _datetime.datetime(2016, 2, 3, 4, 5, 6)
+        dtfin = _datetime.datetime(2016, 9, 1, 13, 15, 26)
+        dtactivation = _datetime.datetime(2017, 8, 9, 11, 43, 56)
+        dtdesactivation = _datetime.datetime(2017, 10, 18, 14, 24, 12)
+        active = False
+        plage = sitehydro.PlageUtilisation(dtdeb=dtdeb,
+                                           dtfin=dtfin,
+                                           dtactivation=dtactivation,
+                                           dtdesactivation=dtdesactivation,
+                                           active=active)
+        self.assertEqual(
+            (plage.dtdeb, plage.dtfin, plage.dtactivation,
+             plage.dtdesactivation, plage.active),
+            (dtdeb, dtfin, dtactivation, dtdesactivation, active)
+        )
+
+    def test_equality(self):
+        """Equality test."""
+        dtdeb = _datetime.datetime(2016, 2, 3, 4, 5, 6)
+        dtfin = _datetime.datetime(2016, 9, 1, 13, 15, 26)
+        dtactivation = _datetime.datetime(2017, 8, 9, 11, 43, 56)
+        dtdesactivation = _datetime.datetime(2017, 10, 18, 14, 24, 12)
+        active = False
+        plage = sitehydro.PlageUtilisation(dtdeb=dtdeb,
+                                           dtfin=dtfin,
+                                           dtactivation=dtactivation,
+                                           dtdesactivation=dtdesactivation,
+                                           active=active)
+
+        other = sitehydro.PlageUtilisation(dtdeb=dtdeb,
+                                           dtfin=dtfin,
+                                           dtactivation=dtactivation,
+                                           dtdesactivation=dtdesactivation,
+                                           active=active)
+        self.assertEqual(plage, other)
+        plage.dtdesactivation = _datetime.datetime(2017, 10, 18, 14, 25, 12)
+        self.assertNotEqual(plage, other)
+
+    def test_str_01(self):
+        """Test __str__ method with only dtdeb."""
+        dtdeb = _datetime.datetime(2016, 2, 3, 4, 5, 6)
+        plage = sitehydro.PlageUtilisation(dtdeb=dtdeb)
+        self.assertTrue(plage.__str__().rfind('active') > -1)
+        self.assertTrue(plage.__str__().rfind('[2016-02-03 04:05:06') > -1)
+        self.assertTrue(plage.__str__().rfind('sans date de fin') > -1)
+
+    def test_str_02(self):
+        """Test __str__ method."""
+        dtdeb = _datetime.datetime(2016, 2, 3, 4, 5, 6)
+        dtfin = _datetime.datetime(2030, 4, 9, 11, 15, 26)
+        active = False
+        plage = sitehydro.PlageUtilisation(dtdeb=dtdeb,
+                                           dtfin=dtfin,
+                                           active=active)
+        self.assertTrue(plage.__str__().rfind('[2016-02-03 04:05:06') > -1)
+        self.assertTrue(plage.__str__().rfind('2030-04-09 11:15:26]') > -1)
+        self.assertTrue(plage.__str__().rfind('inactive') > -1)

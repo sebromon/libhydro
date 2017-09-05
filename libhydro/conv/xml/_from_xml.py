@@ -35,10 +35,12 @@ from libhydro.core import (
 # -- strings ------------------------------------------------------------------
 # contributor Camillo Montes (SYNAPSE)
 # contributor Sébastien ROMON
-__version__ = '0.7.2'
-__date__ = '2017-07-18'
+__version__ = '0.7.3'
+__date__ = '2017-09-05'
 
 # HISTORY
+# V0.7.3 - SR - 2017-09-05
+# get plages d'utilisation of station from xml
 # V0.7.2 - SR - 2017-07-18
 # get some properties of station from xml
 # V0.7.1 - SR - 2017-07-05
@@ -441,6 +443,10 @@ def _station_from_element(element):
             args['niveauaffichage'] = niveauaffichage
         args['coord'] = _coord_from_element(
             element.find('CoordStationHydro'), 'StationHydro')
+        args['plages_utilisation'] = [
+            _plage_from_element(e, 'StationHydro')
+            for e in element.findall(
+                'PlagesUtilStationHydro/PlageUtilStationHydro')]
         args['capteurs'] = [
             _capteur_from_element(e)
             for e in element.findall('Capteurs/Capteur')]
@@ -464,6 +470,29 @@ def _coord_from_element(element, entite):
         coord['y'] = _value(element, 'CoordY%s' % entite, float)
         coord['proj'] = _value(element, 'ProjCoord%s' % entite, int)
         return coord
+
+
+def _plage_from_element(element, entite):
+    """Return a sitehydro.PlageUtilisation
+
+    from a <PlageUtilStationHydro> element or >PlageUtilCapteur> element
+
+    Arg entite is the xml element suffix, a string in
+    (StationHydro, Capteur).
+
+    """
+    if element is None:
+        return None
+    args = {}
+    args['dtdeb'] = _value(element, 'DtDebPlageUtil{}'.format(entite), _UTC)
+    args['dtfin'] = _value(element, 'DtFinPlageUtil{}'.format(entite), _UTC)
+    args['dtactivation'] = _value(element,
+                                  'DtActivationPlageUtil{}'.format(entite),
+                                  _UTC)
+    args['dtdesactivation'] = _value(element,
+        'DtDesactivationPlageUtil{}'.format(entite), _UTC)
+    args['active'] = _value(element, 'ActivePlageUtil{}'.format(entite), bool)
+    return _sitehydro.PlageUtilisation(**args)
 
 
 def _capteur_from_element(element):

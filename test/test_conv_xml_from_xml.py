@@ -200,6 +200,28 @@ class TestFromXmlSitesHydros(unittest.TestCase):
             self.assertEqual(sh.stations[i - 1].typestation, 'LIMNI')
             self.assertEqual(sh.stations[i - 1].libellecomplement,
                              'station %i' % i)
+
+        # check plages d'utilisation
+        self.assertEqual(len(sh.stations[0].plages_utilisation), 2)
+        plage = sh.stations[0].plages_utilisation[0]
+        self.assertEqual(plage.dtdeb,
+                         datetime.datetime(2015, 2, 14, 11, 54, 6))
+        self.assertEqual(plage.dtfin,
+                         datetime.datetime(2016, 9, 21, 6, 19, 31))
+        self.assertEqual(plage.dtactivation,
+                         datetime.datetime(2017, 3, 17, 17, 38, 21))
+        self.assertEqual(plage.dtdesactivation,
+                         datetime.datetime(2017, 4, 29, 19, 51, 48))
+        self.assertEqual(plage.active, False)
+
+        plage = sh.stations[0].plages_utilisation[1]
+        self.assertEqual(plage.dtdeb,
+                         datetime.datetime(2020, 11, 3, 15, 2, 3))
+        self.assertIsNone(plage.dtfin)
+        self.assertIsNone(plage.dtactivation)
+        self.assertIsNone(plage.dtdesactivation)
+        self.assertIsNone(plage.active)
+
         self.assertEqual(sh.stations[0].niveauaffichage, 911)
         self.assertEqual(sh.stations[1].niveauaffichage, 0)
 
