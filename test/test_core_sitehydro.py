@@ -29,11 +29,13 @@ from libhydro.core import _composant_site as composant_site
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.3"""
-__date__ = """2017-07-18"""
+__version__ = """0.3.1"""
+__date__ = """2017-09-05"""
 # contributor Sébastien ROMON
 
 # HISTORY
+# V0.3.1 - SR - 2017-07-18
+# Tests on plages_utilisation of classes Station and Capteur
 # V0.3 - SR - 2017-07-18
 # Tests on properies of class Station
 # V0.2 - 2014-12-17
@@ -333,10 +335,11 @@ class TestStation(unittest.TestCase):
             (
                 s.code, s.typestation, s.libelle, s.libellecomplement,
                 s.descriptif, s.dtmaj, s.pointk, s.dtmiseservice,
-                s.dtfermeture, s.surveillance, s.commune, s.ddcs
+                s.dtfermeture, s.surveillance, s.commune, s.ddcs,
+                s._plages_utilisation
             ),
             (code, 'LIMNI', None, None, None, None, None, None, None, None,
-             None, [])
+             None, [], [])
         )
 
     def test_base_02(self):
@@ -354,23 +357,35 @@ class TestStation(unittest.TestCase):
         capteurs = [sitehydro.Capteur(code='V83310100101')]
         commune = '03150'
         ddcs = 33  # a numeric rezo
+        plages_utilisation = [
+            sitehydro.PlageUtilisation(
+                dtdeb=_datetime.datetime(2017, 9, 1, 12, 3, 19)),
+            sitehydro.PlageUtilisation(
+                dtdeb=_datetime.datetime(2017, 9, 1, 12, 3, 19),
+                dtfin=_datetime.datetime(2020, 2, 15, 10, 11, 56),
+                dtactivation=_datetime.datetime(2017, 8, 23, 9, 43, 32),
+                dtdesactivation=_datetime.datetime(2017, 9, 4, 19, 41, 27),
+                active=True)]
         s = sitehydro.Station(
             code=code, typestation=typestation,
             libelle=libelle, libellecomplement=libellecomplement,
             descriptif=descriptif, dtmaj=dtmaj, dtmiseservice=dtmiseservice,
             dtfermeture=dtfermeture, pointk=pointk, surveillance=surveillance,
-            capteurs=capteurs, commune=commune, ddcs=ddcs
+            capteurs=capteurs, commune=commune, ddcs=ddcs,
+            plages_utilisation=plages_utilisation
         )
         self.assertEqual(
             (
                 s.code, s.typestation, s.libelle, s.libellecomplement,
                 s.descriptif, s.dtmaj, s.pointk, s.dtmiseservice,
-                s.dtfermeture, s.surveillance, s.capteurs, s.commune, s.ddcs
+                s.dtfermeture, s.surveillance, s.capteurs, s.commune, s.ddcs,
+                s.plages_utilisation
             ),
             (
                 code, typestation, libelle, libellecomplement,
                 descriptif, dtmaj, pointk, dtmiseservice, dtfermeture,
-                surveillance, capteurs, commune, [str(ddcs)]
+                surveillance, capteurs, commune, [str(ddcs)],
+                plages_utilisation
             )
         )
 
@@ -491,8 +506,8 @@ class TestCapteur(unittest.TestCase):
         code = 'V83310100101'
         c = sitehydro.Capteur(code=code)
         self.assertEqual(
-            (c.code, c.typemesure, c.libelle),
-            (code, 'H', None)
+            (c.code, c.typemesure, c.libelle, c.plages_utilisation),
+            (code, 'H', None, [])
         )
 
     def test_base_02(self):
@@ -500,12 +515,22 @@ class TestCapteur(unittest.TestCase):
         typemesure = 'Q'
         code = 'A03346500101'
         libelle = 'Capteur de secours'
+        plages_utilisation = [
+            sitehydro.PlageUtilisation(
+                dtdeb=_datetime.datetime(2017, 9, 1, 12, 3, 19)),
+            sitehydro.PlageUtilisation(
+                dtdeb=_datetime.datetime(2017, 9, 1, 12, 3, 19),
+                dtfin=_datetime.datetime(2020, 2, 15, 10, 11, 56),
+                dtactivation=_datetime.datetime(2017, 8, 23, 9, 43, 32),
+                dtdesactivation=_datetime.datetime(2017, 9, 4, 19, 41, 27),
+                active=True)]
         c = sitehydro.Capteur(
-            code=code, typemesure=typemesure, libelle=libelle
+            code=code, typemesure=typemesure, libelle=libelle,
+            plages_utilisation=plages_utilisation
         )
         self.assertEqual(
-            (c.code, c.typemesure, c.libelle),
-            (code, typemesure, libelle)
+            (c.code, c.typemesure, c.libelle, c.plages_utilisation),
+            (code, typemesure, libelle, plages_utilisation)
         )
 
     def test_equality(self):

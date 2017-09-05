@@ -135,6 +135,18 @@
                 <CdCapteur>O17125100101</CdCapteur>
                 <LbCapteur>Ultrasons principal</LbCapteur>
                 <TypMesureCapteur>H</TypMesureCapteur>
+                <PlagesUtilCapteur>
+                  <PlageUtilCapteur>
+                    <DtDebPlageUtilCapteur>2009-11-03T15:19:18</DtDebPlageUtilCapteur>
+                    <DtFinPlageUtilCapteur>2015-03-21T11:14:47</DtFinPlageUtilCapteur>
+                    <DtActivationPlageUtilCapteur>2014-12-14T18:27:32</DtActivationPlageUtilCapteur>
+                    <DtDesactivationPlageUtilCapteur>2015-10-25T19:13:04</DtDesactivationPlageUtilCapteur>
+                    <ActivePlageUtilCapteur>true</ActivePlageUtilCapteur>
+                  </PlageUtilCapteur>
+                  <PlageUtilCapteur>
+                    <DtDebPlageUtilCapteur>2016-01-15T12:14:13</DtDebPlageUtilCapteur>
+                  </PlageUtilCapteur>
+                </PlagesUtilCapteur>
                 <CdCapteurAncienRef>O1712510</CdCapteurAncienRef>
               </Capteur>
             </Capteurs>

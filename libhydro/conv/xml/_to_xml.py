@@ -33,7 +33,7 @@ __date__ = '2017-09-05'
 
 # HISTORY
 # V0.6.3 - SR- 2017-09-05
-# export plages d'utilisatin of station to xml
+# export plages d'utilisatin of station and capteur to xml
 # V0.6.2 - SR- 2017-07-18
 # export some properties of station to xml
 # V0.6.1 - SR - 2017-07-05
@@ -718,10 +718,23 @@ def _capteur_to_element(capteur, bdhydro=False, strict=True):
             ('CdCapteur', {'value': capteur.code}),
             ('LbCapteur', {'value': capteur.libelle}),
             ('TypMesureCapteur', {'value': capteur.typemesure}),
+            ('PlagesUtilCapteur', {
+                'value': None,
+                'force': True if len(capteur.plages_utilisation) > 0 else False
+                }),
             ('CdCapteurAncienRef', {'value': capteur.codeh2})))
 
-        # action !
-        return _factory(root=_etree.Element('Capteur'), story=story)
+        # make element <Capteur>
+        element = _factory(root=_etree.Element('Capteur'), story=story)
+
+        if len(capteur.plages_utilisation) > 0:
+            child = element.find('PlagesUtilCapteur')
+            for plage in capteur.plages_utilisation:
+                child.append(_plage_to_element(
+                    plage, 'Capteur'))
+
+        # return
+        return element
 
 
 def _grandeur_to_element(grandeur, bdhydro=False, strict=True):

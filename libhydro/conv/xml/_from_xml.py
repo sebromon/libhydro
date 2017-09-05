@@ -40,7 +40,7 @@ __date__ = '2017-09-05'
 
 # HISTORY
 # V0.7.3 - SR - 2017-09-05
-# get plages d'utilisation of station from xml
+# get plages d'utilisation of station and capteur from xml
 # V0.7.2 - SR - 2017-07-18
 # get some properties of station from xml
 # V0.7.1 - SR - 2017-07-05
@@ -506,6 +506,10 @@ def _capteur_from_element(element):
         typemesure = _value(element, 'TypMesureCapteur')
         if typemesure is not None:
             args['typemesure'] = typemesure
+        args['plages_utilisation'] = [
+            _plage_from_element(e, 'Capteur')
+            for e in element.findall(
+                'PlagesUtilCapteur/PlageUtilCapteur')]
         # build a Capteur and return
         return _sitehydro.Capteur(**args)
 

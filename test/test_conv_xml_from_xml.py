@@ -27,10 +27,12 @@ from libhydro.core import (sitehydro, sitemeteo)
 
 # -- strings ------------------------------------------------------------------
 # contributor Sébastien ROMON
-__version__ = '0.5.2'
-__date__ = '2017-07-18'
+__version__ = '0.5.3'
+__date__ = '2017-09-05'
 
 # HISTORY
+# V0.5.3 - SR - 2017-07-18
+# Add tests on plages utilisation of Station and Capteur
 # V0.5.2 - SR - 2017-07-18
 # Add tests on new properties of Station
 # V0.5.1 - SR - 2017-07-05
@@ -275,6 +277,28 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(capteurs[1].code, 'O17125100101')
         self.assertEqual(capteurs[1].typemesure, 'H')
         self.assertEqual(capteurs[1].codeh2, 'O1712510')
+
+        # check plages utilisatino capteurs
+        self.assertEqual(len(capteurs[0].plages_utilisation), 0)
+        self.assertEqual(len(capteurs[1].plages_utilisation), 2)
+        plage = capteurs[1].plages_utilisation[0]
+        self.assertEqual(plage.dtdeb,
+                         datetime.datetime(2009, 11, 3, 15, 19, 18))
+        self.assertEqual(plage.dtfin,
+                         datetime.datetime(2015, 3, 21, 11, 14, 47))
+        self.assertEqual(plage.dtactivation,
+                         datetime.datetime(2014, 12, 14, 18, 27, 32))
+        self.assertEqual(plage.dtdesactivation,
+                         datetime.datetime(2015, 10, 25, 19, 13, 4))
+        self.assertEqual(plage.active, True)
+
+        plage = capteurs[1].plages_utilisation[1]
+        self.assertEqual(plage.dtdeb,
+                         datetime.datetime(2016, 1, 15, 12, 14, 13))
+        self.assertIsNone(plage.dtfin)
+        self.assertIsNone(plage.dtactivation)
+        self.assertIsNone(plage.dtdesactivation)
+        self.assertIsNone(plage.active)
 
     def test_error_1(self):
         """Xml file with namespace error test."""

@@ -688,6 +688,8 @@ class Capteur(_Entitehydro):
         codeh2 (string(8)) = ancien code hydro2
         typemesure (caractere parmi NOMENCLATURE[520]) = H ou Q
         libelle (string)
+        plages_utilisation (PlageUtilisation ou un iterable
+            de PlageUtilisation ou None) = plages d'utilisation
 
     """
 
@@ -703,13 +705,12 @@ class Capteur(_Entitehydro):
     # essai
     # commentaire
 
-    # plageutilisation
     # observateur
 
     typemesure = _composant.Nomenclatureitem(nomenclature=520)
 
     def __init__(self, code, codeh2=None, typemesure='H', libelle=None,
-                 strict=True):
+                 plages_utilisation=None, strict=True):
         """Initialisation.
 
         Arguments:
@@ -717,6 +718,8 @@ class Capteur(_Entitehydro):
             codeh2 (string(8)) = ancien code hydro2
             typemesure (caractere parmi NOMENCLATURE[520], defaut H) = H ou Q
             libelle (string)
+            plages_utilisation (PlageUtilisation ou un iterable
+                de PlageUtilisation ou None) = plages d'utilisation
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite du code et du type de mesure
 
@@ -732,8 +735,37 @@ class Capteur(_Entitehydro):
         # -- descriptors --
         self.typemesure = typemesure
 
+        self._plages_utilisation = []
+        self.plages_utilisation = plages_utilisation
+
+    # TODO plages utilisation communes aux stations et capteurs
+    # -- property plages_utilisation --
+    @property
+    def plages_utilisation(self):
+        """Return plages_utilisation."""
+        return self._plages_utilisation
+
+    @plages_utilisation.setter
+    def plages_utilisation(self, plages_utilisation):
+        """Set plages_utilisation."""
+        self._plages_utilisation = []
+        # None case
+        if plages_utilisation is None:
+            return
+        # one ddc, we make a list with it
+        if not hasattr(plages_utilisation, '__iter__'):
+            plages_utilisation = [plages_utilisation]
+        # an iterable of PlageUtilisation
+        for plage in plages_utilisation:
+            if self._strict and not isinstance(plage, PlageUtilisation):
+                raise TypeError('plages utilisation is not'
+                                ' a PlageUtilisation'
+                                ' or an iterable of PlageUtilisation ')
+            self._plages_utilisation.append(plage)
+
     # -- special methods --
-    __all__attrs__ = ('code', 'codeh2', 'typemesure', 'libelle')
+    __all__attrs__ = ('code', 'codeh2', 'typemesure', 'libelle',
+                      'plages_utilisation')
     # __eq__ = _composant.__eq__
     # __ne__ = _composant.__ne__
 
