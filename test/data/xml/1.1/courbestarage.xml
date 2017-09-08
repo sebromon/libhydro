@@ -32,7 +32,7 @@
         <PivotsCourbeTarage>
           <PivotCourbeTarage>
             <HtPivotCourbeTarage>198.26</HtPivotCourbeTarage>
-            <QualifPivotCourbeTarage>16</QualifPivotCourbeTarage>
+            <!-- <QualifPivotCourbeTarage>16</QualifPivotCourbeTarage> -->
             <QPivotCourbeTarage>20021.36</QPivotCourbeTarage>
           </PivotCourbeTarage>
           <PivotCourbeTarage>

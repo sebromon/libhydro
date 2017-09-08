@@ -675,27 +675,29 @@ def _courbetarage_from_element(element):
 
     return _courbetarage.CourbeTarage(**args)
 
+
 def _pivotct_from_element(element, typect):
     """Return PivotCTPuissance if typect = 4
        or PivotCTPoly if typect = 0
        from  <PivotsCourbeTarage> element.
 
     """
+    # qualif is not mandatory
+    args = {'hauteur': _value(element, 'HtPivotCourbeTarage', float)}
+    qualif = _value(element, 'QualifPivotCourbeTarage', int)
+    if qualif is not None:
+        args['qualif'] = qualif
     if typect == 0:
-        return _courbetarage.PivotCTPoly(
-            hauteur=_value(element, 'HtPivotCourbeTarage', float),
-            qualif=_value(element, 'QualifPivotCourbeTarage', int),
-            debit=_value(element, 'QPivotCourbeTarage', float))
+        args['debit'] = _value(element, 'QPivotCourbeTarage', float)
+        return _courbetarage.PivotCTPoly(**args)
     elif typect == 4:
-        return _courbetarage.PivotCTPuissance(
-            hauteur=_value(element, 'HtPivotCourbeTarage', float),
-            qualif=_value(element, 'QualifPivotCourbeTarage', int),
-            vara=_value(element, 'VarAPivotCourbeTarage', float),
-            varb=_value(element, 'VarBPivotCourbeTarage', float),
-            varh=_value(element, 'VarHPivotCourbeTarage', float),)
+        args['vara'] = _value(element, 'VarAPivotCourbeTarage', float)
+        args['varb'] = _value(element, 'VarBPivotCourbeTarage', float)
+        args['varh'] = _value(element, 'VarHPivotCourbeTarage', float)
+        return _courbetarage.PivotCTPuissance(**args)
     else:
-        print(("type ct:{}".format(typect)))
         raise ValueError('TypCourbeTarage must be 0 or 4')
+
 
 def _periodect_from_element(element):
     """Return a PeriodeCT from  <PeriodeUtilisationCourbeTarage> element."""
