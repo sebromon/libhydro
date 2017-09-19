@@ -22,10 +22,12 @@ from . import (_composant, _composant_site)
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.3a"""
-__date__ = """2014-10-30"""
+__version__ = """0.3b"""
+__date__ = """2017-09-19"""
 
 # HISTORY
+# V0.3b -SR - 2017-09-19
+# Add pdt to grandeur meteo
 # V0.3 - 2014-12-17
 #   change the __eq__ and __ne__ methods
 # V0.1 - 2014-07-07
@@ -236,6 +238,7 @@ class Grandeur(object):
     Proprietes:
         typemesure (string parmi NOMENCLATURE[523])
         sitemeteo (Sitemeteo)
+        pdt (int) pas de temps
 
     """
 
@@ -244,7 +247,6 @@ class Grandeur(object):
     # dtes
     # dths
     # essai
-    # pdt
     # dtmaj
 
     # classesqualites
@@ -253,12 +255,13 @@ class Grandeur(object):
 
     typemesure = _composant.Nomenclatureitem(nomenclature=523)
 
-    def __init__(self, typemesure, sitemeteo=None, strict=True):
+    def __init__(self, typemesure, sitemeteo=None, pdt=None, strict=True):
         """Initialisation.
 
         Arguments:
             typegrandeur (string parmi NOMENCLATURE[523])
             sitemeteo (Sitemeteo)
+            pdt (int) = pas de temps pour un capteur RR
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite du sitemeteo et du type
 
@@ -277,6 +280,8 @@ class Grandeur(object):
         # -- full properties --
         self._sitemeteo = None
         self._sitemeteo = sitemeteo
+        self._pdt = None
+        self.pdt = pdt
 
     # -- property sitemeteo --
     @property
@@ -292,17 +297,31 @@ class Grandeur(object):
                 raise TypeError('sitemeteo must be a Sitemeteo')
         self._sitemeteo = sitemeteo
 
+    # -- property sitemeteo --
+    @property
+    def pdt(self):
+        """Return pdt."""
+        return self._pdt
+
+    @pdt.setter
+    def pdt(self, pdt):
+        """Set pdt."""
+        self._pdt = int(pdt) if pdt is not None else None
+
     # -- special methods --
-    __all__attrs__ = ('typemesure', 'sitemeteo')
+    __all__attrs__ = ('typemesure', 'sitemeteo', 'pdt')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
     __hash__ = _composant.__hash__
 
     def __unicode__(self):
         """Return unicode representation."""
-        return 'Grandeur {0} sur le site meteo {1}'.format(
+        str_pdt = 'de pas de temps {}'.format(self.pdt) \
+            if self.pdt is not None else ''
+        return 'Grandeur {0} {1} sur le site meteo {2}'.format(
             self.typemesure if self.typemesure is not None
             else '<sans type de mesure>',
+            str_pdt,
             self.sitemeteo.code if (
                 (self.sitemeteo is not None) and
                 (self.sitemeteo.code is not None)

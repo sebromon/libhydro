@@ -550,7 +550,9 @@ class TestFromXmlSitesMeteo(unittest.TestCase):
         for grandeur in sm.grandeurs:
             self.assertEqual(grandeur.sitemeteo, sm)
         self.assertEqual(sm.grandeurs[0].typemesure, 'RR')
+        self.assertEqual(sm.grandeurs[0].pdt, 4)
         self.assertEqual(sm.grandeurs[1].typemesure, 'VV')
+        self.assertIsNone(sm.grandeurs[1].pdt)
 
 
 # -- class TestFromXmlModelesPrevision ----------------------------------------

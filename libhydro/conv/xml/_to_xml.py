@@ -28,10 +28,12 @@ from libhydro.core import (
 
 # -- strings ------------------------------------------------------------------
 # contributor Sébastien ROMON
-__version__ = '0.6.3'
-__date__ = '2017-09-05'
+__version__ = '0.6.4'
+__date__ = '2017-09-19'
 
 # HISTORY
+# V0.6.4 - SR- 2017-09-19
+# export pdt of grandeur
 # V0.6.3 - SR- 2017-09-05
 # export plages d'utilisatin of station and capteur to xml
 # V0.6.2 - SR- 2017-07-18
@@ -748,7 +750,8 @@ def _grandeur_to_element(grandeur, bdhydro=False, strict=True):
 
         # template for grandeur simple element
         story = _collections.OrderedDict((
-            ('CdGrdMeteo', {'value': grandeur.typemesure}),))
+            ('CdGrdMeteo', {'value': grandeur.typemesure}),
+            ('PasDeTempsNominalGrdMeteo', {'value': grandeur.pdt})))
 
         # action !
         return _factory(root=_etree.Element('GrdMeteo'), story=story)

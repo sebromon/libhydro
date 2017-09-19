@@ -35,10 +35,12 @@ from libhydro.core import (
 # -- strings ------------------------------------------------------------------
 # contributor Camillo Montes (SYNAPSE)
 # contributor Sébastien ROMON
-__version__ = '0.7.3'
-__date__ = '2017-09-05'
+__version__ = '0.7.4'
+__date__ = '2017-09-19'
 
 # HISTORY
+# V0.7.4 - SR - 2017-09-19
+#  get pdt of grandeur from xml
 # V0.7.3 - SR - 2017-09-05
 # get plages d'utilisation of station and capteur from xml
 # V0.7.2 - SR - 2017-07-18
@@ -522,6 +524,7 @@ def _grandeur_from_element(element, sitemeteo=None):
         args['typemesure'] = _value(element, 'CdGrdMeteo')
         if sitemeteo is not None:
             args['sitemeteo'] = sitemeteo
+        args['pdt'] = _value(element, 'PasDeTempsNominalGrdMeteo', int)
         # build a Grandeur and return
         return _sitemeteo.Grandeur(**args)
 

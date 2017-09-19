@@ -222,8 +222,7 @@ class TestGrandeur(unittest.TestCase):
 
     """Grandeur class tests."""
 
-    def test_base(self):
-        # def test_base_01(self):
+    def test_base_01(self):
         """Base case test."""
         codeinsee = '013008110'
         s = sitemeteo.Sitemeteo(codeinsee)
@@ -234,22 +233,22 @@ class TestGrandeur(unittest.TestCase):
         )
         self.assertEqual(g.typemesure, typemesure)
         self.assertEqual(g.sitemeteo.code, codeinsee)
+        self.assertIsNone(g.pdt)
 
-    def test_base_01(self):
+    def test_base_02(self):
+        """Test pdt"""
         codeinsee = '013008110'
         s = sitemeteo.Sitemeteo(codeinsee)
-        typemesure = 'EP'
+        typemesure = 'RR'
+        pdt = 5
         g = sitemeteo.Grandeur(
             typemesure=typemesure,
-            sitemeteo=s
+            sitemeteo=s,
+            pdt=pdt
         )
-        g2 = sitemeteo.Grandeur(
-            typemesure=typemesure,
-            sitemeteo=s
-        )
-        g2.typemesure = 'RR'
-        self.assertEqual(g.typemesure,'EP')
-        self.assertEqual(g2.typemesure, 'RR')
+        self.assertEqual(g.typemesure, typemesure)
+        self.assertEqual(g.sitemeteo.code, codeinsee)
+        self.assertEqual(g.pdt, pdt)
 
     def test_str(self):
         """Test __str__ method with None values."""

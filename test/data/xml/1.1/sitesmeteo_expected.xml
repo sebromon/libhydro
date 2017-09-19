@@ -62,7 +62,7 @@
             <!-- <DtMiseServiceGrdMeteo>1994-04-05T16:00:00</DtMiseServiceGrdMeteo> -->
             <!-- <DtFermetureServiceGrdMeteo>2011-04-05T16:00:00</DtFermetureServiceGrdMeteo> -->
             <!-- <EssaiGrdMeteo>1</EssaiGrdMeteo> -->
-            <!-- <PasDeTempsNominalGrdMeteo>4</PasDeTempsNominalGrdMeteo> -->
+            <PasDeTempsNominalGrdMeteo>4</PasDeTempsNominalGrdMeteo>
             <!-- <ClassesQualiteGrd> -->
             <!--   <ClasseQualiteGrd> -->
             <!--     <CdqClasseQualiteGrd>3</CdqClasseQualiteGrd> -->
