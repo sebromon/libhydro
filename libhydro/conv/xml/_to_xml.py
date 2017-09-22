@@ -28,10 +28,13 @@ from libhydro.core import (
 
 # -- strings ------------------------------------------------------------------
 # contributor Sébastien ROMON
-__version__ = '0.6.4'
-__date__ = '2017-09-19'
+__version__ = '0.6.5'
+__date__ = '2017-09-22'
 
 # HISTORY
+# V0.6.5 - SR- 2017-09-22
+# export entitehydro, tronconhydro, zonehydro
+# and precisioncoursdeau of site to xml
 # V0.6.4 - SR- 2017-09-19
 # export pdt of grandeur
 # V0.6.3 - SR- 2017-09-05
@@ -360,6 +363,8 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
             ('CoordSiteHydro', {
                 'value': None,
                 'force': True if sitehydro.coord is not None else False}),
+            ('CdEntiteHydrographique', {'value': sitehydro.entitehydro}),
+            ('CdTronconHydrographique', {'value': sitehydro.tronconhydro}),
             ('TronconsVigilanceSiteHydro', {
                 'value': None,
                 'force': True if (
@@ -372,7 +377,10 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
                 'force': True if (len(sitehydro.stations) > 0) else False}),
             ('ValeursSeuilsSiteHydro', {
                 'value': None,
-                'force': True if (len(seuilshydro) > 0) else False})))
+                'force': True if (len(seuilshydro) > 0) else False}),
+            ('CdZoneHydro', {'value': sitehydro.zonehydro}),
+            ('PrecisionCoursDEauSiteHydro',
+             {'value': sitehydro.precisioncoursdeau})))
 
         # update the coord if necessary
         if sitehydro.coord is not None:

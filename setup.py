@@ -60,4 +60,4 @@ setup(
         'Topic :: Scientific/Engineering :: Atmospheric Science :: Hydrology'],
     keywords=['hydrology'],
     packages=find_packages(exclude=["doc", "tests"]),
-    install_requires=('numpy == 1.12', 'pandas == 0.19', 'lxml >= 3.2.3'))
+    install_requires=('numpy == 1.12', 'pandas == 0.19.2', 'lxml >= 3.2.3'))

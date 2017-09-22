@@ -29,11 +29,13 @@ from libhydro.core import _composant_site as composant_site
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin \
              <philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.3.1"""
-__date__ = """2017-09-05"""
+__version__ = """0.3.2"""
+__date__ = """2017-09-22"""
 # contributor Sébastien ROMON
 
 # HISTORY
+# V0.3.2 - SR - 2017-07-18
+# Tests entitehydro, tronconhydro, zonehydro precisioncoursdeaun of class Site
 # V0.3.1 - SR - 2017-07-18
 # Tests on plages_utilisation of classes Station and Capteur
 # V0.3 - SR - 2017-07-18
@@ -56,9 +58,11 @@ class TestSitehydro(unittest.TestCase):
         self.assertEqual(
             (
                 s.code, s.codeh2, s.typesite, s.libelle, s.libelleusuel,
-                s.stations, s.communes, s.tronconsvigilance
+                s.stations, s.communes, s.tronconsvigilance, s.entitehydro,
+                s.zonehydro, s.tronconhydro, s.precisioncoursdeau
             ),
-            (code, None, 'REEL', None, None, [], [], [])
+            (code, None, 'REEL', None, None, [], [], [], None, None, None,
+             None)
         )
 
     def test_base_02(self):
@@ -76,22 +80,33 @@ class TestSitehydro(unittest.TestCase):
         tronconvigilance = sitehydro.Tronconvigilance(
             code='AC1', libelle='La Liane'
         )
+        entitehydro = 'O---0000'
+        tronconhydro = 'O0240430'
+        zonehydro = 'O987'
+        precisioncoursdeau = 'totale'
         s = sitehydro.Sitehydro(
             code=code, codeh2=codeh2, typesite=typesite,
             libelle=libelle, libelleusuel=libelleusuel,
             coord=coord, stations=station, communes=commune,
-            tronconsvigilance=tronconvigilance
+            tronconsvigilance=tronconvigilance,
+            entitehydro=entitehydro,
+            tronconhydro=tronconhydro,
+            zonehydro=zonehydro,
+            precisioncoursdeau=precisioncoursdeau
         )
 
         self.assertEqual(
             (
                 s.code, s.codeh2, s.typesite, s.libelle, s.libelleusuel,
-                s.coord, s.stations, s.communes, s.tronconsvigilance
+                s.coord, s.stations, s.communes, s.tronconsvigilance,
+                s.entitehydro, s.zonehydro, s.tronconhydro,
+                s.precisioncoursdeau
             ),
             (
                 code, codeh2, typesite, libelle, libelleusuel,
                 composant_site.Coord(*coord), [station], [str(commune)],
-                [tronconvigilance]
+                [tronconvigilance], entitehydro, zonehydro, tronconhydro,
+                precisioncoursdeau
             )
         )
 
@@ -304,6 +319,45 @@ class TestSitehydro(unittest.TestCase):
         with self.assertRaises(TypeError):
             sitehydro.Sitehydro(
                 code=code, tronconsvigilance='I am not a troncon'
+            )
+
+    def test_error_07(self):
+        """Zonehydro error."""
+        code = 'A2351010'
+        zonehydro = 'A012'
+        sitehydro.Sitehydro(
+            code=code,
+            zonehydro=zonehydro)
+        zonehydro = 'A0123'
+        with self.assertRaises(ValueError):
+            sitehydro.Sitehydro(
+                code=code, zonehydro=zonehydro
+            )
+
+    def test_error_08(self):
+        """Tronconhydro error."""
+        code = 'A2351010'
+        tronconhydro = 'A1234567'
+        sitehydro.Sitehydro(
+            code=code,
+            tronconhydro=tronconhydro)
+        tronconhydro = 'A0123'
+        with self.assertRaises(ValueError):
+            sitehydro.Sitehydro(
+                code=code, tronconhydro=tronconhydro
+            )
+
+    def test_error_09(self):
+        """Entitehydro error."""
+        code = 'A2351010'
+        entitehydro = 'A1234567'
+        sitehydro.Sitehydro(
+            code=code,
+            entitehydro=entitehydro)
+        entitehydro = 'A0123456789'
+        with self.assertRaises(ValueError):
+            sitehydro.Sitehydro(
+                code=code, entitehydro=entitehydro
             )
 
     def test_inheritance(self):

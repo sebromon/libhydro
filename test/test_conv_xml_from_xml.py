@@ -253,6 +253,10 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(site.tronconsvigilance[1].code, 'AG5')
         self.assertEqual(
             site.tronconsvigilance[1].libelle, 'Troncon Adour àvâl')
+        self.assertEqual(site.entitehydro, 'Y1524018')
+        self.assertEqual(site.tronconhydro, 'O0011532')
+        self.assertEqual(site.zonehydro, 'H420')
+        self.assertEqual(site.precisioncoursdeau, 'bras principal')
         # check station
         station = site.stations[0]
         self.assertEqual(station.ddcs, ['10', '1000000001'])

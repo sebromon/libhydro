@@ -117,7 +117,7 @@
         <!-- <DroitPublicationSiteHydro>10</DroitPublicationSiteHydro> -->
         <!-- <EssaiSiteHydro>false</EssaiSiteHydro> -->
         <!-- <InfluGeneSiteHydro>2</InfluGeneSiteHydro> -->
-        <!-- <CdEntiteHydrographique>Y1524018</CdEntiteHydrographique> -->
+        <CdEntiteHydrographique>Y1524018</CdEntiteHydrographique>
         <!-- <LoisStatContexteSiteHydro> -->
         <!--   <LoiStatContexteSiteHydro> -->
         <!--     <TypContexteLoiStat>1</TypContexteLoiStat> -->
@@ -150,7 +150,7 @@
         <!--     <RoleContactSiteHydro>ADM</RoleContactSiteHydro> -->
         <!--   </RoleContactSiteHydro> -->
         <!-- </RolesContactSiteHydro> -->
-        <!-- <CdTronconHydrographique>O0011532</CdTronconHydrographique> -->
+        <CdTronconHydrographique>O0011532</CdTronconHydrographique>
         <TronconsVigilanceSiteHydro>
           <TronconVigilanceSiteHydro>
             <CdTronconVigilance>AG3</CdTronconVigilance>
@@ -304,7 +304,7 @@
         <!--   </LameDEau> -->
         <!-- </LamesDEau> -->
         <CdZoneHydro>H420</CdZoneHydro>
-        <!-- <PrecisionCoursDEauSiteHydro>bras principal</PrecisionCoursDEauSiteHydro> -->
+        <PrecisionCoursDEauSiteHydro>bras principal</PrecisionCoursDEauSiteHydro>
       </SiteHydro>
     </SitesHydro>
   </RefHyd>

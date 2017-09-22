@@ -35,10 +35,13 @@ from libhydro.core import (
 # -- strings ------------------------------------------------------------------
 # contributor Camillo Montes (SYNAPSE)
 # contributor Sébastien ROMON
-__version__ = '0.7.4'
-__date__ = '2017-09-19'
+__version__ = '0.7.5'
+__date__ = '2017-09-22'
 
 # HISTORY
+# V0.7.5 - SR - 2017-09-22
+# get entitehydro, tronconhydro, zonehydro
+# and precisioncoursdeau of site from xml
 # V0.7.4 - SR - 2017-09-19
 #  get pdt of grandeur from xml
 # V0.7.3 - SR - 2017-09-05
@@ -383,6 +386,11 @@ def _sitehydro_from_element(element):
             _tronconvigilance_from_element(e)
             for e in element.findall(
                 'TronconsVigilanceSiteHydro/TronconVigilanceSiteHydro')]
+        args['entitehydro'] = _value(element, 'CdEntiteHydrographique')
+        args['tronconhydro'] = _value(element, 'CdTronconHydrographique')
+        args['zonehydro'] = _value(element, 'CdZoneHydro')
+        args['precisioncoursdeau'] = _value(element,
+                                            'PrecisionCoursDEauSiteHydro')
         # build a Sitehydro and return
         return _sitehydro.Sitehydro(**args)
 

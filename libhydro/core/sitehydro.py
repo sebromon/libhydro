@@ -19,10 +19,12 @@ from . import _composant, _composant_site
 # -- strings ------------------------------------------------------------------
 # contributor Camillo Montes (SYNAPSE)
 # contributor Sébastien ROMON
-__version__ = '0.4.3'
-__date__ = '2017-09-05'
+__version__ = '0.4.4'
+__date__ = '2017-09-22'
 
 # HISTORY
+# V 0.4.4 - SR - 2017-09-22
+# add entitehydro, zonehydro, tronconhydro and precisioncoursdeau to Site
 # V 0.4.3 - SR - 2017-09-05
 # add plages_utilisation to Station
 # V 0.4.2 - SR -2017-07-18
@@ -213,7 +215,10 @@ class Sitehydro(_Site_or_station):
         stations (une liste de Station)
         communes (une liste de codes communes, string(5)) = code INSEE commune
         tronconsvigilance (une liste de Tronconvigilance)
-
+        entitehydro (string(8) = entité hydrographique
+        zonehydro (string(4)) = zone hydrographique
+        tronconhydro (string(8)) = troncon hydrographique
+        precisioncoursdeau (string) = precision du cours d'eau
     """
 
     # Sitehydro other properties
@@ -241,18 +246,16 @@ class Sitehydro(_Site_or_station):
     # siteattache
     # siteassocie
     # masses d'eau
-    # entitehydro
     # loistats
     # images
     # rolecontact
-    # zonehydro
-    # tronconhydro
 
     typesite = _composant.Nomenclatureitem(nomenclature=530)
 
     def __init__(self, code, codeh2=None, typesite='REEL', libelle=None,
                  libelleusuel=None, coord=None, stations=None, communes=None,
-                 tronconsvigilance=None, strict=True):
+                 tronconsvigilance=None, entitehydro=None, zonehydro=None,
+                 tronconhydro=None, precisioncoursdeau=None, strict=True):
         """Initialisation.
 
         Arguments:
@@ -267,6 +270,10 @@ class Sitehydro(_Site_or_station):
             stations (une Station ou un iterable de Station)
             communes (un code commmune ou un iterable de codes)
             tronconsvigilance (un Tronconvigilance ou un iterable)
+            entitehydro (string(8) = entité hydrographique
+            zonehydro (string(4)) = zone hydrographique
+            tronconhydro (string(8)) = troncon hydrographique
+            precisioncoursdeau (string) = precision du cours d'eau
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite du type, du code et des stations
 
@@ -283,6 +290,8 @@ class Sitehydro(_Site_or_station):
         # -- simple properties --
         self.libelleusuel = str(libelleusuel) \
             if (libelleusuel is not None) else None
+        self.precisioncoursdeau = str(precisioncoursdeau) \
+            if (precisioncoursdeau is not None) else None
 
         # -- descriptors --
         self.typesite = typesite
@@ -292,6 +301,12 @@ class Sitehydro(_Site_or_station):
         self.stations = stations
         self.communes = communes
         self.tronconsvigilance = tronconsvigilance
+        self._entitehydro = None
+        self.entitehydro = entitehydro
+        self._tronconhydro = None
+        self.tronconhydro = tronconhydro
+        self._zonehydro = None
+        self.zonehydro = zonehydro
 
     # -- property stations --
     @property
@@ -373,10 +388,68 @@ class Sitehydro(_Site_or_station):
             # add station
             self._tronconsvigilance.append(tronconvigilance)
 
+    # -- property zonehydro --
+    @property
+    def zonehydro(self):
+        """Return zonehydro."""
+        return self._zonehydro
+
+    @zonehydro.setter
+    def zonehydro(self, zonehydro):
+        """Set zonehydro."""
+        self._zonehydro = None
+        # None case
+        if zonehydro is None:
+            return
+        zonehydro = str(zonehydro)
+        if self._strict and len(zonehydro) != 4:
+            raise ValueError(
+                'length of zone hydro ({}) must be 4'.format(zonehydro))
+        self._zonehydro = zonehydro
+
+    # -- property tronconhydro --
+    @property
+    def tronconhydro(self):
+        """Return tronconhydro."""
+        return self._tronconhydro
+
+    @tronconhydro.setter
+    def tronconhydro(self, tronconhydro):
+        """Set tronconhydro."""
+        self._tronconhydro = None
+        # None case
+        if tronconhydro is None:
+            return
+        tronconhydro = str(tronconhydro)
+        if self._strict and len(tronconhydro) != 8:
+            raise ValueError(
+                'length of troncon hydro ({}) must be 8'.format(tronconhydro))
+        self._tronconhydro = tronconhydro
+
+    # -- property entitehydro --
+    @property
+    def entitehydro(self):
+        """Return zonehydro."""
+        return self._entitehydro
+
+    @entitehydro.setter
+    def entitehydro(self, entitehydro):
+        """Set tronconhydro."""
+        self._entitehydro = None
+        # None case
+        if entitehydro is None:
+            return
+        entitehydro = str(entitehydro)
+        if self._strict and len(entitehydro) != 8:
+            raise ValueError(
+                'length of entite hydro ({}) must be 8'.format(entitehydro))
+        self._entitehydro = entitehydro
+
     # -- special methods --
     __all__attrs__ = (
         'code', 'codeh2', 'typesite', 'libelle', 'libelleusuel', 'coord',
-        'stations', 'communes', 'tronconsvigilance')
+        'stations', 'communes', 'tronconsvigilance',  'entitehydro',
+        'zonehydro', 'tronconhydro', 'precisioncoursdeau')
 
     def __unicode__(self):
         """Return unicode representation."""

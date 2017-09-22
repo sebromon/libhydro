@@ -93,6 +93,8 @@
           <CoordYSiteHydro>1781803.0</CoordYSiteHydro>
           <ProjCoordSiteHydro>26</ProjCoordSiteHydro>
         </CoordSiteHydro>
+        <CdEntiteHydrographique>Y1524018</CdEntiteHydrographique>
+        <CdTronconHydrographique>O0011532</CdTronconHydrographique>
         <TronconsVigilanceSiteHydro>
           <TronconVigilanceSiteHydro>
             <CdTronconVigilance>AG3</CdTronconVigilance>
@@ -154,6 +156,8 @@
             <CdCommune>11354</CdCommune>
           </StationHydro>
         </StationsHydro>
+        <CdZoneHydro>H420</CdZoneHydro>
+        <PrecisionCoursDEauSiteHydro>bras principal</PrecisionCoursDEauSiteHydro>
       </SiteHydro>
     </SitesHydro>
   </RefHyd>
