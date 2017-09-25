@@ -249,7 +249,7 @@
                 <CdCapteur>O17125100101</CdCapteur>
                 <LbCapteur>Ultrasons principal</LbCapteur>
                 <!-- <MnCapteur>UP</MnCapteur> -->
-                <!-- <TypCapteur>3</TypCapteur> -->
+                <TypCapteur>3</TypCapteur>
                 <TypMesureCapteur>H</TypMesureCapteur>
                 <!-- <EssaiCapteur>false</EssaiCapteur> -->
                 <!-- <ComCapteur>Capteur jaune</ComCapteur> -->

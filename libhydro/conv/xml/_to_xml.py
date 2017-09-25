@@ -32,6 +32,7 @@ __version__ = '0.6.5'
 __date__ = '2017-09-22'
 
 # HISTORY
+# SR - 2017-09- 25 export type capteur to xml
 # V0.6.5 - SR- 2017-09-22
 # export entitehydro, tronconhydro, zonehydro
 # and precisioncoursdeau of site to xml
@@ -727,6 +728,7 @@ def _capteur_to_element(capteur, bdhydro=False, strict=True):
         story = _collections.OrderedDict((
             ('CdCapteur', {'value': capteur.code}),
             ('LbCapteur', {'value': capteur.libelle}),
+            ('TypCapteur', {'value': capteur.typecapteur}),
             ('TypMesureCapteur', {'value': capteur.typemesure}),
             ('PlagesUtilCapteur', {
                 'value': None,

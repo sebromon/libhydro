@@ -560,8 +560,9 @@ class TestCapteur(unittest.TestCase):
         code = 'V83310100101'
         c = sitehydro.Capteur(code=code)
         self.assertEqual(
-            (c.code, c.typemesure, c.libelle, c.plages_utilisation),
-            (code, 'H', None, [])
+            (c.code, c.typemesure, c.libelle, c.typecapteur,
+             c.plages_utilisation),
+            (code, 'H', None, 0, [])
         )
 
     def test_base_02(self):
@@ -569,6 +570,7 @@ class TestCapteur(unittest.TestCase):
         typemesure = 'Q'
         code = 'A03346500101'
         libelle = 'Capteur de secours'
+        typecapteur = 5
         plages_utilisation = [
             sitehydro.PlageUtilisation(
                 dtdeb=_datetime.datetime(2017, 9, 1, 12, 3, 19)),
@@ -580,11 +582,13 @@ class TestCapteur(unittest.TestCase):
                 active=True)]
         c = sitehydro.Capteur(
             code=code, typemesure=typemesure, libelle=libelle,
+            typecapteur=typecapteur,
             plages_utilisation=plages_utilisation
         )
         self.assertEqual(
-            (c.code, c.typemesure, c.libelle, c.plages_utilisation),
-            (code, typemesure, libelle, plages_utilisation)
+            (c.code, c.typemesure, c.libelle, c.typecapteur,
+             c.plages_utilisation),
+            (code, typemesure, libelle, typecapteur, plages_utilisation)
         )
 
     def test_equality(self):
@@ -609,6 +613,14 @@ class TestCapteur(unittest.TestCase):
         """Test __str__ method with None values."""
         c = sitehydro.Capteur(code=0, strict=False)
         self.assertTrue(c.__str__().rfind('Capteur') > -1)
+        self.assertTrue(c.__str__().rfind('type inconnu') > -1)
+
+    def test_str_02(self):
+        """Test __str__ method with None values."""
+        typecapteur = 1
+        c = sitehydro.Capteur(code=0, typecapteur=typecapteur, strict=False)
+        self.assertTrue(c.__str__().rfind('Capteur') > -1)
+        self.assertTrue(c.__str__().rfind('type observateur') > -1)
 
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test."""
@@ -639,6 +651,17 @@ class TestCapteur(unittest.TestCase):
             sitehydro.Capteur(code='B440112201')
         with self.assertRaises(ValueError):
             sitehydro.Capteur(code='B4401122010133')
+
+    def test_error_03(self):
+        """typecapteur error."""
+        typecapteur = 6
+        code = 'Z00123456789'
+        sitehydro.Capteur(code=code,
+                          typecapteur=typecapteur)
+        typecapteur = 56
+        with self.assertRaises(ValueError):
+            sitehydro.Capteur(code=code,
+                              typecapteur=typecapteur)
 
 
 # -- class TestTronconvigilance -----------------------------------------------

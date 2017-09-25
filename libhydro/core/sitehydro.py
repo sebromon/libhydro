@@ -14,6 +14,7 @@ from __future__ import (
     division as _division, print_function as _print_function)
 
 from . import _composant, _composant_site
+from libhydro.core.nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
 # -- strings ------------------------------------------------------------------
@@ -23,6 +24,7 @@ __version__ = '0.4.4'
 __date__ = '2017-09-22'
 
 # HISTORY
+# SR add typecapteur to Capteur
 # V 0.4.4 - SR - 2017-09-22
 # add entitehydro, zonehydro, tronconhydro and precisioncoursdeau to Site
 # V 0.4.3 - SR - 2017-09-05
@@ -760,6 +762,7 @@ class Capteur(_Entitehydro):
         code (string(12)) = code hydro
         codeh2 (string(8)) = ancien code hydro2
         typemesure (caractere parmi NOMENCLATURE[520]) = H ou Q
+        typecapteur (int parmi NOMENCLATURE[519])
         libelle (string)
         plages_utilisation (PlageUtilisation ou un iterable
             de PlageUtilisation ou None) = plages d'utilisation
@@ -771,7 +774,7 @@ class Capteur(_Entitehydro):
     # station
 
     # mnemonique
-    # typecapteur
+
     # surveillance
     # dtmaj
     # pdt
@@ -781,8 +784,10 @@ class Capteur(_Entitehydro):
     # observateur
 
     typemesure = _composant.Nomenclatureitem(nomenclature=520)
+    typecapteur = _composant.Nomenclatureitem(nomenclature=519)
 
     def __init__(self, code, codeh2=None, typemesure='H', libelle=None,
+                 typecapteur=0,
                  plages_utilisation=None, strict=True):
         """Initialisation.
 
@@ -790,6 +795,7 @@ class Capteur(_Entitehydro):
             code (string(12)) = code hydro
             codeh2 (string(8)) = ancien code hydro2
             typemesure (caractere parmi NOMENCLATURE[520], defaut H) = H ou Q
+            typecapteur (int parmi NOMENCLATURE[519])
             libelle (string)
             plages_utilisation (PlageUtilisation ou un iterable
                 de PlageUtilisation ou None) = plages d'utilisation
@@ -807,6 +813,7 @@ class Capteur(_Entitehydro):
 
         # -- descriptors --
         self.typemesure = typemesure
+        self.typecapteur = typecapteur
 
         self._plages_utilisation = []
         self.plages_utilisation = plages_utilisation
@@ -838,13 +845,15 @@ class Capteur(_Entitehydro):
 
     # -- special methods --
     __all__attrs__ = ('code', 'codeh2', 'typemesure', 'libelle',
+                      'typecapteur',
                       'plages_utilisation')
     # __eq__ = _composant.__eq__
     # __ne__ = _composant.__ne__
 
     def __unicode__(self):
         """Return unicode representation."""
-        return 'Capteur {0} {1}::{2}'.format(
+        return 'Capteur de type {0} {1} {2}::{3}'.format(
+            _NOMENCLATURE[519][self.typecapteur].lower(),
             self.typemesure or '<sans type de mesure>',
             self.code or '<sans code>',
             self.libelle or '<sans libelle>')

@@ -278,9 +278,11 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(len(capteurs), 2)
         self.assertEqual(capteurs[0].code, 'O17125100102')
         self.assertEqual(capteurs[0].typemesure, 'H')
+        self.assertEqual(capteurs[0].typecapteur, 0)  # default type
         self.assertEqual(capteurs[1].code, 'O17125100101')
         self.assertEqual(capteurs[1].typemesure, 'H')
         self.assertEqual(capteurs[1].codeh2, 'O1712510')
+        self.assertEqual(capteurs[1].typecapteur, 3)
 
         # check plages utilisatino capteurs
         self.assertEqual(len(capteurs[0].plages_utilisation), 0)

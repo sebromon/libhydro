@@ -131,11 +131,13 @@
               <Capteur>
                 <CdCapteur>O17125100102</CdCapteur>
                 <LbCapteur>Radar</LbCapteur>
+                <TypCapteur>0</TypCapteur>
                 <TypMesureCapteur>H</TypMesureCapteur>
               </Capteur>
               <Capteur>
                 <CdCapteur>O17125100101</CdCapteur>
                 <LbCapteur>Ultrasons principal</LbCapteur>
+                <TypCapteur>3</TypCapteur>
                 <TypMesureCapteur>H</TypMesureCapteur>
                 <PlagesUtilCapteur>
                   <PlageUtilCapteur>

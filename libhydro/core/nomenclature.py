@@ -20,10 +20,12 @@ from __future__ import (
 
 
 # -- strings ------------------------------------------------------------------
-__version__ = '0.6.2'
-__date__ = '2015-06-09'
+__version__ = '0.6.3'
+__date__ = '2015-09-23'
 
 # HISTORY
+# V0.6.3 - SR - 2015-09-23
+# add nomenclature 519 (type du capteur)
 # V0.6.2 - SR - 2015-06-09
 # add nomenclature 76
 # V0.6 - 2014-07-15
@@ -146,13 +148,13 @@ NOMENCLATURE = {
     },
 
     # Type de courbe de tarage
-    503: {0: 'Polyligne', 4:'Fonction puissance'},
-    
+    503: {0: 'Polyligne', 4: 'Fonction puissance'},
+
     # Etat de la courbe de tarage
-    504: {0: 'Non utilisable', 4:'Utilisable', 8: 'Utilisée', 12: 'Travail'},
-    
+    504: {0: 'Non utilisable', 4: 'Utilisable', 8: 'Utilisée', 12: 'Travail'},
+
     # Qualification du pivot de la courbe de tarage
-    505:{12: 'Incertain', 16: 'Non qualifié' ,20: 'Bon'},
+    505: {12: 'Incertain', 16: 'Non qualifié', 20: 'Bon'},
 
     # Methode d'obtention du resultat de l'observation hydrometrique
     507: {0: 'Mesure', 4: 'Reconstitution', 12: 'Interpolation'},
@@ -191,7 +193,21 @@ NOMENCLATURE = {
 
     # Statut de la simulation
     516: {4: 'Brute', 16: 'Critiquee'},
-
+    # Type du capteur
+    519: {
+        0: 'Inconnu',
+        1: 'Observateur',
+        2: 'Bulle à bulle',
+        3: 'Ultrasons (gele)',
+        4: 'Radar',
+        5: 'Pression',
+        6: 'Codeur',
+        7: 'Nilomètre',
+        8: 'Ultrason immergé',
+        9: 'Ultrason aérien',
+        10: 'Ultrason débit',
+        11: 'Vidéo',
+        12: 'Limni'},
     # Type de mesure du capteur hydrometrique
     520: {'H': 'Hauteur', 'Q': 'Debit'},
 

@@ -39,6 +39,7 @@ __version__ = '0.7.5'
 __date__ = '2017-09-22'
 
 # HISTORY
+# SR - 2017-09-25 get type capteur from xml
 # V0.7.5 - SR - 2017-09-22
 # get entitehydro, tronconhydro, zonehydro
 # and precisioncoursdeau of site from xml
@@ -513,6 +514,9 @@ def _capteur_from_element(element):
         args['code'] = _value(element, 'CdCapteur')
         args['codeh2'] = _value(element, 'CdCapteurAncienRef')
         args['libelle'] = _value(element, 'LbCapteur')
+        typecapteur = _value(element, 'TypCapteur')
+        if typecapteur is not None:
+            args['typecapteur'] = typecapteur
         typemesure = _value(element, 'TypMesureCapteur')
         if typemesure is not None:
             args['typemesure'] = typemesure
