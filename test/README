@@ -1,0 +1,15 @@
+test_conv_xml_to_xml.py
+===============================================================================
+
+Ce test, qui vérifie la bonne écriture d'un fichier XML par comparaison avec un
+modèle, échoue parfois de manière aléatoire pour les <seriesmeteo> car l'ordre
+d'écriture des éléments n'y est pas garanti.
+
+Le message d'erreur contient:
+
+    ...
+    AssertionError: To XML SANDRE format test for unit <seriesmeteo>...
+    ...
+
+En général l'utilisation d'un autre pattern pour lancer les tests permet de
+contourner le problème (make test, make discover ou make coverage), en attendant sa correction.

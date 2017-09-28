@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Package libhydro.conv.
 
 Ce package contient des convertisseurs de et vers differents formats.
@@ -8,6 +8,7 @@ Il contient les modules:
     # xml
 
 """
-__all__ = ['shom', 'xml']
+__all__ = ['csv', 'shom', 'xml']
+from . import csv
 from .shom import shom
 from . import xml

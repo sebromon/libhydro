@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module composant.
 
 Ce module contient des elements de base de la librairie.
@@ -14,19 +14,20 @@ les descripteurs:
     # Datefromeverything
     # Nomenclatureitem
 
-et les fonctions:
+les fonctions:
     # is_code_hydro()
     # is_code_insee()
     # __str__()
 
+les fonctions speciales:
+    # __eq__
+    # __ne__
+
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
-    unicode_literals as _unicode_literals,
-    absolute_import as _absolute_import,
-    division as _division,
-    print_function as _print_function
-)
+    unicode_literals as _unicode_literals, absolute_import as _absolute_import,
+    division as _division, print_function as _print_function)
 
 import sys as _sys
 import locale as _locale
@@ -39,27 +40,26 @@ import datetime as _datetime
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
-#-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin """ \
-             """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.9f"""
-__date__ = """2014-07-20"""
+# -- strings ------------------------------------------------------------------
+__version__ = '1.0.2'
+__date__ = '2015-05-03'
 
-#HISTORY
-#V0.9 - 2014-07-16
-#    add the error_handler, the Rlist and the Rlistproperty
-#    split the module in 3 parts
-#V0.8 - 2014-02-01
-#    add and use descriptors
-#V0.1 - 2013-11-06
-#    first shot
+# HISTORY
+# V1.0 - 2014-12-17
+#   move here full __eq__ and __ne__ methods
+# V0.9 - 2014-07-16
+#   add the error_handler, the Rlist and the Rlistproperty
+#   split the module in 3 parts
+# V0.8 - 2014-02-01
+#   add and use descriptors
+# V0.1 - 2013-11-06
+#   first shot
 
-
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # TODO - use regex for codes matching functions
 
 
-#-- a basic errors handler ----------------------------------------------------
+# -- a basic errors handler ---------------------------------------------------
 def _warn_handler(msg, *args, **kwargs):
     """Print msg on stderr."""
     _warnings.warn(msg)
@@ -73,11 +73,10 @@ def _strict_handler(msg, error):
 ERROR_HANDLERS = {
     "ignore": lambda *args, **kwargs: None,  # 'ignore' returns None
     "warn": _warn_handler,  # 'warn' emit 'warn(msg)'
-    "strict": _strict_handler  # 'strict' raises 'error(msg)'
-}
+    "strict": _strict_handler}  # 'strict' raises 'error(msg)'
 
 
-#-- class Rlist ---------------------------------------------------------------
+# -- class Rlist --------------------------------------------------------------
 class Rlist(list):
 
     """Class Rlist.
@@ -135,13 +134,19 @@ class Rlist(list):
 
     def __setitem__(self, i, y):
         """Setitem method."""
-        self.checkiterable([y])
+        # Used for slicing in python 3
+        if isinstance(i, slice):
+            # check type of each element in y 
+            self.checkiterable(y)
+        else:
+            # check type of y
+            self.checkiterable([y])
         super(Rlist, self).__setitem__(i, y)
 
-    def __setslice__(self, i, j, y):
-        """Setitem method."""
-        self.checkiterable(y)
-        super(Rlist, self).__setslice__(i, j, y)
+#    def __setslice__(self, i, j, y):
+#        """Setitem method."""
+#        self.checkiterable(y)
+#        super(Rlist, self).__setslice__(i, j, y)
 
     # -- other methods --
     def checkiterable(self, iterable, errors='strict'):
@@ -163,21 +168,30 @@ class Rlist(list):
                 if not isinstance(obj, self.cls):
                     error_handler(
                         msg="the object '%s' is not of %s" % (obj, self.cls),
-                        error=TypeError
-                    )
+                        error=TypeError)
                     return False
         # return
         return True
 
 # reset docstrings to their original 'list' values
-Rlist.append.__func__.__doc__ = list.append.__doc__
-Rlist.extend.__func__.__doc__ = list.extend.__doc__
-Rlist.insert.__func__.__doc__ = list.insert.__doc__
-Rlist.__setitem__.__func__.__doc__ = list.__setitem__.__doc__
-Rlist.__setslice__.__func__.__doc__ = list.__setslice__.__doc__
+# python2 Rlist.append <unbound method Rlist.append>
+# python2 Rlist.append __func__ <function append at 0x7fd89991a2a8>
+# python3 Rlist.append <function __main__.Rlist.append>
+#Rlist.append.__func__.__doc__ = list.append.__doc__
+#Rlist.extend.__func__.__doc__ = list.extend.__doc__
+#Rlist.insert.__func__.__doc__ = list.insert.__doc__
+#Rlist.__setitem__.__func__.__doc__ = list.__setitem__.__doc__
+#Rlist.__setslice__.__func__.__doc__ = list.__setslice__.__doc__
+Rlist.append.__doc__ = list.append.__doc__
+Rlist.extend.__doc__ = list.extend.__doc__
+Rlist.insert.__doc__ = list.insert.__doc__
+Rlist.__setitem__.__doc__ = list.__setitem__.__doc__
+# __set_slice depretacted python2.6 use __setitem__ isntead
+#Rlist.__setslice__.__doc__ = list.__setslice__.__doc__
 
 
-#-- class  Rlistproperty ------------------------------------------------------
+
+# -- class  Rlistproperty -----------------------------------------------------
 class Rlistproperty(object):
 
     """Class Rlistproperty
@@ -234,7 +248,7 @@ class Rlistproperty(object):
         self.data[instance] = rlist
 
 
-#-- class Datefromeverything --------------------------------------------------
+# -- class Datefromeverything -------------------------------------------------
 class Datefromeverything(object):
 
     """Class Datefromeverything.
@@ -264,10 +278,8 @@ class Datefromeverything(object):
         """Set the datetime.datetime property.
 
         Args:
-            value (
-                numpy.datetime64 or string to make one
-                datetime.datetime or iterable or dict to make it
-            )
+            value (numpy.datetime64 or string to make one
+                datetime.datetime or iterable or dict to make it)
 
         String format: look at
           [http://docs.scipy.org/doc/numpy-dev/reference/arrays.datetime.html]
@@ -275,22 +287,18 @@ class Datefromeverything(object):
         """
         if self.required and (value is None):
             raise TypeError('a value other than None is required')
-        if (
-            (value is not None)
-            and not isinstance(value, _datetime.datetime)
-            and not isinstance(value, _numpy.datetime64)
-        ):
+        if (value is not None) and not isinstance(value, _datetime.datetime) \
+                and not isinstance(value, _numpy.datetime64):
             try:
                 if isinstance(value, dict):
                     value = _datetime.datetime(**value)
-                elif isinstance(value, (str, unicode)):
+                elif isinstance(value, str):
                     value = _numpy.datetime64(value, 's')
                 else:  # can be an iterable for datetime.datetime
                     value = _datetime.datetime(*value)
             except (ValueError, TypeError, AttributeError):
                 raise ValueError(
-                    'could not convert object to datetime.datetime'
-                )
+                    'could not convert object to datetime.datetime')
 
         # all is well
         if isinstance(value, _numpy.datetime64):
@@ -298,7 +306,7 @@ class Datefromeverything(object):
         self.data[instance] = value
 
 
-#-- class Nomenclatureitem ----------------------------------------------------
+# -- class Nomenclatureitem ---------------------------------------------------
 class Nomenclatureitem(object):
 
     """Class Nomenclatureitem.
@@ -340,7 +348,7 @@ class Nomenclatureitem(object):
         self.nomenclature = int(nomenclature)
         if self.nomenclature not in _NOMENCLATURE:
             raise ValueError('unknown nomenclature')
-        self.valuetype = type(_NOMENCLATURE[self.nomenclature].keys()[0])
+        self.valuetype = type(list(_NOMENCLATURE[self.nomenclature].keys())[0])
         self.strict = bool(strict)
         self.required = bool(required)
         self.default = default
@@ -360,19 +368,15 @@ class Nomenclatureitem(object):
         # other cases
         else:
             value = self.valuetype(value)
-            if (
-                (self.strict) and
-                (value not in _NOMENCLATURE[self.nomenclature])
-            ):
+            if self.strict and value not in _NOMENCLATURE[self.nomenclature]:
                 raise ValueError(
-                    'value should be in nomenclature %i' % self.nomenclature
-                )
+                    'value should be in nomenclature %i' % self.nomenclature)
 
         # all is well
         self.data[instance] = value
 
 
-#-- functions -----------------------------------------------------------------
+# -- functions ----------------------------------------------------------------
 def is_code_hydro(code, length=8, errors='ignore'):
     """Return wether or not code is a valid code hydro as a bool.
 
@@ -387,18 +391,16 @@ def is_code_hydro(code, length=8, errors='ignore'):
         # (length) chars length
         if len(code) != length:
             raise ValueError(
-                'code hydro must be {0:d} chars long'.format(length)
-            )
+                'code hydro must be {0:d} chars long'.format(length))
 
-        # upper first char
-        if not code[0].isupper():
-            raise ValueError('code hydro first char must be upper')
+        # first char must be in [A-Z] or in [0-9]
+        if not (code[0].isupper() or code[0].isdigit()):
+            raise ValueError('code hydro first char must be upper or a digit')
 
         # [1:-1] digits
         if not code[1:-1].isdigit():
             raise ValueError(
-                'code hydro chars except first and last must be digits'
-            )
+                'code hydro chars except first and last must be digits')
 
         # digit or upper last char
         if not (code[-1].isdigit() or code[-1].isupper()):
@@ -410,7 +412,8 @@ def is_code_hydro(code, length=8, errors='ignore'):
     except Exception as err:
         if errors not in ('ignore', 'strict'):
             raise ValueError("unknown error handler name '%s'" % errors)
-        ERROR_HANDLERS[errors](msg=err.message, error=type(err))
+        #ERROR_HANDLERS[errors](msg=err.message, error=type(err))
+        ERROR_HANDLERS[errors](msg=str(err), error=type(err))
 
 
 def is_code_insee(code, length=5, errors='ignore'):
@@ -441,7 +444,7 @@ def is_code_insee(code, length=5, errors='ignore'):
 
     try:
         # prepare
-        code = unicode(code)
+        code = str(code)
 
         # chars length
         if len(code) != length:
@@ -450,10 +453,8 @@ def is_code_insee(code, length=5, errors='ignore'):
         # code commune must be all digit or 2(A|B)xxx
         if not code.isdigit():
             start = length is 9  # 0 or 1
-            if not (
-                (code[start:start + 2] in ('2A', '2B')) and
-                (code[start + 2:].isdigit())
-            ):
+            if not (code[start:start + 2] in ('2A', '2B') and
+                    code[start + 2:].isdigit()):
                 raise ValueError('illegal char in INSEE code')
 
         # all is well
@@ -462,7 +463,71 @@ def is_code_insee(code, length=5, errors='ignore'):
     except Exception as err:
         if errors not in ('ignore', 'strict'):
             raise ValueError("unknown error handler name '%s'" % errors)
-        ERROR_HANDLERS[errors](msg=err.message, error=type(err))
+        #ERROR_HANDLERS[errors](msg=err.message, error=type(err))
+        ERROR_HANDLERS[errors](msg=str(err), error=type(err))
+
+
+def __eq__(self, other, attrs=None, ignore=None, lazzy=False):
+    """Equal elaborate function.
+
+    Arguments:
+        self, other
+        attrs (iterable of strings, default to self.__class__.__all__attrs__ or
+            __self.__dict__.keys() = the attrs to compare
+        ignore (iterable of strings, default None) = attrs to ignore in the
+            comparison
+        lazzy (bool, default False) = if True does not test an attribute
+            whose counterpart is None
+
+    NB: functool.partial could be smarter than a private class variable to
+    fix the default attrs list, but it doesn't work with 'self'.
+
+    """
+    # quick identity test
+    if self is other:
+        return True
+    # set the final attrs list
+    if not attrs:
+        attrs = getattr(
+            self.__class__, '__all__attrs__', list(self.__dict__.keys()))
+    if ignore:
+        for attr in ignore:
+            # we make attrs mutable or a copy before removing elements
+            attrs = list(attrs)
+            try:
+                attrs.remove(attr)
+            except ValueError:
+                raise AttributeError(
+                    "'{}' object has no attribute '{}'".format(
+                        attr, self.__class__.__name__))
+    # action !
+    for attr in attrs:
+        first = getattr(self, attr)
+        second = getattr(other, attr, False)  # never raise
+        if lazzy and (first is None or second is None):
+            continue
+        try:
+            # base case - works with numpy.ndarrays of size 1
+            if not bool(first == second):
+                # if not first == second:
+                return False
+        except Exception:
+            # # comparison for ndarrays of size > 1 and pandas objects
+            try:
+                if not bool((first == second).all().all()):
+                    return False
+            except:
+                # here everything failed
+                return False
+    return True
+
+
+def __ne__(self, other, attrs=[], ignore=[], lazzy=False):
+    return not self.__eq__(
+        other=other, attrs=attrs, ignore=ignore, lazzy=lazzy)
+
+def __hash__(self):
+    return id(self)
 
 
 def __str__(self):
@@ -471,8 +536,5 @@ def __str__(self):
         return self.__unicode__()
     else:  # Python 2
         return self.__unicode__().encode(
-            _sys.stdout.encoding or
-            _locale.getpreferredencoding() or
-            'ascii',
-            'replace'
-        )
+            _sys.stdout.encoding or _locale.getpreferredencoding() or 'ascii',
+            'replace')

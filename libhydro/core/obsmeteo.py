@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module obsmeteo.
 
 Ce module contient les classes:
@@ -14,41 +14,39 @@ et quelques fonctions utiles:
  d'un pandas.DataFrame dont l'index est une serie de timestamp.
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
-    unicode_literals as _unicode_literals,
-    absolute_import as _absolute_import,
-    division as _division,
-    print_function as _print_function
-)
+    unicode_literals as _unicode_literals, absolute_import as _absolute_import,
+    division as _division, print_function as _print_function)
 
 import numpy as _numpy
 import datetime as _datetime
 import math as _math
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
-from . import (_composant, _composant_obs)
+from . import _composant, _composant_obs
 from . import sitemeteo as _sitemeteo
 
 
-#-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin """ \
-             """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1f"""
-__date__ = """2014-07-30"""
+# -- strings ------------------------------------------------------------------
+__version__ = '0.9.2'
+__date__ = '2017-02-03'
 
-#HISTORY
-#V0.1 - 2014-07-11
-#    first shot
+# HISTORY
+# V0.9 - 2014-12-29
+#   fix a numpy deprecated warnign around resample()
+#   update version number according to progress
+# V0.1 - 2014-07-11
+#   first shot
 
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # PROGRESS - Serie 100% - Observations 100% - Observation 100%
 # TODO - as for obshydro, serie.dtdeb, dtend and duree are not related to the
 #        observations property (one can change an attribute without changing
 #        the other leading to incoherent datas)
 
 
-#-- class Observation ---------------------------------------------------------
+# -- class Observation --------------------------------------------------------
 class Observation(_numpy.ndarray):
 
     """Classe observation.
@@ -78,6 +76,8 @@ class Observation(_numpy.ndarray):
             NOMENCLATURE[508]
         qua (int de 0 a 100, defaut Nan) = indice de qualite de la mesure
 
+    ATTENTION, Nan != Nan et deux observations sans qualite sont differentes.
+
     Usage:
         Getter => observation.['x'].item()
         Setter => observation.['x'] = value
@@ -89,18 +89,17 @@ class Observation(_numpy.ndarray):
         (str('res'), _numpy.float),
         (str('mth'), _numpy.int8),
         (str('qal'), _numpy.int8),
-        (str('qua'), _numpy.float)  # required for NaN
-    ])
+        (str('qua'), _numpy.float)])  # required for NaN
 
     def __new__(cls, dte, res, mth=0, qal=16, qua=_numpy.NaN):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
-        if mth not in _NOMENCLATURE[512]:
+        if int(mth) not in _NOMENCLATURE[512]:
             raise ValueError('incorrect method ')
-        if qal not in _NOMENCLATURE[508]:
+        if int(qal) not in _NOMENCLATURE[508]:
             raise ValueError('incorrect qualification')
         try:
-            if not _math.isnan(qua):
+            if not _math.isnan(float(qua)):
                 qua = int(qua)
                 if not (0 <= qua <= 100):
                     raise ValueError()
@@ -108,9 +107,7 @@ class Observation(_numpy.ndarray):
             raise ValueError('incorrect quality')
 
         obj = _numpy.array(
-            (dte, res, mth, qal, qua),
-            dtype=Observation.DTYPE
-        ).view(cls)
+            (dte, res, mth, qal, qua), dtype=Observation.DTYPE).view(cls)
         return obj
 
     # def __array_finalize__(self, obj):
@@ -127,13 +124,12 @@ class Observation(_numpy.ndarray):
                    _NOMENCLATURE[512][self['mth'].item()],
                    _NOMENCLATURE[508][self['qal'].item()],
                    qualite,
-                   *self['dte'].item().isoformat().split('T')
-               )
+                   *self['dte'].item().isoformat().split('T'))
 
     __str__ = _composant.__str__
 
 
-#-- class Observations --------------------------------------------------------
+# -- class Observations -------------------------------------------------------
 class Observations(_composant_obs.Observations):
 
     """Classe Observations.
@@ -167,6 +163,9 @@ class Observations(_composant_obs.Observations):
 
     On peut iterer dans le DataFrame avec la fonction iterrows().
 
+    ATTENTION, la comparaison de Pandas.DataFrames necessite d'ecrire:
+        (obs == obs).all().all()
+
     """
 
     # NB: les pandas.Period ne conviennent pas pour les observations meteo,
@@ -187,11 +186,10 @@ class Observations(_composant_obs.Observations):
 
         """
         return _composant_obs.Observations.__new__(
-            cls, Observation, observations
-        )
+            cls, Observation, observations)
 
 
-#-- class Serie ---------------------------------------------------------------
+# -- class Serie --------------------------------------------------------------
 class Serie(_composant_obs.Serie):
 
     """Classe Serie.
@@ -213,11 +211,9 @@ class Serie(_composant_obs.Serie):
 
     statut = _composant.Nomenclatureitem(nomenclature=511)
 
-    def __init__(
-        self, grandeur=None, duree=0, statut=0,
-        dtdeb=None, dtfin=None, dtprod=None, contact=None,
-        observations=None, strict=True
-    ):
+    def __init__(self, grandeur=None, duree=0, statut=0, dtdeb=None,
+                 dtfin=None, dtprod=None, contact=None, observations=None,
+                 strict=True):
         """Initialisation.
 
         Arguments:
@@ -239,11 +235,10 @@ class Serie(_composant_obs.Serie):
         # -- super --
         super(Serie, self).__init__(
             dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, contact=contact,
-            observations=observations, strict=strict
-        )
+            observations=observations, strict=strict)
 
         # -- adjust the descriptor --
-        vars(self.__class__)['statut'].strict = self._strict
+        vars(Serie)['statut'].strict = self._strict
 
         # -- descriptors --
         self.statut = statut
@@ -264,13 +259,9 @@ class Serie(_composant_obs.Serie):
     def grandeur(self, grandeur):
         """Set grandeur."""
         try:
-            if (
-                (self._strict) and
-                not isinstance(grandeur, _sitemeteo.Grandeur)
-            ):
-                raise TypeError(
-                    'grandeur must be a Grandeur'
-                )
+            if self._strict and \
+                    not isinstance(grandeur, _sitemeteo.Grandeur):
+                raise TypeError('grandeur must be a Grandeur')
             self._grandeur = grandeur
         except:
             raise
@@ -289,8 +280,7 @@ class Serie(_composant_obs.Serie):
                 duree = int(duree)
                 if duree < 0:
                     raise ValueError(
-                        'duree must be a timedelta or a positive integer'
-                    )
+                        'duree must be a timedelta or a positive integer')
                 duree = _datetime.timedelta(seconds=duree)
         except:
             raise
@@ -318,25 +308,19 @@ class Serie(_composant_obs.Serie):
         # )
         try:
             self.observations = self.observations.resample(
-                '{:0.0f}S'.format(pdt.total_seconds())
-            )
+                '{:0.0f}S'.format(pdt.total_seconds())).mean()
         except Exception as err:
             raise ValueError('resampling error, %s' % err)
 
-    def __eq__(self, other):
-        """Return True ou False."""
-        if self is other:
-            return True
-        for attr in (
-            'grandeur', 'duree', 'statut'  # , 'dtprod'
-        ):
-            if getattr(self, attr, True) != getattr(other, attr, False):
-                return False
-        return True
+    # -- static methods --
+    # FIXME - add the concat function (from obshydro)
 
-    def __ne__(self, other):
-        """Return True ou False."""
-        return not self.__eq__(other)
+    # -- special methods --
+    __all__attrs__ = ('grandeur', 'duree', 'statut', 'dtdeb', 'dtfin',
+                      'dtprod', 'contact', 'observations')
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
 
     def __unicode__(self):
         """Return unicode representation."""
@@ -351,8 +335,7 @@ class Serie(_composant_obs.Serie):
             code = '<sans code>'
         try:
             obs = self.observations.to_string(
-                max_rows=15, show_dimensions=True
-            )
+                max_rows=15, show_dimensions=True)
         except Exception:
             obs = '<sans observations>'
 
@@ -362,13 +345,8 @@ class Serie(_composant_obs.Serie):
                'Duree {4} mn\n'\
                '{5}\n'\
                'Observations:\n{6}'.format(
-                   grandeur,
-                   code,
-                   self.statut,
+                   grandeur, code, self.statut,
                    _NOMENCLATURE[511][self.statut].lower(),
-                   self.duree.total_seconds() / 60,
-                   '-' * 72,
-                   obs
-               )
+                   self.duree.total_seconds() / 60, '-' * 72, obs)
 
     __str__ = _composant.__str__

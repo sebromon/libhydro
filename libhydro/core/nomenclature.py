@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module python nomenclature.
 
 Contient les nomenclatures Sandre utilisees pour l'Hydrometrie.
@@ -13,37 +13,36 @@ Usage:
         des entiers ou des chaines.
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
-    unicode_literals as _unicode_literals,
-    absolute_import as _absolute_import,
-    division as _division,
-    print_function as _print_function
-)
+    unicode_literals as _unicode_literals, absolute_import as _absolute_import,
+    division as _division, print_function as _print_function)
 
 
-#-- strings -------------------------------------------------------------------
-__author__ = """Philippe Gouin """ \
-             """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.6a"""
-__date__ = """2014-07-15"""
+# -- strings ------------------------------------------------------------------
+__version__ = '0.6.3'
+__date__ = '2015-09-23'
 
-#HISTORY
-#V0.6 - 2014-07-15
-#    add a bunch of nomenclatures
-#V0.1 - 2013-07-12
-#    first shot
+# HISTORY
+# V0.6.3 - SR - 2015-09-23
+# add nomenclature 519 (type du capteur)
+# V0.6.2 - SR - 2015-06-09
+# add nomenclature 76
+# V0.6 - 2014-07-15
+#   add a bunch of nomenclatures
+# V0.1 - 2013-07-12
+#   first shot
 
 
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # TODO - all nomenclatures
 # TODO - write a decorator to check an attribute validity
 
 
-#-- config --------------------------------------------------------------------
+# -- config -------------------------------------------------------------------
 NOMENCLATURE = {
 
-    #Syntaxe: "reference : {code: mnemonique, ...}"
+    # Syntaxe: "reference : {code: mnemonique, ...}"
 
     # Projection des coordonnees
     22: {
@@ -109,8 +108,53 @@ NOMENCLATURE = {
         59: 'ETRS89 / LCC',
         60: 'ETRS89 / UTM Nord 30',
         61: 'ETRS89 / UTM Nord 31',
-        62: 'ETRS89 / UTM Nord 32'
+        62: 'ETRS89 / UTM Nord 32',
+        63: 'WGS84 Web Mercator'},
+
+    # Système altimétrique
+    76: {
+        0: 'Système altimétrique inconnu',
+        1: 'Bourdeloue 1857',
+        2: 'NGF84',
+        3: 'IGN 1969',
+        4: 'NGC48',
+        5: 'IGN 1978 (Corse)',
+        6: 'IGN 1958 (Réunion)',
+        7: 'IGN 1989 (Réunion)',
+        8: 'IGN 1955 (Martinique)',
+        9: 'IGN 1987 (Martinique)',
+        10: 'IGN 1951 (Guadeloupe)',
+        11: 'IGN 1988 (Guadeloupe)',
+        12: 'IGN 1988 (Guadeloupe Les Saintes)',
+        13: 'IGN 1988 (Guadeloupe Marie Galante)',
+        14: 'IGN 1988 (Guadeloupe St Martin)',
+        15: 'IGN 1988 (Guadeloupe St Barthelemy)',
+        16: 'IGN 1942 (Guyane)',
+        17: 'Niv. Général de la Guyane 1977',
+        18: 'IGN 1950 (Mayotte)',
+        19: 'Equipe 1979 (Mayotte)',
+        20: 'Danger 1950 (St Pierre et Miquelon)',
+        21: 'NGNC 1969 (Nelle Calédonie)',
+        22: 'IGN 1984 (Wallis et Futuna)',
+        23: 'SHOM 1953 (Mayotte)',
+        24: 'Tahiti IGN 1966 (Polynésie)',
+        25: 'SHOM 1981 (Iles Loyauté)',
+        26: 'SHOM 1976 (Iles Loyauté)',
+        27: 'SHOM 1970 (Iles Loyauté)',
+        28: 'IGN 1962 (Iles Kerguelen)',
+        29: 'EPF 1952 (Terre Adélie)',
+        30: 'SHOM 1977 (Ile du canal du Mozambique)',
+        31: 'TN'
     },
+
+    # Type de courbe de tarage
+    503: {0: 'Polyligne', 4: 'Fonction puissance'},
+
+    # Etat de la courbe de tarage
+    504: {0: 'Non utilisable', 4: 'Utilisable', 8: 'Utilisée', 12: 'Travail'},
+
+    # Qualification du pivot de la courbe de tarage
+    505: {12: 'Incertain', 16: 'Non qualifié', 20: 'Bon'},
 
     # Methode d'obtention du resultat de l'observation hydrometrique
     507: {0: 'Mesure', 4: 'Reconstitution', 12: 'Interpolation'},
@@ -120,8 +164,7 @@ NOMENCLATURE = {
         0: 'Inconnu',
         12: 'Valeur incertaine',
         16: 'Valeur non qualifiee',
-        20: 'Valeur bonne'
-    },
+        20: 'Valeur bonne'},
 
     # Grandeur observee de la serie
     509: {'H': 'Hauteur', 'Q': 'Debit'},
@@ -129,19 +172,15 @@ NOMENCLATURE = {
     # Statut de la serie
     510: {
         0: 'Sans validation', 4: 'Brute', 8: 'Corrige',
-        12: 'Pre-valide', 16: 'Valide'
-    },
+        12: 'Pre-valide', 16: 'Valide'},
 
     # Statut de l'observation meteorologique
-    511: {
-        0: 'Sans validation', 4: 'Brute', 8: 'Corrige'
-    },
+    511: {0: 'Sans validation', 4: 'Brute', 8: 'Corrige'},
 
     # Methode d'obtention du resultat de l'observation meteoroloqiue
     512: {
         0: 'Mesure', 4: 'Reconstitution', 8: 'Calcul',
-        12: 'Interpolation', 16: 'Forcage'
-    },
+        12: 'Interpolation', 16: 'Forcage'},
 
     # Qualification de la donnees de l'observation hydrometrique
     515: {
@@ -150,12 +189,25 @@ NOMENCLATURE = {
         8: 'Forte',
         12: 'Valeur incertaine',
         16: 'Valeur non qualifiee',
-        20: 'Valeur bonne'
-    },
+        20: 'Valeur bonne'},
 
     # Statut de la simulation
     516: {4: 'Brute', 16: 'Critiquee'},
-
+    # Type du capteur
+    519: {
+        0: 'Inconnu',
+        1: 'Observateur',
+        2: 'Bulle à bulle',
+        3: 'Ultrasons (gele)',
+        4: 'Radar',
+        5: 'Pression',
+        6: 'Codeur',
+        7: 'Nilomètre',
+        8: 'Ultrason immergé',
+        9: 'Ultrason aérien',
+        10: 'Ultrason débit',
+        11: 'Vidéo',
+        12: 'Limni'},
     # Type de mesure du capteur hydrometrique
     520: {'H': 'Hauteur', 'Q': 'Debit'},
 
@@ -173,8 +225,7 @@ NOMENCLATURE = {
         'EM': "Evapotranspiration maximale",
         'RA': "Rayonnement",
         'HR': "Humidite relative",
-        'HA': "Humidite absolue"
-    },
+        'HA': "Humidite absolue"},
 
     # Type du modele de prevision
     525: {
@@ -185,8 +236,7 @@ NOMENCLATURE = {
         4: "Modele hydraulique",
         5: "Modele statistique",
         6: "Enchainement de modeles",
-        7: "Modele a propagation empirique"
-    },
+        7: "Modele a propagation empirique"},
 
     # Type de seuil
     528: {1: 'Absolu', 2: 'Gradient'},
@@ -204,8 +254,7 @@ NOMENCLATURE = {
         41: 'Seuil expertise valeur basse',
         42: 'Seuil expertise valeur forte',
         101: 'Seuil inferieur de valeur aberrante',
-        102: 'Seuil superieur de valeur aberrante'
-    },
+        102: 'Seuil superieur de valeur aberrante'},
 
     # Type de site hydrometrique
     530: {
@@ -216,8 +265,7 @@ NOMENCLATURE = {
         'VIRTUEL': "Site virtuel",
         'RECONSTITUE': "Site a debit moyen mensuel reconstitue",
         'PLANDEAU': "Plan d'eau",
-        'SOURCE': "Source"
-    },
+        'SOURCE': "Source"},
 
     # Type de station hydrometrique
     531: {
@@ -225,8 +273,7 @@ NOMENCLATURE = {
         'DEB': 'Debitmetre',
         'HC': 'Hauteur calculee',
         'LIMNIMERE': 'Limnimetre station mere',
-        'LIMNIFILLE': 'Limnimetre station fille'
-    },
+        'LIMNIFILLE': 'Limnimetre station fille'},
 
     # Type de publication de l'evenement
     534: {
@@ -235,13 +282,25 @@ NOMENCLATURE = {
         20: 'Vigicrues uniquement',
         25: 'Archive',
         30: 'Tableau des dernieres valeurs',
-        100: 'Privé'
-    },
+        100: 'Privé'},
 
     # Civilite du contact
-    538: {
-        1: 'Monsieur', 2: 'Madame', 3: 'Mademoiselle'
-    }
+    538: {1: 'Monsieur', 2: 'Madame', 3: 'Mademoiselle'},
+
+    # Mode de jaugeage du site hydrométrique
+    873: {0: 'Inconnu',
+          1: 'Saumon point par point',
+          2: 'Saumon par integration',
+          3: 'Perche point par point',
+          4: 'Perche par integration',
+          5: 'Dilution par integration',
+          6: 'Dilution a debit constant',
+          7: 'Flotteur',
+          8: 'Debit mesure directement',
+          9: 'Jaugeage par mesure de vitesse en surface',
+          10: 'Mesure par ADCP',
+          11: 'Autres'
+          }
 }
 
-NOMENCLATURES = NOMENCLATURE.keys()
+NOMENCLATURES = list(NOMENCLATURE.keys())

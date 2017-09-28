@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<hydrometrie>
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>1.1</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2017-06-20T07:47:48</DateHeureCreationFichier>
+    <RefFichier>20100226160756_donnees_sac30-2010-02-26-15-05.xml</RefFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1178</CdIntervenant>
+      <NomIntervenant>Service de Prévision des Crues (S.P.C.) Grand Delta</NomIntervenant>
+      <CdContact>74</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+    </Destinataire>
+  </Scenario>
+  <Donnees>
+    <CourbesTarage>
+      <CourbeTarage>
+        <CdCourbeTarage>courbe tarage</CdCourbeTarage>
+        <LbCourbeTarage>libellé</LbCourbeTarage>
+        <TypCourbeTarage>0</TypCourbeTarage>
+        <LimiteInfCourbeTarage>156.12</LimiteInfCourbeTarage>
+        <LimiteSupCourbeTarage>854.01</LimiteSupCourbeTarage>
+        <DnCourbeTarage>1.15</DnCourbeTarage>
+        <AlphaCourbeTarage>1.23</AlphaCourbeTarage>
+        <BetaCourbeTarage>2.56</BetaCourbeTarage>
+        <ComCourbeTarage>no comment</ComCourbeTarage>
+        <CdStationHydro>A123456789</CdStationHydro>
+        <CdContact>token</CdContact>
+        <PivotsCourbeTarage>
+          <PivotCourbeTarage>
+            <HtPivotCourbeTarage>198.26</HtPivotCourbeTarage>
+            <!-- <QualifPivotCourbeTarage>16</QualifPivotCourbeTarage> -->
+            <QPivotCourbeTarage>20021.36</QPivotCourbeTarage>
+          </PivotCourbeTarage>
+          <PivotCourbeTarage>
+            <HtPivotCourbeTarage>209.12</HtPivotCourbeTarage>
+            <QualifPivotCourbeTarage>20</QualifPivotCourbeTarage>
+            <QPivotCourbeTarage>30156.12</QPivotCourbeTarage>
+          </PivotCourbeTarage>
+        </PivotsCourbeTarage>
+        <PeriodesUtilisationCourbeTarage>
+          <PeriodeUtilisationCourbeTarage>
+            <DtDebutPeriodeUtilisationCourbeTarage>2015-01-02T03:04:05</DtDebutPeriodeUtilisationCourbeTarage>
+            <DtFinPeriodeUtilisationCourbeTarage>2016-10-11T12:13:14</DtFinPeriodeUtilisationCourbeTarage>
+            <EtatPeriodeUtilisationCourbeTarage>0</EtatPeriodeUtilisationCourbeTarage>
+            <HistosActivPeriod>
+              <HistoActivPeriod>
+                <DtActivHistoActivPeriod>2017-05-20T06:44:23</DtActivHistoActivPeriod>
+                <DtDesactivHistoActivPeriod>2017-06-01T07:57:12</DtDesactivHistoActivPeriod>
+              </HistoActivPeriod>
+              <HistoActivPeriod>
+                <DtActivHistoActivPeriod>2017-06-20T01:02:03</DtActivHistoActivPeriod>
+              </HistoActivPeriod>
+            </HistosActivPeriod>
+          </PeriodeUtilisationCourbeTarage>
+          <PeriodeUtilisationCourbeTarage>
+            <DtDebutPeriodeUtilisationCourbeTarage>2017-05-09T11:56:47</DtDebutPeriodeUtilisationCourbeTarage>
+            <DtFinPeriodeUtilisationCourbeTarage>2017-06-15T23:11:18</DtFinPeriodeUtilisationCourbeTarage>
+            <EtatPeriodeUtilisationCourbeTarage>8</EtatPeriodeUtilisationCourbeTarage>
+          </PeriodeUtilisationCourbeTarage>
+        </PeriodesUtilisationCourbeTarage>
+        <DtMajCourbeTarage>2017-06-19T08:01:21</DtMajCourbeTarage>
+      </CourbeTarage>
+      <!-- courbe de tarage puissance sans alpha, beta et dn-->
+      <CourbeTarage>
+        <CdCourbeTarage>Courbe 1564</CdCourbeTarage>
+        <LbCourbeTarage>Courbe puissance</LbCourbeTarage>
+        <TypCourbeTarage>4</TypCourbeTarage>
+        <LimiteInfCourbeTarage>10.56</LimiteInfCourbeTarage>
+        <LimiteSupCourbeTarage>987.12</LimiteSupCourbeTarage>
+        <ComCourbeTarage>commentaire</ComCourbeTarage>
+        <CdStationHydro>W987654321</CdStationHydro>
+        <CdContact>874</CdContact>
+        <PivotsCourbeTarage>
+          <PivotCourbeTarage>
+            <HtPivotCourbeTarage>123.456</HtPivotCourbeTarage>
+            <QualifPivotCourbeTarage>12</QualifPivotCourbeTarage>
+            <VarAPivotCourbeTarage>1.06</VarAPivotCourbeTarage>
+            <VarBPivotCourbeTarage>0.98</VarBPivotCourbeTarage>
+            <VarHPivotCourbeTarage>2.31</VarHPivotCourbeTarage>
+          </PivotCourbeTarage>
+          <PivotCourbeTarage>
+            <HtPivotCourbeTarage>198.64</HtPivotCourbeTarage>
+            <QualifPivotCourbeTarage>20</QualifPivotCourbeTarage>
+            <VarAPivotCourbeTarage>5.14</VarAPivotCourbeTarage>
+            <VarBPivotCourbeTarage>2.35e-06</VarBPivotCourbeTarage>
+            <VarHPivotCourbeTarage>45.14</VarHPivotCourbeTarage>
+          </PivotCourbeTarage>
+        </PivotsCourbeTarage>
+        <PeriodesUtilisationCourbeTarage>
+          <PeriodeUtilisationCourbeTarage>
+            <DtDebutPeriodeUtilisationCourbeTarage>2010-03-04T15:06:20</DtDebutPeriodeUtilisationCourbeTarage>
+            <DtFinPeriodeUtilisationCourbeTarage>2011-10-24T05:19:24</DtFinPeriodeUtilisationCourbeTarage>
+            <EtatPeriodeUtilisationCourbeTarage>8</EtatPeriodeUtilisationCourbeTarage>
+          </PeriodeUtilisationCourbeTarage>
+        </PeriodesUtilisationCourbeTarage>
+        <DtMajCourbeTarage>2015-09-03T01:41:34</DtMajCourbeTarage>
+      </CourbeTarage>
+       <!-- courbe de tarage puissance sans points pivot et periodes -->
+      <CourbeTarage>
+        <CdCourbeTarage>ct 987</CdCourbeTarage>
+        <LbCourbeTarage>éàéà</LbCourbeTarage>
+        <TypCourbeTarage>0</TypCourbeTarage>
+        <CdStationHydro>B198524123</CdStationHydro>
+      </CourbeTarage>
+    </CourbesTarage>
+  </Donnees>
+</hydrometrie>

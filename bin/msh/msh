@@ -1,0 +1,192 @@
+#!/bin/env python
+"""Program msh (merge series hydro)."""
+# -- imports ------------------------------------------------------------------
+from __future__ import (
+    unicode_literals, absolute_import, division, print_function)
+
+import sys
+import os
+import getopt
+import logging
+
+from libhydro.conv import xml
+from libhydro.core.obshydro import Serie
+
+# -- strings ------------------------------------------------------------------
+# author Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>
+__version__ = """0.1.1"""
+__date__ = """2016-09-28"""
+# status: prototype
+
+# HISTORY
+# V0.1 - 2016-09-26
+#   first shot
+
+__usage__ = """Usage: msh [OPTIONS] <path>
+
+Msh (merge series hydro) regroup series having the same metadata in a xml
+hydrometrie file, compressed file ou url and print the result to a pretty xml
+or write it to a gzipped file.
+
+Arguments:
+~~~~~~~~~~
+  <path>              xml file to update
+
+Options:
+~~~~~~~~
+      --debug         verbose mode
+  -d, --destination   gzip destination file (default to XML on the tty).
+                      The gz extension is added if necessary
+  -h, --help
+  -v, --version
+
+Exit status:
+~~~~~~~~~~~~
+  0 if OK
+  1 if argument error
+  2 if execution error
+
+"""
+
+
+# -- configuration ------------------------------------------------------------
+logger = logging.getLogger(__name__)
+
+
+# -- MergeSeries --------------------------------------------------------------
+class MergeSeries(object):
+
+    """Class MergeSeries.
+
+    Properties:
+        message (xml.Message)
+        destination (str or None)
+
+    """
+
+    def __init__(self, path, destination=None, autorun=False):
+        """Initialisation.
+
+        Argument:
+            path (str)
+            destination (str, default None)
+            debug (bool, default False)
+            autorun (bool, default False)
+
+        """
+        self.message = xml.Message.from_file(path)
+        if len(self.message.serieshydro) < 2:
+            raise IOError('this message contains only %i serieshydro')
+        logger.debug('DEBUG - %s' % self.message)
+        self.destination = destination
+        if autorun:
+            self.run()
+
+    def run(self):
+        """Run method."""
+        # series initial count for logging purposes
+        count = len(self.message.serieshydro)
+        # series indexes: {(entite.code, grandeur): index, ...}
+        indexes = {}
+        # deprecated series indexes
+        deprecates = []
+
+        # merge
+        for index, serie in enumerate(self.message.serieshydro):
+            key = (serie.entite.code, serie.grandeur)
+            # look for existing (entite, grandeur)
+            if key in indexes:  # concat to an already existing serie
+                logger.debug(
+                    'DEBUG - new serie concatenated for key %s at '
+                    'index %i' % (key, index))
+                self.message.serieshydro[indexes[key]] = Serie.concat(
+                    [self.message.serieshydro[indexes[key]], serie],
+                    duplicates='raise', sort=True)
+                deprecates.append(index)
+            else:  # new entry
+                logger.debug(
+                    'DEBUG - new key %s found at index %i' % (key, index))
+                indexes[key] = index
+
+        # pop deprecated series
+        deprecates.sort(reverse=True)
+        for index in deprecates:
+            self.message.serieshydro.pop(index)
+
+        # output
+        logger.debug('DEBUG - %i series reduced to %i' % (
+            count, len(self.message.serieshydro)))
+        if self.destination is None:
+            print(self.message.show())
+        else:
+            destination = self.destination.rstrip('.gz')
+            self.message.write(file='%s.gz' % destination, compression=9)
+
+
+# -- functions ----------------------------------------------------------------
+def parse(argv):
+    """Parse argv and return a dict or None."""
+    # set getopt
+    opts, args = getopt.getopt(
+            argv, 'd:hv', ['debug', 'destination=', 'help', 'version'])
+
+    # prepare
+    debug = False
+    destination = None
+
+    # check the options
+    for name, val in opts:
+        if name == '--debug':
+            debug = True
+        elif name in ('-d', '--destination'):
+            destination = val
+        elif name in ('-h', '--help'):
+            print(__usage__)
+            return
+        elif name in ('-v', '--version'):
+            print('{}, version {} ({})'.format(
+                os.path.basename(sys.argv[0]), __version__, __date__))
+            return
+
+    # arguments, a path is requested
+    if len(args) != 1:
+        raise Exception
+
+    # return
+    return({'debug': debug, 'destination': destination, 'path': args[0]})
+
+
+# -- main entry point ---------------------------------------------------------
+def main():
+    """Main entry point."""
+    # parse
+    try:
+        kwargs = parse(sys.argv[1:])
+        if kwargs is None:
+            return 0
+    except Exception:
+        print(__usage__)
+        return 1
+
+    # set a logger
+    debug = kwargs.pop('debug')
+    logger.addHandler(logging.StreamHandler(stream=sys.stdout))
+    if debug:
+        logger.setLevel(logging.DEBUG)
+        logger.debug(kwargs)
+    else:
+        logger.setLevel(logging.ERROR)
+
+    # run !
+    try:
+        MergeSeries(autorun=True, **kwargs)
+        return 0
+    except Exception as err:
+        if debug:
+            raise
+        logger.critical('Execution error, %s', err)
+        return 2
+
+# call main when run as script
+if __name__ == '__main__':
+    sys.exit(main())

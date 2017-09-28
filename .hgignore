@@ -11,8 +11,10 @@ syntax: glob
 # specific files
 REMINDER*
 dist
+build
 libhydro.egg-info
 TODO*
+*.pdf
 
 # -----------------------------------------------------------------------------
 #syntax: regexp

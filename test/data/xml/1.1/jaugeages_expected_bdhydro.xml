@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<hydrometrie>
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>1.1</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2017-06-20T07:47:48</DateHeureCreationFichier>
+    <!-- <RefFichier>20100226160756_donnees_sac30-2010-02-26-15-05.xml</RefFichier> -->
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1178</CdIntervenant>
+      <NomIntervenant>Service de Prévision des Crues (S.P.C.) Grand Delta</NomIntervenant>
+      <CdContact schemeAgencyID="SANDRE">74</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+    </Destinataire>
+  </Scenario>
+  <Donnees>
+    <Jaugeages>
+      <!-- minimal jaugeage -->
+      <Jaugeage>
+        <CdJaugeage>184</CdJaugeage>
+        <CdSiteHydro>K0101010</CdSiteHydro>
+      </Jaugeage>
+      <!-- full jaugeage -->
+      <Jaugeage>
+        <CdJaugeage>159</CdJaugeage>
+        <DtJaugeage>2015-08-03T04:05:17</DtJaugeage>
+        <DebitJaugeage>1034.56</DebitJaugeage>
+        <DtDebJaugeage>2015-08-02T06:13:34</DtDebJaugeage>
+        <DtFinJaugeage>2015-08-03T11:39:08</DtFinJaugeage>
+        <SectionMouilJaugeage>341.25</SectionMouilJaugeage>
+        <PerimMouilleJaugeage>987.54</PerimMouilleJaugeage>
+        <LargMiroirJaugeage>156423.12</LargMiroirJaugeage>
+        <ModeJaugeage>5</ModeJaugeage>
+        <ComJaugeage>Commentaire</ComJaugeage>
+        <VitesseMoyJaugeage>17.54</VitesseMoyJaugeage>
+        <VitesseMaxJaugeage>19.43</VitesseMaxJaugeage>
+        <VitesseMoySurfaceJaugeage>18.87</VitesseMoySurfaceJaugeage>
+        <CdSiteHydro>A1234567</CdSiteHydro>
+        <HauteursJaugeage>
+          <!-- full HauteurJaugeage -->
+          <HauteurJaugeage>
+            <CdStationHydro>Z123456789</CdStationHydro>
+            <SysAltiStationJaugeage>0</SysAltiStationJaugeage>
+            <CoteRetenueStationJaugeage>149.17</CoteRetenueStationJaugeage>
+            <CoteDebutStationJaugeage>148.62</CoteDebutStationJaugeage>
+            <CoteFinStationJaugeage>150.23</CoteFinStationJaugeage>
+            <DnStationJaugeage>1.51</DnStationJaugeage>
+            <DistanceStationJaugeage>1543.13</DistanceStationJaugeage>
+            <StationFille>
+              <CdStationHydro>B123456789</CdStationHydro>
+            </StationFille>
+            <DtDebutRefAlti>2010-11-24T05:42:31</DtDebutRefAlti>
+          </HauteurJaugeage>
+          <!-- another full HauteurJaugeage -->
+          <HauteurJaugeage>
+            <CdStationHydro>K987654321</CdStationHydro>
+            <SysAltiStationJaugeage>31</SysAltiStationJaugeage>
+            <CoteRetenueStationJaugeage>214.15</CoteRetenueStationJaugeage>
+            <CoteDebutStationJaugeage>212.67</CoteDebutStationJaugeage>
+            <CoteFinStationJaugeage>216.99</CoteFinStationJaugeage>
+            <DnStationJaugeage>1.21</DnStationJaugeage>
+            <DistanceStationJaugeage>846.21</DistanceStationJaugeage>
+            <StationFille>
+              <CdStationHydro>L987654321</CdStationHydro>
+            </StationFille>
+            <DtDebutRefAlti>2015-03-26T16:14:15</DtDebutRefAlti>
+          </HauteurJaugeage>
+          <!-- minimal HauteurJaugeage -->
+          <HauteurJaugeage>
+            <CdStationHydro>V195436574</CdStationHydro>
+            <SysAltiStationJaugeage>25</SysAltiStationJaugeage>
+            <CoteRetenueStationJaugeage>214.15</CoteRetenueStationJaugeage>
+          </HauteurJaugeage>
+        </HauteursJaugeage>
+        <DtMajJaugeage>2017-07-04T06:20:47</DtMajJaugeage>
+      </Jaugeage>
+    </Jaugeages>
+  </Donnees>
+</hydrometrie>

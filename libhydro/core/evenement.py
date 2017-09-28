@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module evenement.
 
 Ce module contient la classe:
     # Evenement
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -18,23 +18,23 @@ import datetime as _datetime
 from . import (_composant, sitehydro as _sitehydro, sitemeteo as _sitemeteo)
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """1.0e"""
-__date__ = """2014-08-03"""
+__version__ = """1.0f"""
+__date__ = """2015-10-30"""
 
-#HISTORY
-#V1.0 - 2014-03-02
-#    use descriptors
-#V0.1 - 2013-11-26
-#    first shot
+# HISTORY
+# V1.0 - 2014-03-02
+#   use descriptors
+# V0.1 - 2013-11-26
+#   first shot
 
-
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # PROGRESS - Evenement 100%
 
-#-- class Evenement -----------------------------------------------------------
+
+# -- class Evenement ----------------------------------------------------------
 class Evenement(object):
 
     """Classe Evenement.
@@ -42,7 +42,7 @@ class Evenement(object):
     Classe pour manipuler des evenements.
 
     Proprietes:
-        entite (sitehydro.Sitehydro ou sitehydro.Stationhydro ou
+        entite (sitehydro.Sitehydro ou sitehydro.Station ou
             sitemeteo.Sitemeteo) = entite concernee par l'evenement
         descriptif (string)
         contact (intervenant.Contact) = contact proprietaire de l'evenement
@@ -64,7 +64,7 @@ class Evenement(object):
         """Initialisation.
 
         Arguments:
-            entite (sitehydro.Sitehydro ou sitehydro.Stationhydro ou
+            entite (sitehydro.Sitehydro ou sitehydro.Station ou
                 sitemeteo.Sitemeteo) = entite concernee par l'evenement
             descriptif (string)
             contact (intervenant.Contact) = contact proprietaire de l'evenement
@@ -83,7 +83,7 @@ class Evenement(object):
         self._strict = bool(strict)
 
         # -- adjust the descriptor --
-        vars(self.__class__)['publication'].strict = self._strict
+        vars(Evenement)['publication'].strict = self._strict
 
         # -- descriptors --
         self.dt = dt
@@ -110,11 +110,11 @@ class Evenement(object):
                 raise TypeError('entite is required')
             if not isinstance(
                 entite,
-                (_sitehydro.Sitehydro, _sitehydro.Stationhydro,
+                (_sitehydro.Sitehydro, _sitehydro.Station,
                  _sitemeteo.Sitemeteo)
             ):
                 raise TypeError(
-                    'entite must be a Sitehydro, a Stationhydro or a Sitemeteo'
+                    'entite must be a Sitehydro, a Station or a Sitemeteo'
                 )
         self._entite = entite
 
@@ -130,7 +130,7 @@ class Evenement(object):
         if descriptif is None:
             if self._strict:
                 raise TypeError('descriptif is required')
-        self._descriptif = unicode(descriptif)
+        self._descriptif = str(descriptif)
 
     # -- property contact --
     @property
@@ -146,7 +146,14 @@ class Evenement(object):
                 raise TypeError('contact is required')
         self._contact = contact
 
-    # -- other methods --
+    # -- special methods --
+    __all__attrs__ = (
+        'entite', 'descriptif', 'contact', 'dt', 'publication', 'dtmaj'
+    )
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
+
     def __unicode__(self):
         """Return unicode representation."""
         return '''Evenement de l'entite {entite} ''' \

@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<hydrometrie>
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>1.1</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2017-06-20T07:47:48</DateHeureCreationFichier>
+    <!-- <RefFichier>20100226160756_donnees_sac30-2010-02-26-15-05.xml</RefFichier> -->
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1178</CdIntervenant>
+      <NomIntervenant>Service de Prévision des Crues (S.P.C.) Grand Delta</NomIntervenant>
+      <CdContact schemeAgencyID="SANDRE">74</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+    </Destinataire>
+  </Scenario>
+  <Donnees>
+    <CourbesCorrH>
+      <CourbeCorrH>
+        <CdStationHydro>A123456789</CdStationHydro>
+        <LbCourbeCorrH>libellé courbe correction</LbCourbeCorrH>
+        <ComCourbeCorrH>commentaire cc</ComCourbeCorrH>
+        <PointsPivot>
+          <PointPivot>
+            <DtPointPivot>2007-03-04T12:25:34</DtPointPivot>
+            <DeltaHPointPivot>10.56</DeltaHPointPivot>
+            <DtActivationPointPivot>2007-04-05T11:12:13</DtActivationPointPivot>
+            <DtDesactivPointPivot>2008-05-01T22:14:54</DtDesactivPointPivot>
+          </PointPivot>
+          <PointPivot>
+            <DtPointPivot>2008-11-20T05:41:12</DtPointPivot>
+            <DeltaHPointPivot>-189.12</DeltaHPointPivot>
+            <DtActivationPointPivot>2009-02-27T01:55:33</DtActivationPointPivot>
+          </PointPivot>
+        </PointsPivot>
+        <DtMajCourbeCorrH>2017-06-21T15:03:31</DtMajCourbeCorrH>
+      </CourbeCorrH>
+      <CourbeCorrH>
+        <CdStationHydro>Z987654321</CdStationHydro>
+      </CourbeCorrH>
+    </CourbesCorrH>
+  </Donnees>
+</hydrometrie>

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module sitemeteo.
 
 Ce module contient les classes:
@@ -8,7 +8,7 @@ Ce module contient les classes:
     # Classequalite - not implemented
 
 """
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -19,22 +19,26 @@ from __future__ import (
 from . import (_composant, _composant_site)
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.1g"""
-__date__ = """2014-07-24"""
+__version__ = """0.3b"""
+__date__ = """2017-09-19"""
 
-#HISTORY
-#V0.1 - 2014-07-07
-#    first shot
+# HISTORY
+# V0.3b -SR - 2017-09-19
+# Add pdt to grandeur meteo
+# V0.3 - 2014-12-17
+#   change the __eq__ and __ne__ methods
+# V0.1 - 2014-07-07
+#   first shot
 
 
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # PROGRESS - Sitemeteo 50% - Grandeur 10% - Visite 0% - Classequalite 0%
 
 
-#-- class Sitemeteo -----------------------------------------------------------
+# -- class Sitemeteo ----------------------------------------------------------
 class Sitemeteo(object):
 
     """Classe Sitemeteo.
@@ -55,22 +59,22 @@ class Sitemeteo(object):
 
     # Sitemeteo other properties
 
-    #mnemonique
-    #lieu-dit
-    #altitude, sysalti
-    #fuseau
-    #dtmaj
-    #dtes
-    #dths
-    #publication
-    #essai
-    #commentaire
+    # mnemonique
+    # lieu-dit
+    # altitude, sysalti
+    # fuseau
+    # dtmaj
+    # dtes
+    # dths
+    # publication
+    # essai
+    # commentaire
 
-    #images
-    #rolecontact
-    #soussecteurhydro
+    # images
+    # rolecontact
+    # soussecteurhydro
 
-    #visites
+    # visites
 
     def __init__(
         self, code, libelle=None, libelleusuel=None, coord=None, commune=None,
@@ -95,9 +99,9 @@ class Sitemeteo(object):
 
         # -- simple properties --
         self._strict = bool(strict)
-        self.libelle = unicode(libelle) \
+        self.libelle = str(libelle) \
             if (libelle is not None) else None
-        self.libelleusuel = unicode(libelleusuel) \
+        self.libelleusuel = str(libelleusuel) \
             if (libelleusuel is not None) else None
 
         # -- full properties --
@@ -125,7 +129,7 @@ class Sitemeteo(object):
 
             else:
                 # other cases
-                code = unicode(code)
+                code = str(code)
                 if self._strict:
                     if len(code) == 8:
                         code = '0{}'.format(code)
@@ -173,7 +177,7 @@ class Sitemeteo(object):
     def commune(self, commune):
         """Set code commune."""
         if commune is not None:
-            commune = unicode(commune)
+            commune = str(commune)
             _composant.is_code_insee(commune, length=5, errors='strict')
         self._commune = commune
 
@@ -205,19 +209,12 @@ class Sitemeteo(object):
             # add capteur
             self._grandeurs.append(grandeur)
 
-    # -- other methods --
-    def __eq__(self, other):
-        """Return True ou False."""
-        if self is other:
-            return True
-        for attr in ('code', ):
-            if getattr(self, attr, True) != getattr(other, attr, False):
-                return False
-        return True
-
-    def __ne__(self, other):
-        """Return True ou False."""
-        return not self.__eq__(other)
+    # -- special methods --
+    __all__attrs__ = (
+        'code', 'libelle', 'libelleusuel', 'coord', 'commune', 'grandeurs'
+    )
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
 
     def __unicode__(self):
         """Return unicode representation."""
@@ -231,7 +228,7 @@ class Sitemeteo(object):
     __str__ = _composant.__str__
 
 
-#-- class Grandeur ------------------------------------------------------------
+# -- class Grandeur -----------------------------------------------------------
 class Grandeur(object):
 
     """Classe Grandeur.
@@ -241,6 +238,7 @@ class Grandeur(object):
     Proprietes:
         typemesure (string parmi NOMENCLATURE[523])
         sitemeteo (Sitemeteo)
+        pdt (int) pas de temps
 
     """
 
@@ -249,7 +247,6 @@ class Grandeur(object):
     # dtes
     # dths
     # essai
-    # pdt
     # dtmaj
 
     # classesqualites
@@ -258,12 +255,13 @@ class Grandeur(object):
 
     typemesure = _composant.Nomenclatureitem(nomenclature=523)
 
-    def __init__(self, typemesure, sitemeteo=None, strict=True):
+    def __init__(self, typemesure, sitemeteo=None, pdt=None, strict=True):
         """Initialisation.
 
         Arguments:
             typegrandeur (string parmi NOMENCLATURE[523])
             sitemeteo (Sitemeteo)
+            pdt (int) = pas de temps pour un capteur RR
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite du sitemeteo et du type
 
@@ -273,8 +271,8 @@ class Grandeur(object):
         self._strict = bool(strict)
 
         # -- adjust the descriptor --
-        vars(self.__class__)['typemesure'].strict = self._strict
-        vars(self.__class__)['typemesure'].required = self._strict
+        vars(Grandeur)['typemesure'].strict = self._strict
+        vars(Grandeur)['typemesure'].required = self._strict
 
         # -- descriptors --
         self.typemesure = typemesure
@@ -282,6 +280,8 @@ class Grandeur(object):
         # -- full properties --
         self._sitemeteo = None
         self._sitemeteo = sitemeteo
+        self._pdt = None
+        self.pdt = pdt
 
     # -- property sitemeteo --
     @property
@@ -297,25 +297,31 @@ class Grandeur(object):
                 raise TypeError('sitemeteo must be a Sitemeteo')
         self._sitemeteo = sitemeteo
 
-    # -- other methods --
-    def __eq__(self, other):
-        """Return True ou False."""
-        if self is other:
-            return True
-        for attr in ('typemesure', 'sitemeteo'):
-            if getattr(self, attr, True) != getattr(other, attr, False):
-                return False
-        return True
+    # -- property sitemeteo --
+    @property
+    def pdt(self):
+        """Return pdt."""
+        return self._pdt
 
-    def __ne__(self, other):
-        """Return True ou False."""
-        return not self.__eq__(other)
+    @pdt.setter
+    def pdt(self, pdt):
+        """Set pdt."""
+        self._pdt = int(pdt) if pdt is not None else None
+
+    # -- special methods --
+    __all__attrs__ = ('typemesure', 'sitemeteo', 'pdt')
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
 
     def __unicode__(self):
         """Return unicode representation."""
-        return 'Grandeur {0} sur le site meteo {1}'.format(
+        str_pdt = 'de pas de temps {}'.format(self.pdt) \
+            if self.pdt is not None else ''
+        return 'Grandeur {0} {1} sur le site meteo {2}'.format(
             self.typemesure if self.typemesure is not None
             else '<sans type de mesure>',
+            str_pdt,
             self.sitemeteo.code if (
                 (self.sitemeteo is not None) and
                 (self.sitemeteo.code is not None)
@@ -324,7 +330,7 @@ class Grandeur(object):
 
     __str__ = _composant.__str__
 
-#-- class Visite --------------------------------------------------------------
+# -- class Visite -------------------------------------------------------------
 # class Visite(object):
 #
 #     raise NotImplementedError
@@ -337,7 +343,7 @@ class Grandeur(object):
 #     sitemeteo
 
 
-#-- class Classequalite -------------------------------------------------------
+# -- class Classequalite ------------------------------------------------------
 # class Classequalite(object):
 #
 #     raise NotImplementedError

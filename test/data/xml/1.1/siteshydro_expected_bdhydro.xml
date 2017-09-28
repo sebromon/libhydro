@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hydrometrie>
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>1.1</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2010-02-26T12:53:10</DateHeureCreationFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">25</CdIntervenant>
+      <CdContact schemeAgencyID="SANDRE">1069</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+    </Destinataire>
+  </Scenario>
+  <RefHyd>
+    <SitesHydro>
+      <SiteHydro>
+        <CdSiteHydro>A1984310</CdSiteHydro>
+        <TypSiteHydro>REEL</TypSiteHydro>
+      </SiteHydro>
+      <SiteHydro>
+        <CdSiteHydro>O1984310</CdSiteHydro>
+        <LbSiteHydro>Le Touch à Toulouse [Saint-Martin-du-Touch]</LbSiteHydro>
+        <LbUsuelSiteHydro>St-Martin-du-Touch</LbUsuelSiteHydro>
+        <TypSiteHydro>SOURCE</TypSiteHydro>
+        <CdCommune>11354</CdCommune>
+        <CdCommune>11355</CdCommune>
+        <CdCommune>2B021</CdCommune>
+        <StationsHydro>
+          <StationHydro>
+            <CdStationHydro>O198431001</CdStationHydro>
+            <LbStationHydro>Le Touch à Toulouse [Saint-Martin-du-Touch] - station 1</LbStationHydro>
+            <TypStationHydro>LIMNI</TypStationHydro>
+            <ComplementLibelleStationHydro>station 1</ComplementLibelleStationHydro>
+            <NiveauAffichageStationHydro>911</NiveauAffichageStationHydro>
+            <PlagesUtilStationHydro>
+                <PlageUtilStationHydro>
+                    <DtDebPlageUtilStationHydro>2015-02-14T11:54:06</DtDebPlageUtilStationHydro>
+                    <DtFinPlageUtilStationHydro>2016-09-21T06:19:31</DtFinPlageUtilStationHydro>
+                    <DtActivationPlageUtilStationHydro>2017-03-17T17:38:21</DtActivationPlageUtilStationHydro>
+                    <DtDesactivationPlageUtilStationHydro>2017-04-29T19:51:48</DtDesactivationPlageUtilStationHydro>
+                    <ActivePlageUtilStationHydro>false</ActivePlageUtilStationHydro>
+                </PlageUtilStationHydro>
+                <PlageUtilStationHydro>
+                    <DtDebPlageUtilStationHydro>2020-11-03T15:02:03</DtDebPlageUtilStationHydro>
+                </PlageUtilStationHydro>
+            </PlagesUtilStationHydro>
+          </StationHydro>
+          <StationHydro>
+            <CdStationHydro>O198431002</CdStationHydro>
+            <LbStationHydro>Le Touch à Toulouse [Saint-Martin-du-Touch] - station 2</LbStationHydro>
+            <TypStationHydro>LIMNI</TypStationHydro>
+            <ComplementLibelleStationHydro>station 2</ComplementLibelleStationHydro>
+            <NiveauAffichageStationHydro>0</NiveauAffichageStationHydro>
+          </StationHydro>
+          <StationHydro>
+            <CdStationHydro>O198431003</CdStationHydro>
+            <LbStationHydro>station 3</LbStationHydro>
+            <TypStationHydro>LIMNI</TypStationHydro>
+            <NiveauAffichageStationHydro>0</NiveauAffichageStationHydro>
+          </StationHydro>
+        </StationsHydro>
+      </SiteHydro>
+      <SiteHydro>
+        <CdSiteHydro>O2000040</CdSiteHydro>
+        <LbSiteHydro>La Garonne à Toulouse</LbSiteHydro>
+        <LbUsuelSiteHydro>Toulouse</LbUsuelSiteHydro>
+        <TypSiteHydro>REEL</TypSiteHydro>
+        <StationsHydro>
+          <StationHydro>
+            <CdStationHydro>O200004001</CdStationHydro>
+            <LbStationHydro>La Garonne à Toulouse - station 1</LbStationHydro>
+            <TypStationHydro>LIMNI</TypStationHydro>
+            <ComplementLibelleStationHydro>échelle principale</ComplementLibelleStationHydro>
+            <CoordStationHydro>
+              <CoordXStationHydro>15.0</CoordXStationHydro>
+              <CoordYStationHydro>16.0</CoordYStationHydro>
+              <ProjCoordStationHydro>26</ProjCoordStationHydro>
+            </CoordStationHydro>
+            <PkStationHydro>1.0</PkStationHydro>
+            <NiveauAffichageStationHydro>0</NiveauAffichageStationHydro>
+          </StationHydro>
+        </StationsHydro>
+      </SiteHydro>
+      <SiteHydro>
+        <CdSiteHydro>O1712510</CdSiteHydro>
+        <LbSiteHydro>L'Ariège à Auterive</LbSiteHydro>
+        <LbUsuelSiteHydro>AUTERIVE</LbUsuelSiteHydro>
+        <TypSiteHydro>REEL</TypSiteHydro>
+        <CoordSiteHydro>
+          <CoordXSiteHydro>618766.0</CoordXSiteHydro>
+          <CoordYSiteHydro>1781803.0</CoordYSiteHydro>
+          <ProjCoordSiteHydro>26</ProjCoordSiteHydro>
+        </CoordSiteHydro>
+        <CdEntiteHydrographique>Y1524018</CdEntiteHydrographique>
+        <CdTronconHydrographique>O0011532</CdTronconHydrographique>
+        <TronconsVigilanceSiteHydro>
+          <TronconVigilanceSiteHydro>
+            <CdTronconVigilance>AG3</CdTronconVigilance>
+          </TronconVigilanceSiteHydro>
+          <TronconVigilanceSiteHydro>
+            <CdTronconVigilance>AG5</CdTronconVigilance>
+            <NomCTronconVigilance>Troncon Adour àvâl</NomCTronconVigilance>
+          </TronconVigilanceSiteHydro>
+        </TronconsVigilanceSiteHydro>
+        <CdSiteHydroAncienRef>O1235401</CdSiteHydroAncienRef>
+        <StationsHydro>
+          <StationHydro>
+            <CdStationHydro>O171251001</CdStationHydro>
+            <LbStationHydro>L'Ariège à Auterive - station de secours</LbStationHydro>
+            <TypStationHydro>LIMNI</TypStationHydro>
+            <ComplementLibelleStationHydro>Complément du libellé</ComplementLibelleStationHydro>
+            <DescriptifStationHydro>Station située à Auterive</DescriptifStationHydro>
+            <DtMAJStationHydro>2017-07-17T11:23:34</DtMAJStationHydro>
+            <CoordStationHydro>
+              <CoordXStationHydro>15.0</CoordXStationHydro>
+              <CoordYStationHydro>16.0</CoordYStationHydro>
+              <ProjCoordStationHydro>26</ProjCoordStationHydro>
+            </CoordStationHydro>
+            <PkStationHydro>153.71</PkStationHydro>
+            <DtMiseServiceStationHydro>1991-10-07T14:15:16</DtMiseServiceStationHydro>
+            <DtFermetureStationHydro>2012-04-21T19:58:03</DtFermetureStationHydro>
+            <ASurveillerStationHydro>true</ASurveillerStationHydro>
+            <NiveauAffichageStationHydro>1</NiveauAffichageStationHydro>
+            <ReseauxMesureStationHydro>
+              <CodeSandreRdd>10</CodeSandreRdd>
+              <CodeSandreRdd>1000000001</CodeSandreRdd>
+            </ReseauxMesureStationHydro>
+            <Capteurs>
+              <Capteur>
+                <CdCapteur>O17125100102</CdCapteur>
+                <LbCapteur>Radar</LbCapteur>
+                <TypCapteur>0</TypCapteur>
+                <TypMesureCapteur>H</TypMesureCapteur>
+              </Capteur>
+              <Capteur>
+                <CdCapteur>O17125100101</CdCapteur>
+                <LbCapteur>Ultrasons principal</LbCapteur>
+                <TypCapteur>3</TypCapteur>
+                <TypMesureCapteur>H</TypMesureCapteur>
+                <PlagesUtilCapteur>
+                  <PlageUtilCapteur>
+                    <DtDebPlageUtilCapteur>2009-11-03T15:19:18</DtDebPlageUtilCapteur>
+                    <DtFinPlageUtilCapteur>2015-03-21T11:14:47</DtFinPlageUtilCapteur>
+                    <DtActivationPlageUtilCapteur>2014-12-14T18:27:32</DtActivationPlageUtilCapteur>
+                    <DtDesactivationPlageUtilCapteur>2015-10-25T19:13:04</DtDesactivationPlageUtilCapteur>
+                    <ActivePlageUtilCapteur>true</ActivePlageUtilCapteur>
+                  </PlageUtilCapteur>
+                  <PlageUtilCapteur>
+                    <DtDebPlageUtilCapteur>2016-01-15T12:14:13</DtDebPlageUtilCapteur>
+                  </PlageUtilCapteur>
+                </PlagesUtilCapteur>
+                <CdCapteurAncienRef>O1712510</CdCapteurAncienRef>
+              </Capteur>
+            </Capteurs>
+            <CdStationHydroAncienRef>O1712510</CdStationHydroAncienRef>
+            <CdCommune>11354</CdCommune>
+          </StationHydro>
+        </StationsHydro>
+        <CdZoneHydro>H420</CdZoneHydro>
+        <PrecisionCoursDEauSiteHydro>bras principal</PrecisionCoursDEauSiteHydro>
+      </SiteHydro>
+    </SitesHydro>
+  </RefHyd>
+</hydrometrie>

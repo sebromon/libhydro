@@ -1,31 +1,23 @@
-#------------------------------------------------------------------------------
-# LIBHYDRO - main makefile
-#------------------------------------------------------------------------------
-# Author: Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>
-# Version: 0.2a - 2014-08-26
-# History:
-#   V0.2 - 2014-08-26
-#     add the backup and the doc targets
-#   V0.1 - 2014-08-02
-#     first shot
-#------------------------------------------------------------------------------
-# TODO - link the tests and doc Makefiles
-#------------------------------------------------------------------------------
+# which is bash on Fedora
 SHELL = /bin/sh
-BACKUP_DST := '/mnt/vosges2/gouinph/developpements/libhydro/libhydro'
+
+.PHONY: backup dist doc test clean cleanall help
 
 default: help
 
-.PHONY: backup
-backup:
+backup: cleanall
 	@echo
 	@echo '-----------------------'
 	@echo 'Backup the repo'
 	@echo '-----------------------'
 	@echo
-	tar cjf ${BACKUP_DST}_$(shell date +%Y%m%d).tar.bz2 .
+	# check destination
+	@set -e
+	@if test -z "${DEST}"; then echo 'missing DEST dir'; exit 1; fi
+	@if test ! -d "${DEST}"; then echo 'unknown DEST dir'; exit 1; fi
+	# backup to ${DEST}
+	@tar cjf ${DEST}/libhydro_$(shell date +%Y%m%d).tar.bz2 -C '..' $(shell basename ${PWD})
 
-.PHONY: dist
 dist:
 	@echo
 	@echo '-----------------------'
@@ -34,13 +26,16 @@ dist:
 	@echo
 	@python setup.py sdist --format=gztar
 	@python setup.py sdist --format=zip
-	# @python setup.py bdist_wininst
+	@python setup.py bdist_wheel
+	@# FIXME - @python setup.py bdist_wininst
 
-.PHONY: doc
 doc:
 	@cd doc && $(MAKE) all
 
-.PHONY: clean
+test:
+	@echo
+	@$(MAKE) discover -C test
+
 clean:
 	@echo
 	@echo '-------------------'
@@ -49,7 +44,6 @@ clean:
 	@echo
 	@find . -name '*.pyc' -exec rm {} \;
 
-.PHONY: cleanall
 cleanall:
 	@echo
 	@echo '---------------------------'
@@ -61,15 +55,15 @@ cleanall:
 	# remove the build and the libhydro.egg-info dirs
 	@rm -rf ./build ./libhydro.egg-info
 
-.PHONY: help
 help:
 	@echo
 	@echo '------------------'
 	@echo 'Available commands'
 	@echo '------------------'
 	@echo
-	@echo 'make backup'
+	@echo 'make backup DEST=<directory>'
 	@echo 'make clean|cleanall'
 	@echo 'make dist'
 	@echo 'make doc'
+	@echo 'make test'
 	@echo 'make [help]'

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """Module obshydro.
 
 Ce module contient les classes:
@@ -30,7 +30,7 @@ d'un pandas.DataFrame dont l'index est une serie de timestamp.
 #         name='observations de debit'
 # )
 
-#-- imports -------------------------------------------------------------------
+# -- imports ------------------------------------------------------------------
 from __future__ import (
     unicode_literals as _unicode_literals,
     absolute_import as _absolute_import,
@@ -45,26 +45,29 @@ from . import (_composant, _composant_obs)
 from . import sitehydro as _sitehydro
 
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
              """<philippe.gouin@developpement-durable.gouv.fr>"""
-__version__ = """0.2c"""
-__date__ = """2014-07-25"""
+__version__ = """0.3"""
+__date__ = """2017-06-09"""
 
-#HISTORY
-#V0.2 - 2014-07-15
-#    use the composant_obs module
-#V0.1 - 2013-07-18
-#    first shot
+# HISTORY
+# V0.3 - SR - 2016-06-09
+# add sysalti and perim properties
+# V0.2 - 2014-07-15
+#   add the Serie.concat static method
+#   use the composant_obs module
+# V0.1 - 2013-07-18
+#   first shot
 
 
-#-- todos ---------------------------------------------------------------------
+# -- todos --------------------------------------------------------------------
 # PROGRESS - Serie 70% - Observations 100% - Observation 100%
 # FIXME - integriey checks entity / grandeur /statut
 # ADMIT_SERIE = {
 #     Sitehydro: 'Q',
 
-#     Stationhydro: type station...
+#     Station: type station...
 
 #     Capteur: 'H', brut corrige
 #                'Q' brut corrige
@@ -81,7 +84,7 @@ __date__ = """2014-07-25"""
 # TODO - add a sort argument/method ?
 
 
-#-- class Observation ---------------------------------------------------------
+# -- class Observation --------------------------------------------------------
 class Observation(_numpy.ndarray):
 
     """Classe observation.
@@ -127,9 +130,9 @@ class Observation(_numpy.ndarray):
     def __new__(cls, dte, res, mth=0, qal=16, cnt=True):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
-        if mth not in _NOMENCLATURE[507]:
+        if int(mth) not in _NOMENCLATURE[507]:
             raise ValueError('incorrect method')
-        if qal not in _NOMENCLATURE[515]:
+        if int(qal) not in _NOMENCLATURE[515]:
             raise ValueError('incorrect qualification')
         obj = _numpy.array(
             (dte, res, mth, qal, cnt),
@@ -155,7 +158,7 @@ class Observation(_numpy.ndarray):
     __str__ = _composant.__str__
 
 
-#-- class Observations --------------------------------------------------------
+# -- class Observations -------------------------------------------------------
 class Observations(_composant_obs.Observations):
 
     """Classe Observations.
@@ -182,6 +185,9 @@ class Observations(_composant_obs.Observations):
 
     On peut iterer dans le DataFrame avec la fonction iterrows().
 
+    ATTENTION, la comparaison de Pandas.DataFrames necessite d'ecrire:
+        (obs == obs).all().all()
+
     """
 
     def __new__(cls, *observations):
@@ -201,7 +207,7 @@ class Observations(_composant_obs.Observations):
         )
 
 
-#-- class Serie ---------------------------------------------------------------
+# -- class Serie --------------------------------------------------------------
 class Serie(_composant_obs.Serie):
 
     """Classe Serie.
@@ -209,12 +215,14 @@ class Serie(_composant_obs.Serie):
     Classe pour manipuler des series d'observations hydrometriques.
 
     Proprietes:
-        entite (Sitehydro, Stationhydro ou Capteur)
+        entite (Sitehydro, Station ou Capteur)
         grandeur (char parmi NOMENCLATURE[509]) = H ou Q
         statut (int parmi NOMENCLATURE[510]) = donnee brute, corrigee...
         dtdeb (datetime.datetime)
         dtfin (datetime.datetime)
         dtprod (datetime.datetime)
+        sysalti (int parmi NOMENCLATURE[76])
+        perim (booleen ou None)
         contact (intervenant.Contact)
         observations (Observations)
 
@@ -222,28 +230,29 @@ class Serie(_composant_obs.Serie):
 
     # TODO - Serie others attributes
 
-    # sysalti
-    # perime
     # refalti OU courbetarage
 
     grandeur = _composant.Nomenclatureitem(nomenclature=509)
     statut = _composant.Nomenclatureitem(nomenclature=510)
+    sysalti = _composant.Nomenclatureitem(nomenclature=76)
 
     def __init__(
-        self, entite=None, grandeur=None, statut=0,
-        dtdeb=None, dtfin=None, dtprod=None, contact=None,
-        observations=None, strict=True
+            self, entite=None, grandeur=None, statut=0,
+            dtdeb=None, dtfin=None, dtprod=None, sysalti=31, perime=None,
+            contact=None, observations=None, strict=True
     ):
         """Initialisation.
 
         Arguments:
-            entite (Sitehydro, Stationhydro ou Capteur)
+            entite (Sitehydro, Station ou Capteur)
             grandeur (char parmi NOMENCLATURE[509]) = H ou Q
             statut (int parmi NOMENCLATURE[510], defaut 0) = donnee brute,
                 corrigee...
             dtdeb (numpy.datetime64)
             dtfin (numpy.datetime64)
             dtprod (numpy.datetime64)
+            sysalti (int parmi NOMENCLATURE[76])
+            perim (booleen ou None)
             contact (intervenant.Contact)
             observations (Observations)
             strict (bool, defaut True) = en mode permissif il n'y a pas de
@@ -258,17 +267,21 @@ class Serie(_composant_obs.Serie):
         )
 
         # -- adjust the descriptor --
-        vars(self.__class__)['grandeur'].strict = self._strict
-        vars(self.__class__)['grandeur'].required = self._strict
-        vars(self.__class__)['statut'].strict = self._strict
+        vars(Serie)['grandeur'].strict = self._strict
+        vars(Serie)['grandeur'].required = self._strict
+        vars(Serie)['statut'].strict = self._strict
+        vars(Serie)['sysalti'].strict = self._strict
 
         # -- descriptors --
         self.grandeur = grandeur
         self.statut = statut
+        self.sysalti = sysalti
 
         # -- full properties --
         self._entite = None
         self.entite = entite
+        self._perime = None
+        self.perime = perime
 
     # -- property entite --
     @property
@@ -286,20 +299,81 @@ class Serie(_composant_obs.Serie):
                     not isinstance(
                         entite,
                         (
-                            _sitehydro.Sitehydro, _sitehydro.Stationhydro,
+                            _sitehydro.Sitehydro, _sitehydro.Station,
                             _sitehydro.Capteur
                         )
                     )
                 )
             ):
                 raise TypeError(
-                    'entite must be a Sitehydro, a Stationhydro or a Capteur'
+                    'entite must be a Sitehydro, a Station or a Capteur'
                 )
             self._entite = entite
         except:
             raise
 
-    # -- other methods --
+    # -- property perime --
+    @property
+    def perime(self):
+        """Return perime."""
+        return self._perime
+
+    @perime.setter
+    def perime(self, perime):
+        """Set perime."""
+        self._perime = bool(perime) if (perime is not None) else None
+
+    # -- static methods --
+    @staticmethod
+    def concat(series, duplicates='raise', sort=False):
+        """Concatene plusieurs series.
+
+        Leve une exception si l'entite ou la grandeur des series differe, sinon
+        retourne une nouvelle serie dont le statut est le plus faible de celui
+        des series a concatener.
+
+        Arguments:
+            series (iterable de Serie) = series a concatener
+            duplicates (string in ['raise' (defaut), 'drop']) = comportement
+                vis-a-vis des doublons dans l'index temporel des observations
+            sort (bool, defaut False) = tri des observations par l'index
+
+        """
+        # check the specific attributes
+        entite, grandeur, statut = (None, ) * 3
+        for serie in series:
+            if entite is None:
+                entite = serie.entite
+            elif entite != serie.entite:
+                raise ValueError(
+                    "can't concatenate series, entite doesn't match"
+                )
+            if grandeur is None:
+                grandeur = serie.grandeur
+            elif grandeur != serie.grandeur:
+                raise ValueError(
+                    "can't concatenate series, grandeur doesn't match"
+                )
+            statut = serie.statut if statut is None \
+                else min(statut, serie.statut)
+
+        # call the base serie concat function
+        concat = _composant_obs.Serie.concat(
+            series=series, duplicates=duplicates, sort=sort
+        )
+
+        # return
+        return Serie(entite=entite, grandeur=grandeur, statut=statut, **concat)
+
+    # -- special methods --
+    __all__attrs__ = (
+        'entite', 'grandeur', 'statut', 'dtdeb', 'dtfin', 'dtprod',
+        'contact', 'observations'
+    )
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
+
     def __unicode__(self):
         """Return unicode representation."""
         # init
@@ -317,8 +391,14 @@ class Serie(_composant_obs.Serie):
         except Exception:
             obs = '<sans observations>'
 
+        perime = ''
+        if self.perime is not None:
+            if self.perime:
+                perime = ' perime'
+            else:
+                perime = ' non perime'
         # action !
-        return 'Serie {0} sur {1}\n'\
+        return 'Serie {0}{6} sur {1}\n'\
                'Statut {2}::{3}\n'\
                '{4}\n'\
                'Observations:\n{5}'.format(
@@ -327,7 +407,8 @@ class Serie(_composant_obs.Serie):
                    self.statut,
                    _NOMENCLATURE[510][self.statut].lower(),
                    '-' * 72,
-                   obs
+                   obs,
+                   perime
                )
 
     __str__ = _composant.__str__
