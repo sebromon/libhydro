@@ -52,6 +52,8 @@ __version__ = """0.3"""
 __date__ = """2017-06-09"""
 
 # HISTORY
+# V0.3.1 - SR - 2016-06-29
+# change type of cnt to int (nomenclature[923]
 # V0.3 - SR - 2016-06-09
 # add sysalti and perim properties
 # V0.2 - 2014-07-15
@@ -111,7 +113,8 @@ class Observation(_numpy.ndarray):
             la NOMENCLATURE[507])
         qal (numpy.int8, defaut 16) = qualification de la donnees suivant la
             NOMENCLATURE[515]
-        cnt (numpy.bool, defaut True) = continuite
+        cnt (numpy.int8, defaut 0) = continuite de la donnee suivant la
+            NOMENCLATURE[923]
 
     Usage:
         Getter => observation.['x'].item()
@@ -124,16 +127,22 @@ class Observation(_numpy.ndarray):
         (str('res'), _numpy.float),
         (str('mth'), _numpy.int8),
         (str('qal'), _numpy.int8),
-        (str('cnt'), _numpy.bool)
+        (str('cnt'), _numpy.int8)
     ])
 
-    def __new__(cls, dte, res, mth=0, qal=16, cnt=True):
+    def __new__(cls, dte, res, mth=0, qal=16, cnt=0):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
         if int(mth) not in _NOMENCLATURE[507]:
             raise ValueError('incorrect method')
         if int(qal) not in _NOMENCLATURE[515]:
             raise ValueError('incorrect qualification')
+        # cnt bol SANDRE V1.1 int in V2
+        # conversion booleen  to int
+        if isinstance(cnt, bool):
+            cnt = 0 if cnt else 1
+        if int(cnt) not in _NOMENCLATURE[923]:
+            raise ValueError('incorrect continuite')
         obj = _numpy.array(
             (dte, res, mth, qal, cnt),
             dtype=Observation.DTYPE
@@ -151,7 +160,7 @@ class Observation(_numpy.ndarray):
                    self['res'].item(),
                    _NOMENCLATURE[507][self['mth'].item()],
                    _NOMENCLATURE[515][self['qal'].item()],
-                   'continue' if self['cnt'].item() else 'discontinue',
+                   'continue' if self['cnt'].item() == 0 else 'discontinue',
                    *self['dte'].item().isoformat().split('T')
                )
 

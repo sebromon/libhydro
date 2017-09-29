@@ -1085,9 +1085,9 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
         self.assertEqual(serie.grandeur, 'Q')
         self.assertEqual(serie.statut, 4)
         self.assertEqual(serie.observations.iloc[0].tolist(),
-                         [20992, 0, 16, True])
+                         [20992, 0, 16, 0])
         self.assertEqual(serie.observations.loc['2010-02-26 11:15'].tolist(),
-                         [21176, 0, 16, True])
+                         [21176, 0, 16, 0])
 
     def test_serie_1(self):
         """Serie 1 test."""
@@ -1096,9 +1096,9 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
         self.assertEqual(serie.grandeur, 'Q')
         self.assertEqual(serie.statut, 4)
         self.assertEqual(serie.observations.iloc[0].tolist(),
-                         [20, 12, 12, False])
+                         [20, 12, 12, 1])
         self.assertEqual(serie.observations.loc['2010-02-26 13:15'].tolist(),
-                         [21, 12, 8, False])
+                         [21, 12, 8, 1])
 
     def test_serie_2(self):
         """Serie 2 test."""
@@ -1107,11 +1107,11 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
         self.assertEqual(serie.grandeur, 'H')
         self.assertEqual(serie.statut, 4)
         self.assertEqual(serie.observations.loc['2010-02-26 13:10'].tolist(),
-                         [680, 4, 20, True])
+                         [680, 4, 20, 0])
         self.assertEqual(serie.observations.loc['2010-02-26 13:15'].tolist(),
-                         [684, 0, 20, True])
+                         [684, 0, 20, 0])
         self.assertEqual(serie.observations.loc['2010-02-26 14:55'].tolist(),
-                         [670, 12, 20, True])
+                         [670, 12, 20, 0])
 
     def test_seriehydro_without_observation(self):
         """Test a unconventionnal seriehydro from bdhydro."""

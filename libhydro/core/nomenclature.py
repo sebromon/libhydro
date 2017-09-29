@@ -20,10 +20,12 @@ from __future__ import (
 
 
 # -- strings ------------------------------------------------------------------
-__version__ = '0.6.3'
-__date__ = '2015-09-23'
+__version__ = '0.6.4'
+__date__ = '2015-09-29'
 
 # HISTORY
+# V0.6.4 - SR - 2015-09-23
+# add nomenclature 923 (continuite obshydro)
 # V0.6.3 - SR - 2015-09-23
 # add nomenclature 519 (type du capteur)
 # V0.6.2 - SR - 2015-06-09
@@ -300,7 +302,16 @@ NOMENCLATURE = {
           9: 'Jaugeage par mesure de vitesse en surface',
           10: 'Mesure par ADCP',
           11: 'Autres'
-          }
+          },
+
+    # Continuité de la donnée de l'observation hydro
+    923: {
+        0: 'Continue',
+        1: 'Discontinue',
+        4: 'Discontinue faible',
+        6: 'Discontinue neutre',
+        8: 'Discontinue forte'
+        }
 }
 
 NOMENCLATURES = list(NOMENCLATURE.keys())

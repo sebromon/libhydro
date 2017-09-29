@@ -29,9 +29,10 @@ from libhydro.core import (
 # -- strings ------------------------------------------------------------------
 # contributor Sébastien ROMON
 __version__ = '0.6.5'
-__date__ = '2017-09-22'
+__date__ = '2017-09-29'
 
 # HISTORY
+# SR - 2017-09-29 use itertuples intsead of iterrows
 # SR - 2017-09- 25 export type capteur to xml
 # V0.6.5 - SR- 2017-09-22
 # export entitehydro, tronconhydro, zonehydro
@@ -1124,26 +1125,23 @@ def _observations_to_element(observations, bdhydro=False, strict=True):
 
         # make element <ObssHydro>
         element = _etree.Element('ObssHydro')
-
-        # add the observations - iterrows gives tuples (index, (items))
-        for observation in observations.iterrows():
+        for observation in observations.itertuples():
             obs = _etree.SubElement(element, 'ObsHydro')
             # dte and res are mandatory...
             child = _etree.SubElement(obs, 'DtObsHydro')
-            child.text = observation[0].strftime('%Y-%m-%dT%H:%M:%S')
+            child.text = observation.Index.strftime('%Y-%m-%dT%H:%M:%S')
             child = _etree.SubElement(obs, 'ResObsHydro')
-            child.text = str(observation[1]['res'])
+            child.text = str(observation.res)
             # while mth, qal and cnt aren't
-            if 'mth' in observation[1].index:
+            if observation.mth is not None:
                 child = _etree.SubElement(obs, 'MethObsHydro')
-                child.text = str(observation[1]['mth'])
-            if 'qal' in observation[1].index:
+                child.text = str(observation.mth)
+            if observation.qal is not None:
                 child = _etree.SubElement(obs, 'QualifObsHydro')
-                child.text = str(observation[1]['qal'])
-            if 'cnt' in observation[1].index:
+                child.text = str(observation.qal)
+            if observation. cnt is not None:
                 child = _etree.SubElement(obs, 'ContObsHydro')
-                child.text = str(observation[1]['cnt']).lower()
-
+                child.text = 'true' if observation.cnt == 0 else 'false'
         # return
         return element
 

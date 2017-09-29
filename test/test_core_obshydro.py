@@ -53,22 +53,25 @@ class TestObservation(unittest.TestCase):
         res = 20.5
         mth = 4
         qal = 8
-        cnt = False
-        obs = obshydro.Observation(dte, res, mth, qal, cnt)
-        self.assertEqual(
-            obs.item(),
-            (datetime.datetime(2000, 1, 1, 10, 33, 1), res, mth, qal, cnt)
-        )
+        cnts = (False, True, 0, 1)
+        expected_cnts = (1, 0, 0, 1)
+        for i, cnt in enumerate(cnts):
+            obs = obshydro.Observation(dte, res, mth, qal, cnt)
+            self.assertEqual(
+                obs.item(),
+                (datetime.datetime(2000, 1, 1, 10, 33, 1), res, mth, qal,
+                 expected_cnts[i])
+            )
 
     def test_base_02(self):
         """Some instanciation use cases."""
         obshydro.Observation('2000-01-01 10:33:01', 20)
         obshydro.Observation('2000-01-01 10:33', 0, 4)
-        obshydro.Observation('2000-01-01 00:00+0100', 10, 4, 8, True)
+        obshydro.Observation('2000-01-01 00:00+0100', 10, 4, 8, 4)
         obshydro.Observation(
             datetime.datetime(2000, 1, 1, 10), 10, mth=4, qal=8
         )
-        obshydro.Observation(datetime.datetime(2000, 1, 1), '20', cnt=True)
+        obshydro.Observation(datetime.datetime(2000, 1, 1), '20', cnt=8)
         self.assertTrue(True)  # avoid pylint warning !
 
     def test_str_01(self):
@@ -77,10 +80,15 @@ class TestObservation(unittest.TestCase):
         res = 20.5
         mth = 4
         qal = 8
-        cnt = False
-        obs = obshydro.Observation(dte, res, mth, qal, cnt)
-        self.assertTrue(obs.__str__().rfind('UTC') > -1)
-        self.assertTrue(obs.__str__().rfind('continue') > -1)
+        for cnt in (False, 1, 4, 6, 8):
+            obs = obshydro.Observation(dte, res, mth, qal, cnt)
+            self.assertTrue(obs.__str__().rfind('UTC') > -1)
+            self.assertTrue(obs.__str__().rfind('discontinue') > -1)
+        for cnt in (True, 0):
+            obs = obshydro.Observation(dte, res, mth, qal, cnt)
+            self.assertTrue(obs.__str__().rfind('UTC') > -1)
+            self.assertTrue(obs.__str__().rfind('continue') > -1)
+            self.assertTrue(obs.__str__().rfind('discontinue') == -1)
 
     def test_error_01(self):
         """Date error."""
@@ -143,11 +151,11 @@ class TestObservations(unittest.TestCase):
         # Datetime, res and others attributes
         obs = obshydro.Observations(
             obshydro.Observation(
-                '2012-10-03 06:00', 33, mth=4, qal=0, cnt=True),
+                '2012-10-03 06:00', 33, mth=4, qal=0, cnt=0),
             obshydro.Observation(
-                '2012-10-03 07:00', 37, mth=0, qal=12, cnt=False),
+                '2012-10-03 07:00', 37, mth=0, qal=12, cnt=1),
             obshydro.Observation(
-                '2012-10-03 08:00', 42, mth=12, qal=20, cnt=True)
+                '2012-10-03 08:00', 42, mth=12, qal=20, cnt=4)
         )
         self.assertEqual(
             obs['mth'].tolist(),
@@ -159,7 +167,7 @@ class TestObservations(unittest.TestCase):
         )
         self.assertEqual(
             obs['cnt'].tolist(),
-            [True, False, True]
+            [0, 1, 4]
         )
 
     def test_error_01(self):
