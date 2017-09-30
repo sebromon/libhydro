@@ -637,7 +637,7 @@ def _station_to_element(station, bdhydro=False, strict=True):
                 'value': station.niveauaffichage}),
             ('PlagesUtilStationHydro', {
                 'value': None,
-                'force': True if (len(station.plages_utilisation) > 0)
+                'force': True if (len(station.plages) > 0)
                     else False}),
             ('ReseauxMesureStationHydro', {
                 'value': None,
@@ -673,9 +673,9 @@ def _station_to_element(station, bdhydro=False, strict=True):
                     _capteur_to_element(
                         capteur, bdhydro=bdhydro, strict=strict))
 
-        if len(station.plages_utilisation) > 0:
+        if len(station.plages) > 0:
             child = element.find('PlagesUtilStationHydro')
-            for plage in station.plages_utilisation:
+            for plage in station.plages:
                 child.append(_plage_to_element(
                     plage, 'StationHydro'))
 
@@ -732,16 +732,16 @@ def _capteur_to_element(capteur, bdhydro=False, strict=True):
             ('TypMesureCapteur', {'value': capteur.typemesure}),
             ('PlagesUtilCapteur', {
                 'value': None,
-                'force': True if len(capteur.plages_utilisation) > 0 else False
+                'force': True if len(capteur.plages) > 0 else False
                 }),
             ('CdCapteurAncienRef', {'value': capteur.codeh2})))
 
         # make element <Capteur>
         element = _factory(root=_etree.Element('Capteur'), story=story)
 
-        if len(capteur.plages_utilisation) > 0:
+        if len(capteur.plages) > 0:
             child = element.find('PlagesUtilCapteur')
-            for plage in capteur.plages_utilisation:
+            for plage in capteur.plages:
                 child.append(_plage_to_element(
                     plage, 'Capteur'))
 

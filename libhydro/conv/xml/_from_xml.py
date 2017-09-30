@@ -454,7 +454,7 @@ def _station_from_element(element):
             args['niveauaffichage'] = niveauaffichage
         args['coord'] = _coord_from_element(
             element.find('CoordStationHydro'), 'StationHydro')
-        args['plages_utilisation'] = [
+        args['plages'] = [
             _plage_from_element(e, 'StationHydro')
             for e in element.findall(
                 'PlagesUtilStationHydro/PlageUtilStationHydro')]
@@ -484,7 +484,7 @@ def _coord_from_element(element, entite):
 
 
 def _plage_from_element(element, entite):
-    """Return a sitehydro.PlageUtilisation
+    """Return a sitehydro.PlageUtil
 
     from a <PlageUtilStationHydro> element or >PlageUtilCapteur> element
 
@@ -503,7 +503,7 @@ def _plage_from_element(element, entite):
     args['dtdesactivation'] = _value(element,
         'DtDesactivationPlageUtil{}'.format(entite), _UTC)
     args['active'] = _value(element, 'ActivePlageUtil{}'.format(entite), bool)
-    return _sitehydro.PlageUtilisation(**args)
+    return _sitehydro.PlageUtil(**args)
 
 
 def _capteur_from_element(element):
@@ -520,7 +520,7 @@ def _capteur_from_element(element):
         typemesure = _value(element, 'TypMesureCapteur')
         if typemesure is not None:
             args['typemesure'] = typemesure
-        args['plages_utilisation'] = [
+        args['plages'] = [
             _plage_from_element(e, 'Capteur')
             for e in element.findall(
                 'PlagesUtilCapteur/PlageUtilCapteur')]

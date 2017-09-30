@@ -28,7 +28,7 @@ __date__ = '2017-09-22'
 # V 0.4.4 - SR - 2017-09-22
 # add entitehydro, zonehydro, tronconhydro and precisioncoursdeau to Site
 # V 0.4.3 - SR - 2017-09-05
-# add plages_utilisation to Station
+# add plages to Station
 # V 0.4.2 - SR -2017-07-18
 # add descriptif,dtmaj,dtmiseservice, dtfermeture,surveillance properties
 # to class Station
@@ -491,8 +491,8 @@ class Station(_Site_or_station):
         commune (string(5)) = code INSEE commune
         ddcs (liste de string(10)) = liste de reseaux de mesure SANDRE
             (dispositifs de collecte)
-        plages_utilisation (PlageUtilisation ou un iterable
-            de PlageUtilisation) = plages d'utilisation
+        plages (PlageUtil ou un iterable
+            de PlageUtil) = plages d'utilisation
 
     """
 
@@ -530,7 +530,7 @@ class Station(_Site_or_station):
                  pointk=None, dtmiseservice=None, dtfermeture=None,
                  surveillance=None, niveauaffichage=0,
                  coord=None, capteurs=None, commune=None, ddcs=None,
-                 plages_utilisation=None, strict=True):
+                 plages=None, strict=True):
         """Initialisation.
 
         Arguments:
@@ -553,8 +553,8 @@ class Station(_Site_or_station):
             commune (string(5)) = code INSEE commune
             ddcs (un code string(10) ou un iterable de string(10)) = reseaux de
                 mesure SANDRE
-            plages_utilisation (PlageUtilisation ou un iterable
-                de PlageUtilisation) = plages d'utilisation
+            plages (PlageUtil ou un iterable
+                de PlageUtil) = plages d'utilisation
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite du type et du code
 
@@ -592,8 +592,8 @@ class Station(_Site_or_station):
         self.commune = commune
         self._ddcs = []
         self.ddcs = ddcs
-        self._plages_utilisation = []
-        self.plages_utilisation = plages_utilisation
+        self._plages = []
+        self.plages = plages
 
     # -- property niveauaffichage --
     @property
@@ -708,36 +708,36 @@ class Station(_Site_or_station):
                 raise ValueError('ddc code must be 10 chars long')
             self._ddcs.append(ddc)
 
-    # -- property plages_utilisation --
+    # -- property plages --
     @property
-    def plages_utilisation(self):
-        """Return plages_utilisation."""
-        return self._plages_utilisation
+    def plages(self):
+        """Return plages."""
+        return self._plages
 
-    @plages_utilisation.setter
-    def plages_utilisation(self, plages_utilisation):
-        """Set plages_utilisation."""
-        self._plages_utilisation = []
+    @plages.setter
+    def plages(self, plages):
+        """Set plages."""
+        self._plages = []
         # None case
-        if plages_utilisation is None:
+        if plages is None:
             return
         # one ddc, we make a list with it
-        if not hasattr(plages_utilisation, '__iter__'):
-            plages_utilisation = [plages_utilisation]
-        # an iterable of PlageUtilisation
-        for plage in plages_utilisation:
-            if self._strict and not isinstance(plage, PlageUtilisation):
+        if not hasattr(plages, '__iter__'):
+            plages = [plages]
+        # an iterable of PlageUtil
+        for plage in plages:
+            if self._strict and not isinstance(plage, PlageUtil):
                 raise TypeError('plages utilisation is not'
-                                ' a PlageUtilisation'
-                                ' or an iterable of PlageUtilisation ')
-            self._plages_utilisation.append(plage)
+                                ' a PlageUtil'
+                                ' or an iterable of PlageUtil ')
+            self._plages.append(plage)
 
     # -- special methods --
     __all__attrs__ = (
         'code', 'codeh2', 'typestation', 'libelle', 'libellecomplement',
         'descriptif',
         'niveauaffichage', 'coord', 'capteurs', 'commune', 'ddcs',
-        'plages_utilisation')
+        'plages')
 
     def __unicode__(self):
         """Return unicode representation."""
@@ -764,8 +764,8 @@ class Capteur(_Entitehydro):
         typemesure (caractere parmi NOMENCLATURE[520]) = H ou Q
         typecapteur (int parmi NOMENCLATURE[519])
         libelle (string)
-        plages_utilisation (PlageUtilisation ou un iterable
-            de PlageUtilisation ou None) = plages d'utilisation
+        plages (PlageUtil ou un iterable
+            de PlageUtil ou None) = plages d'utilisation
 
     """
 
@@ -788,7 +788,7 @@ class Capteur(_Entitehydro):
 
     def __init__(self, code, codeh2=None, typemesure='H', libelle=None,
                  typecapteur=0,
-                 plages_utilisation=None, strict=True):
+                 plages=None, strict=True):
         """Initialisation.
 
         Arguments:
@@ -797,8 +797,8 @@ class Capteur(_Entitehydro):
             typemesure (caractere parmi NOMENCLATURE[520], defaut H) = H ou Q
             typecapteur (int parmi NOMENCLATURE[519])
             libelle (string)
-            plages_utilisation (PlageUtilisation ou un iterable
-                de PlageUtilisation ou None) = plages d'utilisation
+            plages (PlageUtil ou un iterable
+                de PlageUtil ou None) = plages d'utilisation
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite du code et du type de mesure
 
@@ -815,38 +815,38 @@ class Capteur(_Entitehydro):
         self.typemesure = typemesure
         self.typecapteur = typecapteur
 
-        self._plages_utilisation = []
-        self.plages_utilisation = plages_utilisation
+        self._plages = []
+        self.plages = plages
 
     # TODO plages utilisation communes aux stations et capteurs
-    # -- property plages_utilisation --
+    # -- property plages --
     @property
-    def plages_utilisation(self):
-        """Return plages_utilisation."""
-        return self._plages_utilisation
+    def plages(self):
+        """Return plages."""
+        return self._plages
 
-    @plages_utilisation.setter
-    def plages_utilisation(self, plages_utilisation):
-        """Set plages_utilisation."""
-        self._plages_utilisation = []
+    @plages.setter
+    def plages(self, plages):
+        """Set plages."""
+        self._plages = []
         # None case
-        if plages_utilisation is None:
+        if plages is None:
             return
         # one ddc, we make a list with it
-        if not hasattr(plages_utilisation, '__iter__'):
-            plages_utilisation = [plages_utilisation]
-        # an iterable of PlageUtilisation
-        for plage in plages_utilisation:
-            if self._strict and not isinstance(plage, PlageUtilisation):
+        if not hasattr(plages, '__iter__'):
+            plages = [plages]
+        # an iterable of PlageUtil
+        for plage in plages:
+            if self._strict and not isinstance(plage, PlageUtil):
                 raise TypeError('plages utilisation is not'
-                                ' a PlageUtilisation'
-                                ' or an iterable of PlageUtilisation ')
-            self._plages_utilisation.append(plage)
+                                ' a PlageUtil'
+                                ' or an iterable of PlageUtil ')
+            self._plages.append(plage)
 
     # -- special methods --
     __all__attrs__ = ('code', 'codeh2', 'typemesure', 'libelle',
                       'typecapteur',
-                      'plages_utilisation')
+                      'plages')
     # __eq__ = _composant.__eq__
     # __ne__ = _composant.__ne__
 
@@ -899,8 +899,8 @@ class Tronconvigilance(object):
     __str__ = _composant.__str__
 
 
-class PlageUtilisation(object):
-    """Classe  PlageUtilisation.
+class PlageUtil(object):
+    """Classe  PlageUtil.
 
     Classe pour manipuler les plages d'activations des capteurs et stations.
 

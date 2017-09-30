@@ -204,8 +204,8 @@ class TestFromXmlSitesHydros(unittest.TestCase):
                              'station %i' % i)
 
         # check plages d'utilisation
-        self.assertEqual(len(sh.stations[0].plages_utilisation), 2)
-        plage = sh.stations[0].plages_utilisation[0]
+        self.assertEqual(len(sh.stations[0].plages), 2)
+        plage = sh.stations[0].plages[0]
         self.assertEqual(plage.dtdeb,
                          datetime.datetime(2015, 2, 14, 11, 54, 6))
         self.assertEqual(plage.dtfin,
@@ -216,7 +216,7 @@ class TestFromXmlSitesHydros(unittest.TestCase):
                          datetime.datetime(2017, 4, 29, 19, 51, 48))
         self.assertEqual(plage.active, False)
 
-        plage = sh.stations[0].plages_utilisation[1]
+        plage = sh.stations[0].plages[1]
         self.assertEqual(plage.dtdeb,
                          datetime.datetime(2020, 11, 3, 15, 2, 3))
         self.assertIsNone(plage.dtfin)
@@ -285,9 +285,9 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(capteurs[1].typecapteur, 3)
 
         # check plages utilisatino capteurs
-        self.assertEqual(len(capteurs[0].plages_utilisation), 0)
-        self.assertEqual(len(capteurs[1].plages_utilisation), 2)
-        plage = capteurs[1].plages_utilisation[0]
+        self.assertEqual(len(capteurs[0].plages), 0)
+        self.assertEqual(len(capteurs[1].plages), 2)
+        plage = capteurs[1].plages[0]
         self.assertEqual(plage.dtdeb,
                          datetime.datetime(2009, 11, 3, 15, 19, 18))
         self.assertEqual(plage.dtfin,
@@ -298,7 +298,7 @@ class TestFromXmlSitesHydros(unittest.TestCase):
                          datetime.datetime(2015, 10, 25, 19, 13, 4))
         self.assertEqual(plage.active, True)
 
-        plage = capteurs[1].plages_utilisation[1]
+        plage = capteurs[1].plages[1]
         self.assertEqual(plage.dtdeb,
                          datetime.datetime(2016, 1, 15, 12, 14, 13))
         self.assertIsNone(plage.dtfin)
