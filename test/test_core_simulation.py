@@ -38,7 +38,7 @@ class TestPrevisionTendance(unittest.TestCase):
 
     def test_base_01(self):
         """Simple prevision."""
-        dte = '2012-05-18 18:36+00'
+        dte = '2012-05-18 18:36'
         res = 33.5
         p = simulation.PrevisionTendance(dte, res)
         self.assertEqual(
@@ -47,7 +47,7 @@ class TestPrevisionTendance(unittest.TestCase):
 
     def test_base_02(self):
         """Prevision with tendency."""
-        dte = '2012-05-18 00:00+00'
+        dte = '2012-05-18 00:00'
         res = 33.5
         tend = 'min'
         p = simulation.PrevisionTendance(dte=dte, res=res, tend=tend)
@@ -60,7 +60,7 @@ class TestPrevisionTendance(unittest.TestCase):
 
     def test_str_01(self):
         """Test __str__ method with minimum values."""
-        dte = '2012-05-18 00:00+00'
+        dte = '2012-05-18 00:00'
         res = 33
         p = simulation.PrevisionTendance(dte=dte, res=res)
         self.assertTrue(p.__str__().rfind('de tendance') > -1)
@@ -103,7 +103,7 @@ class TestPrevisionPrb(unittest.TestCase):
 
     def test_base_01(self):
         """Simple prevision."""
-        dte = '2012-05-18 18:36+00'
+        dte = '2012-05-18 18:36'
         res = 33.5
         p = simulation.PrevisionPrb(dte, res)
         self.assertEqual(
@@ -112,7 +112,7 @@ class TestPrevisionPrb(unittest.TestCase):
 
     def test_base_02(self):
         """Prevision with probability."""
-        dte = '2012-05-18 00:00+00'
+        dte = '2012-05-18 00:00'
         res = 33.5
         prb = 22.3
         p = simulation.PrevisionPrb(dte=dte, res=res, prb=prb)
@@ -125,7 +125,7 @@ class TestPrevisionPrb(unittest.TestCase):
 
     def test_str_01(self):
         """Test __str__ method with minimum values."""
-        dte = '2012-05-18 00:00+00'
+        dte = '2012-05-18 00:00'
         res = 33
         p = simulation.PrevisionPrb(dte=dte, res=res)
         self.assertTrue(p.__str__().rfind('avec une probabilite') > -1)
@@ -255,10 +255,11 @@ class TestSimulation(unittest.TestCase):
 
     def test_base_03(self):
         """Dtprod can be a string."""
-        sim = simulation.Simulation(dtprod='2012-05-18T18:36Z')
-        self.assertEqual(sim.dtprod, datetime.datetime(2012, 5, 18, 18, 36))
-        sim = simulation.Simulation(dtprod='2012-05-18 18:36+02')
-        self.assertEqual(sim.dtprod, datetime.datetime(2012, 5, 18, 16, 36))
+        dte = datetime.datetime(2012, 5, 18, 18, 36)
+        sim = simulation.Simulation(dtprod=dte)
+        self.assertEqual(sim.dtprod, dte)
+        sim = simulation.Simulation(dtprod='2012-05-18 18:36')
+        self.assertEqual(sim.dtprod, dte)
 
     def test_str_01(self):
         """Test __str__ method with minimum values."""
@@ -281,7 +282,7 @@ class TestSimulation(unittest.TestCase):
             simulation.PrevisionPrb(
                 **{'dte': '2012-10-10 10', 'res': 25.8, 'prb': 3}))
         sim = simulation.Simulation(
-            dtprod='2012-05-18T18:36Z',
+            dtprod='2012-05-18T18:36',
             entite=sitehydro.Station(
                 code=0, libelle='Toulouse', strict=False),
             previsions_prb=previsions_prb)
@@ -296,7 +297,7 @@ class TestSimulation(unittest.TestCase):
             *[simulation.PrevisionPrb(dte='20%i-10-10 10' % x, res=x)
               for x in range(10, 50)])
         sim = simulation.Simulation(
-            dtprod='2012-05-18T18:36Z',
+            dtprod='2012-05-18T18:36',
             entite=sitehydro.Station(code=0, strict=False),
             previsions_prb=previsions_prb)
         self.assertTrue(sim.__str__().rfind('Simulation') > -1)

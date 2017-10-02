@@ -39,7 +39,7 @@ class TestObservation(unittest.TestCase):
 
     def test_base_01(self):
         """Base case test."""
-        dte = '2000-01-01 10:33:01+0000'
+        dte = '2000-01-01 10:33:01'
         res = 20.5
         mth = 4
         qal = 0
@@ -53,7 +53,7 @@ class TestObservation(unittest.TestCase):
         """Some instanciation use cases."""
         obsmeteo.Observation('2000-01-01 10:33:01', 20)
         obsmeteo.Observation('2000-01-01 10:33', 0, 4)
-        obsmeteo.Observation('2000-01-01 00:00+0100', 10, 4, 12, True)
+        obsmeteo.Observation('2000-01-01 00:00', 10, 4, 12, True)
         obsmeteo.Observation(
             datetime.datetime(2000, 1, 1, 10), 10, mth=4, qal=16)
         obsmeteo.Observation(datetime.datetime(2000, 1, 1), '20', qua=10)
@@ -61,7 +61,7 @@ class TestObservation(unittest.TestCase):
 
     def test_str_01(self):
         """Test __str__ method."""
-        dte = '2000-01-01 10:33:01+0000'
+        dte = '2000-01-01 10:33:01'
         res = 20.5
         mth = 4
         qal = 12
@@ -162,20 +162,20 @@ class TestObservationsConcat(unittest.TestCase):
     def test_base_01(self):
         """Concat base test."""
         obs1 = obsmeteo.Observations(
-            obsmeteo.Observation('2012-10-03 06:00+00:00', 33, qua=22),
-            obsmeteo.Observation('2012-10-03 07:00+00:00', 37, qua=22),
-            obsmeteo.Observation('2012-10-03 08:00+00:00', 42, qua=22))
+            obsmeteo.Observation('2012-10-03 06:00', 33, qua=22),
+            obsmeteo.Observation('2012-10-03 07:00', 37, qua=22),
+            obsmeteo.Observation('2012-10-03 08:00', 42, qua=22))
         obs2 = obsmeteo.Observations(
-            obsmeteo.Observation('2014-10-03 09:00+00:00', 330, qua=22),
-            obsmeteo.Observation('2014-10-03 10:00+00:00', 370, qua=22),
-            obsmeteo.Observation('2014-10-03 11:00+00:00', 420, qua=22))
+            obsmeteo.Observation('2014-10-03 09:00', 330, qua=22),
+            obsmeteo.Observation('2014-10-03 10:00', 370, qua=22),
+            obsmeteo.Observation('2014-10-03 11:00', 420, qua=22))
         expected = obsmeteo.Observations(
-            obsmeteo.Observation('2012-10-03 06:00+00:00', 33, qua=22),
-            obsmeteo.Observation('2012-10-03 07:00+00:00', 37, qua=22),
-            obsmeteo.Observation('2012-10-03 08:00+00:00', 42, qua=22),
-            obsmeteo.Observation('2014-10-03 09:00+00:00', 330, qua=22),
-            obsmeteo.Observation('2014-10-03 10:00+00:00', 370, qua=22),
-            obsmeteo.Observation('2014-10-03 11:00+00:00', 420, qua=22))
+            obsmeteo.Observation('2012-10-03 06:00', 33, qua=22),
+            obsmeteo.Observation('2012-10-03 07:00', 37, qua=22),
+            obsmeteo.Observation('2012-10-03 08:00', 42, qua=22),
+            obsmeteo.Observation('2014-10-03 09:00', 330, qua=22),
+            obsmeteo.Observation('2014-10-03 10:00', 370, qua=22),
+            obsmeteo.Observation('2014-10-03 11:00', 420, qua=22))
         concat = obsmeteo.Observations.concat((obs1, obs2))
         self.assertTrue(numpy.array_equal(concat, expected))
 
@@ -204,9 +204,9 @@ class TestSerie(unittest.TestCase):
             obsmeteo.Observation('2012-10-03 06:00', 33),
             obsmeteo.Observation('2012-10-03 07:00', 37),
             obsmeteo.Observation('2012-10-03 08:00', 42))
-        dtdeb = '2012-10-03 05:00+00'
-        dtfin = '2012-10-03 09:00+00'
-        dtprod = '2012-10-03 10:00+00'
+        dtdeb = '2012-10-03 05:00'
+        dtfin = '2012-10-03 09:00'
+        dtprod = '2012-10-03 10:00'
         c = intervenant.Contact(999)
         i = True
         serie = obsmeteo.Serie(

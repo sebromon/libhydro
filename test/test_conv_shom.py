@@ -151,12 +151,14 @@ class TestSerieFromHSF(unittest.TestCase):
     def test_error_02(self):
         """Check dates format error."""
         self.assertRaises(
-            pandas.tseries.tools.DateParseError,
+            ValueError,
+            # pandas.tseries.tools.DateParseError,
             shom.serie_from_hfs,
             # **{'src': SRC, 'begin': '2013-1-1'}
             **{'src': SRC, 'begin': '20131'})
         self.assertRaises(
-            pandas.tseries.tools.DateParseError,
+            ValueError,
+            # pandas.tseries.tools.DateParseError,
             shom.serie_from_hfs,
             # **{'src': SRC, 'end': '2013-1-25'}
             **{'src': SRC, 'end': '20131'})

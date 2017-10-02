@@ -4,7 +4,7 @@
     <CodeScenario>hydrometrie</CodeScenario>
     <VersionScenario>1.1</VersionScenario>
     <NomScenario>Scenario Echange Hydrometrie v1.1</NomScenario>
-    <DateHeureCreationFichier>2001-12-17T09:30:47.10+05:00</DateHeureCreationFichier>
+    <DateHeureCreationFichier>2001-12-17T04:30:47.10</DateHeureCreationFichier>
     <RefFichier>modele.xml</RefFichier>
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
@@ -23,7 +23,7 @@
         <NomIntervenant>Nom</NomIntervenant>
         <StIntervenant>String</StIntervenant>
         <DateCreationIntervenant>1967-08-13</DateCreationIntervenant>
-        <DateMajIntervenant>2001-12-17T09:30:47+05:00</DateMajIntervenant>
+        <DateMajIntervenant>2001-12-17T04:30:47</DateMajIntervenant>
         <AuteurIntervenant>Auteur</AuteurIntervenant>
         <MnIntervenant>Mnemo</MnIntervenant>
         <BpIntervenant>String</BpIntervenant>

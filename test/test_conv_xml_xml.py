@@ -85,7 +85,7 @@ class TestScenario(unittest.TestCase):
         sce = Scenario(emetteur=emetteur, destinataire=destinataire)
         self.assertTrue(isinstance(sce.dtprod, datetime.datetime))
         # stringt dtprod
-        dtprod = '2012-12-12T05:33+00'
+        dtprod = '2012-12-12T05:33'
         sce = Scenario(
             emetteur=emetteur, destinataire=destinataire,
             dtprod=dtprod

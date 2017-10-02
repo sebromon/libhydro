@@ -49,7 +49,7 @@ class TestObservation(unittest.TestCase):
 
     def test_base_01(self):
         """Base case test."""
-        dte = '2000-01-01 10:33:01+0000'
+        dte = '2000-01-01 10:33:01'
         res = 20.5
         mth = 4
         qal = 8
@@ -67,7 +67,7 @@ class TestObservation(unittest.TestCase):
         """Some instanciation use cases."""
         obshydro.Observation('2000-01-01 10:33:01', 20)
         obshydro.Observation('2000-01-01 10:33', 0, 4)
-        obshydro.Observation('2000-01-01 00:00+0100', 10, 4, 8, 4)
+        obshydro.Observation('2000-01-01 00:00', 10, 4, 8, 4)
         obshydro.Observation(
             datetime.datetime(2000, 1, 1, 10), 10, mth=4, qal=8
         )
@@ -76,7 +76,7 @@ class TestObservation(unittest.TestCase):
 
     def test_str_01(self):
         """Test __str__ method."""
-        dte = '2000-01-01 10:33:01+0000'
+        dte = '2000-01-01 10:33:01'
         res = 20.5
         mth = 4
         qal = 8
@@ -246,9 +246,9 @@ class TestSerie(unittest.TestCase):
             obshydro.Observation('2012-10-03 07:00', 37),
             obshydro.Observation('2012-10-03 08:00', 42)
         )
-        dtdeb = '2012-10-03 05:00+00'
-        dtfin = '2012-10-03 09:00+00'
-        dtprod = '2012-10-03 10:00+00'
+        dtdeb = '2012-10-03 05:00'
+        dtfin = '2012-10-03 09:00'
+        dtprod = '2012-10-03 10:00'
         i = True
         sysalti = 0
         perime = False
