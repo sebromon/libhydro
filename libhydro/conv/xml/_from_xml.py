@@ -1110,17 +1110,21 @@ def _seuilshydro_from_element(element, ordered=False):
     # return a list of seuils
     return list(seuilshydro.values())
 
-
 def _seriesmeteo_from_element(element):
     """Return a list of obsmeteo.Serie from a <ObssMeteo> element.
 
     Painful because the XML does not contain series:
         # for each <ObsMeteo> we build a serie and obs
-        # then we group obs by identical series in a set
+        # then we group obs by identical series
+        # we make observations (dataframe) after grouping obs
         # at last we sort the series and update dtdeb and dtfin
 
     """
-    seriesmeteo = set()
+    seriesmeteo = []  # set()
+    # TempSerie : a serie with a list of observations
+    # use a temporary serie to make only once a dataframe
+    TmpSerie = _collections.namedtuple('TmpSerie', ['serie', 'obss'])
+    tmpseries = []
     if element is not None:
 
         for obsmeteo in element.findall('./ObsMeteo'):
@@ -1130,28 +1134,27 @@ def _seriesmeteo_from_element(element):
             if obs is None:
                 continue
 
-            for serie in seriesmeteo:
+            for tmpserie in tmpseries:
                 # if serie == ser:
-                if serie.__eq__(ser, ignore=['observations']):
-                    # add obs to an exisitng serie
-                    serie.observations = \
-                        _obsmeteo.Observations.concat((
-                            serie.observations,
-                            _obsmeteo.Observations(obs)))
+                if tmpserie.serie.__eq__(ser, ignore=['observations',
+                                                      'dtprod']):
+
+                    tmpserie.obss.append(obs)
+                    if ser.dtprod > tmpserie.serie.dtprod:
+                        tmpserie.serie.dtprod = ser.dtprod
                     break
             else:
                 # new serie
-                ser.observations = _obsmeteo.Observations(obs)
-                seriesmeteo.add(ser)
-
-        # update the serie
-        for serie in seriesmeteo:
-            serie.observations = serie.observations.sort_index()
+                tmpseries.append(TmpSerie(serie=ser, obss=[obs]))
+        # Add observations to serie
+        for tmpserie in tmpseries:
+            serie = tmpserie.serie
+            serie.observations = _obsmeteo.Observations(*tmpserie.obss)
             serie.dtdeb = min(serie.observations.index)
             serie.dtfin = max(serie.observations.index)
+            seriesmeteo.append(serie)
 
-    return list(seriesmeteo)
-
+    return seriesmeteo
 
 # -- utility functions --------------------------------------------------------
 def _UTC(dte):
