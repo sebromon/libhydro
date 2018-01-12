@@ -895,7 +895,7 @@ def _obsshydro_from_element(element):
             args['dte'] = _value(o, 'DtObsHydro')
             args['res'] = _value(o, 'ResObsHydro')
             if args['res'] is None:
-                return
+                continue
             mth = _value(o, 'MethObsHydro', int)
             if mth is not None:
                 args['mth'] = mth
