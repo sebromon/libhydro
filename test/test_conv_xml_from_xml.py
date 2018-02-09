@@ -1083,35 +1083,32 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
         serie = self.data['serieshydro'][0]
         self.assertEqual(serie.entite.code, 'V7144010')
         self.assertEqual(serie.grandeur, 'Q')
-        self.assertEqual(serie.statut, 4)
         self.assertEqual(serie.observations.iloc[0].tolist(),
-                         [20992, 0, 16, 0])
+                         [20992, 0, 16, 0, 4])
         self.assertEqual(serie.observations.loc['2010-02-26 11:15'].tolist(),
-                         [21176, 0, 16, 0])
+                         [21176, 0, 16, 0, 4])
 
     def test_serie_1(self):
         """Serie 1 test."""
         serie = self.data['serieshydro'][1]
         self.assertEqual(serie.entite.code, 'V714401001')
         self.assertEqual(serie.grandeur, 'Q')
-        self.assertEqual(serie.statut, 4)
         self.assertEqual(serie.observations.iloc[0].tolist(),
-                         [20, 12, 12, 1])
+                         [20, 12, 12, 1, 4])
         self.assertEqual(serie.observations.loc['2010-02-26 13:15'].tolist(),
-                         [21, 12, 8, 1])
+                         [21, 12, 8, 1, 4])
 
     def test_serie_2(self):
         """Serie 2 test."""
         serie = self.data['serieshydro'][2]
         self.assertEqual(serie.entite.code, 'V71440100103')
         self.assertEqual(serie.grandeur, 'H')
-        self.assertEqual(serie.statut, 4)
         self.assertEqual(serie.observations.loc['2010-02-26 13:10'].tolist(),
-                         [680, 4, 20, 0])
+                         [680, 4, 20, 0, 4])
         self.assertEqual(serie.observations.loc['2010-02-26 13:15'].tolist(),
-                         [684, 0, 20, 0])
+                         [684, 0, 20, 0, 4])
         self.assertEqual(serie.observations.loc['2010-02-26 14:55'].tolist(),
-                         [670, 12, 20, 0])
+                         [670, 12, 20, 0, 4])
 
     def test_seriehydro_without_observation(self):
         """Test a unconventionnal seriehydro from bdhydro."""

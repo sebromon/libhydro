@@ -1091,7 +1091,7 @@ def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True):
         _required(seriehydro, ['entite', 'dtdeb', 'dtfin', 'dtprod'])
         if strict:
             _required(seriehydro.entite, ['code'])
-            _required(seriehydro, ['grandeur', 'statut'])
+            _required(seriehydro, ['grandeur'])
 
         # template for seriehydro simple elements
         story = _collections.OrderedDict()
@@ -1104,7 +1104,14 @@ def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True):
             'value': seriehydro.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')}
         story['DtFinSerie'] = {
             'value': seriehydro.dtfin.strftime('%Y-%m-%dT%H:%M:%S')}
-        story['StatutSerie'] = {'value': str(seriehydro.statut)}
+
+        if len(seriehydro.observations) == 0:
+            statut = 0
+        else:
+            # iloc return Series with float
+            statut = int(seriehydro.observations.iloc[0]['statut'].item())
+        story['StatutSerie'] = {'value': str(statut)}
+
         story['DtProdSerie'] = {
             'value': seriehydro.dtprod.strftime('%Y-%m-%dT%H:%M:%S')}
         if seriehydro.sysalti is not None:

@@ -93,8 +93,8 @@ class Observation(_numpy.ndarray):
 
     Classe pour manipuler une observation hydrometrique elementaire.
 
-    Subclasse de numpy.array('dte', 'res', 'mth', 'qal', 'cnt'), les elements
-    etant du type DTYPE.
+    Subclasse de numpy.array('dte', 'res', 'mth', 'qal', 'cnt', 'statut'),
+    les elements etant du type DTYPE.
 
     Date et resultat sont obligatoires, les autres elements ont une valeur par
     defaut.
@@ -115,6 +115,8 @@ class Observation(_numpy.ndarray):
             NOMENCLATURE[515]
         cnt (numpy.int8, defaut 0) = continuite de la donnee suivant la
             NOMENCLATURE[923]
+        statut (numpy.int8, defaut 4) = statut de la donnee suivant la
+            NOMENCLATURE[510]
 
     Usage:
         Getter => observation.['x'].item()
@@ -127,10 +129,11 @@ class Observation(_numpy.ndarray):
         (str('res'), _numpy.float),
         (str('mth'), _numpy.int8),
         (str('qal'), _numpy.int8),
-        (str('cnt'), _numpy.int8)
+        (str('cnt'), _numpy.int8),
+        (str('statut'), _numpy.int8)
     ])
 
-    def __new__(cls, dte, res, mth=0, qal=16, cnt=0):
+    def __new__(cls, dte, res, mth=0, qal=16, cnt=0, statut=4):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
         if int(mth) not in _NOMENCLATURE[507]:
@@ -143,8 +146,11 @@ class Observation(_numpy.ndarray):
             cnt = 0 if cnt else 1
         if int(cnt) not in _NOMENCLATURE[923]:
             raise ValueError('incorrect continuite')
+        if int(statut) not in _NOMENCLATURE[510]:
+            raise ValueError('incorrect statut')
+
         obj = _numpy.array(
-            (dte, res, mth, qal, cnt),
+            (dte, res, mth, qal, cnt, statut),
             dtype=Observation.DTYPE
         ).view(cls)
         return obj
@@ -242,11 +248,10 @@ class Serie(_composant_obs.Serie):
     # refalti OU courbetarage
 
     grandeur = _composant.Nomenclatureitem(nomenclature=509)
-    statut = _composant.Nomenclatureitem(nomenclature=510)
     sysalti = _composant.Nomenclatureitem(nomenclature=76)
 
     def __init__(
-            self, entite=None, grandeur=None, statut=0,
+            self, entite=None, grandeur=None,
             dtdeb=None, dtfin=None, dtprod=None, sysalti=31, perime=None,
             contact=None, observations=None, strict=True
     ):
@@ -255,8 +260,6 @@ class Serie(_composant_obs.Serie):
         Arguments:
             entite (Sitehydro, Station ou Capteur)
             grandeur (char parmi NOMENCLATURE[509]) = H ou Q
-            statut (int parmi NOMENCLATURE[510], defaut 0) = donnee brute,
-                corrigee...
             dtdeb (numpy.datetime64)
             dtfin (numpy.datetime64)
             dtprod (numpy.datetime64)
@@ -278,12 +281,10 @@ class Serie(_composant_obs.Serie):
         # -- adjust the descriptor --
         vars(Serie)['grandeur'].strict = self._strict
         vars(Serie)['grandeur'].required = self._strict
-        vars(Serie)['statut'].strict = self._strict
         vars(Serie)['sysalti'].strict = self._strict
 
         # -- descriptors --
         self.grandeur = grandeur
-        self.statut = statut
         self.sysalti = sysalti
 
         # -- full properties --
@@ -363,8 +364,6 @@ class Serie(_composant_obs.Serie):
                 raise ValueError(
                     "can't concatenate series, grandeur doesn't match"
                 )
-            statut = serie.statut if statut is None \
-                else min(statut, serie.statut)
 
         # call the base serie concat function
         concat = _composant_obs.Serie.concat(
@@ -372,11 +371,11 @@ class Serie(_composant_obs.Serie):
         )
 
         # return
-        return Serie(entite=entite, grandeur=grandeur, statut=statut, **concat)
+        return Serie(entite=entite, grandeur=grandeur, **concat)
 
     # -- special methods --
     __all__attrs__ = (
-        'entite', 'grandeur', 'statut', 'dtdeb', 'dtfin', 'dtprod',
+        'entite', 'grandeur', 'dtdeb', 'dtfin', 'dtprod',
         'contact', 'observations'
     )
     __eq__ = _composant.__eq__
@@ -407,14 +406,11 @@ class Serie(_composant_obs.Serie):
             else:
                 perime = ' non perime'
         # action !
-        return 'Serie {0}{6} sur {1}\n'\
-               'Statut {2}::{3}\n'\
-               '{4}\n'\
-               'Observations:\n{5}'.format(
+        return 'Serie {0}{4} sur {1}\n'\
+               '{2}\n'\
+               'Observations:\n{3}'.format(
                    self.grandeur or '<grandeur inconnue>',
                    entite,
-                   self.statut,
-                   _NOMENCLATURE[510][self.statut].lower(),
                    '-' * 72,
                    obs,
                    perime

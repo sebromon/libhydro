@@ -830,18 +830,20 @@ def _seriehydro_from_element(element):
         contact = None
         if element.find('CdContact') is not None:
             contact = _intervenant.Contact(code=_value(element, 'CdContact'))
+
+        statut = _value(element, 'StatutSerie')
         # utilisation d'un dictionnaire afin que sysalti ne soit pas transmis
         # au constructeur si la balide n'existe pas
         args = {
             'entite': entite,
             'grandeur': _value(element, 'GrdSerie'),
-            'statut': _value(element, 'StatutSerie'),
             'dtdeb': _value(element, 'DtDebSerie'),
             'dtfin': _value(element, 'DtFinSerie'),
             'dtprod': _value(element, 'DtProdSerie'),
             'perime': _value(element, 'SeriePerim', bool),
             'contact': contact,
-            'observations': _obsshydro_from_element(element.find('ObssHydro'))}
+            'observations': _obsshydro_from_element(element.find('ObssHydro'),
+                                                    statut)}
         # balise sysalti
         sysalti = _value(element, 'SysAltiSerie', int)
         if sysalti is not None:
@@ -885,7 +887,7 @@ def _seriemeteo_from_element(element):
             contact=contact)
 
 
-def _obsshydro_from_element(element):
+def _obsshydro_from_element(element, statut):
     """Return a sorted obshydro.Observations from a <ObssHydro> element."""
     if element is not None:
         # prepare a list of Observation
@@ -905,6 +907,7 @@ def _obsshydro_from_element(element):
             continuite = _value(o, 'ContObsHydro', bool)
             if continuite is not None:
                 args['cnt'] = continuite
+            args['statut'] = statut
             observations.append(_obshydro.Observation(**args))
         # build the Observations and return
         return _obshydro.Observations(*observations).sort_index()

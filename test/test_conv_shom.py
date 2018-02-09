@@ -106,8 +106,8 @@ class TestSerieFromHSF(unittest.TestCase):
              serie.entite.libelle),
             (None, 'LIMNI', 'LOCMARIAQUER'))
         self.assertEqual(
-            (serie.grandeur, serie.statut),
-            ('H', 0))
+            (serie.grandeur, ),
+            ('H', ))
         self.assertEqual(len(serie.observations), 144)
         self.assertEqual(
             (serie.observations.iloc[100].item(),
@@ -122,8 +122,8 @@ class TestSerieFromHSF(unittest.TestCase):
             begin='2013-01-23 20:05', end='2013-01-23 20:35')
         self.assertEqual(serie.entite, station)
         self.assertEqual(
-            (serie.grandeur, serie.statut),
-            ('H', 0))
+            (serie.grandeur, ),
+            ('H', ))
         self.assertEqual(len(serie.observations), 3)
         self.assertEqual(
             (serie.observations.iloc[1].item(),
@@ -136,7 +136,7 @@ class TestSerieFromHSF(unittest.TestCase):
             src=SRC, station='X1', strict=False)
         self.assertEqual(serie.entite, 'X1')
         self.assertEqual(
-            (serie.grandeur, serie.statut), ('H', 0))
+            (serie.grandeur, ), ('H', ))
         self.assertEqual(len(serie.observations), 144)
         self.assertEqual(
             (serie.observations.iloc[73].item(),

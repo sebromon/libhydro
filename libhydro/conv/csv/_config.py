@@ -132,8 +132,7 @@ MAPPER = {
         '<DtFermetureServiceGrdMeteo>': None,  # NotImplemented yet
     },
     'libhydro.core.obshydro.Serie': {
-        '<GrdSerie>': 'grandeur',  # mandatory
-        '<StatutSerie>': 'statut',
+        '<GrdSerie>': 'grandeur'  # mandatory
     },
     'libhydro.core.obshydro.Serie.entite_sitehydro': {
         '<CdSiteHydro>': 'code',  # mandatory
@@ -145,6 +144,7 @@ MAPPER = {
         '<DtObsHydro>': 'dte',  # mandatory
         '<ResObsHydro>': 'res',  # mandatory
         '<MethObsHydro>': 'mth',
+        '<StatutSerie>': 'statut' # mandatory
     },
     'libhydro.core.obsmeteo.Serie': {
         '<DureeObsMeteo>': 'duree',

@@ -55,12 +55,13 @@ class TestObservation(unittest.TestCase):
         qal = 8
         cnts = (False, True, 0, 1)
         expected_cnts = (1, 0, 0, 1)
+        statut = 16
         for i, cnt in enumerate(cnts):
-            obs = obshydro.Observation(dte, res, mth, qal, cnt)
+            obs = obshydro.Observation(dte, res, mth, qal, cnt, statut)
             self.assertEqual(
                 obs.item(),
                 (datetime.datetime(2000, 1, 1, 10, 33, 1), res, mth, qal,
-                 expected_cnts[i])
+                 expected_cnts[i], statut)
             )
 
     def test_base_02(self):
@@ -72,6 +73,8 @@ class TestObservation(unittest.TestCase):
             datetime.datetime(2000, 1, 1, 10), 10, mth=4, qal=8
         )
         obshydro.Observation(datetime.datetime(2000, 1, 1), '20', cnt=8)
+        obshydro.Observation(datetime.datetime(2000, 1, 1), '20', cnt=8,
+                             statut=8)
         self.assertTrue(True)  # avoid pylint warning !
 
     def test_str_01(self):
@@ -127,6 +130,17 @@ class TestObservation(unittest.TestCase):
             **{'dte': '2000-10-05 10:00', 'res': 20, 'qal': 1000}
         )
 
+    def test_error_05(self):
+        """Statut error."""
+        obshydro.Observation(
+            **{'dte': '2000-10-05 10:00', 'res': 20, 'qal': 16, 'statut': 16}
+        )
+        self.assertRaises(
+            ValueError,
+            obshydro.Observation,
+            **{'dte': '2000-10-05 10:00', 'res': 20, 'qal': 16, 'statut': 18}
+        )
+
 
 # -- class TestObservations ---------------------------------------------------
 class TestObservations(unittest.TestCase):
@@ -151,11 +165,11 @@ class TestObservations(unittest.TestCase):
         # Datetime, res and others attributes
         obs = obshydro.Observations(
             obshydro.Observation(
-                '2012-10-03 06:00', 33, mth=4, qal=0, cnt=0),
+                '2012-10-03 06:00', 33, mth=4, qal=0, cnt=0, statut=4),
             obshydro.Observation(
-                '2012-10-03 07:00', 37, mth=0, qal=12, cnt=1),
+                '2012-10-03 07:00', 37, mth=0, qal=12, cnt=1, statut=8),
             obshydro.Observation(
-                '2012-10-03 08:00', 42, mth=12, qal=20, cnt=4)
+                '2012-10-03 08:00', 42, mth=12, qal=20, cnt=4, statut=12)
         )
         self.assertEqual(
             obs['mth'].tolist(),
@@ -168,6 +182,10 @@ class TestObservations(unittest.TestCase):
         self.assertEqual(
             obs['cnt'].tolist(),
             [0, 1, 4]
+        )
+        self.assertEqual(
+            obs['statut'].tolist(),
+            [4, 8, 12]
         )
 
     def test_error_01(self):
@@ -240,7 +258,6 @@ class TestSerie(unittest.TestCase):
             code='A0445810', libelle='Le Rhône à Marseille'
         )
         g = 'Q'
-        t = 16
         o = obshydro.Observations(
             obshydro.Observation('2012-10-03 06:00', 33),
             obshydro.Observation('2012-10-03 07:00', 37),
@@ -253,17 +270,17 @@ class TestSerie(unittest.TestCase):
         sysalti = 0
         perime = False
         serie = obshydro.Serie(
-            entite=s, grandeur=g, statut=t, observations=o, strict=i,
+            entite=s, grandeur=g, observations=o, strict=i,
             dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, sysalti=sysalti,
             perime=perime
         )
         self.assertEqual(
             (
-                serie.entite, serie.grandeur, serie.statut,
+                serie.entite, serie.grandeur,
                 serie.observations, serie._strict, serie.contact,
                 serie.sysalti, serie.perime
             ),
-            (s, g, t, o, i, None, sysalti, perime)
+            (s, g, o, i, None, sysalti, perime)
         )
         self.assertEqual(
             (serie.dtdeb, serie.dtfin, serie.dtprod),
@@ -292,11 +309,11 @@ class TestSerie(unittest.TestCase):
         )
         self.assertEqual(
             (
-                serie.entite, serie.grandeur, serie.statut,
+                serie.entite, serie.grandeur,
                 serie.observations, serie._strict, serie.contact,
                 serie.sysalti, serie.perime
             ),
-            (s, g, 0, o, True, c, 31, None)
+            (s, g, o, True, c, 31, None)
         )
         self.assertEqual(
             (serie.dtdeb, serie.dtfin, serie.dtprod),
@@ -338,9 +355,9 @@ class TestSerie(unittest.TestCase):
         self.assertFalse((obss1 == obss3).all().all())
         self.assertEqual(serie1, serie2)
         self.assertNotEqual(serie1, serie3)
-        serie2.statut = 4
-        self.assertNotEqual(serie1, serie2)
-        self.assertTrue(serie1.__eq__(serie2, ignore=['statut']))
+        # serie2.statut = 4
+        # self.assertNotEqual(serie1, serie2)
+        # self.assertTrue(serie1.__eq__(serie2, ignore=['statut']))
 
     def test_non_equal_01(self):
         """Test __ne__ method."""
@@ -362,7 +379,6 @@ class TestSerie(unittest.TestCase):
         # None values
         serie = obshydro.Serie(strict=False)
         self.assertTrue(serie.__str__().rfind('Serie') > -1)
-        self.assertTrue(serie.__str__().rfind('Statut') > -1)
         self.assertTrue(serie.__str__().rfind('Observations') > -1)
         # a junk entite
         serie = obshydro.Serie(entite='station 33', strict=False)
@@ -377,7 +393,6 @@ class TestSerie(unittest.TestCase):
         )
         serie = obshydro.Serie(entite=s, grandeur='Q', observations=o)
         self.assertTrue(serie.__str__().rfind('Serie') > -1)
-        self.assertTrue(serie.__str__().rfind('Statut') > -1)
         self.assertTrue(serie.__str__().rfind('Observations') > -1)
 
     def test_str_03(self):
@@ -389,7 +404,6 @@ class TestSerie(unittest.TestCase):
         )
         serie = obshydro.Serie(entite=s, grandeur='H', observations=o)
         self.assertTrue(serie.__str__().rfind('Serie') > -1)
-        self.assertTrue(serie.__str__().rfind('Statut') > -1)
         self.assertTrue(serie.__str__().rfind('Observations') > -1)
 
     def test_str_04(self):
@@ -414,25 +428,24 @@ class TestSerie(unittest.TestCase):
         """Fuzzy mode test."""
         s = 4
         g = 'RR'
-        t = 123
         o = [10, 13, 25, 8]
         serie = obshydro.Serie(
-            entite=s, grandeur=g, statut=t, observations=o, strict=False
+            entite=s, grandeur=g, observations=o, strict=False
         )
         self.assertEqual(
             (
-                serie.entite, serie.grandeur, serie.statut,
+                serie.entite, serie.grandeur,
                 serie.observations, serie._strict
             ),
-            (s, g, t, o, False)
+            (s, g, o, False)
         )
         serie = obshydro.Serie(strict=False)
         self.assertEqual(
             (
-                serie.entite, serie.grandeur, serie.statut,
+                serie.entite, serie.grandeur,
                 serie.observations, serie._strict
             ),
-            (None, None, 0, None, False)
+            (None, None, None, False)
         )
 
     def test_error_01(self):
@@ -460,24 +473,6 @@ class TestSerie(unittest.TestCase):
             ValueError,
             obshydro.Serie,
             **{'entite': s, 'grandeur': 'X', 'observations': o}
-        )
-
-    def test_error_03(self):
-        """Statut error."""
-        s = sitehydro.Station(code='A044581001', strict=False)
-        o = obshydro.Observations(obshydro.Observation('2012-10-03 06:00', 33))
-        obshydro.Serie(
-            **{'entite': s, 'grandeur': 'H', 'statut': 12, 'observations': o}
-        )
-        self.assertRaises(
-            ValueError,
-            obshydro.Serie,
-            **{'entite': s, 'grandeur': 'H', 'statut': None, 'observations': o}
-        )
-        self.assertRaises(
-            ValueError,
-            obshydro.Serie,
-            **{'entite': s, 'grandeur': 'H', 'statut': 124, 'observations': o}
         )
 
     def test_error_04(self):
