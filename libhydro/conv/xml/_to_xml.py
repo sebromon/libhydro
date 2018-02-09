@@ -421,18 +421,27 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
         return element
 
 
+def _codesitemeteo_to_value(sitemeteo, bdhydro=False, strict=True):
+    code = sitemeteo.code
+    if strict:
+        _required(sitemeteo, ['code'])
+        # in bdhydro cdsitemeteo 8 or 9 char
+        if bdhydro and sitemeteo.code[0] == '0':
+                code = sitemeteo.code[1:]
+    return code
+
+
 def _sitemeteo_to_element(sitemeteo, bdhydro=False, strict=True):
     """Return a <SiteMeteo> element from a sitemeteo.Sitemeteo."""
 
     if sitemeteo is not None:
 
         # prerequisites
-        if strict:
-            _required(sitemeteo, ['code'])
+        code = _codesitemeteo_to_value(sitemeteo, bdhydro, strict)
 
         # template for sitemeteo simple elements
         story = _collections.OrderedDict((
-            ('CdSiteMeteo', {'value': sitemeteo.code}),
+            ('CdSiteMeteo', {'value': code}),
             ('LbSiteMeteo', {'value': sitemeteo.libelle}),
             ('LbUsuelSiteMeteo', {'value': sitemeteo.libelleusuel}),
             ('CoordSiteMeteo', {
@@ -1154,6 +1163,10 @@ def _obsmeteo_to_element(seriemeteo, index, obs, bdhydro=False, strict=True):
         # prerequisite
         _required(seriemeteo, ['grandeur', 'dtprod', 'duree'])
         _required(seriemeteo.grandeur, ['sitemeteo'])
+        code = _codesitemeteo_to_value(sitemeteo=seriemeteo.grandeur.sitemeteo,
+                                       bdhydro=bdhydro,
+                                       strict=strict)
+
         if strict:
             _required(seriemeteo.grandeur.sitemeteo, ['code'])
             _required(seriemeteo, ['statut'])  # contact is also mandatory
@@ -1161,7 +1174,7 @@ def _obsmeteo_to_element(seriemeteo, index, obs, bdhydro=False, strict=True):
         # template for seriemeteo simple elements
         story = _collections.OrderedDict()
         story['CdGrdMeteo'] = {'value': seriemeteo.grandeur.typemesure}
-        story['CdSiteMeteo'] = {'value': seriemeteo.grandeur.sitemeteo.code}
+        story['CdSiteMeteo'] = {'value': code}
         story['DtProdObsMeteo'] = {
             'value': seriemeteo.dtprod.strftime('%Y-%m-%dT%H:%M:%S')}
         story['DtObsMeteo'] = {'value': index.strftime('%Y-%m-%dT%H:%M:%S')}

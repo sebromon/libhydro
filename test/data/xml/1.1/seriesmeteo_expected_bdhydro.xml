@@ -17,7 +17,7 @@
     <ObssMeteo>
       <ObsMeteo>
         <CdGrdMeteo>RR</CdGrdMeteo>
-        <CdSiteMeteo>001033002</CdSiteMeteo>
+        <CdSiteMeteo>01033002</CdSiteMeteo>
         <DtProdObsMeteo>2010-02-26T15:13:37</DtProdObsMeteo>
         <DtObsMeteo>2010-02-26T12:00:00</DtObsMeteo>
         <StatutObsMeteo>4</StatutObsMeteo>
@@ -30,7 +30,7 @@
       </ObsMeteo>
       <ObsMeteo>
         <CdGrdMeteo>RR</CdGrdMeteo>
-        <CdSiteMeteo>001033002</CdSiteMeteo>
+        <CdSiteMeteo>01033002</CdSiteMeteo>
         <DtProdObsMeteo>2010-02-26T15:13:37</DtProdObsMeteo>
         <DtObsMeteo>2010-02-26T13:00:00</DtObsMeteo>
         <StatutObsMeteo>4</StatutObsMeteo>
@@ -43,7 +43,7 @@
       </ObsMeteo>
       <ObsMeteo>
         <CdGrdMeteo>TA</CdGrdMeteo>
-        <CdSiteMeteo>02B033002</CdSiteMeteo>
+        <CdSiteMeteo>2B033002</CdSiteMeteo>
         <DtProdObsMeteo>2010-02-26T15:13:37</DtProdObsMeteo>
         <DtObsMeteo>2010-02-26T14:00:00</DtObsMeteo>
         <StatutObsMeteo>4</StatutObsMeteo>
