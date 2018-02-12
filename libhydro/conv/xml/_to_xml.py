@@ -1176,7 +1176,7 @@ def _obsmeteo_to_element(seriemeteo, index, obs, bdhydro=False, strict=True):
 
         if strict:
             _required(seriemeteo.grandeur.sitemeteo, ['code'])
-            _required(seriemeteo, ['statut'])  # contact is also mandatory
+            # contact is also mandatory
 
         # template for seriemeteo simple elements
         story = _collections.OrderedDict()
@@ -1185,7 +1185,7 @@ def _obsmeteo_to_element(seriemeteo, index, obs, bdhydro=False, strict=True):
         story['DtProdObsMeteo'] = {
             'value': seriemeteo.dtprod.strftime('%Y-%m-%dT%H:%M:%S')}
         story['DtObsMeteo'] = {'value': index.strftime('%Y-%m-%dT%H:%M:%S')}
-        story['StatutObsMeteo'] = {'value': seriemeteo.statut}
+        story['StatutObsMeteo'] = {'value': int(obs.statut)}
         story['ResObsMeteo'] = {'value': obs.res}
         if bdhydro:
             story['DureeObsMeteo'] = {

@@ -882,7 +882,6 @@ def _seriemeteo_from_element(element):
         return _obsmeteo.Serie(
             grandeur=grandeur,
             duree=duree * 60,
-            statut=_value(element, 'StatutObsMeteo', int),
             dtprod=_value(element, 'DtProdObsMeteo'),
             contact=contact)
 
@@ -931,6 +930,7 @@ def _obsmeteo_from_element(element):
         qua = _value(element, 'IndiceQualObsMeteo', int)
         if qua is not None:
             args['qua'] = qua
+        args['statut'] = _value(element, 'StatutObsMeteo', int)
         # build the Observation and return
         return _obsmeteo.Observation(**args)
 

@@ -1168,15 +1168,15 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
                 break
         self.assertEqual(serie.grandeur.sitemeteo.code, '001033002')
         self.assertEqual(serie.duree, datetime.timedelta(minutes=60))
-        self.assertEqual(serie.statut, 4)
         self.assertEqual(serie.dtdeb, datetime.datetime(2010, 2, 26, 12))
         self.assertEqual(serie.dtfin, datetime.datetime(2010, 2, 26, 13))
         self.assertEqual(serie.dtprod,
                          datetime.datetime(2010, 2, 26, 15, 13, 37))
         # (dte) res mth qal qua
-        self.assertEqual(serie.observations.iloc[0].tolist(), [2, 0, 16, 100])
+        self.assertEqual(serie.observations.iloc[0].tolist(),
+                         [2, 0, 16, 100, 4])
         self.assertEqual(serie.observations.loc['2010-02-26 13:00'].tolist(),
-                         [8, 0, 16, 75])
+                         [8, 0, 16, 75, 4])
 
     def test_serie_TA(self):
         """Serie TA test."""
@@ -1185,7 +1185,6 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
                 break
         self.assertEqual(serie.grandeur.sitemeteo.code, '02B033002')
         self.assertEqual(serie.duree, datetime.timedelta(minutes=0))
-        self.assertEqual(serie.statut, 4)
         self.assertEqual(serie.dtdeb, datetime.datetime(2010, 2, 26, 14))
         self.assertEqual(serie.dtfin, datetime.datetime(2010, 2, 26, 14))
         self.assertEqual(serie.dtprod,

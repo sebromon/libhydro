@@ -44,10 +44,12 @@ class TestObservation(unittest.TestCase):
         mth = 4
         qal = 0
         qua = 98
-        obs = obsmeteo.Observation(dte, res, mth, qal, qua)
+        statut = 8
+        obs = obsmeteo.Observation(dte, res, mth, qal, qua, statut)
         self.assertEqual(
             obs.item(),
-            (datetime.datetime(2000, 1, 1, 10, 33, 1), res, mth, qal, qua))
+            (datetime.datetime(2000, 1, 1, 10, 33, 1), res, mth, qal, qua,
+             statut))
 
     def test_base_02(self):
         """Some instanciation use cases."""
@@ -112,6 +114,20 @@ class TestObservation(unittest.TestCase):
             obsmeteo.Observation(
                 **{'dte': '2000-10-05 10:00', 'res': 20, 'qua': 101})
 
+    def test_error_06(self):
+        """Statut error."""
+        obsmeteo.Observation(
+            **{'dte': '2000-10-05 10:00', 'res': 20, 'statut': 12})
+        with self.assertRaises(ValueError):
+            obsmeteo.Observation(
+                **{'dte': '2000-10-05 10:00', 'res': 20, 'statut': '95.aaa'})
+        with self.assertRaises(ValueError):
+            obsmeteo.Observation(
+                **{'dte': '2000-10-05 10:00', 'res': 20, 'statut': -1})
+        with self.assertRaises(ValueError):
+            obsmeteo.Observation(
+                **{'dte': '2000-10-05 10:00', 'res': 20, 'statut': 101})
+
 
 # -- class TestObservations ---------------------------------------------------
 class TestObservations(unittest.TestCase):
@@ -132,14 +148,15 @@ class TestObservations(unittest.TestCase):
         # Datetime, res and others attributes
         obs = obsmeteo.Observations(
             obsmeteo.Observation(
-                '2012-10-03 06:00', 33, mth=4, qal=0, qua=100),
+                '2012-10-03 06:00', 33, mth=4, qal=0, qua=100, statut=0),
             obsmeteo.Observation(
-                '2012-10-03 07:00', 37, mth=0, qal=12),
+                '2012-10-03 07:00', 37, mth=0, qal=12, statut=8),
             obsmeteo.Observation(
-                '2012-10-03 08:00', 42, mth=12, qal=20, qua=99))
+                '2012-10-03 08:00', 42, mth=12, qal=20, qua=99, statut=16))
         self.assertEqual(obs['mth'].tolist(), [4, 0, 12])
         self.assertEqual(obs['qal'].tolist(), [0, 12, 20])
         self.assertEqual(obs['qua'].tolist()[::2], [100, 99])
+        self.assertEqual(obs['statut'].tolist(), [0, 8, 16])
         self.assertTrue(numpy.isnan(obs['qua'].tolist()[1]))
 
     def test_error_01(self):
@@ -201,21 +218,21 @@ class TestSerie(unittest.TestCase):
         d = datetime.timedelta(days=1)
         t = 4
         o = obsmeteo.Observations(
-            obsmeteo.Observation('2012-10-03 06:00', 33),
-            obsmeteo.Observation('2012-10-03 07:00', 37),
-            obsmeteo.Observation('2012-10-03 08:00', 42))
+            obsmeteo.Observation('2012-10-03 06:00', 33, statut=t),
+            obsmeteo.Observation('2012-10-03 07:00', 37, statut=t),
+            obsmeteo.Observation('2012-10-03 08:00', 42, statut=t))
         dtdeb = '2012-10-03 05:00'
         dtfin = '2012-10-03 09:00'
         dtprod = '2012-10-03 10:00'
         c = intervenant.Contact(999)
         i = True
         serie = obsmeteo.Serie(
-            grandeur=g, duree=d, statut=t, observations=o, strict=i,
+            grandeur=g, duree=d, observations=o, strict=i,
             dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, contact=c)
         self.assertEqual(
-            (serie.grandeur, serie.duree, serie.statut,
+            (serie.grandeur, serie.duree,
              serie.observations, serie._strict, serie.contact),
-            (g, d, t, o, i, c))
+            (g, d, o, i, c))
         self.assertEqual(
             (serie.dtdeb, serie.dtfin, serie.dtprod),
             (datetime.datetime(2012, 10, 3, 5),
@@ -229,10 +246,10 @@ class TestSerie(unittest.TestCase):
             obsmeteo.Observation('2012-10-03 06:00', 33),)
         serie = obsmeteo.Serie(grandeur=g, observations=o,)
         self.assertEqual(
-            (serie.grandeur, serie.duree, serie.statut, serie._strict,
+            (serie.grandeur, serie.duree, serie._strict,
              serie.dtdeb, serie.dtfin, serie.dtprod, serie.observations,
              serie.contact),
-            (g, datetime.timedelta(0), 0, True, None, None, None, o, None))
+            (g, datetime.timedelta(0), True, None, None, None, o, None))
 
     def test_resample(self):
         """Resample method test."""
@@ -284,9 +301,9 @@ class TestSerie(unittest.TestCase):
         self.assertFalse((obss1 == obss3).all().all())
         self.assertEqual(serie1, serie2)
         self.assertNotEqual(serie1, serie3)
-        serie2.statut = 4
-        self.assertNotEqual(serie1, serie2)
-        self.assertTrue(serie1.__eq__(serie2, ignore=['statut']))
+#         serie2.statut = 4
+#         self.assertNotEqual(serie1, serie2)
+#         self.assertTrue(serie1.__eq__(serie2, ignore=['statut']))
 
         # sans qualite => Nan != Nan
         grd1 = sitemeteo.Grandeur('EP')
@@ -321,7 +338,6 @@ class TestSerie(unittest.TestCase):
         # None values
         serie = obsmeteo.Serie(strict=False)
         self.assertTrue(serie.__str__().rfind('Serie') > -1)
-        self.assertTrue(serie.__str__().rfind('Statut') > -1)
         self.assertTrue(serie.__str__().rfind('Observations') > -1)
         # a junk entite
         serie = obsmeteo.Serie(grandeur='XL', strict=False)
@@ -335,7 +351,6 @@ class TestSerie(unittest.TestCase):
             obsmeteo.Observation('2012-10-03 08:00', 42))
         serie = obsmeteo.Serie(grandeur=g, observations=o)
         self.assertTrue(serie.__str__().rfind('Serie') > -1)
-        self.assertTrue(serie.__str__().rfind('Statut') > -1)
         self.assertTrue(serie.__str__().rfind('Observations') > -1)
 
     def test_str_03(self):
@@ -346,25 +361,23 @@ class TestSerie(unittest.TestCase):
               for x in range(10, 50)])
         serie = obsmeteo.Serie(grandeur=g, observations=o)
         self.assertTrue(serie.__str__().rfind('Serie') > -1)
-        self.assertTrue(serie.__str__().rfind('Statut') > -1)
         self.assertTrue(serie.__str__().rfind('Observations') > -1)
 
     def test_fuzzy_mode_01(self):
         """Fuzzy mode test."""
         g = 'XX'
-        t = 123
         o = [10, 13, 25, 8]
         serie = obsmeteo.Serie(
-            grandeur=g, statut=t, observations=o, strict=False)
+            grandeur=g, observations=o, strict=False)
         self.assertEqual(
-            (serie.grandeur, serie.duree, serie.statut,
+            (serie.grandeur, serie.duree,
              serie.observations, serie._strict),
-            (g, datetime.timedelta(0), t, o, False))
+            (g, datetime.timedelta(0), o, False))
         serie = obsmeteo.Serie(strict=False)
         self.assertEqual(
-            (serie.grandeur, serie.duree, serie.statut,
+            (serie.grandeur, serie.duree,
              serie.observations, serie._strict),
-            (None, datetime.timedelta(0), 0, None, False))
+            (None, datetime.timedelta(0), None, False))
 
     def test_error_01(self):
         """Grandeur error."""
@@ -388,18 +401,6 @@ class TestSerie(unittest.TestCase):
         with self.assertRaises(ValueError):
             obsmeteo.Serie(
                 **{'grandeur': g, 'duree': 'hex', 'observations': o})
-
-    def test_error_03(self):
-        """Statut error."""
-        g = sitemeteo.Grandeur('XX', strict=False)
-        o = obsmeteo.Observations(obsmeteo.Observation('2012-10-03 06:00', 33))
-        obsmeteo.Serie(
-            **{'grandeur': g, 'statut': 8, 'observations': o})
-        with self.assertRaises(ValueError):
-            obsmeteo.Serie(
-                **{'grandeur': g, 'statut': None, 'observations': o})
-        with self.assertRaises(ValueError):
-            obsmeteo.Serie(**{'grandeur': g, 'statut': 124, 'observations': o})
 
     def test_error_04(self):
         """Observations error."""
