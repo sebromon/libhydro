@@ -184,6 +184,33 @@ NOMENCLATURE = {
         0: 'Mesure', 4: 'Reconstitution', 8: 'Calcul',
         12: 'Interpolation', 16: 'Forcage'},
 
+    # Type de grandeur de l'observation élaborée hydro
+    513: {
+        # 'QmJ': 'Débit moyen journalier',
+        'QmM': 'Débit moyen mensuel',
+        'QIXM': 'Débit instantanée maximal mensuel',
+        'QINM': 'Débit instantanée minimal mensuel',
+        'HIXM': 'Hauteur instantanée maximale mensuelle',
+        'HINM': 'Hauteur instantanée minimale mensuelle',
+        'dQmM': 'Delta du débit moyen mensuel pour la reconstitution du débit naturel',
+        # 'QIXJ': 'Débit instantané maximal journalier',
+        # 'QINJ': 'Débit instantané minimal journalier',
+        # 'HIXJ': 'Hauteur instantanée maximale journalier',
+        # 'HINJ': 'Hauteur instantanée minimal journalier'
+        'Module': 'Débit moyen inter-annuel',
+        'QIX': 'Débit instantané maximum',
+        'QIN': 'Débit instantané minimum',
+        'QmnJ': 'Débit moyen sur n jours',
+        'QIXnJ': 'Débit instantané maximal n journalier',
+        'QINnJ': 'Débit instantané minimal n journalier',
+        'HIXnJ': 'Hauteur instantanée maximale n journalière',
+        'HINnJ': 'Hauteur instantanée minimale n journalière',
+        'QmnH': 'Débit moyen n horaire',
+        'HmnH': 'Hauteur moyenne n horaire',
+        'HmnJ': 'Hauteur moyenne n journalière',
+        'HmM': 'Hauteur moyenne mensuelle'
+    },
+
     # Qualification de la donnees de l'observation hydrometrique
     515: {
         0: 'Neutre',
@@ -306,11 +333,11 @@ NOMENCLATURE = {
 
     # Continuité de la donnée de l'observation hydro
     923: {
-        0: 'Continue',
-        1: 'Discontinue',
-        4: 'Discontinue faible',
-        6: 'Discontinue neutre',
-        8: 'Discontinue forte'
+        0: 'Valeur continue',
+        1: 'Valeur discontinue',
+        4: 'Valeur discontinue faible',
+        6: 'Valeur discontinue neutre',
+        8: 'Valeur discontinue forte'
         }
 }
 
