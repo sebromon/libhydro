@@ -29,7 +29,8 @@ from libhydro.core import (
     obshydro as _obshydro,
     obsmeteo as _obsmeteo,
     simulation as _simulation,
-    jaugeage as _jaugeage)
+    jaugeage as _jaugeage,
+    obselaboreehydro as _obselaboreehydro)
 
 
 # -- strings ------------------------------------------------------------------
@@ -72,6 +73,7 @@ class Message(object):
         courbescorrection (liste de courbecorrection.CourbeCorrection)
         serieshydro (liste de obshydro.Serie)
         seriesmeteo (liste de obsmeteo.Serie)
+        seriesobselab (liste de obselaboree.SerieObsElab)
         simulations (liste de simulation.Simulation)
 
     """
@@ -94,13 +96,14 @@ class Message(object):
     courbescorrection = _composant.Rlistproperty(cls=_courbecorrection.CourbeCorrection)
     serieshydro = _composant.Rlistproperty(cls=_obshydro.Serie)
     seriesmeteo = _composant.Rlistproperty(cls=_obsmeteo.Serie)
+    seriesobselab = _composant.Rlistproperty(cls=_obselaboreehydro.SerieObsElab)
     simulations = _composant.Rlistproperty(cls=_simulation.Simulation)
 
     def __init__(self, scenario, intervenants=None, siteshydro=None,
                  sitesmeteo=None, seuilshydro=None, modelesprevision=None,
                  evenements=None, courbestarage=None, jaugeages=None,
                  courbescorrection=None, serieshydro=None, seriesmeteo=None,
-                 simulations=None, strict=True):
+                 seriesobselab=None, simulations=None, strict=True):
         """Initialisation.
 
         Arguments:
@@ -116,6 +119,7 @@ class Message(object):
             courbescorrection (courbecorrection.CourbeCorrection ou None)
             serieshydro (obshydro.Serie iterable ou None)
             seriesmeteo (obsmeteo.Serie iterable ou None)
+            seriesobselab (obselaboreehydro.SerieObsElab ou None)
             simulations (simulation.Simulation iterable ou None)
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite des elements
@@ -142,6 +146,7 @@ class Message(object):
         self.courbescorrection = courbescorrection or []
         self.serieshydro = serieshydro or []
         self.seriesmeteo = seriesmeteo or []
+        self.seriesobselab = seriesobselab or []
         self.simulations = simulations or []
 
         # -- full properties --
@@ -257,6 +262,8 @@ class Message(object):
                 tree.find('Donnees/Series')),
             seriesmeteo=_from_xml._seriesmeteo_from_element(
                 tree.find('Donnees/ObssMeteo')),
+            seriesobselab=_from_xml._seriesobselab_from_element(
+                tree.find('Donnees/ObssElabHydro')),
             simulations=_from_xml._simulations_from_element(
                 tree.find('Donnees/Simuls')))
 
@@ -286,6 +293,7 @@ class Message(object):
             courbescorrection = iterable de courbecorrection.CourbeCorrection
             serieshydro  = iterable de obshydro.Serie
             seriesmeteo  = iterable de obsmeteo.Serie
+            seriesobselab = iterable de obselaboreehydro.SerieObsElab
             simulations  = iterable de simulation.Simulation
 
         """
@@ -317,6 +325,7 @@ class Message(object):
                 courbescorrection=self.courbescorrection,
                 serieshydro=self.serieshydro,
                 seriesmeteo=self.seriesmeteo,
+                seriesobselab=self.seriesobselab,
                 simulations=self.simulations,
                 bdhydro=bdhydro,
                 ordered=ordered,
@@ -396,6 +405,7 @@ class Message(object):
                '{space}{courbescorrection} courbescorrection\n' \
                '{space}{serieshydro} serieshydro\n' \
                '{space}{seriesmeteo} seriesmeteo\n' \
+               '{space}{seriesobselab} seriesobselab\n' \
                '{space}{simulations} simulations'.format(
                    space=' ' * 4,
                    scenario=scenario,
@@ -421,6 +431,8 @@ class Message(object):
                    else len(self.serieshydro),
                    seriesmeteo=0 if self.seriesmeteo is None
                    else len(self.seriesmeteo),
+                   seriesobselab=0 if self.seriesobselab is None
+                   else len(self.seriesobselab),
                    simulations=0 if self.simulations is None
                    else len(self.simulations))
 

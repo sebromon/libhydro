@@ -29,8 +29,7 @@ from libhydro.core import (
     modeleprevision as _modeleprevision, obshydro as _obshydro,
     obsmeteo as _obsmeteo, simulation as _simulation, evenement as _evenement,
     courbetarage as _courbetarage, courbecorrection as _courbecorrection,
-    jaugeage as _jaugeage)
-
+    jaugeage as _jaugeage, obselaboreehydro as _obselaboreehydro)
 
 # -- strings ------------------------------------------------------------------
 # contributor Camillo Montes (SYNAPSE)
@@ -251,8 +250,8 @@ def _parse(src, ordered=True):
             # courbescorrection: liste de courbes de correction
             # serieshydro: liste de obshydro.Serie
             # seriesmeteo: liste de obsmeteo.Serie
+            # seriesobselab: liste de obselaboreehydro.SerieObsElab
             # simulations: liste de simulation.Simulation
-
     """
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -293,7 +292,8 @@ def _parse(src, ordered=True):
         'serieshydro': _serieshydro_from_element(tree.find('Donnees/Series')),
         'seriesmeteo': _seriesmeteo_from_element(
             tree.find('Donnees/ObssMeteo')),
-        # 'obsselab'
+        'seriesobselab': _seriesobselab_from_element(
+            tree.find('Donnees/ObssElabHydro')),
         # 'gradshydro'
         # 'qualifsannee'
         # 'alarmes'
@@ -886,6 +886,71 @@ def _seriemeteo_from_element(element):
             contact=contact)
 
 
+def _serieobselab_from_element(element):
+    """Return a obselaboreehydro.SerieObsElab
+       from a TypsDeGrdObsElabHydro element.
+    """
+    # use an orderdDict to save the order of series
+    series = _collections.OrderedDict()
+    typegrd = _value(element, 'TypDeGrdObsElabHydro')  # mandatory
+    pdt = None
+    if typegrd == 'QmJ':
+        typegrd = 'QmnJ'
+        pdt = 1
+    observations = {}
+    for obs in element.findall('ObsElabHydro'):
+        dtprod = _value(obs, 'DtProdObsElabHydro')
+        # CdSiteHydro or CdstationHydro mandatory
+        entite = None
+        code = None
+        if obs.find('CdSiteHydro') is not None:
+            code = _value(obs, 'CdSiteHydro')
+            entite = _sitehydro.Sitehydro(
+                code=code)
+        elif obs.find('CdStationHydro') is not None:
+            code = _value(obs, 'CdStationHydro')
+            entite = _sitehydro.Station(
+                code=code)
+
+        args = {}
+        args['dte'] = _value(obs, 'DtObsElabHydro')  # mandatory
+        args['res'] = _value(obs, 'ResObsElabHydro', float)  # mandatory
+        statut = _value(element, 'StatutObsElabHydro')
+        if statut is not None:
+            args['statut'] = statut
+        qal = _value(obs, 'QualifObsElabHydro', int)
+        if qal is not None:
+            args['qal'] = qal
+        mth = _value(obs, 'MethObsElabHydro', int)
+        if mth is not None:
+            args['mth'] = mth
+        sysalti = _value(obs, 'SysAltiObsElabHydro')
+
+        contact = None
+        cdcontact = _value(obs, 'CdContact')
+        if cdcontact is not None:
+            contact = _intervenant.Contact(code=cdcontact)
+        dtdebrefalti = _value(obs, 'DtDebutRefAlti')
+        # print(args)
+        key = (code, typegrd)
+        if key not in series:
+            series[key] = _obselaboreehydro.SerieObsElab(
+                entite=entite, dtprod=dtprod, typegrd=typegrd, pdt=pdt,
+                sysalti=sysalti, contact=contact, dtdebrefalti=dtdebrefalti)
+            observations[key] = []
+        else:
+            dtprod = _datetime.datetime.strptime(dtprod, '%Y-%m-%dT%H:%M:%S')
+            if dtprod > series[key].dtprod:
+                series[key].dtprod = dtprod
+        observations[key].append(
+            _obselaboreehydro.ObservationElaboree(**args))
+
+    # add observations to series
+    for key, serie in series.items():
+        serie.observations = _obselaboreehydro.ObservationsElaborees(
+            *observations[key]).sort_index()
+    return list(series.values())
+
 def _obsshydro_from_element(element, statut):
     """Return a sorted obshydro.Observations from a <ObssHydro> element."""
     if element is not None:
@@ -1158,6 +1223,19 @@ def _seriesmeteo_from_element(element):
             seriesmeteo.append(serie)
 
     return seriesmeteo
+
+
+def _seriesobselab_from_element(element):
+    """return a list of obselaboreehydro.SerieObsElab
+    from a <ObssElabHydro> element
+    """
+    series = []
+    if element is None:
+        return series
+    for typegrd in element.findall('./TypsDeGrdObsElabHydro'):
+        series.extend(_serieobselab_from_element(typegrd))
+    return series
+
 
 # -- utility functions --------------------------------------------------------
 def _UTC(dte):

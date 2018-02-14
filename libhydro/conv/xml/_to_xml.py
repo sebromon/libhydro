@@ -76,7 +76,7 @@ ORDERED_ACCEPTED_KEYS = [
     'seuilshydro', 'modelesprevision',
     # line 180: [6:]
     'evenements', 'courbestarage', 'jaugeages', 'courbescorrection',
-    'serieshydro', 'seriesmeteo', 'simulations']
+    'serieshydro', 'seriesmeteo', 'seriesobselab', 'simulations']
 
 PREV_PROBABILITY = {
     50: 'ResMoyPrev',
@@ -111,7 +111,7 @@ NS_ATTR = {
 def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
             seuilshydro=None, modelesprevision=None, evenements=None,
             courbestarage=None, jaugeages=None, courbescorrection=None,
-            serieshydro=None, seriesmeteo=None,
+            serieshydro=None, seriesmeteo=None, seriesobselab=None,
             simulations=None, bdhydro=False, strict=True, ordered=False):
     """Return a etree.Element a partir des donnees passes en argument.
 
@@ -133,6 +133,8 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
             iterable ou None
         serieshydro (obshydro.Serie collection) = iterable or None
         seriesmeteo (obsmeteo.Serie collection) = iterable or None
+        seriesobselab(obselaboreehydro.SerieObsElab collection) =
+            iterable or None
         simulations (simulation.Simulation collection) = iterable or None
         bdhydro (bool, defaut False) = controle de conformite bdhydro
         strict (bool, defaut True) = controle de conformite XML Hydrometrie
