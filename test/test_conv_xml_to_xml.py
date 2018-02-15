@@ -241,7 +241,7 @@ class TestAllXmlBaseTests(unittest.TestCase):
     for unit in ('intervenants', 'siteshydro', 'sitesmeteo', 'seuilshydro',
                  'modelesprevision', 'evenements', 'courbestarage',
                  'jaugeages', 'courbescorrection', 'serieshydro',
-                 'seriesmeteo', 'simulations'):
+                 'seriesmeteo', 'obsselaboree', 'simulations'):
         suite.addTest(
             ParametrizedTestCase.parametrize(ToXmlBaseTest, param=unit))
     unittest.TextTestRunner(verbosity=1).run(suite)

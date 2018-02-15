@@ -1213,6 +1213,47 @@ def _obsmeteo_to_element(seriemeteo, index, obs, bdhydro=False, strict=True):
         return element
 
 
+def _obselab_to_element(serie, obs, bdhydro=False, strict=True):
+    """Return a <ObsElabHydro> element
+    from a SerieObsElab an ObservaionElaboree.
+    """
+    obsel = _etree.Element('ObsElabHydro')
+    _etree.SubElement(obsel, 'DtProdObsElabHydro').text = \
+        serie.dtprod.strftime('%Y-%m-%dT%H:%M:%S')
+
+    if isinstance(serie.entite, _sitehydro.Sitehydro):
+        _etree.SubElement(obsel, 'CdSiteHydro').text = \
+            serie.entite.code
+    else:
+        _etree.SubElement(obsel, 'CdStationHydro').text = \
+            serie.entite.code
+    # dte and res are mandatory...
+    _etree.SubElement(obsel, 'DtObsElabHydro').text = \
+        obs.Index.strftime('%Y-%m-%dT%H:%M:%S')
+    _etree.SubElement(obsel, 'ResObsElabHydro').text = \
+        str(obs.res)
+    if obs.statut is not None:
+        _etree.SubElement(obsel, 'StatutObsElabHydro').text = \
+            str(obs.statut)
+    if obs.qal is not None:
+        _etree.SubElement(obsel, 'QualifObsElabHydro').text = \
+            str(obs.qal)
+    if obs.mth is not None:
+        _etree.SubElement(obsel, 'MethObsElabHydro').text = \
+            str(obs.mth)
+    if serie.sysalti is not None:
+        _etree.SubElement(obsel, 'SysAltiObsElabHydro').text = \
+            str(serie.sysalti)
+    if serie.contact is not None:
+        _etree.SubElement(obsel, 'CdContact').text = \
+            str(serie.contact.code)
+    if serie.dtdebrefalti is not None:
+        _etree.SubElement(obsel, 'DtDebutRefAlti').text = \
+            serie.dtrefalti.strftime('%Y-%m-%dT%H:%M:%S')
+    # print(_etree.tostring(obsel, method='xml'))
+    return obsel
+
+
 def _simulation_to_element(simulation, bdhydro=False, strict=True):
     """Return a <Simul> element from a simulation.Simulation."""
 
@@ -1333,6 +1374,34 @@ def _seriesmeteo_to_element(seriesmeteo, bdhydro=False, strict=True):
             for row in serie.observations.iterrows():
                 element.append(_obsmeteo_to_element(
                     serie, *row, bdhydro=bdhydro, strict=strict))
+        return element
+
+
+def _seriesobselab_to_element(seriesobselab, bdhydro=False, strict=True):
+    """Return a <ObssElabHydro> element
+    from a list of obselaboreehydro.SerieObsElab.
+    """
+    if seriesobselab is not None:
+        element = _etree.Element('ObssElabHydro')
+        # First series are group by typegrd
+        dict_series = {}
+        for serie in seriesobselab:
+            typegrd = serie.typegrd
+            # Conversion Sandre V2->V1 QIXnJ -> QIXJ
+            if typegrd in ['QmnJ', 'QIXnJ', 'QINnJ', 'HIXnJ', 'HINnJ']:
+                typegrd = '{}{}'.format(typegrd[0:-2], typegrd[-1])
+            if typegrd not in dict_series:
+                dict_series[typegrd] = []
+            dict_series[typegrd].append(serie)
+        for typegrd, series in dict_series.items():
+            typel = _etree.SubElement(element, 'TypsDeGrdObsElabHydro')
+            _etree.SubElement(typel, 'TypDeGrdObsElabHydro').text = typegrd
+            # add observations
+            for serie in series:
+                for row in serie.observations.itertuples():
+                    typel.append(_obselab_to_element(
+                        serie, row, bdhydro=bdhydro, strict=strict))
+        # print(_etree.tostring(element, method='xml'))
         return element
 
 

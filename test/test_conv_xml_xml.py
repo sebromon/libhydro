@@ -179,6 +179,7 @@ class TestMessage(unittest.TestCase):
         self.file_serh = os.path.join(FILES_PATH, 'serieshydro.xml')
         self.file_serm = os.path.join(FILES_PATH, 'seriesmeteo.xml')
         self.file_sim = os.path.join(FILES_PATH, 'simulations.xml')
+        self.file_serelab = os.path.join(FILES_PATH, 'obsselaboree.xml')
         self.tmp_dir = tempfile.mkdtemp(prefix='test_xml_')
         self.tmp_file = tempfile.mktemp(dir=self.tmp_dir)
 
@@ -304,6 +305,12 @@ class TestMessage(unittest.TestCase):
         msg2 = Message.from_string(content)
         for i in range(0, len(msg.serieshydro)):
             self.assertEqual(msg.serieshydro[i], msg2.serieshydro[i])
+
+    def test_base_16(self):
+        """Message from file obsselaboree"""
+        msg = Message.from_file(self.file_serelab)
+        msg.write(self.tmp_file, force=True)
+        msg.seriesobselab.insert(0, msg.seriesobselab[0])
 
     def test_str_01(self):
         """Test __str__ method with basic values."""

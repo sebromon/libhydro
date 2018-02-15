@@ -893,9 +893,10 @@ def _serieobselab_from_element(element):
     # use an orderdDict to save the order of series
     series = _collections.OrderedDict()
     typegrd = _value(element, 'TypDeGrdObsElabHydro')  # mandatory
+    # Conversion Sandre V1.1 to V2 (QmJ ->QmnJ)
     pdt = None
-    if typegrd == 'QmJ':
-        typegrd = 'QmnJ'
+    if typegrd in ['QmJ', 'QIXJ', 'QINJ', 'HIXJ', 'HINJ']:
+        typegrd = '{}n{}'.format(typegrd[0:-1], typegrd[-1])
         pdt = 1
     observations = {}
     for obs in element.findall('ObsElabHydro'):
