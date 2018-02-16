@@ -238,6 +238,7 @@ class Serie(_composant_obs.Serie):
         dtprod (datetime.datetime)
         sysalti (int parmi NOMENCLATURE[76])
         perim (booleen ou None)
+        pdt (PasDeTemps or None) = pas de temps de la série hydro
         contact (intervenant.Contact)
         observations (Observations)
 
@@ -253,7 +254,7 @@ class Serie(_composant_obs.Serie):
     def __init__(
             self, entite=None, grandeur=None,
             dtdeb=None, dtfin=None, dtprod=None, sysalti=31, perime=None,
-            contact=None, observations=None, strict=True
+            pdt=None, contact=None, observations=None, strict=True
     ):
         """Initialisation.
 
@@ -265,6 +266,7 @@ class Serie(_composant_obs.Serie):
             dtprod (numpy.datetime64)
             sysalti (int parmi NOMENCLATURE[76])
             perim (booleen ou None)
+            pdt (PasDeTemps or None) = pas de temps de la série hydro
             contact (intervenant.Contact)
             observations (Observations)
             strict (bool, defaut True) = en mode permissif il n'y a pas de
@@ -292,6 +294,8 @@ class Serie(_composant_obs.Serie):
         self.entite = entite
         self._perime = None
         self.perime = perime
+        self._pdt = None
+        self.pdt = pdt
 
     # -- property entite --
     @property
@@ -332,6 +336,26 @@ class Serie(_composant_obs.Serie):
     def perime(self, perime):
         """Set perime."""
         self._perime = bool(perime) if (perime is not None) else None
+
+    # -- property pdt --
+    @property
+    def pdt(self):
+        """Return pdt."""
+        return self._pdt
+
+    @pdt.setter
+    def pdt(self, pdt):
+        """Set pdt."""
+        if pdt is None:
+            self._pdt = None
+            return
+        if isinstance(pdt, _composant.PasDeTemps):
+            if pdt.unite != 'm':
+                raise ValueError('pdt must be in minutes')
+            self._pdt = pdt
+        else:
+            pdt = int(pdt)
+            self._pdt = _composant.PasDeTemps(duree=pdt, unite='m')
 
     # -- static methods --
     @staticmethod

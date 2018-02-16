@@ -23,7 +23,7 @@ import unittest
 import datetime
 import numpy
 
-from libhydro.core import (sitehydro, obshydro, intervenant)
+from libhydro.core import (sitehydro, obshydro, intervenant, _composant)
 
 
 # -- strings ------------------------------------------------------------------
@@ -269,18 +269,19 @@ class TestSerie(unittest.TestCase):
         i = True
         sysalti = 0
         perime = False
+        pdt = _composant.PasDeTemps(duree=5, unite='m')
         serie = obshydro.Serie(
             entite=s, grandeur=g, observations=o, strict=i,
             dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, sysalti=sysalti,
-            perime=perime
+            pdt=pdt, perime=perime
         )
         self.assertEqual(
             (
                 serie.entite, serie.grandeur,
                 serie.observations, serie._strict, serie.contact,
-                serie.sysalti, serie.perime
+                serie.sysalti, serie.pdt, serie.perime
             ),
-            (s, g, o, i, None, sysalti, perime)
+            (s, g, o, i, None, sysalti, pdt, perime)
         )
         self.assertEqual(
             (serie.dtdeb, serie.dtfin, serie.dtprod),
@@ -323,6 +324,38 @@ class TestSerie(unittest.TestCase):
                 datetime.datetime(2012, 10, 3, 10)
             )
         )
+
+    def test_base_pdt(self):
+        """Test different values and types of pas de temps"""
+        s = sitehydro.Station(code='A044581001')
+        g = 'Q'
+        o = obshydro.Observations(
+            obshydro.Observation('2012-10-03 06:00', 33),
+            obshydro.Observation('2012-10-03 08:00', 42)
+        )
+        dtdeb = datetime.datetime(2012, 10, 3, 5)
+        dtfin = datetime.datetime(2012, 10, 3, 9)
+        dtprod = datetime.datetime(2012, 10, 3, 10)
+        c = intervenant.Contact(code='99')
+        pdt = None
+        serie = obshydro.Serie(
+            entite=s, grandeur=g, observations=o,
+            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, pdt=pdt, contact=c
+        )
+        pdt = 5
+        serie.pdt = pdt
+        self.assertEqual(serie.pdt.duree, datetime.timedelta(minutes=5))
+        self.assertEqual(serie.pdt.unite, 'm')
+
+        serie = obshydro.Serie(
+            entite=s, grandeur=g, observations=o,
+            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, pdt=pdt, contact=c
+        )
+        self.assertEqual(serie.pdt.duree, datetime.timedelta(minutes=5))
+        self.assertEqual(serie.pdt.unite, 'm')
+        # TODO instinciation with timedelta
+        # pdt = datetime.timedelta(minutes=10)
+        # serie.pdt = pdt
 
     def test_equal_01(self):
         """Test __eq__ method."""
@@ -512,6 +545,59 @@ class TestSerie(unittest.TestCase):
                     'strict': True
                 }
             )
+
+    def test_error_pdt(self):
+        """Test pdt error"""
+        s = sitehydro.Sitehydro(
+            code='A0445810', libelle='Le Rhône à Marseille'
+        )
+        g = 'Q'
+        o = obshydro.Observations(
+            obshydro.Observation('2012-10-03 06:00', 33),
+            obshydro.Observation('2012-10-03 07:00', 37),
+            obshydro.Observation('2012-10-03 08:00', 42)
+        )
+        dtdeb = '2012-10-03 05:00'
+        dtfin = '2012-10-03 09:00'
+        dtprod = '2012-10-03 10:00'
+        i = True
+        sysalti = 0
+        perime = False
+        pdt = _composant.PasDeTemps(duree=5, unite='m')
+        obshydro.Serie(
+            entite=s, grandeur=g, observations=o, strict=i,
+            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, sysalti=sysalti,
+            pdt=pdt, perime=perime
+        )
+        # error negative duree
+        pdt = -1
+        with self.assertRaises(ValueError) as cm:
+            obshydro.Serie(
+                entite=s, grandeur=g, observations=o, strict=i,
+                dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, sysalti=sysalti,
+                pdt=pdt, perime=perime
+            )
+        self.assertEqual(str(cm.exception), 'duree must be positive')
+
+        # error wrong unite
+        pdt = _composant.PasDeTemps(duree=1, unite='j')
+        with self.assertRaises(ValueError) as cm:
+            obshydro.Serie(
+                entite=s, grandeur=g, observations=o, strict=i,
+                dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, sysalti=sysalti,
+                pdt=pdt, perime=perime
+            )
+        self.assertEqual(str(cm.exception), 'pdt must be in minutes')
+
+        # Wrong pdt type
+        pdt = 'toto'
+        with self.assertRaises(Exception):
+            obshydro.Serie(
+                entite=s, grandeur=g, observations=o, strict=i,
+                dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, sysalti=sysalti,
+                pdt=pdt, perime=perime
+            )
+
 
 # -- class TestSerieConcat ----------------------------------------------------
 class TestSerieConcat(unittest.TestCase):
