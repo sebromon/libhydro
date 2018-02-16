@@ -353,6 +353,93 @@ class TestNomenclatureitem(unittest.TestCase):
             composant.Nomenclatureitem(**{'nomenclature': 0})
 
 
+# -- class TestPasDeTemps -----------------------------------------------
+class TestPasDeTemps(unittest.TestCase):
+
+    """PasDeTemps class tests."""
+
+    def test_base_01(self):
+        """ Test pas de temps in minutes."""
+        pdt = 4
+        pas = composant.PasDeTemps(pdt=pdt)
+        self.assertEqual(pas.pdt, datetime.timedelta(minutes=pdt))
+        self.assertEqual(pas.unite, 'm')
+        self.assertEqual(pas.to_int(), pdt)
+        for unite in ['m', 'minutes']:
+            pas = composant.PasDeTemps(pdt=pdt, unite=unite)
+            self.assertEqual(pas.pdt, datetime.timedelta(minutes=pdt))
+            self.assertEqual(pas.unite, 'm')
+            self.assertEqual(pas.to_int(), pdt)
+
+    def test_base_02(self):
+        """ Test pas de temps in hours."""
+        pdt = 8
+        for unite in ['h', 'hours', 'heures']:
+            pas = composant.PasDeTemps(pdt=pdt, unite=unite)
+            self.assertEqual(pas.pdt, datetime.timedelta(hours=pdt))
+            self.assertEqual(pas.unite, 'h')
+            self.assertEqual(pas.to_int(), pdt)
+
+    def test_base_03(self):
+        """ Test pas de temps in days."""
+        pdt = 3
+        for unite in ['d', 'j', 'days', 'jours']:
+            pas = composant.PasDeTemps(pdt=pdt, unite=unite)
+            self.assertEqual(pas.pdt, datetime.timedelta(days=pdt))
+            self.assertEqual(pas.unite, 'j')
+            self.assertEqual(pas.to_int(), pdt)
+
+    def test_error_unite(self):
+        """Error unite"""
+        pdt = 15
+        unite = 'm'
+        composant.PasDeTemps(pdt=pdt, unite=unite)
+
+        unite = 'toto'
+        with self.assertRaises(ValueError):
+            composant.PasDeTemps(pdt=pdt, unite=unite)
+
+    def test_error_pdt(self):
+        """Error pdt"""
+        pdt = 15
+        unite = 'm'
+        composant.PasDeTemps(pdt=pdt, unite=unite)
+
+        pdt = -1
+        with self.assertRaises(ValueError):
+            composant.PasDeTemps(pdt=pdt, unite=unite)
+
+        pdt = 'toto'
+        with self.assertRaises(Exception):
+            composant.PasDeTemps(pdt=pdt, unite=unite)
+
+        pdt = None
+        with self.assertRaises(Exception):
+            composant.PasDeTemps(pdt=pdt, unite=unite)
+
+    def test_str_01(self):
+        """str pas de temps in minutes"""
+        pdt = 8
+        unite = 'm'
+        pas = composant.PasDeTemps(pdt=pdt, unite=unite)
+        self.assertEqual(pas.__unicode__(), '8 m')
+
+    def test_str_02(self):
+        """str pas de temps in hours"""
+        pdt = 5
+        unite = 'hours'
+        pas = composant.PasDeTemps(pdt=pdt, unite=unite)
+        self.assertEqual(pas.__unicode__(), '5 h')
+
+    def test_str_03(self):
+        """str pas de temps in days"""
+        pdt = 10
+        unite = 'jours'
+        pas = composant.PasDeTemps(pdt=pdt, unite=unite)
+        self.assertEqual(pas.__unicode__(), '10 j')
+        self.assertEqual(pas.__str__(), '10 j')
+
+
 # -- class TestIsCodeHydro ----------------------------------------------------
 class TestIsCodeHydro(unittest.TestCase):
 
