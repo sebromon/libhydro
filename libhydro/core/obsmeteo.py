@@ -75,6 +75,7 @@ class Observation(_numpy.ndarray):
         qal (numpy.int8, defaut 16) = qualification de la donnees suivant la
             NOMENCLATURE[508]
         qua (int de 0 a 100, defaut Nan) = indice de qualite de la mesure
+        ctxt (int parmi NOMENCLATURE[872] = contexte de l'observation
         statut (int parmi NOMENCLATURE[510]) = donnee brute, corrigee...
 
     ATTENTION, Nan != Nan et deux observations sans qualite sont differentes.
@@ -91,15 +92,19 @@ class Observation(_numpy.ndarray):
         (str('mth'), _numpy.int8),
         (str('qal'), _numpy.int8),
         (str('qua'), _numpy.float),  # required for NaN
+        (str('ctxt'), _numpy.int8),
         (str('statut'), _numpy.int8)])
 
-    def __new__(cls, dte, res, mth=0, qal=16, qua=_numpy.NaN, statut=4):
+    def __new__(cls, dte, res, mth=0, qal=16, qua=_numpy.NaN, ctxt=0,
+                statut=4):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
         if int(mth) not in _NOMENCLATURE[512]:
             raise ValueError('incorrect method ')
         if int(qal) not in _NOMENCLATURE[508]:
             raise ValueError('incorrect qualification')
+        if int(ctxt) not in _NOMENCLATURE[872]:
+            raise ValueError('incorrect context')
         if int(statut) not in _NOMENCLATURE[510]:
             raise ValueError('incorrect statut')
         try:
@@ -111,7 +116,8 @@ class Observation(_numpy.ndarray):
             raise ValueError('incorrect quality')
 
         obj = _numpy.array(
-            (dte, res, mth, qal, qua, statut), dtype=Observation.DTYPE).view(cls)
+            (dte, res, mth, qal, qua, ctxt, statut),
+            dtype=Observation.DTYPE).view(cls)
         return obj
 
     # def __array_finalize__(self, obj):
@@ -122,12 +128,15 @@ class Observation(_numpy.ndarray):
         """Return unicode representation."""
         qualite = '%s%%' % self['qua'].item() \
             if not _math.isnan(self['qua'].item()) else '<inconnue>'
-        return '''{0} le {4} a {5} UTC ''' \
-               '''(valeur obtenue par {1}, {2}, qualite {3})'''.format(
+        return '''{0} le {6} a {7} UTC de statut {5}''' \
+               ''' (valeur obtenue par {1}, {2},''' \
+               ''' qualite {3}, contexte {4})'''.format(
                    self['res'].item(),
                    _NOMENCLATURE[512][self['mth'].item()],
                    _NOMENCLATURE[508][self['qal'].item()],
                    qualite,
+                   _NOMENCLATURE[872][self['ctxt'].item()].lower(),
+                   _NOMENCLATURE[510][self['statut'].item()].lower(),
                    *self['dte'].item().isoformat().split('T'))
 
     __str__ = _composant.__str__

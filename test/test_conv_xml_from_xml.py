@@ -1185,9 +1185,9 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
                          datetime.datetime(2010, 2, 26, 15, 13, 37))
         # (dte) res mth qal qua
         self.assertEqual(serie.observations.iloc[0].tolist(),
-                         [2, 0, 16, 100, 4])
+                         [2, 0, 16, 100, 0, 4])
         self.assertEqual(serie.observations.loc['2010-02-26 13:00'].tolist(),
-                         [8, 0, 16, 75, 4])
+                         [8, 0, 16, 75, 0, 4])
 
     def test_serie_TA(self):
         """Serie TA test."""

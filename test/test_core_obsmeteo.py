@@ -45,11 +45,12 @@ class TestObservation(unittest.TestCase):
         qal = 0
         qua = 98
         statut = 8
-        obs = obsmeteo.Observation(dte, res, mth, qal, qua, statut)
+        ctxt = 1
+        obs = obsmeteo.Observation(dte, res, mth, qal, qua, ctxt, statut)
         self.assertEqual(
             obs.item(),
             (datetime.datetime(2000, 1, 1, 10, 33, 1), res, mth, qal, qua,
-             statut))
+             ctxt, statut))
 
     def test_base_02(self):
         """Some instanciation use cases."""
@@ -68,9 +69,13 @@ class TestObservation(unittest.TestCase):
         mth = 4
         qal = 12
         qua = 25.3
-        obs = obsmeteo.Observation(dte, res, mth, qal, qua)
+        ctxt = 1
+        statut = 16
+        obs = obsmeteo.Observation(dte, res, mth, qal, qua, ctxt, statut)
         self.assertTrue(obs.__str__().rfind('UTC') > -1)
         self.assertTrue(obs.__str__().rfind('qualite') > -1)
+        self.assertTrue(obs.__str__().rfind('pluie') > -1)
+        self.assertTrue(obs.__str__().rfind('valide') > -1)
 
     def test_error_01(self):
         """Date error."""
@@ -127,6 +132,20 @@ class TestObservation(unittest.TestCase):
         with self.assertRaises(ValueError):
             obsmeteo.Observation(
                 **{'dte': '2000-10-05 10:00', 'res': 20, 'statut': 101})
+
+    def test_error_07(self):
+        """Context error."""
+        obsmeteo.Observation(
+            **{'dte': '2000-10-05 10:00', 'res': 20, 'ctxt': 1})
+        with self.assertRaises(ValueError):
+            obsmeteo.Observation(
+                **{'dte': '2000-10-05 10:00', 'res': 20, 'ctxt': '95.aaa'})
+        with self.assertRaises(ValueError):
+            obsmeteo.Observation(
+                **{'dte': '2000-10-05 10:00', 'res': 20, 'ctxt': -1})
+        with self.assertRaises(ValueError):
+            obsmeteo.Observation(
+                **{'dte': '2000-10-05 10:00', 'res': 20, 'ctxt': 101})
 
 
 # -- class TestObservations ---------------------------------------------------

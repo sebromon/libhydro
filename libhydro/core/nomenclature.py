@@ -316,6 +316,17 @@ NOMENCLATURE = {
     # Civilite du contact
     538: {1: 'Monsieur', 2: 'Madame', 3: 'Mademoiselle'},
 
+    # Contexte de production de l'observation météorologique
+    872: {
+        0: 'Contexte inconnu',
+        1: 'Pluie',
+        2: 'Neige',
+        3: 'Début d\'un cumul',
+        4: 'Fin d\'un cumul',
+        8: 'Début d\'un cumul neige',
+        9: 'Fin d\'un cumul neige'
+        },
+
     # Mode de jaugeage du site hydrométrique
     873: {0: 'Inconnu',
           1: 'Saumon point par point',
