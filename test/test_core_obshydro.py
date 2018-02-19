@@ -269,7 +269,8 @@ class TestSerie(unittest.TestCase):
         i = True
         sysalti = 0
         perime = False
-        pdt = _composant.PasDeTemps(duree=5, unite='m')
+        pdt = _composant.PasDeTemps(duree=5,
+                                    unite=_composant.PasDeTemps.MINUTES)
         serie = obshydro.Serie(
             entite=s, grandeur=g, observations=o, strict=i,
             dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, sysalti=sysalti,
@@ -345,14 +346,14 @@ class TestSerie(unittest.TestCase):
         pdt = 5
         serie.pdt = pdt
         self.assertEqual(serie.pdt.duree, datetime.timedelta(minutes=5))
-        self.assertEqual(serie.pdt.unite, 'm')
+        self.assertEqual(serie.pdt.unite, _composant.PasDeTemps.MINUTES)
 
         serie = obshydro.Serie(
             entite=s, grandeur=g, observations=o,
             dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, pdt=pdt, contact=c
         )
         self.assertEqual(serie.pdt.duree, datetime.timedelta(minutes=5))
-        self.assertEqual(serie.pdt.unite, 'm')
+        self.assertEqual(serie.pdt.unite, _composant.PasDeTemps.MINUTES)
         # TODO instinciation with timedelta
         # pdt = datetime.timedelta(minutes=10)
         # serie.pdt = pdt
@@ -563,7 +564,8 @@ class TestSerie(unittest.TestCase):
         i = True
         sysalti = 0
         perime = False
-        pdt = _composant.PasDeTemps(duree=5, unite='m')
+        pdt = _composant.PasDeTemps(duree=5,
+                                    unite=_composant.PasDeTemps.MINUTES)
         obshydro.Serie(
             entite=s, grandeur=g, observations=o, strict=i,
             dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, sysalti=sysalti,
@@ -580,7 +582,8 @@ class TestSerie(unittest.TestCase):
         self.assertEqual(str(cm.exception), 'duree must be positive')
 
         # error wrong unite
-        pdt = _composant.PasDeTemps(duree=1, unite='j')
+        pdt = _composant.PasDeTemps(duree=1,
+                                    unite=_composant.PasDeTemps.JOURS)
         with self.assertRaises(ValueError) as cm:
             obshydro.Serie(
                 entite=s, grandeur=g, observations=o, strict=i,

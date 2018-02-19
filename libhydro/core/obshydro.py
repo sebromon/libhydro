@@ -350,12 +350,14 @@ class Serie(_composant_obs.Serie):
             self._pdt = None
             return
         if isinstance(pdt, _composant.PasDeTemps):
-            if pdt.unite != 'm':
+            if pdt.unite != _composant.PasDeTemps.MINUTES:
                 raise ValueError('pdt must be in minutes')
             self._pdt = pdt
         else:
             pdt = int(pdt)
-            self._pdt = _composant.PasDeTemps(duree=pdt, unite='m')
+            self._pdt = _composant.PasDeTemps(
+                duree=pdt,
+                unite=_composant.PasDeTemps.MINUTES)
 
     # -- static methods --
     @staticmethod

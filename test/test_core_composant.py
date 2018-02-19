@@ -363,57 +363,66 @@ class TestPasDeTemps(unittest.TestCase):
         duree = 4
         pas = composant.PasDeTemps(duree=duree)
         self.assertEqual(pas.duree, datetime.timedelta(minutes=duree))
-        self.assertEqual(pas.unite, 'm')
+        self.assertEqual(pas.unite, composant.PasDeTemps.MINUTES)
         self.assertEqual(pas.to_int(), duree)
-        for unite in ['m', 'minutes']:
-            pas = composant.PasDeTemps(duree=duree, unite=unite)
-            self.assertEqual(pas.duree, datetime.timedelta(minutes=duree))
-            self.assertEqual(pas.unite, 'm')
-            self.assertEqual(pas.to_int(), duree)
+        unite = composant.PasDeTemps.MINUTES
+        pas = composant.PasDeTemps(duree=duree, unite=unite)
+        self.assertEqual(pas.duree, datetime.timedelta(minutes=duree))
+        self.assertEqual(pas.unite, unite)
+        self.assertEqual(pas.to_int(), duree)
 
     def test_base_02(self):
         """ Test pas de temps in hours."""
         duree = 8
-        for unite in ['h', 'hours', 'heures']:
-            pas = composant.PasDeTemps(duree=duree, unite=unite)
-            self.assertEqual(pas.duree, datetime.timedelta(hours=duree))
-            self.assertEqual(pas.unite, 'h')
-            self.assertEqual(pas.to_int(), duree)
+        unite = composant.PasDeTemps.HEURES
+        pas = composant.PasDeTemps(duree=duree, unite=unite)
+        self.assertEqual(pas.duree, datetime.timedelta(hours=duree))
+        self.assertEqual(pas.unite, unite)
+        self.assertEqual(pas.to_int(), duree)
 
     def test_base_03(self):
         """ Test pas de temps in days."""
         duree = 3
-        for unite in ['d', 'j', 'days', 'jours']:
-            pas = composant.PasDeTemps(duree=duree, unite=unite)
-            self.assertEqual(pas.duree, datetime.timedelta(days=duree))
-            self.assertEqual(pas.unite, 'j')
-            self.assertEqual(pas.to_int(), duree)
+        unite = composant.PasDeTemps.JOURS
+        pas = composant.PasDeTemps(duree=duree, unite=unite)
+        self.assertEqual(pas.duree, datetime.timedelta(days=duree))
+        self.assertEqual(pas.unite, unite)
+        self.assertEqual(pas.to_int(), duree)
 
     def test_base_04(self):
+        """ test pas de temps in seconds."""
+        duree = 48
+        unite = composant.PasDeTemps.SECONDES
+        pas = composant.PasDeTemps(duree=duree, unite=unite)
+        self.assertEqual(pas.duree, datetime.timedelta(seconds=duree))
+        self.assertEqual(pas.unite, unite)
+        self.assertEqual(pas.to_int(), duree)
+
+    def test_base_05(self):
         """ test duree timedelta"""
         duree = datetime.timedelta(minutes=5)
-        unite = 'm'
+        unite = composant.PasDeTemps.MINUTES
         pdt = composant.PasDeTemps(duree=duree, unite=unite)
         self.assertEqual(pdt.duree, duree)
 
     def test_to_int_01(self):
         """test method to_int with duree int"""
         duree = 3
-        unite = 'j'
+        unite = composant.PasDeTemps.JOURS
         pdt = composant.PasDeTemps(duree=duree, unite=unite)
         self.assertEqual(pdt.to_int(), 3)
 
     def test_to_int_02(self):
         """test method to_int with duree timedelta """
         duree = datetime.timedelta(days=1)
-        unite = 'm'
+        unite = composant.PasDeTemps.MINUTES
         pdt = composant.PasDeTemps(duree=duree, unite=unite)
         self.assertEqual(pdt.to_int(), 1440)
 
     def test_error_unite(self):
         """Error unite"""
         duree = 15
-        unite = 'm'
+        unite = composant.PasDeTemps.MINUTES
         composant.PasDeTemps(duree=duree, unite=unite)
 
         unite = 'toto'
@@ -423,7 +432,7 @@ class TestPasDeTemps(unittest.TestCase):
     def test_error_duree(self):
         """Error duree"""
         duree = 15
-        unite = 'm'
+        unite = composant.PasDeTemps.MINUTES
         composant.PasDeTemps(duree=duree, unite=unite)
 
         duree = -1
@@ -441,21 +450,21 @@ class TestPasDeTemps(unittest.TestCase):
     def test_str_01(self):
         """str pas de temps in minutes"""
         duree = 8
-        unite = 'm'
+        unite = composant.PasDeTemps.MINUTES
         pas = composant.PasDeTemps(duree=duree, unite=unite)
         self.assertEqual(pas.__unicode__(), '8 m')
 
     def test_str_02(self):
         """str pas de temps in hours"""
         duree = 5
-        unite = 'hours'
+        unite = composant.PasDeTemps.HEURES
         pas = composant.PasDeTemps(duree=duree, unite=unite)
         self.assertEqual(pas.__unicode__(), '5 h')
 
     def test_str_03(self):
         """str pas de temps in days"""
         duree = 10
-        unite = 'jours'
+        unite = composant.PasDeTemps.JOURS
         pas = composant.PasDeTemps(duree=duree, unite=unite)
         self.assertEqual(pas.__unicode__(), '10 j')
         self.assertEqual(pas.__str__(), '10 j')
@@ -463,7 +472,7 @@ class TestPasDeTemps(unittest.TestCase):
     def test_str_04(self):
         """str pas de temps in days"""
         duree = datetime.timedelta(days=10)
-        unite = 'm'
+        unite = composant.PasDeTemps.MINUTES
         pas = composant.PasDeTemps(duree=duree, unite=unite)
         self.assertEqual(pas.__unicode__(), '14400 m')
         self.assertEqual(pas.__str__(), '14400 m')
@@ -471,10 +480,18 @@ class TestPasDeTemps(unittest.TestCase):
     def test_str_05(self):
         """str pas de temps in days"""
         duree = datetime.timedelta(minutes=10, seconds=8)
-        unite = 'm'
+        unite = composant.PasDeTemps.MINUTES
         pas = composant.PasDeTemps(duree=duree, unite=unite)
         self.assertEqual(pas.__unicode__(), '10 m')
         self.assertEqual(pas.__str__(), '10 m')
+
+    def test_str_06(self):
+        """str pas de temps in seconds"""
+        duree = datetime.timedelta(minutes=10, seconds=17)
+        unite = composant.PasDeTemps.SECONDES
+        pas = composant.PasDeTemps(duree=duree, unite=unite)
+        self.assertEqual(pas.__unicode__(), '617 s')
+        self.assertEqual(pas.__str__(), '617 s')
 
 
 # -- class TestIsCodeHydro ----------------------------------------------------

@@ -547,30 +547,25 @@ class PasDeTemps(object):
 
     Properties:
         duree (datetime.timedelta) duree du pas de temps
-        unite (str (m, h or j)): unité du pas de temps
-            m: pas de temps en minutes
-            h: pas de temps en heures
-            j: pas de temps en jours
+        unite (int): unite du pas de temps
+                     parmi [PasDeTemps.SECONDES, PAsDeTemps.MINUTES,
+                     PasDeTemps.HEURES, PasDeTemps.JOURS]
 
     """
 
-    UNITES = {'minutes': 'm',
-              'm': 'm',
-              'heures': 'h',
-              'hours': 'h',
-              'h': 'h',
-              'jours': 'j',
-              'j': 'j',
-              'days': 'j',
-              'd': 'j'}
+    SECONDES = 0
+    MINUTES = 1
+    HEURES = 2
+    JOURS = 3
 
-    def __init__(self, duree=None,  unite='m'):
+    def __init__(self, duree=None,  unite=1):
         """Initialisation.
 
         Arguments:
             duree (int or datetime.timedelta): duree du pas de temps
-            unite (str): unite du pas de temps
-                parmi [minutes, m, heures, hours, h, jours, days, j, d]
+            unite (int): unite du pas de temps (défaut PasDeTemps.MINUTES)
+                parmi [PasDeTemps.SECONDES, PasDeTemps.MINUTES,
+                       PasDeTemps.HEURES, PasDeTemps.JOURS]
         """
         self._unite = None
         self.unite = unite
@@ -593,14 +588,14 @@ class PasDeTemps(object):
             duree = int(duree)
             if duree < 0:
                 raise ValueError('duree must be positive')
-            if self.unite == 'm':
+            if self.unite == PasDeTemps.MINUTES:
                 self._duree = _datetime.timedelta(minutes=duree)
-            elif self.unite == 'h':
+            elif self.unite == PasDeTemps.HEURES:
                 self._duree = _datetime.timedelta(hours=duree)
-            elif self.unite == 'j':
+            elif self.unite == PasDeTemps.JOURS:
                 self._duree = _datetime.timedelta(days=duree)
             else:
-                self._duree = None
+                self._duree = _datetime.timedelta(seconds=duree)
         except Exception:
             raise
 
@@ -614,9 +609,13 @@ class PasDeTemps(object):
     def unite(self, unite):
         """Set unite."""
         try:
-            if unite not in PasDeTemps.UNITES.keys():
+            unite = int(unite)
+            if unite not in [PasDeTemps.SECONDES,
+                             PasDeTemps.MINUTES,
+                             PasDeTemps.HEURES,
+                             PasDeTemps.JOURS]:
                 raise ValueError('incorrect unite')
-            self._unite = PasDeTemps.UNITES[unite]
+            self._unite = unite
         except Exception:
             raise
 
@@ -624,16 +623,26 @@ class PasDeTemps(object):
         """conversion in integer with good units"""
         if self.duree is None:
             return None
-        if self.unite == 'm':
+        if self.unite == PasDeTemps.MINUTES:
             return int(self.duree.total_seconds() / 60)
-        elif self.unite == 'h':
+        elif self.unite == PasDeTemps.HEURES:
             return int(self.duree.total_seconds() / 3600)
-        elif self.unite == 'j':
+        elif self.unite == PasDeTemps.JOURS:
             return self.duree.days
+        else:
+            return int(self.duree.total_seconds())
 
     def __unicode__(self):
         """Return unicode representation."""
+        if self.unite == PasDeTemps.MINUTES:
+            unite = 'm'
+        elif self.unite == PasDeTemps.HEURES:
+            unite = 'h'
+        elif self.unite == PasDeTemps.JOURS:
+            unite = 'j'
+        else:
+            unite = 's'
         duree = self.to_int()
-        return '{} {}'.format(duree, self.unite)
+        return '{} {}'.format(duree, unite)
 
     __str__ = __str__
