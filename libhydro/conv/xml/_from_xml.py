@@ -965,6 +965,9 @@ def _obsshydro_from_element(element, statut):
                 continue
             mth = _value(o, 'MethObsHydro', int)
             if mth is not None:
+                # chgt de liste Sandre V1.1 -> V2
+                if mth == 12:
+                    mth = 8
                 args['mth'] = mth
             qal = _value(o, 'QualifObsHydro', int)
             if qal is not None:

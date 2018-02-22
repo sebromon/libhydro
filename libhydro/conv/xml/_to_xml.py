@@ -1152,8 +1152,14 @@ def _observations_to_element(observations, bdhydro=False, strict=True):
             child.text = str(observation.res)
             # while mth, qal and cnt aren't
             if observation.mth is not None:
+                # Conversion liste 512 en 507
+                mth = observation.mth
+                if mth in [8, 14]:
+                    mth = 12
+                elif mth == 10:
+                    mth = 4
                 child = _etree.SubElement(obs, 'MethObsHydro')
-                child.text = str(observation.mth)
+                child.text = str(mth)
             if observation.qal is not None:
                 child = _etree.SubElement(obs, 'QualifObsHydro')
                 child.text = str(observation.qal)
