@@ -110,7 +110,7 @@ class Observation(_numpy.ndarray):
                 np.datetime64('2000-01-01 09:28Z')
         res (numpy.float) = resultat
         mth (numpy.int8, defaut 0) = methode d'obtention de la donnees suivant
-            la NOMENCLATURE[507])
+            la NOMENCLATURE[512])
         qal (numpy.int8, defaut 16) = qualification de la donnees suivant la
             NOMENCLATURE[515]
         cnt (numpy.int8, defaut 0) = continuite de la donnee suivant la
@@ -136,7 +136,7 @@ class Observation(_numpy.ndarray):
     def __new__(cls, dte, res, mth=0, qal=16, cnt=0, statut=4):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
-        if int(mth) not in _NOMENCLATURE[507]:
+        if int(mth) not in _NOMENCLATURE[512]:
             raise ValueError('incorrect method')
         if int(qal) not in _NOMENCLATURE[515]:
             raise ValueError('incorrect qualification')
@@ -164,7 +164,7 @@ class Observation(_numpy.ndarray):
         return '''{0} le {4} a {5} UTC ''' \
                '''(valeur obtenue par {1}, {2} et {3})'''.format(
                    self['res'].item(),
-                   _NOMENCLATURE[507][self['mth'].item()],
+                   _NOMENCLATURE[512][self['mth'].item()],
                    _NOMENCLATURE[515][self['qal'].item()],
                    'continue' if self['cnt'].item() == 0 else 'discontinue',
                    *self['dte'].item().isoformat().split('T')

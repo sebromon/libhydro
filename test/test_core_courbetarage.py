@@ -529,30 +529,30 @@ class TestCourbeTarage(unittest.TestCase):
         periodes = [periode1, periode2, periode3, periode4]
         ctar = CourbeTarage(code=code, station=station, libelle=libelle,
                             periodes=periodes)
-        self.assertFalse(ctar.is_used(dte=datetime(2013, 1, 1)))
-        self.assertTrue(ctar.is_used(dte=datetime(2014, 1, 1)))
-        self.assertTrue(ctar.is_used(dte=datetime(2014, 1, 1)))
-        self.assertFalse(ctar.is_used(dte=datetime(2014, 3, 1)))
+        self.assertFalse(ctar.is_active(dte=datetime(2013, 1, 1)))
+        self.assertTrue(ctar.is_active(dte=datetime(2014, 1, 1)))
+        self.assertTrue(ctar.is_active(dte=datetime(2014, 1, 1)))
+        self.assertFalse(ctar.is_active(dte=datetime(2014, 3, 1)))
 
-        self.assertTrue(ctar.is_used(dte=datetime(2015, 4, 14, 14, 15, 17)))
-        self.assertTrue(ctar.is_used(dte=datetime(2016, 1, 1)))
+        self.assertTrue(ctar.is_active(dte=datetime(2015, 4, 14, 14, 15, 17)))
+        self.assertTrue(ctar.is_active(dte=datetime(2016, 1, 1)))
 
-        self.assertFalse(ctar.is_used(dte=datetime(2016, 1, 10, 2, 4, 5)))
-        self.assertTrue(ctar.is_used(dte=datetime(2016, 4, 14, 14, 15, 17)))
-        self.assertTrue(ctar.is_used(dte=datetime(2017, 1, 1)))
-        self.assertFalse(ctar.is_used(dte=datetime(2017, 1, 1, 0, 0, 1)))
+        self.assertFalse(ctar.is_active(dte=datetime(2016, 1, 10, 2, 4, 5)))
+        self.assertTrue(ctar.is_active(dte=datetime(2016, 4, 14, 14, 15, 17)))
+        self.assertTrue(ctar.is_active(dte=datetime(2017, 1, 1)))
+        self.assertFalse(ctar.is_active(dte=datetime(2017, 1, 1, 0, 0, 1)))
 
-        self.assertTrue(ctar.is_used(dte=datetime(2017, 6, 4, 0, 0, 1)))
-        self.assertTrue(ctar.is_used(dte=datetime(2050, 1, 1)))
+        self.assertTrue(ctar.is_active(dte=datetime(2017, 6, 4, 0, 0, 1)))
+        self.assertTrue(ctar.is_active(dte=datetime(2050, 1, 1)))
 
         periode2.etat = 0
-        self.assertFalse(ctar.is_used(dte=datetime(2015, 4, 14, 14, 15, 17)))
+        self.assertFalse(ctar.is_active(dte=datetime(2015, 4, 14, 14, 15, 17)))
 
         periode3.histos = histos
-        self.assertFalse(ctar.is_used(dte=datetime(2016, 4, 14, 14, 15, 17)))
+        self.assertFalse(ctar.is_active(dte=datetime(2016, 4, 14, 14, 15, 17)))
 
         histo2.dtdesactivation = None
-        self.assertTrue(ctar.is_used(dte=datetime(2016, 4, 14, 14, 15, 17)))
+        self.assertTrue(ctar.is_active(dte=datetime(2016, 4, 14, 14, 15, 17)))
 
     def test_base_11(self):
         """fuzzy mode"""

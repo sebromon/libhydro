@@ -656,7 +656,7 @@ class CourbeTarage(object):
                     periodes.append(periode)
         return periodes
 
-    def is_used(self, dte):
+    def is_active(self, dte):
         """check if the CourbeTarge is used and actived at dte"""
         for periode in self.periodes:
             if periode.etat == 8 and periode.dtdeb <= dte and \
