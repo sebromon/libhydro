@@ -27,7 +27,8 @@ from libhydro.core.obselaboreehydro import (ObservationElaboree,
                                             ObservationsElaborees,
                                             SerieObsElab)
 from libhydro.core import (intervenant as _intervenant,
-                           sitehydro as _sitehydro)
+                           sitehydro as _sitehydro,
+                           _composant)
 
 # -- strings ------------------------------------------------------------------
 __author__ = """Sébastien ROMON""" \
@@ -373,8 +374,9 @@ class TestSerieObsElab(unittest.TestCase):
         dtactivation = datetime.datetime(2016, 9, 23, 11, 29, 37)
         dtdesactivation = datetime.datetime(2017, 4, 29, 17, 11, 30)
         contact = _intervenant.Contact(code='154')
-        typegrd = 'QmM'
-        pdt = 1
+        typegrd = 'QINnJ'
+        pdt = _composant.PasDeTemps(duree=1,
+                                    unite=_composant.PasDeTemps.JOURS)
         glissant = True
         sysalti = 1
         obs = ObservationsElaborees(
@@ -406,6 +408,38 @@ class TestSerieObsElab(unittest.TestCase):
                           serie.sysalti, serie.dtactivation, serie.glissant,
                           serie.contact),
                          (entite, dtprod, typegrd, None,
+                          None, None, None,
+                          31, None, None, None))
+
+    def test_base_03(self):
+        """different values of typegrd and pdt"""
+        entite = _sitehydro.Station(code='A123456789')
+        dtprod = datetime.datetime(2015, 3, 4, 15, 47, 23)
+        typegrd = 'HIXnJ'
+        pdt = _composant.PasDeTemps(duree=2,
+                                    unite=_composant.PasDeTemps.JOURS)
+        serie = SerieObsElab(entite=entite, dtprod=dtprod, typegrd=typegrd,
+                             pdt=pdt)
+        self.assertEqual((serie.entite, serie.dtprod, serie.typegrd, serie.pdt,
+                          serie.dtdeb, serie.dtfin, serie.dtdesactivation,
+                          serie.sysalti, serie.dtactivation, serie.glissant,
+                          serie.contact),
+                         (entite, dtprod, typegrd, pdt,
+                          None, None, None,
+                          31, None, None, None))
+
+        entite = _sitehydro.Station(code='A123456789')
+        dtprod = datetime.datetime(2015, 3, 4, 15, 47, 23)
+        typegrd = 'QmnH'
+        pdt = _composant.PasDeTemps(duree=3,
+                                    unite=_composant.PasDeTemps.HEURES)
+        serie = SerieObsElab(entite=entite, dtprod=dtprod, typegrd=typegrd,
+                             pdt=pdt)
+        self.assertEqual((serie.entite, serie.dtprod, serie.typegrd, serie.pdt,
+                          serie.dtdeb, serie.dtfin, serie.dtdesactivation,
+                          serie.sysalti, serie.dtactivation, serie.glissant,
+                          serie.contact),
+                         (entite, dtprod, typegrd, pdt,
                           None, None, None,
                           31, None, None, None))
 
@@ -481,15 +515,44 @@ class TestSerieObsElab(unittest.TestCase):
                 SerieObsElab(entite=entite, dtprod=dtprod, typegrd=typegrd)
             # print(cm.exception)
 
-    def test_error_pdt(self):
+    def test_error_pdt_01(self):
+        """test error pdt in days"""
         entite = _sitehydro.Station(code='A123456789')
         dtprod = datetime.datetime(2015, 3, 4, 15, 47, 23)
-        typegrd = 'QmM'
-        pdt = 5
+        typegrd = 'HINnJ'
+        pdt = _composant.PasDeTemps(duree=5,
+                                    unite=_composant.PasDeTemps.JOURS)
         SerieObsElab(entite=entite, dtprod=dtprod, typegrd=typegrd,
                      pdt=pdt)
         pdt = 'toto'
         with self.assertRaises(Exception) as cm:
+            SerieObsElab(entite=entite, dtprod=dtprod, typegrd=typegrd,
+                         pdt=pdt)
+
+        pdt = _composant.PasDeTemps(duree=5,
+                                    unite=_composant.PasDeTemps.HEURES)
+        with self.assertRaises(ValueError) as cm:
+            SerieObsElab(entite=entite, dtprod=dtprod, typegrd=typegrd,
+                         pdt=pdt)
+
+    def test_error_pdt_02(self):
+        """test error pdt in hours"""
+        entite = _sitehydro.Station(code='A123456789')
+        dtprod = datetime.datetime(2015, 3, 4, 15, 47, 23)
+        typegrd = 'HmnH'
+        pdt = _composant.PasDeTemps(duree=5,
+                                    unite=_composant.PasDeTemps.HEURES)
+        SerieObsElab(entite=entite, dtprod=dtprod, typegrd=typegrd,
+                     pdt=pdt)
+        pdt = 'toto'
+        with self.assertRaises(Exception) as cm:
+            SerieObsElab(entite=entite, dtprod=dtprod, typegrd=typegrd,
+                         pdt=pdt)
+
+        pdt = _composant.PasDeTemps(duree=5,
+                                    unite=_composant.PasDeTemps.JOURS)
+
+        with self.assertRaises(ValueError):
             SerieObsElab(entite=entite, dtprod=dtprod, typegrd=typegrd,
                          pdt=pdt)
 

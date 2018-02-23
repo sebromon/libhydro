@@ -22,7 +22,7 @@ import datetime
 import math
 
 from libhydro.conv.xml import _from_xml as from_xml
-from libhydro.core import (sitehydro, sitemeteo)
+from libhydro.core import (sitehydro, sitemeteo, _composant)
 
 
 # -- strings ------------------------------------------------------------------
@@ -1402,7 +1402,8 @@ class TestFromXmlObssElab(unittest.TestCase):
 
         self.assertEqual(series[0].entite.code, 'O005002001')
         self.assertEqual(series[0].typegrd, 'QmnJ')
-        self.assertEqual(series[0].pdt, 1)
+        self.assertEqual(series[0].pdt.duree, datetime.timedelta(days=1))
+        self.assertEqual(series[0].pdt.unite, _composant.PasDeTemps.JOURS)
         self.assertEqual(len(series[0].observations), 9)
         self.assertEqual(series[0].dtprod,
                          datetime.datetime(2013, 6, 23, 0, 21, 34))

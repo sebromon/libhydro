@@ -897,7 +897,8 @@ def _serieobselab_from_element(element):
     pdt = None
     if typegrd in ['QmJ', 'QIXJ', 'QINJ', 'HIXJ', 'HINJ']:
         typegrd = '{}n{}'.format(typegrd[0:-1], typegrd[-1])
-        pdt = 1
+        pdt = _composant.PasDeTemps(duree=1,
+                                    unite=_composant.PasDeTemps.JOURS)
     observations = {}
     for obs in element.findall('ObsElabHydro'):
         dtprod = _value(obs, 'DtProdObsElabHydro')

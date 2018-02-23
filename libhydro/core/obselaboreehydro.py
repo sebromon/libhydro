@@ -346,7 +346,6 @@ class SerieObsElab(object):
         self.glissant = glissant
         self._contact = None
         self.contact = contact
-        
 
     # -- property entite --
     @property
@@ -378,14 +377,28 @@ class SerieObsElab(object):
     @pdt.setter
     def pdt(self, pdt):
         """Set pdt."""
-        try:
-            if pdt is not None:
-                self._pdt = int(pdt)
+        if pdt is None:
+            self._pdt = None
+            return
+        lastc = self.typegrd[-1]
+        if isinstance(pdt, _composant.PasDeTemps):
+            if lastc == 'H':
+                if pdt.unite != _composant.PasDeTemps.HEURES:
+                    raise ValueError('pdt must be in hours')
+            elif lastc == 'J':
+                if pdt.unite != _composant.PasDeTemps.JOURS:
+                    raise ValueError('pdt must be in jours')
+            # pas de contrôle si différent de H et J
+            self._pdt = pdt
+        else:
+            pdt = int(pdt)
+            if lastc == 'H':
+                unite = _composant.PasDeTemps.MINUTES
             else:
-                self._pdt = None
-
-        except Exception:
-            raise
+                unite = _composant.PasDeTemps.JOURS
+            self._pdt = _composant.PasDeTemps(
+                duree=pdt,
+                unite=unite)
 
     # -- property glissant --
     @property
