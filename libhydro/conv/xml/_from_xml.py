@@ -29,8 +29,7 @@ from libhydro.core import (
     modeleprevision as _modeleprevision, obshydro as _obshydro,
     obsmeteo as _obsmeteo, simulation as _simulation, evenement as _evenement,
     courbetarage as _courbetarage, courbecorrection as _courbecorrection,
-    jaugeage as _jaugeage)
-
+    jaugeage as _jaugeage, obselaboreehydro as _obselaboreehydro)
 
 # -- strings ------------------------------------------------------------------
 # contributor Camillo Montes (SYNAPSE)
@@ -251,8 +250,8 @@ def _parse(src, ordered=True):
             # courbescorrection: liste de courbes de correction
             # serieshydro: liste de obshydro.Serie
             # seriesmeteo: liste de obsmeteo.Serie
+            # seriesobselab: liste de obselaboreehydro.SerieObsElab
             # simulations: liste de simulation.Simulation
-
     """
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -293,7 +292,8 @@ def _parse(src, ordered=True):
         'serieshydro': _serieshydro_from_element(tree.find('Donnees/Series')),
         'seriesmeteo': _seriesmeteo_from_element(
             tree.find('Donnees/ObssMeteo')),
-        # 'obsselab'
+        'seriesobselab': _seriesobselab_from_element(
+            tree.find('Donnees/ObssElabHydro')),
         # 'gradshydro'
         # 'qualifsannee'
         # 'alarmes'
@@ -324,7 +324,7 @@ def _scenario_from_element(element):
                 code=_value(element.find('Destinataire'), 'CdIntervenant'),
                 nom=_value(element.find('Destinataire'), 'NomIntervenant'),
                 contacts=dest_contacts,),
-            dtprod=_value(element, 'DateHeureCreationFichier', _UTC))
+            dtprod=_value(element, 'DateHeureCreationFichier'))
 
 
 def _intervenant_from_element(element):
@@ -443,11 +443,11 @@ def _station_from_element(element):
         args['libellecomplement'] = _value(
             element, 'ComplementLibelleStationHydro')
         args['descriptif'] = _value(element, 'DescriptifStationHydro')
-        args['dtmaj'] = _value(element, 'DtMAJStationHydro', _UTC)
+        args['dtmaj'] = _value(element, 'DtMAJStationHydro')
         args['pointk'] = _value(element, 'PkStationHydro', float)
         args['dtmiseservice'] = _value(
-            element, 'DtMiseServiceStationHydro', _UTC)
-        args['dtfermeture'] = _value(element, 'DtFermetureStationHydro', _UTC)
+            element, 'DtMiseServiceStationHydro')
+        args['dtfermeture'] = _value(element, 'DtFermetureStationHydro')
         args['surveillance'] = _value(element, 'ASurveillerStationHydro', bool)
         niveauaffichage = _value(element, 'NiveauAffichageStationHydro')
         if niveauaffichage is not None:
@@ -495,13 +495,12 @@ def _plage_from_element(element, entite):
     if element is None:
         return None
     args = {}
-    args['dtdeb'] = _value(element, 'DtDebPlageUtil{}'.format(entite), _UTC)
-    args['dtfin'] = _value(element, 'DtFinPlageUtil{}'.format(entite), _UTC)
+    args['dtdeb'] = _value(element, 'DtDebPlageUtil{}'.format(entite))
+    args['dtfin'] = _value(element, 'DtFinPlageUtil{}'.format(entite))
     args['dtactivation'] = _value(element,
-                                  'DtActivationPlageUtil{}'.format(entite),
-                                  _UTC)
+                                  'DtActivationPlageUtil{}'.format(entite))
     args['dtdesactivation'] = _value(element,
-        'DtDesactivationPlageUtil{}'.format(entite), _UTC)
+        'DtDesactivationPlageUtil{}'.format(entite))
     args['active'] = _value(element, 'ActivePlageUtil{}'.format(entite), bool)
     return _sitehydro.PlageUtil(**args)
 
@@ -562,7 +561,7 @@ def _seuilhydro_from_element(element, sitehydro):
         args['publication'] = _value(
             element, 'DroitPublicationSeuilSiteHydro', bool)
         args['valeurforcee'] = _value(element, 'ValForceeSeuilSiteHydro')
-        args['dtmaj'] = _value(element, 'DtMajSeuilSiteHydro', _UTC)
+        args['dtmaj'] = _value(element, 'DtMajSeuilSiteHydro')
         seuil = _seuil.Seuilhydro(**args)
         # add the values
         args['valeurs'] = []
@@ -594,9 +593,9 @@ def _valeurseuilsitehydro_from_element(element, sitehydro, seuil):
         args['entite'] = sitehydro
         args['tolerance'] = _value(element, 'ToleranceSeuilSiteHydro')
         args['dtactivation'] = _value(
-            element, 'DtActivationSeuilSiteHydro', _UTC)
+            element, 'DtActivationSeuilSiteHydro')
         args['dtdesactivation'] = _value(
-            element, 'DtDesactivationSeuilSiteHydro', _UTC)
+            element, 'DtDesactivationSeuilSiteHydro')
         # build a Valeurseuil and return
         return _seuil.Valeurseuil(**args)
 
@@ -612,9 +611,9 @@ def _valeurseuilstation_from_element(element, seuil):
             code=_value(element, 'CdStationHydro'))
         args['tolerance'] = _value(element, 'ToleranceSeuilStationHydro')
         args['dtactivation'] = _value(
-            element, 'DtActivationSeuilStationHydro', _UTC)
+            element, 'DtActivationSeuilStationHydro')
         args['dtdesactivation'] = _value(
-            element, 'DtDesactivationSeuilStationHydro', _UTC)
+            element, 'DtDesactivationSeuilStationHydro')
         # build a Valeurseuil and return
         return _seuil.Valeurseuil(**args)
 
@@ -654,9 +653,9 @@ def _evenement_from_element(element):
             descriptif=_value(element, 'DescEvenement'),
             contact=_intervenant.Contact(
                 code=_value(element, 'CdContact')),
-            dt=_value(element, 'DtEvenement', _UTC),
+            dt=_value(element, 'DtEvenement'),
             publication=_value(element, 'TypPublicationEvenement'),
-            dtmaj=_value(element, 'DtMajEvenement', _UTC))
+            dtmaj=_value(element, 'DtMajEvenement'))
 
 def _courbetarage_from_element(element):
     """Return a courbetarage.CourbeTarage from a <CourbeTarage> element."""
@@ -685,7 +684,7 @@ def _courbetarage_from_element(element):
         'periodes': [_periodect_from_element(e)
             for e in element.findall(('PeriodesUtilisationCourbeTarage/'
                                       'PeriodeUtilisationCourbeTarage'))],
-        'dtmaj': _value(element, 'DtMajCourbeTarage', _UTC)
+        'dtmaj': _value(element, 'DtMajCourbeTarage')
         }
 
     return _courbetarage.CourbeTarage(**args)
@@ -717,8 +716,8 @@ def _pivotct_from_element(element, typect):
 def _periodect_from_element(element):
     """Return a PeriodeCT from  <PeriodeUtilisationCourbeTarage> element."""
     return _courbetarage.PeriodeCT(
-        dtdeb=_value(element, 'DtDebutPeriodeUtilisationCourbeTarage', _UTC),
-        dtfin=_value(element, 'DtFinPeriodeUtilisationCourbeTarage', _UTC),
+        dtdeb=_value(element, 'DtDebutPeriodeUtilisationCourbeTarage'),
+        dtfin=_value(element, 'DtFinPeriodeUtilisationCourbeTarage'),
         etat=_value(element, 'EtatPeriodeUtilisationCourbeTarage', int),
         histos=[_histoactiveperiode_from_element(e)
             for e in element.findall('HistosActivPeriod/HistoActivPeriod')]
@@ -727,8 +726,8 @@ def _periodect_from_element(element):
 def _histoactiveperiode_from_element(element):
     """Return HistoActivePeriode from <HistoActivPeriod>"""
     return _courbetarage.HistoActivePeriode(
-        dtactivation=_value(element, 'DtActivHistoActivPeriod', _UTC),
-        dtdesactivation=_value(element, 'DtDesactivHistoActivPeriod', _UTC)
+        dtactivation=_value(element, 'DtActivHistoActivPeriod'),
+        dtdesactivation=_value(element, 'DtDesactivHistoActivPeriod')
         )
 
 
@@ -743,10 +742,10 @@ def _jaugeage_from_element(element):
     mode = _value(element, 'ModeJaugeage', int)
     args = {
         'code': _value(element, 'CdJaugeage'),
-        'dte': _value(element, 'DtJaugeage', _UTC),
+        'dte': _value(element, 'DtJaugeage'),
         'debit': _value(element, 'DebitJaugeage', float),
-        'dtdeb': _value(element, 'DtDebJaugeage', _UTC),
-        'dtfin': _value(element, 'DtFinJaugeage', _UTC),
+        'dtdeb': _value(element, 'DtDebJaugeage'),
+        'dtfin': _value(element, 'DtFinJaugeage'),
         'section_mouillee': _value(element, 'SectionMouilJaugeage', float),
         'perimetre_mouille': _value(element, 'PerimMouilleJaugeage', float),
         'largeur_miroir': _value(element, 'LargMiroirJaugeage', float),
@@ -758,7 +757,7 @@ def _jaugeage_from_element(element):
         'site': site,
         'hauteurs': [_hjaug_from_element(e)
             for e in element.findall('HauteursJaugeage/HauteurJaugeage')],
-        'dtmaj': _value(element, 'DtMajJaugeage', _UTC)
+        'dtmaj': _value(element, 'DtMajJaugeage')
         }
     if mode is not None:
         args['mode'] = mode
@@ -799,7 +798,7 @@ def _courbecorrection_from_element(element):
         'commentaire': _value(element, 'ComCourbeCorrH'),
         'pivots': [_pivotcc_from_element(e)
             for e in element.findall('PointsPivot/PointPivot')],
-        'dtmaj': _value(element, 'DtMajCourbeCorrH', _UTC)
+        'dtmaj': _value(element, 'DtMajCourbeCorrH')
         }
 
     return _courbecorrection.CourbeCorrection(**args)
@@ -807,10 +806,10 @@ def _courbecorrection_from_element(element):
 def _pivotcc_from_element(element):
     """Return courbecorrection.PivotCC from a <PointPivot> element."""
     return _courbecorrection.PivotCC(
-        dte=_value(element, 'DtPointPivot', _UTC),
+        dte=_value(element, 'DtPointPivot'),
         deltah=_value(element, 'DeltaHPointPivot', float),
-        dtactivation=_value(element, 'DtActivationPointPivot', _UTC),
-        dtdesactivation=_value(element, 'DtDesactivPointPivot', _UTC)
+        dtactivation=_value(element, 'DtActivationPointPivot'),
+        dtdesactivation=_value(element, 'DtDesactivPointPivot')
         )
 
 def _seriehydro_from_element(element):
@@ -831,18 +830,20 @@ def _seriehydro_from_element(element):
         contact = None
         if element.find('CdContact') is not None:
             contact = _intervenant.Contact(code=_value(element, 'CdContact'))
+
+        statut = _value(element, 'StatutSerie')
         # utilisation d'un dictionnaire afin que sysalti ne soit pas transmis
         # au constructeur si la balide n'existe pas
         args = {
             'entite': entite,
             'grandeur': _value(element, 'GrdSerie'),
-            'statut': _value(element, 'StatutSerie'),
-            'dtdeb': _value(element, 'DtDebSerie', _UTC),
-            'dtfin': _value(element, 'DtFinSerie', _UTC),
-            'dtprod': _value(element, 'DtProdSerie', _UTC),
+            'dtdeb': _value(element, 'DtDebSerie'),
+            'dtfin': _value(element, 'DtFinSerie'),
+            'dtprod': _value(element, 'DtProdSerie'),
             'perime': _value(element, 'SeriePerim', bool),
             'contact': contact,
-            'observations': _obsshydro_from_element(element.find('ObssHydro'))}
+            'observations': _obsshydro_from_element(element.find('ObssHydro'),
+                                                    statut)}
         # balise sysalti
         sysalti = _value(element, 'SysAltiSerie', int)
         if sysalti is not None:
@@ -853,9 +854,9 @@ def _seriehydro_from_element(element):
 #            entite=entite,
 #            grandeur=_value(element, 'GrdSerie'),
 #            statut=_value(element, 'StatutSerie'),
-#            dtdeb=_value(element, 'DtDebSerie', _UTC),
-#            dtfin=_value(element, 'DtFinSerie', _UTC),
-#            dtprod=_value(element, 'DtProdSerie', _UTC),
+#            dtdeb=_value(element, 'DtDebSerie'),
+#            dtfin=_value(element, 'DtFinSerie'),
+#            dtprod=_value(element, 'DtProdSerie'),
 #            sysalti=sysalti,
 #            perime=_value(element, 'SeriePerim', bool),
 #            contact=contact,
@@ -881,24 +882,93 @@ def _seriemeteo_from_element(element):
         return _obsmeteo.Serie(
             grandeur=grandeur,
             duree=duree * 60,
-            statut=_value(element, 'StatutObsMeteo', int),
-            dtprod=_value(element, 'DtProdObsMeteo', _UTC),
+            dtprod=_value(element, 'DtProdObsMeteo'),
             contact=contact)
 
 
-def _obsshydro_from_element(element):
+def _serieobselab_from_element(element):
+    """Return a obselaboreehydro.SerieObsElab
+       from a TypsDeGrdObsElabHydro element.
+    """
+    # use an orderdDict to save the order of series
+    series = _collections.OrderedDict()
+    typegrd = _value(element, 'TypDeGrdObsElabHydro')  # mandatory
+    # Conversion Sandre V1.1 to V2 (QmJ ->QmnJ)
+    pdt = None
+    if typegrd in ['QmJ', 'QIXJ', 'QINJ', 'HIXJ', 'HINJ']:
+        typegrd = '{}n{}'.format(typegrd[0:-1], typegrd[-1])
+        pdt = _composant.PasDeTemps(duree=1,
+                                    unite=_composant.PasDeTemps.JOURS)
+    observations = {}
+    for obs in element.findall('ObsElabHydro'):
+        dtprod = _value(obs, 'DtProdObsElabHydro')
+        # CdSiteHydro or CdstationHydro mandatory
+        entite = None
+        code = None
+        if obs.find('CdSiteHydro') is not None:
+            code = _value(obs, 'CdSiteHydro')
+            entite = _sitehydro.Sitehydro(
+                code=code)
+        elif obs.find('CdStationHydro') is not None:
+            code = _value(obs, 'CdStationHydro')
+            entite = _sitehydro.Station(
+                code=code)
+
+        args = {}
+        args['dte'] = _value(obs, 'DtObsElabHydro')  # mandatory
+        args['res'] = _value(obs, 'ResObsElabHydro', float)  # mandatory
+        statut = _value(element, 'StatutObsElabHydro')
+        if statut is not None:
+            args['statut'] = statut
+        qal = _value(obs, 'QualifObsElabHydro', int)
+        if qal is not None:
+            args['qal'] = qal
+        mth = _value(obs, 'MethObsElabHydro', int)
+        if mth is not None:
+            args['mth'] = mth
+        sysalti = _value(obs, 'SysAltiObsElabHydro')
+
+        contact = None
+        cdcontact = _value(obs, 'CdContact')
+        if cdcontact is not None:
+            contact = _intervenant.Contact(code=cdcontact)
+        dtdebrefalti = _value(obs, 'DtDebutRefAlti')
+        # print(args)
+        key = (code, typegrd)
+        if key not in series:
+            series[key] = _obselaboreehydro.SerieObsElab(
+                entite=entite, dtprod=dtprod, typegrd=typegrd, pdt=pdt,
+                sysalti=sysalti, contact=contact, dtdebrefalti=dtdebrefalti)
+            observations[key] = []
+        else:
+            dtprod = _datetime.datetime.strptime(dtprod, '%Y-%m-%dT%H:%M:%S')
+            if dtprod > series[key].dtprod:
+                series[key].dtprod = dtprod
+        observations[key].append(
+            _obselaboreehydro.ObservationElaboree(**args))
+
+    # add observations to series
+    for key, serie in series.items():
+        serie.observations = _obselaboreehydro.ObservationsElaborees(
+            *observations[key]).sort_index()
+    return list(series.values())
+
+def _obsshydro_from_element(element, statut):
     """Return a sorted obshydro.Observations from a <ObssHydro> element."""
     if element is not None:
         # prepare a list of Observation
         observations = []
         for o in element:
             args = {}
-            args['dte'] = _value(o, 'DtObsHydro', _UTC)
+            args['dte'] = _value(o, 'DtObsHydro')
             args['res'] = _value(o, 'ResObsHydro')
             if args['res'] is None:
-                return
+                continue
             mth = _value(o, 'MethObsHydro', int)
             if mth is not None:
+                # chgt de liste Sandre V1.1 -> V2
+                if mth == 12:
+                    mth = 8
                 args['mth'] = mth
             qal = _value(o, 'QualifObsHydro', int)
             if qal is not None:
@@ -906,6 +976,7 @@ def _obsshydro_from_element(element):
             continuite = _value(o, 'ContObsHydro', bool)
             if continuite is not None:
                 args['cnt'] = continuite
+            args['statut'] = statut
             observations.append(_obshydro.Observation(**args))
         # build the Observations and return
         return _obshydro.Observations(*observations).sort_index()
@@ -916,7 +987,7 @@ def _obsmeteo_from_element(element):
     if element is not None:
         # prepare args
         args = {}
-        args['dte'] = _value(element, 'DtObsMeteo', _UTC)
+        args['dte'] = _value(element, 'DtObsMeteo')
         args['res'] = _value(element, 'ResObsMeteo')
         if args['res'] is None:
             return
@@ -929,6 +1000,7 @@ def _obsmeteo_from_element(element):
         qua = _value(element, 'IndiceQualObsMeteo', int)
         if qua is not None:
             args['qua'] = qua
+        args['statut'] = _value(element, 'StatutObsMeteo', int)
         # build the Observation and return
         return _obsmeteo.Observation(**args)
 
@@ -961,7 +1033,7 @@ def _simulation_from_element(element):
             qualite=qualite,
             public=_value(element, 'PubliSimul', bool),
             commentaire=_value(element, 'ComSimul'),
-            dtprod=_value(element, 'DtProdSimul', _UTC),
+            dtprod=_value(element, 'DtProdSimul'),
             #previsions=previsions['all'],
             previsions_tend=previsions['tend'],
             previsions_prb=previsions['prb'],
@@ -977,7 +1049,7 @@ def _previsions_from_element(element):
     if element is not None:
 
         for prev in element:
-            dte = _value(prev, 'DtPrev', _UTC)
+            dte = _value(prev, 'DtPrev')
 
             # -------------------
             # compute Res[Min|Moy|Max]Prev
@@ -1111,17 +1183,21 @@ def _seuilshydro_from_element(element, ordered=False):
     # return a list of seuils
     return list(seuilshydro.values())
 
-
 def _seriesmeteo_from_element(element):
     """Return a list of obsmeteo.Serie from a <ObssMeteo> element.
 
     Painful because the XML does not contain series:
         # for each <ObsMeteo> we build a serie and obs
-        # then we group obs by identical series in a set
+        # then we group obs by identical series
+        # we make observations (dataframe) after grouping obs
         # at last we sort the series and update dtdeb and dtfin
 
     """
-    seriesmeteo = set()
+    seriesmeteo = []  # set()
+    # TempSerie : a serie with a list of observations
+    # use a temporary serie to make only once a dataframe
+    TmpSerie = _collections.namedtuple('TmpSerie', ['serie', 'obss'])
+    tmpseries = []
     if element is not None:
 
         for obsmeteo in element.findall('./ObsMeteo'):
@@ -1131,36 +1207,49 @@ def _seriesmeteo_from_element(element):
             if obs is None:
                 continue
 
-            for serie in seriesmeteo:
+            for tmpserie in tmpseries:
                 # if serie == ser:
-                if serie.__eq__(ser, ignore=['observations']):
-                    # add obs to an exisitng serie
-                    serie.observations = \
-                        _obsmeteo.Observations.concat((
-                            serie.observations,
-                            _obsmeteo.Observations(obs)))
+                if tmpserie.serie.__eq__(ser, ignore=['observations',
+                                                      'dtprod']):
+
+                    tmpserie.obss.append(obs)
+                    if ser.dtprod > tmpserie.serie.dtprod:
+                        tmpserie.serie.dtprod = ser.dtprod
                     break
             else:
                 # new serie
-                ser.observations = _obsmeteo.Observations(obs)
-                seriesmeteo.add(ser)
-
-        # update the serie
-        for serie in seriesmeteo:
-            serie.observations = serie.observations.sort_index()
+                tmpseries.append(TmpSerie(serie=ser, obss=[obs]))
+        # Add observations to serie
+        for tmpserie in tmpseries:
+            serie = tmpserie.serie
+            serie.observations = _obsmeteo.Observations(*tmpserie.obss)
             serie.dtdeb = min(serie.observations.index)
             serie.dtfin = max(serie.observations.index)
+            seriesmeteo.append(serie)
 
-    return list(seriesmeteo)
+    return seriesmeteo
+
+
+def _seriesobselab_from_element(element):
+    """return a list of obselaboreehydro.SerieObsElab
+    from a <ObssElabHydro> element
+    """
+    series = []
+    if element is None:
+        return series
+    for typegrd in element.findall('./TypsDeGrdObsElabHydro'):
+        series.extend(_serieobselab_from_element(typegrd))
+    return series
 
 
 # -- utility functions --------------------------------------------------------
 def _UTC(dte):
     """Return string date with suffix +00 if no time zone specified."""
-    if (dte is not None) and (dte.find('+') == -1):
-        return '%s+00' % dte
-    else:
-        return dte
+    return dte
+#     if (dte is not None) and (dte.find('+') == -1):
+#         return '%s+00' % dte
+#     else:
+#         return dte
 
 
 def _value(element, tag, cast=str):

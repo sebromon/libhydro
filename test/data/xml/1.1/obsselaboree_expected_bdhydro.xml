@@ -8,11 +8,11 @@
     <DateHeureCreationFichier>2013-08-05T15:29:38</DateHeureCreationFichier>
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
-      <CdContact>1234</CdContact>
+      <CdContact schemeAgencyID="SANDRE">1234</CdContact>
     </Emetteur>
     <Destinataire>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
-      <CdContact>4</CdContact>
+      <CdContact schemeAgencyID="SANDRE">4</CdContact>
     </Destinataire>
   </Scenario>
   <Donnees>
@@ -20,7 +20,7 @@
       <TypsDeGrdObsElabHydro>
         <TypDeGrdObsElabHydro>QmJ</TypDeGrdObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-14T07:04:42</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-23T00:21:34</DtProdObsElabHydro>
           <CdStationHydro>O005002001</CdStationHydro>
           <DtObsElabHydro>2013-06-13T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>137144.07</ResObsElabHydro>
@@ -30,7 +30,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-15T00:16:31</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-23T00:21:34</DtProdObsElabHydro>
           <CdStationHydro>O005002001</CdStationHydro>
           <DtObsElabHydro>2013-06-14T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>177672.57</ResObsElabHydro>
@@ -40,7 +40,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-16T00:16:55</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-23T00:21:34</DtProdObsElabHydro>
           <CdStationHydro>O005002001</CdStationHydro>
           <DtObsElabHydro>2013-06-15T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>174684.38</ResObsElabHydro>
@@ -50,7 +50,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-17T00:14:19</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-23T00:21:34</DtProdObsElabHydro>
           <CdStationHydro>O005002001</CdStationHydro>
           <DtObsElabHydro>2013-06-16T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>178256.32</ResObsElabHydro>
@@ -60,7 +60,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-18T00:15:49</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-23T00:21:34</DtProdObsElabHydro>
           <CdStationHydro>O005002001</CdStationHydro>
           <DtObsElabHydro>2013-06-17T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>185130.63</ResObsElabHydro>
@@ -70,7 +70,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-20T00:16:31</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-23T00:21:34</DtProdObsElabHydro>
           <CdStationHydro>O005002001</CdStationHydro>
           <DtObsElabHydro>2013-06-19T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>280207.81</ResObsElabHydro>
@@ -80,7 +80,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-21T00:18:47</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-23T00:21:34</DtProdObsElabHydro>
           <CdStationHydro>O005002001</CdStationHydro>
           <DtObsElabHydro>2013-06-20T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>185175.68</ResObsElabHydro>
@@ -90,7 +90,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-22T00:16:27</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-23T00:21:34</DtProdObsElabHydro>
           <CdStationHydro>O005002001</CdStationHydro>
           <DtObsElabHydro>2013-06-21T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>147906.25</ResObsElabHydro>
@@ -110,7 +110,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-21T01:44:58</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-23T01:47:08</DtProdObsElabHydro>
           <CdStationHydro>H040002001</CdStationHydro>
           <DtObsElabHydro>2013-06-20T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>46191.28</ResObsElabHydro>
@@ -120,7 +120,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-22T01:49:51</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-23T01:47:08</DtProdObsElabHydro>
           <CdStationHydro>H040002001</CdStationHydro>
           <DtObsElabHydro>2013-06-21T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>52341.53</ResObsElabHydro>
@@ -150,7 +150,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-24T02:45:14</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-29T02:45:54</DtProdObsElabHydro>
           <CdStationHydro>H620101001</CdStationHydro>
           <DtObsElabHydro>2013-06-23T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>32433.69</ResObsElabHydro>
@@ -160,7 +160,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-14T08:32:26</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-24T05:39:27</DtProdObsElabHydro>
           <CdStationHydro>H622101001</CdStationHydro>
           <DtObsElabHydro>2013-06-13T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>25823.32</ResObsElabHydro>
@@ -170,7 +170,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-15T05:45:50</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-24T05:39:27</DtProdObsElabHydro>
           <CdStationHydro>H622101001</CdStationHydro>
           <DtObsElabHydro>2013-06-14T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>27795.42</ResObsElabHydro>
@@ -180,7 +180,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-16T05:42:59</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-24T05:39:27</DtProdObsElabHydro>
           <CdStationHydro>H622101001</CdStationHydro>
           <DtObsElabHydro>2013-06-15T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>28171.99</ResObsElabHydro>
@@ -190,7 +190,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-17T05:40:09</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-24T05:39:27</DtProdObsElabHydro>
           <CdStationHydro>H622101001</CdStationHydro>
           <DtObsElabHydro>2013-06-16T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>25284.27</ResObsElabHydro>
@@ -200,7 +200,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-18T05:37:08</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-24T05:39:27</DtProdObsElabHydro>
           <CdStationHydro>H622101001</CdStationHydro>
           <DtObsElabHydro>2013-06-17T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>22761.28</ResObsElabHydro>
@@ -210,7 +210,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-19T05:36:42</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-24T05:39:27</DtProdObsElabHydro>
           <CdStationHydro>H622101001</CdStationHydro>
           <DtObsElabHydro>2013-06-18T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>21111.6</ResObsElabHydro>
@@ -220,7 +220,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-21T11:55:36</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-24T05:39:27</DtProdObsElabHydro>
           <CdStationHydro>H622101001</CdStationHydro>
           <DtObsElabHydro>2013-06-19T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>20579.62</ResObsElabHydro>
@@ -230,7 +230,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-21T11:55:36</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-24T05:39:27</DtProdObsElabHydro>
           <CdStationHydro>H622101001</CdStationHydro>
           <DtObsElabHydro>2013-06-20T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>35437.48</ResObsElabHydro>
@@ -240,7 +240,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-22T05:54:03</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-24T05:39:27</DtProdObsElabHydro>
           <CdStationHydro>H622101001</CdStationHydro>
           <DtObsElabHydro>2013-06-21T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>56281.51</ResObsElabHydro>
@@ -250,7 +250,7 @@
           <SysAltiObsElabHydro>31</SysAltiObsElabHydro>
         </ObsElabHydro>
         <ObsElabHydro>
-          <DtProdObsElabHydro>2013-06-23T05:39:19</DtProdObsElabHydro>
+          <DtProdObsElabHydro>2013-06-24T05:39:27</DtProdObsElabHydro>
           <CdStationHydro>H622101001</CdStationHydro>
           <DtObsElabHydro>2013-06-22T00:00:00</DtObsElabHydro>
           <ResObsElabHydro>60470.34</ResObsElabHydro>

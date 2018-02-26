@@ -5,7 +5,7 @@
     <CodeScenario>hydrometrie</CodeScenario>
     <VersionScenario>1.1</VersionScenario>
     <NomScenario>Echange de données hydrométriques</NomScenario>
-    <DateHeureCreationFichier>2001-12-17T09:30:47+05:00</DateHeureCreationFichier>
+    <DateHeureCreationFichier>2001-12-17T04:30:47</DateHeureCreationFichier>
     <RefFichier>modele.xml</RefFichier>
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">825</CdIntervenant>
@@ -24,7 +24,7 @@
         <LbModelePrevision>String</LbModelePrevision>
         <TypModelePrevision>0</TypModelePrevision>
         <DescModelePrevision>String</DescModelePrevision>
-        <DtMajModelePrevision>2001-12-17T09:30:47+05:00</DtMajModelePrevision>
+        <DtMajModelePrevision>2001-12-17T04:30:47</DtMajModelePrevision>
       </ModelePrevision>
       <ModelePrevision>
         <CdContact>token</CdContact>
@@ -32,7 +32,7 @@
         <LbModelePrevision>String</LbModelePrevision>
         <TypModelePrevision>0</TypModelePrevision>
         <DescModelePrevision>String</DescModelePrevision>
-        <DtMajModelePrevision>2001-12-17T09:30:47+05:00</DtMajModelePrevision>
+        <DtMajModelePrevision>2001-12-17T04:30:47</DtMajModelePrevision>
       </ModelePrevision>
     </ModelesPrevision>
   </RefHyd>

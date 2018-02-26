@@ -538,3 +538,111 @@ def __str__(self):
         return self.__unicode__().encode(
             _sys.stdout.encoding or _locale.getpreferredencoding() or 'ascii',
             'replace')
+
+
+class PasDeTemps(object):
+    """Class PasDeTemps réprsentant un pas de temps.
+
+    Le pas de temps peut être exprimé en minutes, heures ou jours.
+
+    Properties:
+        duree (datetime.timedelta) duree du pas de temps
+        unite (int): unite du pas de temps
+                     parmi [PasDeTemps.SECONDES, PAsDeTemps.MINUTES,
+                     PasDeTemps.HEURES, PasDeTemps.JOURS]
+
+    """
+
+    SECONDES = 0
+    MINUTES = 1
+    HEURES = 2
+    JOURS = 3
+
+    def __init__(self, duree=None,  unite=1):
+        """Initialisation.
+
+        Arguments:
+            duree (int or datetime.timedelta): duree du pas de temps
+            unite (int): unite du pas de temps (défaut PasDeTemps.MINUTES)
+                parmi [PasDeTemps.SECONDES, PasDeTemps.MINUTES,
+                       PasDeTemps.HEURES, PasDeTemps.JOURS]
+        """
+        self._unite = None
+        self.unite = unite
+        self._duree = None
+        self.duree = duree
+
+    # -- property duree --
+    @property
+    def duree(self):
+        """Return duree."""
+        return self._duree
+
+    @duree.setter
+    def duree(self, duree):
+        """Set duree."""
+        if isinstance(duree, _datetime.timedelta):
+            self._duree = duree
+            return
+        try:
+            duree = int(duree)
+            if duree < 0:
+                raise ValueError('duree must be positive')
+            if self.unite == PasDeTemps.MINUTES:
+                self._duree = _datetime.timedelta(minutes=duree)
+            elif self.unite == PasDeTemps.HEURES:
+                self._duree = _datetime.timedelta(hours=duree)
+            elif self.unite == PasDeTemps.JOURS:
+                self._duree = _datetime.timedelta(days=duree)
+            else:
+                self._duree = _datetime.timedelta(seconds=duree)
+        except Exception:
+            raise
+
+    # -- property entite --
+    @property
+    def unite(self):
+        """Return unite."""
+        return self._unite
+
+    @unite.setter
+    def unite(self, unite):
+        """Set unite."""
+        try:
+            unite = int(unite)
+            if unite not in [PasDeTemps.SECONDES,
+                             PasDeTemps.MINUTES,
+                             PasDeTemps.HEURES,
+                             PasDeTemps.JOURS]:
+                raise ValueError('incorrect unite')
+            self._unite = unite
+        except Exception:
+            raise
+
+    def to_int(self):
+        """conversion in integer with good units"""
+        if self.duree is None:
+            return None
+        if self.unite == PasDeTemps.MINUTES:
+            return int(self.duree.total_seconds() / 60)
+        elif self.unite == PasDeTemps.HEURES:
+            return int(self.duree.total_seconds() / 3600)
+        elif self.unite == PasDeTemps.JOURS:
+            return self.duree.days
+        else:
+            return int(self.duree.total_seconds())
+
+    def __unicode__(self):
+        """Return unicode representation."""
+        if self.unite == PasDeTemps.MINUTES:
+            unite = 'm'
+        elif self.unite == PasDeTemps.HEURES:
+            unite = 'h'
+        elif self.unite == PasDeTemps.JOURS:
+            unite = 'j'
+        else:
+            unite = 's'
+        duree = self.to_int()
+        return '{} {}'.format(duree, unite)
+
+    __str__ = __str__

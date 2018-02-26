@@ -222,9 +222,9 @@ class ToXmlBaseTest(ParametrizedTestCase):
         xml = etree.tostring(to_xml._to_xml(
             bdhydro=True, **data), encoding='utf-8').decode('utf-8')
         # test
-        if self.param == 'seriesmeteo':  # FIXME
-            self.skipTest(
-                "the 'seriesmeteo' test can fail for ordering problems...")
+#         if self.param == 'seriesmeteo':  # FIXME
+#             self.skipTest(
+#                 "the 'seriesmeteo' test can fail for ordering problems...")
         self.assertEqual(
             xml, self.expected_bdhydro,
             msg='To XML BDHYDRO format test for unit <%s>' % self.param)
@@ -241,7 +241,7 @@ class TestAllXmlBaseTests(unittest.TestCase):
     for unit in ('intervenants', 'siteshydro', 'sitesmeteo', 'seuilshydro',
                  'modelesprevision', 'evenements', 'courbestarage',
                  'jaugeages', 'courbescorrection', 'serieshydro',
-                 'seriesmeteo', 'simulations'):
+                 'seriesmeteo', 'obsselaboree', 'simulations'):
         suite.addTest(
             ParametrizedTestCase.parametrize(ToXmlBaseTest, param=unit))
     unittest.TextTestRunner(verbosity=1).run(suite)

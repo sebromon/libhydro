@@ -78,7 +78,7 @@ class TestHauteurJaugeage(unittest.TestCase):
         denivele = '14.4'
         distancestation = '456.12'
         stationfille = _sitehydro.Station(code='A123456789')
-        dtdeb_refalti = '2015-01-05T10:14:56Z'
+        dtdeb_refalti = '2015-01-05T10:14:56'
         hjaug = HauteurJaugeage(station=station, sysalti=sysalti,
                                 coteretenue=coteretenue, cotedeb=cotedeb,
                                 cotefin=cotefin, denivele=denivele,

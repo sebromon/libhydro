@@ -53,8 +53,8 @@ class Observation(_numpy.ndarray):
 
     Classe pour manipuler une observation meteorologique elementaire.
 
-    Subclasse de numpy.array('dte', 'res', 'mth', 'qal', 'qua'), les elements
-    etant du type DTYPE.
+    Subclasse de numpy.array('dte', 'res', 'mth', 'qal', 'qua', 'statut'),
+    les elements etant du type DTYPE.
 
     Date et resultat sont obligatoires, les autres elements ont une valeur par
     defaut. Pour les observations de pluie, la date est celle de la fin du
@@ -75,6 +75,8 @@ class Observation(_numpy.ndarray):
         qal (numpy.int8, defaut 16) = qualification de la donnees suivant la
             NOMENCLATURE[508]
         qua (int de 0 a 100, defaut Nan) = indice de qualite de la mesure
+        ctxt (int parmi NOMENCLATURE[872] = contexte de l'observation
+        statut (int parmi NOMENCLATURE[510]) = donnee brute, corrigee...
 
     ATTENTION, Nan != Nan et deux observations sans qualite sont differentes.
 
@@ -89,15 +91,22 @@ class Observation(_numpy.ndarray):
         (str('res'), _numpy.float),
         (str('mth'), _numpy.int8),
         (str('qal'), _numpy.int8),
-        (str('qua'), _numpy.float)])  # required for NaN
+        (str('qua'), _numpy.float),  # required for NaN
+        (str('ctxt'), _numpy.int8),
+        (str('statut'), _numpy.int8)])
 
-    def __new__(cls, dte, res, mth=0, qal=16, qua=_numpy.NaN):
+    def __new__(cls, dte, res, mth=0, qal=16, qua=_numpy.NaN, ctxt=0,
+                statut=4):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
         if int(mth) not in _NOMENCLATURE[512]:
             raise ValueError('incorrect method ')
         if int(qal) not in _NOMENCLATURE[508]:
             raise ValueError('incorrect qualification')
+        if int(ctxt) not in _NOMENCLATURE[872]:
+            raise ValueError('incorrect context')
+        if int(statut) not in _NOMENCLATURE[510]:
+            raise ValueError('incorrect statut')
         try:
             if not _math.isnan(float(qua)):
                 qua = int(qua)
@@ -107,7 +116,8 @@ class Observation(_numpy.ndarray):
             raise ValueError('incorrect quality')
 
         obj = _numpy.array(
-            (dte, res, mth, qal, qua), dtype=Observation.DTYPE).view(cls)
+            (dte, res, mth, qal, qua, ctxt, statut),
+            dtype=Observation.DTYPE).view(cls)
         return obj
 
     # def __array_finalize__(self, obj):
@@ -118,12 +128,15 @@ class Observation(_numpy.ndarray):
         """Return unicode representation."""
         qualite = '%s%%' % self['qua'].item() \
             if not _math.isnan(self['qua'].item()) else '<inconnue>'
-        return '''{0} le {4} a {5} UTC ''' \
-               '''(valeur obtenue par {1}, {2}, qualite {3})'''.format(
+        return '''{0} le {6} a {7} UTC de statut {5}''' \
+               ''' (valeur obtenue par {1}, {2},''' \
+               ''' qualite {3}, contexte {4})'''.format(
                    self['res'].item(),
                    _NOMENCLATURE[512][self['mth'].item()],
                    _NOMENCLATURE[508][self['qal'].item()],
                    qualite,
+                   _NOMENCLATURE[872][self['ctxt'].item()].lower(),
+                   _NOMENCLATURE[510][self['statut'].item()].lower(),
                    *self['dte'].item().isoformat().split('T'))
 
     __str__ = _composant.__str__
@@ -200,7 +213,6 @@ class Serie(_composant_obs.Serie):
         grandeur (Grandeur)
         duree (datetime.timedelta) =
             duree des cumuls, 0 pour les donnees instantanees
-        statut (int parmi NOMENCLATURE[511]) = donnee brute, corrigee...
         dtdeb (datetime.datetime)
         dtfin (datetime.datetime)
         dtprod (datetime.datetime)
@@ -209,9 +221,7 @@ class Serie(_composant_obs.Serie):
 
     """
 
-    statut = _composant.Nomenclatureitem(nomenclature=511)
-
-    def __init__(self, grandeur=None, duree=0, statut=0, dtdeb=None,
+    def __init__(self, grandeur=None, duree=0, dtdeb=None,
                  dtfin=None, dtprod=None, contact=None, observations=None,
                  strict=True):
         """Initialisation.
@@ -220,8 +230,6 @@ class Serie(_composant_obs.Serie):
             grandeur (Grandeur)
             duree (datetime.timedelta ou secondes, defaut 0) = duree des
                 cumuls, 0 pour les donnees instantanees
-            statut (int parmi NOMENCLATURE[511], defaut 0) = donnee brute,
-                corrigee...
             dtdeb (numpy.datetime64)
             dtfin (numpy.datetime64)
             dtprod (numpy.datetime64)
@@ -238,10 +246,8 @@ class Serie(_composant_obs.Serie):
             observations=observations, strict=strict)
 
         # -- adjust the descriptor --
-        vars(Serie)['statut'].strict = self._strict
 
         # -- descriptors --
-        self.statut = statut
 
         # -- full properties --
         self._grandeur = None
@@ -316,7 +322,7 @@ class Serie(_composant_obs.Serie):
     # FIXME - add the concat function (from obshydro)
 
     # -- special methods --
-    __all__attrs__ = ('grandeur', 'duree', 'statut', 'dtdeb', 'dtfin',
+    __all__attrs__ = ('grandeur', 'duree', 'dtdeb', 'dtfin',
                       'dtprod', 'contact', 'observations')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
@@ -341,12 +347,10 @@ class Serie(_composant_obs.Serie):
 
         # action
         return 'Serie {0} sur le site meteorologique {1}\n'\
-               'Statut {2}::{3}\n'\
-               'Duree {4} mn\n'\
-               '{5}\n'\
-               'Observations:\n{6}'.format(
-                   grandeur, code, self.statut,
-                   _NOMENCLATURE[511][self.statut].lower(),
+               'Duree {2} mn\n'\
+               '{3}\n'\
+               'Observations:\n{4}'.format(
+                   grandeur, code,
                    self.duree.total_seconds() / 60, '-' * 72, obs)
 
     __str__ = _composant.__str__

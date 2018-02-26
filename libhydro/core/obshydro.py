@@ -52,6 +52,8 @@ __version__ = """0.3"""
 __date__ = """2017-06-09"""
 
 # HISTORY
+# V0.3.1 - SR - 2016-06-29
+# change type of cnt to int (nomenclature[923]
 # V0.3 - SR - 2016-06-09
 # add sysalti and perim properties
 # V0.2 - 2014-07-15
@@ -91,8 +93,8 @@ class Observation(_numpy.ndarray):
 
     Classe pour manipuler une observation hydrometrique elementaire.
 
-    Subclasse de numpy.array('dte', 'res', 'mth', 'qal', 'cnt'), les elements
-    etant du type DTYPE.
+    Subclasse de numpy.array('dte', 'res', 'mth', 'qal', 'cnt', 'statut'),
+    les elements etant du type DTYPE.
 
     Date et resultat sont obligatoires, les autres elements ont une valeur par
     defaut.
@@ -108,10 +110,13 @@ class Observation(_numpy.ndarray):
                 np.datetime64('2000-01-01 09:28Z')
         res (numpy.float) = resultat
         mth (numpy.int8, defaut 0) = methode d'obtention de la donnees suivant
-            la NOMENCLATURE[507])
+            la NOMENCLATURE[512])
         qal (numpy.int8, defaut 16) = qualification de la donnees suivant la
             NOMENCLATURE[515]
-        cnt (numpy.bool, defaut True) = continuite
+        cnt (numpy.int8, defaut 0) = continuite de la donnee suivant la
+            NOMENCLATURE[923]
+        statut (numpy.int8, defaut 4) = statut de la donnee suivant la
+            NOMENCLATURE[510]
 
     Usage:
         Getter => observation.['x'].item()
@@ -124,18 +129,28 @@ class Observation(_numpy.ndarray):
         (str('res'), _numpy.float),
         (str('mth'), _numpy.int8),
         (str('qal'), _numpy.int8),
-        (str('cnt'), _numpy.bool)
+        (str('cnt'), _numpy.int8),
+        (str('statut'), _numpy.int8)
     ])
 
-    def __new__(cls, dte, res, mth=0, qal=16, cnt=True):
+    def __new__(cls, dte, res, mth=0, qal=16, cnt=0, statut=4):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
-        if int(mth) not in _NOMENCLATURE[507]:
+        if int(mth) not in _NOMENCLATURE[512]:
             raise ValueError('incorrect method')
         if int(qal) not in _NOMENCLATURE[515]:
             raise ValueError('incorrect qualification')
+        # cnt bol SANDRE V1.1 int in V2
+        # conversion booleen  to int
+        if isinstance(cnt, bool):
+            cnt = 0 if cnt else 1
+        if int(cnt) not in _NOMENCLATURE[923]:
+            raise ValueError('incorrect continuite')
+        if int(statut) not in _NOMENCLATURE[510]:
+            raise ValueError('incorrect statut')
+
         obj = _numpy.array(
-            (dte, res, mth, qal, cnt),
+            (dte, res, mth, qal, cnt, statut),
             dtype=Observation.DTYPE
         ).view(cls)
         return obj
@@ -149,9 +164,9 @@ class Observation(_numpy.ndarray):
         return '''{0} le {4} a {5} UTC ''' \
                '''(valeur obtenue par {1}, {2} et {3})'''.format(
                    self['res'].item(),
-                   _NOMENCLATURE[507][self['mth'].item()],
+                   _NOMENCLATURE[512][self['mth'].item()],
                    _NOMENCLATURE[515][self['qal'].item()],
-                   'continue' if self['cnt'].item() else 'discontinue',
+                   'continue' if self['cnt'].item() == 0 else 'discontinue',
                    *self['dte'].item().isoformat().split('T')
                )
 
@@ -223,6 +238,7 @@ class Serie(_composant_obs.Serie):
         dtprod (datetime.datetime)
         sysalti (int parmi NOMENCLATURE[76])
         perim (booleen ou None)
+        pdt (PasDeTemps or None) = pas de temps de la série hydro
         contact (intervenant.Contact)
         observations (Observations)
 
@@ -233,26 +249,24 @@ class Serie(_composant_obs.Serie):
     # refalti OU courbetarage
 
     grandeur = _composant.Nomenclatureitem(nomenclature=509)
-    statut = _composant.Nomenclatureitem(nomenclature=510)
     sysalti = _composant.Nomenclatureitem(nomenclature=76)
 
     def __init__(
-            self, entite=None, grandeur=None, statut=0,
+            self, entite=None, grandeur=None,
             dtdeb=None, dtfin=None, dtprod=None, sysalti=31, perime=None,
-            contact=None, observations=None, strict=True
+            pdt=None, contact=None, observations=None, strict=True
     ):
         """Initialisation.
 
         Arguments:
             entite (Sitehydro, Station ou Capteur)
             grandeur (char parmi NOMENCLATURE[509]) = H ou Q
-            statut (int parmi NOMENCLATURE[510], defaut 0) = donnee brute,
-                corrigee...
             dtdeb (numpy.datetime64)
             dtfin (numpy.datetime64)
             dtprod (numpy.datetime64)
             sysalti (int parmi NOMENCLATURE[76])
             perim (booleen ou None)
+            pdt (PasDeTemps or None) = pas de temps de la série hydro
             contact (intervenant.Contact)
             observations (Observations)
             strict (bool, defaut True) = en mode permissif il n'y a pas de
@@ -269,12 +283,10 @@ class Serie(_composant_obs.Serie):
         # -- adjust the descriptor --
         vars(Serie)['grandeur'].strict = self._strict
         vars(Serie)['grandeur'].required = self._strict
-        vars(Serie)['statut'].strict = self._strict
         vars(Serie)['sysalti'].strict = self._strict
 
         # -- descriptors --
         self.grandeur = grandeur
-        self.statut = statut
         self.sysalti = sysalti
 
         # -- full properties --
@@ -282,6 +294,8 @@ class Serie(_composant_obs.Serie):
         self.entite = entite
         self._perime = None
         self.perime = perime
+        self._pdt = None
+        self.pdt = pdt
 
     # -- property entite --
     @property
@@ -323,6 +337,28 @@ class Serie(_composant_obs.Serie):
         """Set perime."""
         self._perime = bool(perime) if (perime is not None) else None
 
+    # -- property pdt --
+    @property
+    def pdt(self):
+        """Return pdt."""
+        return self._pdt
+
+    @pdt.setter
+    def pdt(self, pdt):
+        """Set pdt."""
+        if pdt is None:
+            self._pdt = None
+            return
+        if isinstance(pdt, _composant.PasDeTemps):
+            if pdt.unite != _composant.PasDeTemps.MINUTES:
+                raise ValueError('pdt must be in minutes')
+            self._pdt = pdt
+        else:
+            pdt = int(pdt)
+            self._pdt = _composant.PasDeTemps(
+                duree=pdt,
+                unite=_composant.PasDeTemps.MINUTES)
+
     # -- static methods --
     @staticmethod
     def concat(series, duplicates='raise', sort=False):
@@ -354,8 +390,6 @@ class Serie(_composant_obs.Serie):
                 raise ValueError(
                     "can't concatenate series, grandeur doesn't match"
                 )
-            statut = serie.statut if statut is None \
-                else min(statut, serie.statut)
 
         # call the base serie concat function
         concat = _composant_obs.Serie.concat(
@@ -363,11 +397,11 @@ class Serie(_composant_obs.Serie):
         )
 
         # return
-        return Serie(entite=entite, grandeur=grandeur, statut=statut, **concat)
+        return Serie(entite=entite, grandeur=grandeur, **concat)
 
     # -- special methods --
     __all__attrs__ = (
-        'entite', 'grandeur', 'statut', 'dtdeb', 'dtfin', 'dtprod',
+        'entite', 'grandeur', 'dtdeb', 'dtfin', 'dtprod',
         'contact', 'observations'
     )
     __eq__ = _composant.__eq__
@@ -398,14 +432,11 @@ class Serie(_composant_obs.Serie):
             else:
                 perime = ' non perime'
         # action !
-        return 'Serie {0}{6} sur {1}\n'\
-               'Statut {2}::{3}\n'\
-               '{4}\n'\
-               'Observations:\n{5}'.format(
+        return 'Serie {0}{4} sur {1}\n'\
+               '{2}\n'\
+               'Observations:\n{3}'.format(
                    self.grandeur or '<grandeur inconnue>',
                    entite,
-                   self.statut,
-                   _NOMENCLATURE[510][self.statut].lower(),
                    '-' * 72,
                    obs,
                    perime

@@ -20,10 +20,12 @@ from __future__ import (
 
 
 # -- strings ------------------------------------------------------------------
-__version__ = '0.6.3'
-__date__ = '2015-09-23'
+__version__ = '0.6.4'
+__date__ = '2015-09-29'
 
 # HISTORY
+# V0.6.4 - SR - 2015-09-23
+# add nomenclature 923 (continuite obshydro)
 # V0.6.3 - SR - 2015-09-23
 # add nomenclature 519 (type du capteur)
 # V0.6.2 - SR - 2015-06-09
@@ -182,6 +184,33 @@ NOMENCLATURE = {
         0: 'Mesure', 4: 'Reconstitution', 8: 'Calcul',
         12: 'Interpolation', 16: 'Forcage'},
 
+    # Type de grandeur de l'observation élaborée hydro
+    513: {
+        # 'QmJ': 'Débit moyen journalier',
+        'QmM': 'Débit moyen mensuel',
+        'QIXM': 'Débit instantanée maximal mensuel',
+        'QINM': 'Débit instantanée minimal mensuel',
+        'HIXM': 'Hauteur instantanée maximale mensuelle',
+        'HINM': 'Hauteur instantanée minimale mensuelle',
+        'dQmM': 'Delta du débit moyen mensuel pour la reconstitution du débit naturel',
+        # 'QIXJ': 'Débit instantané maximal journalier',
+        # 'QINJ': 'Débit instantané minimal journalier',
+        # 'HIXJ': 'Hauteur instantanée maximale journalier',
+        # 'HINJ': 'Hauteur instantanée minimal journalier'
+        'Module': 'Débit moyen inter-annuel',
+        'QIX': 'Débit instantané maximum',
+        'QIN': 'Débit instantané minimum',
+        'QmnJ': 'Débit moyen sur n jours',
+        'QIXnJ': 'Débit instantané maximal n journalier',
+        'QINnJ': 'Débit instantané minimal n journalier',
+        'HIXnJ': 'Hauteur instantanée maximale n journalière',
+        'HINnJ': 'Hauteur instantanée minimale n journalière',
+        'QmnH': 'Débit moyen n horaire',
+        'HmnH': 'Hauteur moyenne n horaire',
+        'HmnJ': 'Hauteur moyenne n journalière',
+        'HmM': 'Hauteur moyenne mensuelle'
+    },
+
     # Qualification de la donnees de l'observation hydrometrique
     515: {
         0: 'Neutre',
@@ -287,6 +316,17 @@ NOMENCLATURE = {
     # Civilite du contact
     538: {1: 'Monsieur', 2: 'Madame', 3: 'Mademoiselle'},
 
+    # Contexte de production de l'observation météorologique
+    872: {
+        0: 'Contexte inconnu',
+        1: 'Pluie',
+        2: 'Neige',
+        3: 'Début d\'un cumul',
+        4: 'Fin d\'un cumul',
+        8: 'Début d\'un cumul neige',
+        9: 'Fin d\'un cumul neige'
+        },
+
     # Mode de jaugeage du site hydrométrique
     873: {0: 'Inconnu',
           1: 'Saumon point par point',
@@ -300,7 +340,16 @@ NOMENCLATURE = {
           9: 'Jaugeage par mesure de vitesse en surface',
           10: 'Mesure par ADCP',
           11: 'Autres'
-          }
+          },
+
+    # Continuité de la donnée de l'observation hydro
+    923: {
+        0: 'Valeur continue',
+        1: 'Valeur discontinue',
+        4: 'Valeur discontinue faible',
+        6: 'Valeur discontinue neutre',
+        8: 'Valeur discontinue forte'
+        }
 }
 
 NOMENCLATURES = list(NOMENCLATURE.keys())

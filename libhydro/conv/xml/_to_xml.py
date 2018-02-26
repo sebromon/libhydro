@@ -29,9 +29,10 @@ from libhydro.core import (
 # -- strings ------------------------------------------------------------------
 # contributor Sébastien ROMON
 __version__ = '0.6.5'
-__date__ = '2017-09-22'
+__date__ = '2017-09-29'
 
 # HISTORY
+# SR - 2017-09-29 use itertuples intsead of iterrows
 # SR - 2017-09- 25 export type capteur to xml
 # V0.6.5 - SR- 2017-09-22
 # export entitehydro, tronconhydro, zonehydro
@@ -75,7 +76,7 @@ ORDERED_ACCEPTED_KEYS = [
     'seuilshydro', 'modelesprevision',
     # line 180: [6:]
     'evenements', 'courbestarage', 'jaugeages', 'courbescorrection',
-    'serieshydro', 'seriesmeteo', 'simulations']
+    'serieshydro', 'seriesmeteo', 'seriesobselab', 'simulations']
 
 PREV_PROBABILITY = {
     50: 'ResMoyPrev',
@@ -110,7 +111,7 @@ NS_ATTR = {
 def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
             seuilshydro=None, modelesprevision=None, evenements=None,
             courbestarage=None, jaugeages=None, courbescorrection=None,
-            serieshydro=None, seriesmeteo=None,
+            serieshydro=None, seriesmeteo=None, seriesobselab=None,
             simulations=None, bdhydro=False, strict=True, ordered=False):
     """Return a etree.Element a partir des donnees passes en argument.
 
@@ -132,6 +133,8 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
             iterable ou None
         serieshydro (obshydro.Serie collection) = iterable or None
         seriesmeteo (obsmeteo.Serie collection) = iterable or None
+        seriesobselab(obselaboreehydro.SerieObsElab collection) =
+            iterable or None
         simulations (simulation.Simulation collection) = iterable or None
         bdhydro (bool, defaut False) = controle de conformite bdhydro
         strict (bool, defaut True) = controle de conformite XML Hydrometrie
@@ -420,18 +423,27 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
         return element
 
 
+def _codesitemeteo_to_value(sitemeteo, bdhydro=False, strict=True):
+    code = sitemeteo.code
+    if strict:
+        _required(sitemeteo, ['code'])
+        # in bdhydro cdsitemeteo 8 or 9 char
+        if bdhydro and sitemeteo.code[0] == '0':
+                code = sitemeteo.code[1:]
+    return code
+
+
 def _sitemeteo_to_element(sitemeteo, bdhydro=False, strict=True):
     """Return a <SiteMeteo> element from a sitemeteo.Sitemeteo."""
 
     if sitemeteo is not None:
 
         # prerequisites
-        if strict:
-            _required(sitemeteo, ['code'])
+        code = _codesitemeteo_to_value(sitemeteo, bdhydro, strict)
 
         # template for sitemeteo simple elements
         story = _collections.OrderedDict((
-            ('CdSiteMeteo', {'value': sitemeteo.code}),
+            ('CdSiteMeteo', {'value': code}),
             ('LbSiteMeteo', {'value': sitemeteo.libelle}),
             ('LbUsuelSiteMeteo', {'value': sitemeteo.libelleusuel}),
             ('CoordSiteMeteo', {
@@ -1081,7 +1093,7 @@ def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True):
         _required(seriehydro, ['entite', 'dtdeb', 'dtfin', 'dtprod'])
         if strict:
             _required(seriehydro.entite, ['code'])
-            _required(seriehydro, ['grandeur', 'statut'])
+            _required(seriehydro, ['grandeur'])
 
         # template for seriehydro simple elements
         story = _collections.OrderedDict()
@@ -1094,7 +1106,14 @@ def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True):
             'value': seriehydro.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')}
         story['DtFinSerie'] = {
             'value': seriehydro.dtfin.strftime('%Y-%m-%dT%H:%M:%S')}
-        story['StatutSerie'] = {'value': str(seriehydro.statut)}
+
+        if len(seriehydro.observations) == 0:
+            statut = 0
+        else:
+            # iloc return Series with float
+            statut = int(seriehydro.observations.iloc[0]['statut'].item())
+        story['StatutSerie'] = {'value': str(statut)}
+
         story['DtProdSerie'] = {
             'value': seriehydro.dtprod.strftime('%Y-%m-%dT%H:%M:%S')}
         if seriehydro.sysalti is not None:
@@ -1124,26 +1143,29 @@ def _observations_to_element(observations, bdhydro=False, strict=True):
 
         # make element <ObssHydro>
         element = _etree.Element('ObssHydro')
-
-        # add the observations - iterrows gives tuples (index, (items))
-        for observation in observations.iterrows():
+        for observation in observations.itertuples():
             obs = _etree.SubElement(element, 'ObsHydro')
             # dte and res are mandatory...
             child = _etree.SubElement(obs, 'DtObsHydro')
-            child.text = observation[0].strftime('%Y-%m-%dT%H:%M:%S')
+            child.text = observation.Index.strftime('%Y-%m-%dT%H:%M:%S')
             child = _etree.SubElement(obs, 'ResObsHydro')
-            child.text = str(observation[1]['res'])
+            child.text = str(observation.res)
             # while mth, qal and cnt aren't
-            if 'mth' in observation[1].index:
+            if observation.mth is not None:
+                # Conversion liste 512 en 507
+                mth = observation.mth
+                if mth in [8, 14]:
+                    mth = 12
+                elif mth == 10:
+                    mth = 4
                 child = _etree.SubElement(obs, 'MethObsHydro')
-                child.text = str(observation[1]['mth'])
-            if 'qal' in observation[1].index:
+                child.text = str(mth)
+            if observation.qal is not None:
                 child = _etree.SubElement(obs, 'QualifObsHydro')
-                child.text = str(observation[1]['qal'])
-            if 'cnt' in observation[1].index:
+                child.text = str(observation.qal)
+            if observation. cnt is not None:
                 child = _etree.SubElement(obs, 'ContObsHydro')
-                child.text = str(observation[1]['cnt']).lower()
-
+                child.text = 'true' if observation.cnt == 0 else 'false'
         # return
         return element
 
@@ -1156,18 +1178,22 @@ def _obsmeteo_to_element(seriemeteo, index, obs, bdhydro=False, strict=True):
         # prerequisite
         _required(seriemeteo, ['grandeur', 'dtprod', 'duree'])
         _required(seriemeteo.grandeur, ['sitemeteo'])
+        code = _codesitemeteo_to_value(sitemeteo=seriemeteo.grandeur.sitemeteo,
+                                       bdhydro=bdhydro,
+                                       strict=strict)
+
         if strict:
             _required(seriemeteo.grandeur.sitemeteo, ['code'])
-            _required(seriemeteo, ['statut'])  # contact is also mandatory
+            # contact is also mandatory
 
         # template for seriemeteo simple elements
         story = _collections.OrderedDict()
         story['CdGrdMeteo'] = {'value': seriemeteo.grandeur.typemesure}
-        story['CdSiteMeteo'] = {'value': seriemeteo.grandeur.sitemeteo.code}
+        story['CdSiteMeteo'] = {'value': code}
         story['DtProdObsMeteo'] = {
             'value': seriemeteo.dtprod.strftime('%Y-%m-%dT%H:%M:%S')}
         story['DtObsMeteo'] = {'value': index.strftime('%Y-%m-%dT%H:%M:%S')}
-        story['StatutObsMeteo'] = {'value': seriemeteo.statut}
+        story['StatutObsMeteo'] = {'value': int(obs.statut)}
         story['ResObsMeteo'] = {'value': obs.res}
         if bdhydro:
             story['DureeObsMeteo'] = {
@@ -1191,6 +1217,47 @@ def _obsmeteo_to_element(seriemeteo, index, obs, bdhydro=False, strict=True):
 
         # return
         return element
+
+
+def _obselab_to_element(serie, obs, bdhydro=False, strict=True):
+    """Return a <ObsElabHydro> element
+    from a SerieObsElab an ObservaionElaboree.
+    """
+    obsel = _etree.Element('ObsElabHydro')
+    _etree.SubElement(obsel, 'DtProdObsElabHydro').text = \
+        serie.dtprod.strftime('%Y-%m-%dT%H:%M:%S')
+
+    if isinstance(serie.entite, _sitehydro.Sitehydro):
+        _etree.SubElement(obsel, 'CdSiteHydro').text = \
+            serie.entite.code
+    else:
+        _etree.SubElement(obsel, 'CdStationHydro').text = \
+            serie.entite.code
+    # dte and res are mandatory...
+    _etree.SubElement(obsel, 'DtObsElabHydro').text = \
+        obs.Index.strftime('%Y-%m-%dT%H:%M:%S')
+    _etree.SubElement(obsel, 'ResObsElabHydro').text = \
+        str(obs.res)
+    if obs.statut is not None:
+        _etree.SubElement(obsel, 'StatutObsElabHydro').text = \
+            str(obs.statut)
+    if obs.qal is not None:
+        _etree.SubElement(obsel, 'QualifObsElabHydro').text = \
+            str(obs.qal)
+    if obs.mth is not None:
+        _etree.SubElement(obsel, 'MethObsElabHydro').text = \
+            str(obs.mth)
+    if serie.sysalti is not None:
+        _etree.SubElement(obsel, 'SysAltiObsElabHydro').text = \
+            str(serie.sysalti)
+    if serie.contact is not None:
+        _etree.SubElement(obsel, 'CdContact').text = \
+            str(serie.contact.code)
+    if serie.dtdebrefalti is not None:
+        _etree.SubElement(obsel, 'DtDebutRefAlti').text = \
+            serie.dtrefalti.strftime('%Y-%m-%dT%H:%M:%S')
+    # print(_etree.tostring(obsel, method='xml'))
+    return obsel
 
 
 def _simulation_to_element(simulation, bdhydro=False, strict=True):
@@ -1313,6 +1380,34 @@ def _seriesmeteo_to_element(seriesmeteo, bdhydro=False, strict=True):
             for row in serie.observations.iterrows():
                 element.append(_obsmeteo_to_element(
                     serie, *row, bdhydro=bdhydro, strict=strict))
+        return element
+
+
+def _seriesobselab_to_element(seriesobselab, bdhydro=False, strict=True):
+    """Return a <ObssElabHydro> element
+    from a list of obselaboreehydro.SerieObsElab.
+    """
+    if seriesobselab is not None:
+        element = _etree.Element('ObssElabHydro')
+        # First series are group by typegrd
+        dict_series = {}
+        for serie in seriesobselab:
+            typegrd = serie.typegrd
+            # Conversion Sandre V2->V1 QIXnJ -> QIXJ
+            if typegrd in ['QmnJ', 'QIXnJ', 'QINnJ', 'HIXnJ', 'HINnJ']:
+                typegrd = '{}{}'.format(typegrd[0:-2], typegrd[-1])
+            if typegrd not in dict_series:
+                dict_series[typegrd] = []
+            dict_series[typegrd].append(serie)
+        for typegrd, series in dict_series.items():
+            typel = _etree.SubElement(element, 'TypsDeGrdObsElabHydro')
+            _etree.SubElement(typel, 'TypDeGrdObsElabHydro').text = typegrd
+            # add observations
+            for serie in series:
+                for row in serie.observations.itertuples():
+                    typel.append(_obselab_to_element(
+                        serie, row, bdhydro=bdhydro, strict=strict))
+        # print(_etree.tostring(element, method='xml'))
         return element
 
 

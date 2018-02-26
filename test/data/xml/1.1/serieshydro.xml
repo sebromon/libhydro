@@ -5,7 +5,7 @@
     <CodeScenario>hydrometrie</CodeScenario>
     <VersionScenario>1.1</VersionScenario>
     <NomScenario>Echange de données hydrométriques</NomScenario>
-    <DateHeureCreationFichier>2010-02-26T10:05:00+03:00</DateHeureCreationFichier>
+    <DateHeureCreationFichier>2010-02-26T07:05:00</DateHeureCreationFichier>
     <RefFichier>20100226160756_donnees_sac30-2010-02-26-15-05.xml</RefFichier>
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">1520</CdIntervenant>
@@ -22,18 +22,18 @@
       <Serie>
         <CdSiteHydro>V7144010</CdSiteHydro>
         <GrdSerie>Q</GrdSerie>
-        <DtDebSerie>2010-02-26T13:10:00+02:00</DtDebSerie>
-        <DtFinSerie>2010-02-26T14:55:00+02:00</DtFinSerie>
+        <DtDebSerie>2010-02-26T11:10:00</DtDebSerie>
+        <DtFinSerie>2010-02-26T12:55:00</DtFinSerie>
         <StatutSerie>4</StatutSerie>
         <DtProdSerie>2010-02-26T14:55:00</DtProdSerie>
         <ObssHydro>
           <ObsHydro>
-            <DtObsHydro>2010-02-26T13:10:00+02:00</DtObsHydro>
+            <DtObsHydro>2010-02-26T11:10:00</DtObsHydro>
             <ResObsHydro>20992.0</ResObsHydro>
             <ContObsHydro>true</ContObsHydro>
           </ObsHydro>
           <ObsHydro>
-            <DtObsHydro>2010-02-26T13:15:00+02:00</DtObsHydro>
+            <DtObsHydro>2010-02-26T11:15:00</DtObsHydro>
             <ResObsHydro>21176.0</ResObsHydro>
             <ContObsHydro>true</ContObsHydro>
           </ObsHydro>

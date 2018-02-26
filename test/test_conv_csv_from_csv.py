@@ -288,14 +288,14 @@ class TestSeriesHydroFromCsv(unittest.TestCase):
         fname = os.path.join(CSV_DIR, 'serieshydro_full.csv')
         # merge = True
         serieshydro = lhcsv.serieshydro_from_csv(fname, decimal=',')
-        self.assertEqual(len(serieshydro), 5)
+        self.assertEqual(len(serieshydro), 4)
         self.assertEqual(serieshydro[0].entite.code, 'A2331020')
         self.assertEqual(serieshydro[1].entite.code, 'R789122010')
-        self.assertEqual(serieshydro[4].entite.code, 'O823153001')
+        self.assertEqual(serieshydro[3].entite.code, 'O823153001')
         self.assertEqual(serieshydro[0].grandeur, 'Q')
         self.assertEqual(serieshydro[1].grandeur, 'H')
-        self.assertEqual(serieshydro[0].statut, 0)
-        self.assertEqual(serieshydro[4].statut, 4)
+        # self.assertEqual(serieshydro[0].statut, 0)
+        # self.assertEqual(serieshydro[4].statut, 4)
         self.assertEqual(
             serieshydro[0].observations.loc['1999-02-13 05', 'res'].get(0),
             123.33)
@@ -309,8 +309,8 @@ class TestSeriesHydroFromCsv(unittest.TestCase):
         self.assertEqual(serieshydro[4].entite.code, 'O823153001')
         self.assertEqual(serieshydro[0].grandeur, 'Q')
         self.assertEqual(serieshydro[1].grandeur, 'H')
-        self.assertEqual(serieshydro[0].statut, 0)
-        self.assertEqual(serieshydro[5].statut, 8)
+        # self.assertEqual(serieshydro[0].statut, 0)
+        # self.assertEqual(serieshydro[5].statut, 8)
         self.assertEqual(
             serieshydro[0].observations.loc['1999-02-13 05', 'res'].get(0),
             123.33)
@@ -373,32 +373,24 @@ class TestSeriesMeteoFromCsv(unittest.TestCase):
         fname = os.path.join(CSV_DIR, 'seriesmeteo_full.csv')
         # merge = True
         seriesmeteo = lhcsv.seriesmeteo_from_csv(fname, decimal=',')
-        self.assertEqual(len(seriesmeteo), 3)
+        self.assertEqual(len(seriesmeteo), 2)
         self.assertEqual(seriesmeteo[0].grandeur.typemesure, 'VV')
         self.assertEqual(seriesmeteo[1].grandeur.typemesure, 'RR')
-        self.assertEqual(seriesmeteo[2].grandeur.typemesure, 'RR')
         self.assertEqual(seriesmeteo[0].grandeur.sitemeteo.code, '02A004001')
         self.assertEqual(seriesmeteo[1].grandeur.sitemeteo.code, '031239004')
-        self.assertEqual(seriesmeteo[2].grandeur.sitemeteo.code, '031239004')
-        self.assertEqual(seriesmeteo[0].statut, 0)
-        self.assertEqual(seriesmeteo[1].statut, 4)
-        self.assertEqual(seriesmeteo[2].statut, 8)
         self.assertEqual(len(seriesmeteo[0].observations), 2)
-        self.assertEqual(len(seriesmeteo[1].observations), 2)
-        self.assertEqual(len(seriesmeteo[2].observations), 2)
+        self.assertEqual(len(seriesmeteo[1].observations), 4)
         # FIXME - comparing string is weak because of formatting issues
         self.assertEqual(
             seriesmeteo[0].observations.to_string().split('\n')[2:],
-            ['2011-02-02 14:00:00  10.1    0   16  55.0',
-             '2011-02-02 14:05:00  20.0    4   16  66.0'])
+            ['2011-02-02 14:00:00  10.1    0   16  55.0     0       0',
+             '2011-02-02 14:05:00  20.0    4   16  66.0     0       0'])
         self.assertEqual(
             seriesmeteo[1].observations.to_string().split('\n')[2:],
-            ['2011-02-02 14:00:00  30.0   12   16  100.0',
-             '2011-02-02 15:00:00  40.0    0   16   75.0'])
-        self.assertEqual(
-            seriesmeteo[2].observations.to_string().split('\n')[2:],
-            ['2011-02-02 16:00:00  50.5    8   16  100.0',
-             '2011-02-02 17:00:00   0.0    8   16  100.0'])
+            ['2011-02-02 14:00:00  30.0   12   16  100.0     0       4',
+             '2011-02-02 15:00:00  40.0    0   16   75.0     0       4',
+             '2011-02-02 16:00:00  50.5    8   16  100.0     0       8',
+             '2011-02-02 17:00:00   0.0    8   16  100.0     0       8'])
         # merge = False
         seriesmeteo = lhcsv.seriesmeteo_from_csv(fname, decimal=',', merge=0)
         self.assertEqual(len(seriesmeteo), 6)
@@ -409,21 +401,18 @@ class TestSeriesMeteoFromCsv(unittest.TestCase):
         self.assertEqual(seriesmeteo[0].grandeur.sitemeteo.code, '02A004001')
         self.assertEqual(seriesmeteo[2].grandeur.sitemeteo.code, '031239004')
         self.assertEqual(seriesmeteo[5].grandeur.sitemeteo.code, '031239004')
-        self.assertEqual(seriesmeteo[1].statut, 0)
-        self.assertEqual(seriesmeteo[3].statut, 4)
-        self.assertEqual(seriesmeteo[5].statut, 8)
         self.assertEqual(len(seriesmeteo[0].observations), 1)
         self.assertEqual(len(seriesmeteo[3].observations), 1)
         self.assertEqual(len(seriesmeteo[5].observations), 1)
         self.assertEqual(
             seriesmeteo[0].observations.to_string().split('\n')[2:],
-            ['2011-02-02 14:00:00  10.1    0   16  55.0', ])
+            ['2011-02-02 14:00:00  10.1    0   16  55.0     0       0', ])
         self.assertEqual(
             seriesmeteo[1].observations.to_string().split('\n')[2:],
-            ['2011-02-02 14:05:00  20.0    4   16  66.0'])
+            ['2011-02-02 14:05:00  20.0    4   16  66.0     0       0'])
         self.assertEqual(
             seriesmeteo[4].observations.to_string().split('\n')[2:],
-            ['2011-02-02 16:00:00  50.5    8   16  100.0', ])
+            ['2011-02-02 16:00:00  50.5    8   16  100.0     0       8', ])
         self.assertEqual(
             seriesmeteo[5].observations.to_string().split('\n')[2:],
-            ['2011-02-02 17:00:00  0.0    8   16  100.0'])
+            ['2011-02-02 17:00:00  0.0    8   16  100.0     0       8'])

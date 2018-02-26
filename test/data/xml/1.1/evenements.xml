@@ -5,7 +5,7 @@
     <CodeScenario>hydrometrie</CodeScenario>
     <VersionScenario>1.1</VersionScenario>
     <NomScenario>Echange de données hydrométriques</NomScenario>
-    <DateHeureCreationFichier>2010-02-26T10:05:00+03:00</DateHeureCreationFichier>
+    <DateHeureCreationFichier>2010-02-26T07:05:00</DateHeureCreationFichier>
     <RefFichier>20100226160756_donnees_sac30-2010-02-26-15-05.xml</RefFichier>
     <Emetteur>
       <CdIntervenant schemeAgencyID="SANDRE">1520</CdIntervenant>
@@ -33,19 +33,19 @@
       <Evenement>
         <CdContact>8563</CdContact>
         <CdStationHydro>Z853010101</CdStationHydro>
-        <DtEvenement>2010-02-26T10:05:00+01:00</DtEvenement>
+        <DtEvenement>2010-02-26T09:05:00</DtEvenement>
         <DescEvenement>Déplacement de la station de 22.5m</DescEvenement>
         <TypPublicationEvenement>20</TypPublicationEvenement>
-        <DtMajEvenement>2011-01-13T10:05:00+00:00</DtMajEvenement>
+        <DtMajEvenement>2011-01-13T10:05:00</DtMajEvenement>
       </Evenement>
       <!-- Evenement 2 -->
       <Evenement>
         <CdContact>1</CdContact>
         <CdSiteMeteo>08530001</CdSiteMeteo>
-        <DtEvenement>1968-02-03T00:00:00+01:00</DtEvenement>
+        <DtEvenement>1968-02-02T23:00:00</DtEvenement>
         <DescEvenement>Débouchage de la sonde de température</DescEvenement>
         <TypPublicationEvenement>100</TypPublicationEvenement>
-        <DtMajEvenement>2000-01-01T22:00:00+00:00</DtMajEvenement>
+        <DtMajEvenement>2000-01-01T22:00:00</DtMajEvenement>
       </Evenement>
     </Evenements>
   </Donnees>
