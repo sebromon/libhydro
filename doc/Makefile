@@ -69,15 +69,15 @@ html: _subdir
 	@# -- core --
 	@python -m pydoc -w libhydro.core
 	@# core/alarm
-	@# core/courbecorrection
-	@# core/courbetarage
+	@python -m pydoc -w libhydro.core.courbecorrection
+	@python -m pydoc -w libhydro.core.courbetarage
 	@python -m pydoc -w libhydro.core.evenement
 	@# core/gradienthydro
 	@python -m pydoc -w libhydro.core.intervenant
-	@#core/jaugeage
+	@python -m pydoc -w libhydro.core.jaugeage
 	@python -m pydoc -w libhydro.core.modeleprevision
 	@python -m pydoc -w libhydro.core.nomenclature
-	@# python -m pydoc -w libhydro.core.obselaboreehydro
+	@python -m pydoc -w libhydro.core.obselaboreehydro
 	@python -m pydoc -w libhydro.core.obshydro
 	@python -m pydoc -w libhydro.core.obsmeteo
 	@# core/qualifannee
@@ -89,6 +89,10 @@ html: _subdir
 	@python -m pydoc -w libhydro.conv
 	@python -m pydoc -w libhydro.conv.shom
 	@python -m pydoc -w libhydro.conv.xml
+	@# -- processing --
+	@python -m pydoc -w libhydro.processing
+	@python -m pydoc -w libhydro.processing.htoq
+	@python -m pydoc -w libhydro.processing.interpolation
 
 .PHONY: clean
 clean:

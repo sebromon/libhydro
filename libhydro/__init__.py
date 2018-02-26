@@ -5,10 +5,11 @@ Le meta-package libhydro est constitue des packages:
     # core qui contient les classes permettant de manipuler les objets
         hydrometriques
     # conv qui propose des convertisseurs de et vers differents formats
+    # processing qui propose des traitements sur les donnéeshydro
 
 """
 
-__version__ = '0.6.0-alpha'
-__all__ = ['core', 'conv']
+__version__ = '0.8.0'
+__all__ = ['core', 'conv', 'processing']
 
 # from .bdhydro import bdhydro
