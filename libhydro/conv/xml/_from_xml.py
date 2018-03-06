@@ -128,13 +128,12 @@ class Scenario(object):
 
     # class attributes
     code = 'hydrometrie'
-    version = '1.1'
     nom = 'Echange de données hydrométriques'
 
     # descriptors
     dtprod = _composant.Datefromeverything(required=True)
 
-    def __init__(self, emetteur, destinataire, dtprod=None):
+    def __init__(self, emetteur, destinataire, dtprod=None, version='1.1'):
         """Constructeur.
 
         Arguments:
@@ -144,10 +143,12 @@ class Scenario(object):
                 est utilise, sa propriete Intervenant doit etre renseignee
             dtprod (numpy.datetime64 string, datetime.datetime...,
                 defaut utcnow()) = date de production
+            version (str) = version du Sandre 1.1 ou 2
 
         """
         # -- descriptors --
         self.dtprod = dtprod or _datetime.datetime.utcnow()
+        self.version = str(version)
 
         # -- full properties --
         self._emetteur = Emetteur(None, None)
