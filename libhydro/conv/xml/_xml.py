@@ -310,7 +310,7 @@ class Message(object):
             except Exception as e:
                 raise ValueError('bad element, {}'.format(e))
 
-    def _to_element(self, bdhydro=False, ordered=False):
+    def _to_element(self, bdhydro=False, ordered=False, version='1.1'):
         """Return etree.Element from Message"""
         return _to_xml._to_xml(
                 scenario=self.scenario,
@@ -329,10 +329,11 @@ class Message(object):
                 simulations=self.simulations,
                 bdhydro=bdhydro,
                 ordered=ordered,
-                strict=self._strict)
+                strict=self._strict,
+                version=version)
 
     def write(self, file, encoding='utf-8', compression=0, force=False,
-              bdhydro=False, ordered=False, pretty_print=False):
+              bdhydro=False, ordered=False, pretty_print=False, version='1.1'):
         """Ecrit le Message dans le fichier <file>.
 
         Cette methode est un wrapper autour de lxml.etree.ElementTree.write.
@@ -347,6 +348,7 @@ class Message(object):
             ordered (bool, defaut False) = si True essaie de conserver l'ordre
                 de certains elements
             pretty_print (bool, defaut False) = option de debogage
+            version (str) = version Sandre 1.1 ou 2
 
         """
         # check for an exisitng file
@@ -355,13 +357,14 @@ class Message(object):
             raise IOError('file already exists')
         # procede !
         tree = _etree.ElementTree(
-            self._to_element(bdhydro, ordered))
+            self._to_element(bdhydro, ordered, version))
         tree.write(
             file=file, encoding=encoding, method='xml',
             pretty_print=pretty_print, xml_declaration=True,
             compression=compression)
 
-    def show(self, bdhydro=False, ordered=False, pretty_print=False):
+    def show(self, bdhydro=False, ordered=False, pretty_print=False,
+             version='1.1'):
         """Return a pretty print XML.
 
        Arguments:
@@ -372,16 +375,16 @@ class Message(object):
 
         """
         return _etree.tostring(
-            self._to_element(bdhydro, ordered),
+            self._to_element(bdhydro, ordered, version),
             encoding=_sys.stdout.encoding,
             xml_declaration=True,
             pretty_print=pretty_print)
 
-    def to_string(self, bdhydro=False, ordered=False):
+    def to_string(self, bdhydro=False, ordered=False, version='1.1'):
         """Return an unicode xml"""
         # encoding=unicode doesn't support xml_declaration
         return _etree.tostring(
-                       self._to_element(bdhydro, ordered),
+                       self._to_element(bdhydro, ordered, version),
                        encoding='UTF-8',
                        xml_declaration=True,
                        pretty_print=False).decode('utf-8')

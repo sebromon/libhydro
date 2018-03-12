@@ -143,19 +143,21 @@ class ParametrizedTestCase(unittest.TestCase):
     #         python-unit-testing-parametrized-test-cases/
     # see also:  https://pypi.python.org/pypi/testscenarios/
 
-    def __init__(self, methodName='runTest', param=None):
+    def __init__(self, methodName='runTest', param=None, version=None):
         super(ParametrizedTestCase, self).__init__(methodName)
         self.param = param
+        self.version = version
 
     @staticmethod
-    def parametrize(testcase_class, param):
+    def parametrize(testcase_class, param, version):
         """ Create a suite containing all tests taken from the given subclass,
         passing them the parameter 'param'."""
         testloader = unittest.TestLoader()
         testnames = testloader.getTestCaseNames(testcase_class)
         suite = unittest.TestSuite()
         for testname in testnames:
-            suite.addTest(testcase_class(testname, param=param))
+            suite.addTest(testcase_class(testname, param=param,
+                                         version=version))
         return suite
 
 
@@ -174,11 +176,11 @@ class ToXmlBaseTest(ParametrizedTestCase):
     def setUp(self):
         """Hook method for setting up the test fixture before exercising it."""
         # build the expected string
-        if self.param is not None:
+        if self.param is not None and self.version is not None:
             self.expected = xml_to_unicode(os.path.join(
-                'data', 'xml', '1.1', '%s_expected.xml' % self.param))
+                'data', 'xml', self.version, '%s_expected.xml' % self.param))
             self.expected_bdhydro = xml_to_unicode(os.path.join(
-                'data', 'xml', '1.1', '%s_expected_bdhydro.xml' % (
+                'data', 'xml', self.version, '%s_expected_bdhydro.xml' % (
                     self.param)))
         # set our own assertEqual function, more verbose
         self.assertEqual = assert_unicode_equal
@@ -193,15 +195,15 @@ class ToXmlBaseTest(ParametrizedTestCase):
 
         # build object from xml
         data = from_xml._parse(
-            os.path.join('data', 'xml', '1.1', '%s.xml' % self.param))
+            os.path.join('data', 'xml', self.version, '%s.xml' % self.param))
         data['ordered'] = True
         # build xml string from objects
         xml = etree.tostring(to_xml._to_xml(
-            bdhydro=False, **data), encoding='utf-8').decode('utf-8')
+            bdhydro=False, version=self.version, **data), encoding='utf-8').decode('utf-8')
         # test
-        if self.param == 'seriesmeteo':  # FIXME
-            self.skipTest(
-                "the 'seriesmeteo' test can fail for ordering problems...")
+#         if self.param == 'seriesmeteo':  # FIXME
+#             self.skipTest(
+#                 "the 'seriesmeteo' test can fail for ordering problems...")
         self.assertEqual(
             xml, self.expected,
             msg='To XML SANDRE format test for unit <%s>' % self.param)
@@ -216,11 +218,11 @@ class ToXmlBaseTest(ParametrizedTestCase):
 
         # build object from xml
         data = from_xml._parse(
-            os.path.join('data', 'xml', '1.1', '%s.xml' % self.param))
+            os.path.join('data', 'xml', self.version, '%s.xml' % self.param))
         data['ordered'] = True
         # build xml string from objects
         xml = etree.tostring(to_xml._to_xml(
-            bdhydro=True, **data), encoding='utf-8').decode('utf-8')
+            bdhydro=True, version=self.version, **data), encoding='utf-8').decode('utf-8')
         # test
 #         if self.param == 'seriesmeteo':  # FIXME
 #             self.skipTest(
@@ -238,12 +240,18 @@ class TestAllXmlBaseTests(unittest.TestCase):
 
     """
     suite = unittest.TestSuite()
-    for unit in ('intervenants', 'siteshydro', 'sitesmeteo', 'seuilshydro',
-                 'modelesprevision', 'evenements', 'courbestarage',
-                 'jaugeages', 'courbescorrection', 'serieshydro',
-                 'seriesmeteo', 'obsselaboree', 'simulations'):
-        suite.addTest(
-            ParametrizedTestCase.parametrize(ToXmlBaseTest, param=unit))
+    version_units = {}
+    version_units['1.1'] = ('intervenants', 'siteshydro', 'sitesmeteo',
+                            'seuilshydro', 'modelesprevision', 'evenements',
+                            'courbestarage', 'jaugeages', 'courbescorrection',
+                            'serieshydro', 'seriesmeteo', 'obsselaboree',
+                            'simulations')
+    version_units['2'] = ('seriesmeteo',)
+    for version, units in version_units.items():
+        for unit in units:
+            suite.addTest(
+                ParametrizedTestCase.parametrize(ToXmlBaseTest, param=unit,
+                                                 version=version))
     unittest.TextTestRunner(verbosity=1).run(suite)
 
 

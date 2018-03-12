@@ -272,8 +272,17 @@ def _parse(src, ordered=True):
     if tree.getroot().nsmap != {}:
         raise ValueError("can't parse xml file with namespaces")
 
+    scenario = _scenario_from_element(tree.find('Scenario'))
+
+    if scenario.version == '2':
+        seriesmeteo = _seriesmeteo_from_element_v2(
+            tree.find('Donnees/SeriesObsMeteo'))
+    else:
+        seriesmeteo = _seriesmeteo_from_element(
+            tree.find('Donnees/ObssMeteo'))
+
     return {
-        'scenario': _scenario_from_element(tree.find('Scenario')),
+        'scenario': scenario,
         'intervenants': _intervenants_from_element(
             tree.find('RefHyd/Intervenants')),
         'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro')),
@@ -291,8 +300,7 @@ def _parse(src, ordered=True):
         'courbescorrection': _courbescorrection_from_element(
             tree.find('Donnees/CourbesCorrH')),
         'serieshydro': _serieshydro_from_element(tree.find('Donnees/Series')),
-        'seriesmeteo': _seriesmeteo_from_element(
-            tree.find('Donnees/ObssMeteo')),
+        'seriesmeteo': seriesmeteo,
         'seriesobselab': _seriesobselab_from_element(
             tree.find('Donnees/ObssElabHydro')),
         # 'gradshydro'
@@ -325,7 +333,8 @@ def _scenario_from_element(element):
                 code=_value(element.find('Destinataire'), 'CdIntervenant'),
                 nom=_value(element.find('Destinataire'), 'NomIntervenant'),
                 contacts=dest_contacts,),
-            dtprod=_value(element, 'DateHeureCreationFichier'))
+            dtprod=_value(element, 'DateHeureCreationFichier'),
+            version=_value(element, 'VersionScenario'))
 
 
 def _intervenant_from_element(element):
@@ -887,6 +896,36 @@ def _seriemeteo_from_element(element):
             contact=contact)
 
 
+def _seriemeteo_from_element_v2(element):
+    """Return a obsmeteo.Serie from a <SerieObsMeteo> element."""
+    if element is None:
+        return
+    # build a Grandeur
+    grandeur = _sitemeteo.Grandeur(
+        typemesure=_value(element, 'CdGrdMeteo'),
+        sitemeteo=_sitemeteo.Sitemeteo(_value(element, 'CdSiteMeteo')))
+    # prepare the duree in minutes
+    duree = _value(element, 'DureeSerieObsMeteo', int) or 0
+    # build a Contact
+    cdcontact = _value(element, 'CdContact')
+    if cdcontact is not None:
+        contact = _intervenant.Contact(code=cdcontact)
+    else:
+        contact = None
+
+    # build a Serie without the observations and return
+    return _obsmeteo.Serie(
+        grandeur=grandeur,
+        duree=duree * 60,
+        dtprod=_value(element, 'DtProdSerieObsMeteo'),
+        dtdeb=_value(element, 'DtDebSerieObsMeteo'),
+        dtfin=_value(element, 'DtFinSerieObsMeteo'),
+        contact=contact,
+        observations=_obssmeteo_from_element(element.find('ObssMeteo'),
+                                             version='2')
+    )
+
+
 def _serieobselab_from_element(element):
     """Return a obselaboreehydro.SerieObsElab
        from a TypsDeGrdObsElabHydro element.
@@ -983,8 +1022,20 @@ def _obsshydro_from_element(element, statut):
         return _obshydro.Observations(*observations).sort_index()
 
 
-def _obsmeteo_from_element(element):
-    """Return a obsmeteo.Observation from a <ObssHydro> element."""
+def _obssmeteo_from_element(element, version):
+    """Return a sorted obsmeteo.Observations from a <ObssMeteo> element."""
+    if element is None:
+        return
+    observations = []
+    for obs in element:
+        observations.append(_obsmeteo_from_element(element=obs,
+                                                   version=version))
+    # build the Observations and return
+    return _obsmeteo.Observations(*observations).sort_index()
+
+
+def _obsmeteo_from_element(element, version='1.1'):
+    """Return a obsmeteo.Observation from a <ObsMeteo> element."""
     if element is not None:
         # prepare args
         args = {}
@@ -1001,7 +1052,18 @@ def _obsmeteo_from_element(element):
         qua = _value(element, 'IndiceQualObsMeteo', int)
         if qua is not None:
             args['qua'] = qua
-        args['statut'] = _value(element, 'StatutObsMeteo', int)
+
+        if version == '2':
+            statut = _value(element, 'StObsMeteo', int)
+            if statut is not None:
+                args['statut'] = statut
+        else:
+            args['statut'] = _value(element, 'StatutObsMeteo', int)
+
+        if version == '2':
+            ctxt = _value(element, 'ContxtObsMeteo', int)
+            if ctxt is not None:
+                args['ctxt'] = ctxt
         # build the Observation and return
         return _obsmeteo.Observation(**args)
 
@@ -1125,6 +1187,9 @@ _courbescorrection_from_element = _global_function_builder(
 # return a list of obshydro.Serie from a <Series> element
 _serieshydro_from_element = _global_function_builder(
     './Serie', _seriehydro_from_element)
+# return a list of obsmeteo.Serie from a <SeriesObsMeteo> element
+_seriesmeteo_from_element_v2 = _global_function_builder(
+    './SerieObsMeteo', _seriemeteo_from_element_v2)
 # return a list of simulation.Simulation from a <Simuls> element
 _simulations_from_element = _global_function_builder(
     './Simul', _simulation_from_element)
@@ -1204,7 +1269,7 @@ def _seriesmeteo_from_element(element):
         for obsmeteo in element.findall('./ObsMeteo'):
 
             ser = _seriemeteo_from_element(obsmeteo)
-            obs = _obsmeteo_from_element(obsmeteo)
+            obs = _obsmeteo_from_element(obsmeteo, version='1.1')
             if obs is None:
                 continue
 

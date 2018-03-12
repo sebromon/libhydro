@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <hydrometrie xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1/sandre_sc_hydrometrie.xsd"> -->
+<hydrometrie>
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>2</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2010-02-26T23:55:30</DateHeureCreationFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact schemeAgencyID="SANDRE">1</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+    </Destinataire>
+  </Scenario>
+  <Donnees>
+    <SeriesObsMeteo>
+    <SerieObsMeteo>
+        <CdSiteMeteo>987654321</CdSiteMeteo>
+        <CdGrdMeteo>RR</CdGrdMeteo>
+        <DureeSerieObsMeteo>10</DureeSerieObsMeteo>
+        <DtProdSerieObsMeteo>2015-02-06T23:54:25</DtProdSerieObsMeteo>
+        <DtDebSerieObsMeteo>2015-01-02T14:18:19</DtDebSerieObsMeteo>
+        <DtFinSerieObsMeteo>2015-01-05T10:21:54</DtFinSerieObsMeteo>
+        <CdContact>4</CdContact>
+        <ObssMeteo>
+          <ObsMeteo>
+            <DtObsMeteo>2015-01-02T15:10:00</DtObsMeteo>
+            <ResObsMeteo>15.2</ResObsMeteo>
+            <IndiceQualObsMeteo>90</IndiceQualObsMeteo>
+            <ContxtObsMeteo>1</ContxtObsMeteo>
+            <QualifObsMeteo>20</QualifObsMeteo>
+            <MethObsMeteo>14</MethObsMeteo>
+            <StObsMeteo>8</StObsMeteo>
+          </ObsMeteo>
+          <ObsMeteo>
+            <DtObsMeteo>2015-01-02T16:00:00</DtObsMeteo>
+            <ResObsMeteo>13.9</ResObsMeteo>
+            <IndiceQualObsMeteo>100</IndiceQualObsMeteo>
+            <ContxtObsMeteo>0</ContxtObsMeteo>
+            <QualifObsMeteo>16</QualifObsMeteo>
+            <MethObsMeteo>10</MethObsMeteo>
+            <StObsMeteo>4</StObsMeteo>
+          </ObsMeteo>
+          <ObsMeteo>
+            <DtObsMeteo>2015-01-03T10:20:00</DtObsMeteo>
+            <ResObsMeteo>0.5</ResObsMeteo>
+            <IndiceQualObsMeteo>50</IndiceQualObsMeteo>
+            <ContxtObsMeteo>2</ContxtObsMeteo>
+            <QualifObsMeteo>12</QualifObsMeteo>
+            <MethObsMeteo>8</MethObsMeteo>
+            <StObsMeteo>0</StObsMeteo>
+          </ObsMeteo>
+          <ObsMeteo>
+            <DtObsMeteo>2015-01-03T10:20:00</DtObsMeteo>
+            <ResObsMeteo>0.5</ResObsMeteo>
+            <IndiceQualObsMeteo>50</IndiceQualObsMeteo>
+            <ContxtObsMeteo>2</ContxtObsMeteo>
+            <QualifObsMeteo>12</QualifObsMeteo>
+            <MethObsMeteo>8</MethObsMeteo>
+            <StObsMeteo>16</StObsMeteo>
+          </ObsMeteo>
+        </ObssMeteo>
+      </SerieObsMeteo>
+      <SerieObsMeteo>
+        <CdSiteMeteo>123456789</CdSiteMeteo>
+        <CdGrdMeteo>TA</CdGrdMeteo>
+        <DureeSerieObsMeteo>0</DureeSerieObsMeteo>
+        <ObssMeteo>
+          <ObsMeteo>
+            <DtObsMeteo>2013-09-14T17:50:00</DtObsMeteo>
+            <ResObsMeteo>23.1</ResObsMeteo>
+            <ContxtObsMeteo>0</ContxtObsMeteo>
+            <QualifObsMeteo>16</QualifObsMeteo>
+            <MethObsMeteo>0</MethObsMeteo>
+            <StObsMeteo>4</StObsMeteo>
+          </ObsMeteo>
+        </ObssMeteo>
+      </SerieObsMeteo>
+      <SerieObsMeteo>
+        <CdSiteMeteo>999999999</CdSiteMeteo>
+        <CdGrdMeteo>RR</CdGrdMeteo>
+        <DureeSerieObsMeteo>10</DureeSerieObsMeteo>
+      </SerieObsMeteo>
+    </SeriesObsMeteo>
+  </Donnees>
+</hydrometrie>

@@ -182,6 +182,7 @@ NOMENCLATURE = {
     # Methode d'obtention du resultat de l'observation meteoroloqiue
     512: {
         0: 'Mesure', 4: 'Reconstitution', 8: 'Calcul',
+        10: 'Expertisée', 14: 'Estimé',
         12: 'Interpolation', 16: 'Forcage'},
 
     # Type de grandeur de l'observation élaborée hydro

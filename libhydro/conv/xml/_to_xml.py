@@ -99,7 +99,7 @@ CLS_MAPPINGS = {
 
 # sandre hydrometrie namespaces
 NS = (
-    'http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1',
+    'http://xml.sandre.eaufrance.fr/scenario/hydrometrie/{version}',
     'http://www.w3.org/2001/XMLSchema-instance')
 NS_ATTR = {
     'xmlns': NS[0],
@@ -112,7 +112,8 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
             seuilshydro=None, modelesprevision=None, evenements=None,
             courbestarage=None, jaugeages=None, courbescorrection=None,
             serieshydro=None, seriesmeteo=None, seriesobselab=None,
-            simulations=None, bdhydro=False, strict=True, ordered=False):
+            simulations=None, bdhydro=False, strict=True, ordered=False,
+            version='1.1'):
     """Return a etree.Element a partir des donnees passes en argument.
 
     Cette fonction est privee et les utilisateurs sont invites a utiliser la
@@ -140,6 +141,7 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
         strict (bool, defaut True) = controle de conformite XML Hydrometrie
         ordered (bool, default False) = essaie de conserver l'ordre de certains
             elements
+        version (str) = version Sandre 1.1 ou 2
 
     """
     # make a deep copy of locals() which is a dict {arg_name: arg_value, ...}
@@ -153,7 +155,11 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
     if bdhydro:
         tree = _etree.Element('hydrometrie')
     else:
-        tree = _etree.Element('hydrometrie', attrib=NS_ATTR)
+        ns_attr = {}
+        for key, value in NS_ATTR.items():
+            ns_attr[key] = value.format(version=version)
+        tree = _etree.Element('hydrometrie',
+                              attrib=ns_attr)
 
     # TODO - this is awful :/ we should factorize those lines
 
@@ -161,7 +167,8 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
     if args['scenario'] is not None:
         tree.append(
             _scenario_to_element(
-                args['scenario'], bdhydro=bdhydro, strict=strict))
+                args['scenario'], bdhydro=bdhydro, strict=strict,
+                version=version))
 
     # add the referentiel
     items = ORDERED_ACCEPTED_KEYS[1:6]
@@ -212,8 +219,8 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
             if args[k] is not None:
                 sub.append(
                     eval('_{0}_to_element(args[k], '
-                         'bdhydro={1}, strict={2})'.format(
-                             k, bdhydro, strict)))
+                         'bdhydro={1}, strict={2}, version=\'{3}\')'.format(
+                             k, bdhydro, strict, version)))
 
     # DEBUG -
     # print(_etree.tostring(
@@ -224,7 +231,7 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
 
 
 # -- atomic functions ---------------------------------------------------------
-def _scenario_to_element(scenario, bdhydro=False, strict=True):
+def _scenario_to_element(scenario, bdhydro=False, strict=True, version='1.1'):
     """Return a <Scenario> element from a xml.Scenario."""
 
     # FIXME - we should check the scenario name <NomScenario>
@@ -242,7 +249,7 @@ def _scenario_to_element(scenario, bdhydro=False, strict=True):
         # template for scenario simple element
         story = _collections.OrderedDict((
             ('CodeScenario', {'value': scenario.code}),
-            ('VersionScenario', {'value': scenario.version}),
+            ('VersionScenario', {'value': version}),
             ('NomScenario', {'value': scenario.nom}),
             ('DateHeureCreationFichier',
                 {'value': scenario.dtprod.strftime('%Y-%m-%dT%H:%M:%S')})))
@@ -271,7 +278,7 @@ def _scenario_to_element(scenario, bdhydro=False, strict=True):
         return _factory(root=_etree.Element('Scenario'), story=story)
 
 
-def _intervenant_to_element(intervenant, bdhydro=False, strict=True):
+def _intervenant_to_element(intervenant, bdhydro=False, strict=True, version='1.1'):
     """Return a <Intervenant> element from a intervenant.Intervenant."""
 
     if intervenant is not None:
@@ -306,7 +313,7 @@ def _intervenant_to_element(intervenant, bdhydro=False, strict=True):
         return element
 
 
-def _contact_to_element(contact, bdhydro=False, strict=True):
+def _contact_to_element(contact, bdhydro=False, strict=True, version='1.1'):
     """Return a <Contact> element from a intervenant.Contact."""
 
     if contact is not None:
@@ -338,7 +345,7 @@ def _contact_to_element(contact, bdhydro=False, strict=True):
 
 
 def _sitehydro_to_element(sitehydro, seuilshydro=None,
-                          bdhydro=False, strict=True):
+                          bdhydro=False, strict=True, version='1.1'):
     """Return a <SiteHydro> element from a sitehydro.Sitehydro.
 
     Args:
@@ -423,7 +430,7 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
         return element
 
 
-def _codesitemeteo_to_value(sitemeteo, bdhydro=False, strict=True):
+def _codesitemeteo_to_value(sitemeteo, bdhydro=False, strict=True, version='1.1'):
     code = sitemeteo.code
     if strict:
         _required(sitemeteo, ['code'])
@@ -433,7 +440,7 @@ def _codesitemeteo_to_value(sitemeteo, bdhydro=False, strict=True):
     return code
 
 
-def _sitemeteo_to_element(sitemeteo, bdhydro=False, strict=True):
+def _sitemeteo_to_element(sitemeteo, bdhydro=False, strict=True, version='1.1'):
     """Return a <SiteMeteo> element from a sitemeteo.Sitemeteo."""
 
     if sitemeteo is not None:
@@ -475,7 +482,7 @@ def _sitemeteo_to_element(sitemeteo, bdhydro=False, strict=True):
         return element
 
 
-def _tronconvigilance_to_element(tronconvigilance, bdhydro=False, strict=True):
+def _tronconvigilance_to_element(tronconvigilance, bdhydro=False, strict=True, version='1.1'):
     """Return a <TronconVigilanceSiteHydro> element from a """
     """sitehydro.Tronconvigilance."""
     if tronconvigilance is not None:
@@ -494,7 +501,7 @@ def _tronconvigilance_to_element(tronconvigilance, bdhydro=False, strict=True):
             root=_etree.Element('TronconVigilanceSiteHydro'), story=story)
 
 
-def _seuilhydro_to_element(seuilhydro, bdhydro=False, strict=True):
+def _seuilhydro_to_element(seuilhydro, bdhydro=False, strict=True, version='1.1'):
     """Return a <ValeursSeuilSiteHydro> element from a seuil.Seuilhydro."""
     if seuilhydro is not None:
 
@@ -574,7 +581,7 @@ def _seuilhydro_to_element(seuilhydro, bdhydro=False, strict=True):
 
 
 def _valeurseuilstation_to_element(valeurseuil, bdhydro=False,
-                                   strict=True):
+                                   strict=True, version='1.1'):
     """Return a <ValeursSeuilStationHydro> element from a seuil.Valeurseuil.
 
     Requires valeurseuil.entite.code to be a station hydro code.
@@ -612,7 +619,7 @@ def _valeurseuilstation_to_element(valeurseuil, bdhydro=False,
             root=_etree.Element('ValeursSeuilStationHydro'), story=story)
 
 
-def _station_to_element(station, bdhydro=False, strict=True):
+def _station_to_element(station, bdhydro=False, strict=True, version='1.1'):
     """Return a <StationHydro> element from a sitehydro.Station."""
 
     if station is not None:
@@ -725,7 +732,7 @@ def _plage_to_element(plage, entite):
                     story=story)
 
 
-def _capteur_to_element(capteur, bdhydro=False, strict=True):
+def _capteur_to_element(capteur, bdhydro=False, strict=True, version='1.1'):
     """Return a <Capteur> element from a sitehydro.Capteur."""
 
     if capteur is not None:
@@ -761,7 +768,7 @@ def _capteur_to_element(capteur, bdhydro=False, strict=True):
         return element
 
 
-def _grandeur_to_element(grandeur, bdhydro=False, strict=True):
+def _grandeur_to_element(grandeur, bdhydro=False, strict=True, version='1.1'):
     """Return a <GrdMeteo> element from a sitehydro.grandeur."""
 
     if grandeur is not None:
@@ -779,7 +786,7 @@ def _grandeur_to_element(grandeur, bdhydro=False, strict=True):
         return _factory(root=_etree.Element('GrdMeteo'), story=story)
 
 
-def _modeleprevision_to_element(modeleprevision, bdhydro=False, strict=True):
+def _modeleprevision_to_element(modeleprevision, bdhydro=False, strict=True, version='1.1'):
     """Return a <ModelePrevision> element from a """
     """modeleprevision.Modeleprevision."""
 
@@ -800,7 +807,7 @@ def _modeleprevision_to_element(modeleprevision, bdhydro=False, strict=True):
         return _factory(root=_etree.Element('ModelePrevision'), story=story)
 
 
-def _evenement_to_element(evenement, bdhydro=False, strict=True):
+def _evenement_to_element(evenement, bdhydro=False, strict=True, version='1.1'):
     """Return a <Evenement> element from a evenement.Evenement."""
 
     if evenement is not None:
@@ -831,7 +838,7 @@ def _evenement_to_element(evenement, bdhydro=False, strict=True):
         return _factory(root=_etree.Element('Evenement'), story=story)
 
 
-def _courbetarage_to_element(courbe, bdhydro=False, strict=True):
+def _courbetarage_to_element(courbe, bdhydro=False, strict=True, version='1.1'):
     """Return a <CourbeTarage> element from a courbetarage.CourbeTarage."""
 
     if courbe is not None:
@@ -890,7 +897,7 @@ def _courbetarage_to_element(courbe, bdhydro=False, strict=True):
                 # return
         return element
 
-def _pivotct_to_element(pivot, strict=True):
+def _pivotct_to_element(pivot, strict=True, version='1.1'):
     _required(pivot, ['hauteur'])
     story = _collections.OrderedDict()
     story['HtPivotCourbeTarage'] = {'value': pivot.hauteur}
@@ -911,7 +918,7 @@ def _pivotct_to_element(pivot, strict=True):
 
     return _factory(root=_etree.Element('PivotCourbeTarage'), story=story)
 
-def _periodect_to_element(periode, strict=True):
+def _periodect_to_element(periode, strict=True, version='1.1'):
     _required(periode, ['dtdeb', 'etat'])
     story = _collections.OrderedDict()
     story['DtDebutPeriodeUtilisationCourbeTarage'] = {
@@ -936,7 +943,7 @@ def _periodect_to_element(periode, strict=True):
                     histo, strict=strict))
     return element
 
-def _histoperiode_to_element(histo, strict=True):
+def _histoperiode_to_element(histo, strict=True, version='1.1'):
     _required(histo, ['dtactivation'])
     story = _collections.OrderedDict()
     story['DtActivHistoActivPeriod'] = {
@@ -948,7 +955,7 @@ def _histoperiode_to_element(histo, strict=True):
     return _factory(root=_etree.Element('HistoActivPeriod'), story=story)
 
 
-def _jaugeage_to_element(jaugeage, bdhydro=False, strict=True):
+def _jaugeage_to_element(jaugeage, bdhydro=False, strict=True, version='1.1'):
     """Return a <Jaugeage> element from a jaugeage.Jaugeage."""
     if jaugeage is not None:
         _required(jaugeage, ['code', 'site'])
@@ -1001,7 +1008,7 @@ def _jaugeage_to_element(jaugeage, bdhydro=False, strict=True):
         return element
 
 
-def _hjaug_to_element(hjaug, strict=True):
+def _hjaug_to_element(hjaug, strict=True, version='1.1'):
     _required(hjaug, ['station', 'sysalti', 'coteretenue'])
     if strict:
         _required(hjaug.station, ['code'])
@@ -1033,7 +1040,7 @@ def _hjaug_to_element(hjaug, strict=True):
     return element
 
 
-def _courbecorrection_to_element(courbe, bdhydro=False, strict=True):
+def _courbecorrection_to_element(courbe, bdhydro=False, strict=True, version='1.1'):
     """Return a <CourbeCorrH> element from a courbecorrection.CourbeCorrection."""
     if courbe is not None:
         # prerequisite
@@ -1067,7 +1074,7 @@ def _courbecorrection_to_element(courbe, bdhydro=False, strict=True):
                         pivot, strict=strict))
         return element
 
-def _pivotcc_to_element(pivotcc, strict=True):
+def _pivotcc_to_element(pivotcc, strict=True, version='1.1'):
     _required(pivotcc, ['dte','deltah'])
     
     story = _collections.OrderedDict()
@@ -1084,7 +1091,7 @@ def _pivotcc_to_element(pivotcc, strict=True):
     return _factory(root=_etree.Element('PointPivot'), story=story)
         
 
-def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True):
+def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True, version='1.1'):
     """Return a <Serie> element from a obshydro.Serie."""
 
     if seriehydro is not None:
@@ -1136,7 +1143,7 @@ def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True):
         return element
 
 
-def _observations_to_element(observations, bdhydro=False, strict=True):
+def _observations_to_element(observations, bdhydro=False, strict=True, version='1.1'):
     """Return a <ObssHydro> element from a obshydro.Observations."""
 
     if observations is not None:
@@ -1170,7 +1177,7 @@ def _observations_to_element(observations, bdhydro=False, strict=True):
         return element
 
 
-def _obsmeteo_to_element(seriemeteo, index, obs, bdhydro=False, strict=True):
+def _obsmeteo_to_element(seriemeteo, index, obs, bdhydro=False, strict=True, version='1.1'):
     """Return a <ObsMeteo> element from a obsmeteo.serie and a observation."""
 
     if (seriemeteo is not None) and (index is not None) and (obs is not None):
@@ -1219,7 +1226,7 @@ def _obsmeteo_to_element(seriemeteo, index, obs, bdhydro=False, strict=True):
         return element
 
 
-def _obselab_to_element(serie, obs, bdhydro=False, strict=True):
+def _obselab_to_element(serie, obs, bdhydro=False, strict=True, version='1.1'):
     """Return a <ObsElabHydro> element
     from a SerieObsElab an ObservaionElaboree.
     """
@@ -1260,7 +1267,7 @@ def _obselab_to_element(serie, obs, bdhydro=False, strict=True):
     return obsel
 
 
-def _simulation_to_element(simulation, bdhydro=False, strict=True):
+def _simulation_to_element(simulation, bdhydro=False, strict=True, version='1.1'):
     """Return a <Simul> element from a simulation.Simulation."""
 
     if simulation is not None:
@@ -1330,12 +1337,13 @@ def _global_function_builder(tag, func):
         func (str) = elementary function name to call
 
     """
-    def closure(items, bdhydro=False, strict=True):
+    def closure(items, bdhydro=False, strict=True, version='1.1'):
         """Items should be a list of item objects."""
         if items is not None:
             element = _etree.Element(tag)
             for item in items:
-                element.append(func(item, bdhydro=bdhydro, strict=strict))
+                element.append(func(item, bdhydro=bdhydro, strict=strict,
+                                    version=version))
             return element
     return closure
 
@@ -1372,7 +1380,17 @@ _simulations_to_element = _global_function_builder(
 
 
 # these 3 functions doesn't fit with the _global_function_builder :-\
-def _seriesmeteo_to_element(seriesmeteo, bdhydro=False, strict=True):
+def _seriesmeteo_to_element(seriesmeteo, bdhydro=False, strict=True,
+                            version='1.1'):
+    """Return a <ObssMeteo> or a <SeriesObsMeteo>
+    depending on Sandre version
+    """
+    if version == '2':
+        return _seriesmeteo_v2(seriesmeteo, bdhydro, strict)
+    return _seriesmeteo_v1(seriesmeteo, bdhydro, strict)
+
+
+def _seriesmeteo_v1(seriesmeteo, bdhydro=False, strict=True):
     """Return a <ObssMeteo> element from a list of obsmeteo.Serie."""
     if seriesmeteo is not None:
         element = _etree.Element('ObssMeteo')
@@ -1383,7 +1401,62 @@ def _seriesmeteo_to_element(seriesmeteo, bdhydro=False, strict=True):
         return element
 
 
-def _seriesobselab_to_element(seriesobselab, bdhydro=False, strict=True):
+def _seriesmeteo_v2(seriesmeteo, bdhydro=False, strict=True):
+    """Return a <SeriesObsMeteo> element from a list of obsmeteo.Serie."""
+    if seriesmeteo is None or not seriesmeteo:
+        return
+    element = _etree.Element('SeriesObsMeteo')
+    for serie in seriesmeteo:
+        element.append(_seriemeteo_v2(
+                       serie=serie, bdhydro=bdhydro, strict=strict))
+    return element
+
+
+def _seriemeteo_v2(serie, bdhydro=False, strict=True):
+    """Return a <SerieObsMeteo> element from a list of obsmeteo.Serie."""
+    elt = _etree.Element('SerieObsMeteo')
+    code = _codesitemeteo_to_value(sitemeteo=serie.grandeur.sitemeteo,
+                                   bdhydro=bdhydro,
+                                   strict=strict)
+    _etree.SubElement(elt, 'CdSiteMeteo').text = code
+    _etree.SubElement(elt, 'CdGrdMeteo').text = serie.grandeur.typemesure
+    _etree.SubElement(elt, 'DureeSerieObsMeteo').text = \
+        str(int(serie.duree.total_seconds() / 60))
+    if serie.dtprod is not None:
+        _etree.SubElement(elt, 'DtProdSerieObsMeteo').text = \
+            serie.dtprod.strftime('%Y-%m-%dT%H:%M:%S')
+    if serie.dtdeb is not None:
+        _etree.SubElement(elt, 'DtDebSerieObsMeteo').text = \
+            serie.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')
+    if serie.dtfin is not None:
+        _etree.SubElement(elt, 'DtFinSerieObsMeteo').text = \
+            serie.dtfin.strftime('%Y-%m-%dT%H:%M:%S')
+    if serie.contact is not None:
+        _etree.SubElement(elt, 'CdContact').text = serie.contact.code
+    if serie.observations is not None:
+        obss_el = _etree.SubElement(elt, 'ObssMeteo')
+        for obs in serie.observations.itertuples():
+            obs_el = _etree.SubElement(obss_el, 'ObsMeteo')
+            _etree.SubElement(obs_el, 'DtObsMeteo').text = \
+                obs.Index.strftime('%Y-%m-%dT%H:%M:%S')
+            _etree.SubElement(obs_el, 'ResObsMeteo').text = \
+                str(obs.res)
+            if not _math.isnan(obs.qua):
+                _etree.SubElement(obs_el, 'IndiceQualObsMeteo').text = \
+                    str(int(obs.qua))
+            _etree.SubElement(obs_el, 'ContxtObsMeteo').text = \
+                str(obs.ctxt)
+            _etree.SubElement(obs_el, 'QualifObsMeteo').text = \
+                str(obs.qal)
+            _etree.SubElement(obs_el, 'MethObsMeteo').text = \
+                str(obs.mth)
+            _etree.SubElement(obs_el, 'StObsMeteo').text = \
+                str(obs.statut)
+    return elt
+
+
+
+def _seriesobselab_to_element(seriesobselab, bdhydro=False, strict=True, version='1.1'):
     """Return a <ObssElabHydro> element
     from a list of obselaboreehydro.SerieObsElab.
     """
@@ -1412,7 +1485,7 @@ def _seriesobselab_to_element(seriesobselab, bdhydro=False, strict=True):
 
 
 def _seuilshydro_to_element(seuilshydro, ordered=False,
-                            bdhydro=False, strict=True):
+                            bdhydro=False, strict=True, version='1.1'):
     """Return a <SitesHydro> element from a list of seuil.Seuilhydro."""
     if seuilshydro is not None:
         # the ugly XML doesn't support many Q values within a seuil
@@ -1457,7 +1530,7 @@ def _seuilshydro_to_element(seuilshydro, ordered=False,
         return element
 
 
-def _previsions_to_element(previsions, bdhydro=False, strict=True):
+def _previsions_to_element(previsions, bdhydro=False, strict=True, version='1.1'):
     """Return a <Prevs> element from a simulation.Previsions."""
 
     # make element <Prevs>
