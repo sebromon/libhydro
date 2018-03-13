@@ -94,6 +94,8 @@ __date__ = '2017-09-22'
 PREV_PROBABILITY = {'ResMoyPrev': 50, 'ResMinPrev': 0, 'ResMaxPrev': 100}
 PREV_TENDANCE = {'ResMoyPrev': 'moy', 'ResMinPrev': 'min', 'ResMaxPrev': 'max'}
 
+SANDRE_VERSIONS = ('1.1', '2')
+
 # -- Emetteur and Destinataire named tuples -----------------------------------
 Emetteur = _collections.namedtuple('Emetteur', ['intervenant', 'contact'])
 Destinataire = _collections.namedtuple(
@@ -150,13 +152,31 @@ class Scenario(object):
         """
         # -- descriptors --
         self.dtprod = dtprod or _datetime.datetime.utcnow()
-        self.version = str(version)
 
         # -- full properties --
         self._emetteur = Emetteur(None, None)
         self._destinataire = Destinataire(None, None)
         self.emetteur = emetteur
         self.destinataire = destinataire
+        self._version = None
+        self.version = version
+
+    # -- property version --
+    @property
+    def version(self):
+        """Return message Sandre version."""
+        return self._version
+
+    @version.setter
+    def version(self, version):
+        """Set Sandre version."""
+        if version is None:
+            raise TypeError('Sandre version is required')
+        version = str(version)
+        if version not in SANDRE_VERSIONS:
+            raise ValueError('Sandre version must be in (\'{}\')'.format(
+                '\', \''.join(SANDRE_VERSIONS)))
+        self._version = version
 
     # -- property emetteur --
     @property

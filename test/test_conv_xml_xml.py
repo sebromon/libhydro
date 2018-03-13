@@ -104,6 +104,22 @@ class TestScenario(unittest.TestCase):
         )
         self.assertEqual(sce.dtprod, datetime.datetime(2012, 12, 12, 5, 33))
 
+    def test_sandre_version(self):
+        """Version Sandre tests"""
+        emetteur = intervenant.Intervenant()
+        destinataire = intervenant.Contact(
+            code=55,
+            intervenant=intervenant.Intervenant(code=1537)
+        )
+        Scenario(emetteur=emetteur, destinataire=destinataire)
+
+        versions = ('1.1', '2', 1.1, 2)
+        versions_expected = ('1.1', '2', '1.1', '2')
+        for index, version in enumerate(versions):
+            sce = Scenario(emetteur=emetteur, destinataire=destinataire,
+                           version=version)
+            self.assertEqual(sce.version, versions_expected[index])
+
     def test_str_01(self):
         """Test __str__ method."""
         emetteur = intervenant.Intervenant()
@@ -160,6 +176,19 @@ class TestScenario(unittest.TestCase):
                 destinataire=destinataire,
                 dtprod='2012-13-24'
             )
+
+    def test_error_04(self):
+        """Sandre version error"""
+        emetteur = intervenant.Intervenant(code=5)
+        destinataire = intervenant.Intervenant(code=8, nom='toto')
+        Scenario(emetteur=emetteur, destinataire=destinataire, version='1.1')
+        with self.assertRaises(TypeError):
+            Scenario(emetteur=emetteur, destinataire=destinataire,
+                     version=None)
+        with self.assertRaises(ValueError):
+            Scenario(emetteur=emetteur, destinataire=destinataire,
+                     version='1.0')
+
 
 
 # -- class TestMessage --------------------------------------------------------
