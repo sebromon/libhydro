@@ -50,6 +50,77 @@ __date__ = '2017-09-05'
 #   first shot
 
 
+# -- class TestFromXmlSeriesHydro ---------------------------------------------
+class TestFromXmlSeriesHydro(unittest.TestCase):
+    """FromXmlSeriesMeteo class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '2', 'serieshydro.xml'))
+
+    def test_base(self):
+        """Check keys test."""
+        self.assertEqual(
+            set(self.data.keys()),
+            set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
+                 'seuilshydro', 'modelesprevision', 'evenements',
+                 'courbestarage', 'jaugeages', 'courbescorrection',
+                 'serieshydro', 'seriesmeteo', 'seriesobselab',
+                 'simulations')))
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertEqual(self.data['intervenants'], [])
+        self.assertEqual(self.data['siteshydro'], [])
+        self.assertEqual(self.data['sitesmeteo'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertNotEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['seriesmeteo'], [])
+        self.assertEqual(self.data['simulations'], [])
+
+    def test_full_serie(self):
+        """Test serie with all tags"""
+        serie = self.data['serieshydro'][0]
+        dtdeb = datetime.datetime(2014, 11, 4, 10, 56, 41)
+        dtfin = datetime.datetime(2014, 12, 2, 8, 15, 27)
+        dtprod = datetime.datetime(2015, 9, 17, 9, 11, 47)
+
+        self.assertEqual((serie.entite.code, serie.grandeur, serie.dtdeb,
+                          serie.dtfin, serie.dtprod, serie.contact.code,
+                          serie.sysalti, serie.perime),
+                         ('A1234567', 'Q', dtdeb, dtfin, dtprod, '247',
+                          1, True))
+        self.assertEqual(serie.pdt.to_int(), 5)
+        self.assertEqual(len(serie.observations), 1)
+        self.assertEqual(serie.observations.loc['2014-11-04 11:05:00'].tolist(),
+                         [1547.1, 14, 20, 1, 8])
+
+    def test_minimal_serie(self):
+        """Serie and obs with only mandatory tags"""
+        serie = self.data['serieshydro'][1]
+        self.assertEqual((serie.entite.code, serie.grandeur, serie.dtdeb,
+                          serie.dtfin, serie.dtprod, serie.contact,
+                          serie.sysalti, serie.perime),
+                         ('B234567890', 'H', None, None, None, None,
+                          31, None))
+        self.assertEqual(serie.pdt, None)
+        self.assertEqual(len(serie.observations), 1)
+        self.assertEqual(serie.observations.loc['2014-11-04 11:05:00'].tolist(),
+                         [1547.1, 0, 16, 0, 4])
+
+    def test_serie_without_obs(self):
+        """Serie without obs"""
+        serie = self.data['serieshydro'][2]
+        dtdeb = datetime.datetime(2017, 9, 8, 6, 49, 26)
+        dtfin = datetime.datetime(2017, 9, 13, 17, 18, 37)
+        dtprod = datetime.datetime(2018, 2, 5, 11, 48, 59)
+        self.assertEqual((serie.entite.code, serie.grandeur, serie.dtdeb,
+                          serie.dtfin, serie.dtprod, serie.contact,
+                          serie.sysalti, serie.perime),
+                         ('C98765432101', 'H', dtdeb, dtfin, dtprod, None,
+                          31, True))
+        self.assertIsNone(serie.observations)
+
 # -- class TestFromXmlSeriesMeteo ---------------------------------------------
 class TestFromXmlSeriesMeteo(unittest.TestCase):
 

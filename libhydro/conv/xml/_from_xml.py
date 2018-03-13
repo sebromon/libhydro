@@ -31,6 +31,8 @@ from libhydro.core import (
     courbetarage as _courbetarage, courbecorrection as _courbecorrection,
     jaugeage as _jaugeage, obselaboreehydro as _obselaboreehydro)
 
+from libhydro.conv.xml import sandre_tags as _sandre_tags
+
 # -- strings ------------------------------------------------------------------
 # contributor Camillo Montes (SYNAPSE)
 # contributor Sébastien ROMON
@@ -275,9 +277,11 @@ def _parse(src, ordered=True):
     scenario = _scenario_from_element(tree.find('Scenario'))
 
     if scenario.version == '2':
+        tags = _sandre_tags.SandreTagsV2
         seriesmeteo = _seriesmeteo_from_element_v2(
             tree.find('Donnees/SeriesObsMeteo'))
     else:
+        tags = _sandre_tags.SandreTagsV1
         seriesmeteo = _seriesmeteo_from_element(
             tree.find('Donnees/ObssMeteo'))
 
@@ -299,7 +303,9 @@ def _parse(src, ordered=True):
             tree.find('Donnees/Jaugeages')),
         'courbescorrection': _courbescorrection_from_element(
             tree.find('Donnees/CourbesCorrH')),
-        'serieshydro': _serieshydro_from_element(tree.find('Donnees/Series')),
+        'serieshydro': _serieshydro_from_element(
+            tree.find('Donnees/' + tags.serieshydro),
+            version=scenario.version, tags=tags),
         'seriesmeteo': seriesmeteo,
         'seriesobselab': _seriesobselab_from_element(
             tree.find('Donnees/ObssElabHydro')),
@@ -822,7 +828,7 @@ def _pivotcc_from_element(element):
         dtdesactivation=_value(element, 'DtDesactivPointPivot')
         )
 
-def _seriehydro_from_element(element):
+def _seriehydro_from_element(element, version, tags):
     """Return a obshydro.Serie from a <Serie> element."""
     if element is not None:
         # prepare args
@@ -841,23 +847,33 @@ def _seriehydro_from_element(element):
         if element.find('CdContact') is not None:
             contact = _intervenant.Contact(code=_value(element, 'CdContact'))
 
-        statut = _value(element, 'StatutSerie')
+        statut = None
+        if version == '1.1':
+            statut = _value(element, 'StatutSerie')
         # utilisation d'un dictionnaire afin que sysalti ne soit pas transmis
         # au constructeur si la balide n'existe pas
         args = {
             'entite': entite,
-            'grandeur': _value(element, 'GrdSerie'),
-            'dtdeb': _value(element, 'DtDebSerie'),
-            'dtfin': _value(element, 'DtFinSerie'),
-            'dtprod': _value(element, 'DtProdSerie'),
-            'perime': _value(element, 'SeriePerim', bool),
+            'grandeur': _value(element, tags.grdseriehydro),
+            'dtdeb': _value(element, tags.dtdebseriehydro),
+            'dtfin': _value(element, tags.dtfinseriehydro),
+            'dtprod': _value(element, tags.dtprodseriehydro),
+            'perime': _value(element, tags.serieperimhydro, bool),
             'contact': contact,
             'observations': _obsshydro_from_element(element.find('ObssHydro'),
-                                                    statut)}
+                                                    statut, version, tags)}
         # balise sysalti
-        sysalti = _value(element, 'SysAltiSerie', int)
+        sysalti = _value(element, tags.sysaltiseriehydro, int)
         if sysalti is not None:
             args['sysalti'] = sysalti
+
+        # balise pdt
+        if version == '2':
+            pdt_duree = _value(element, tags.pdtseriehydro, int)
+            if pdt_duree is not None:
+                args['pdt'] = _composant.PasDeTemps(
+                    duree=pdt_duree, unite=_composant.PasDeTemps.MINUTES)
+
         # build a Serie and return
         return _obshydro.Serie(**args)
 #        return _obshydro.Serie(
@@ -993,7 +1009,7 @@ def _serieobselab_from_element(element):
             *observations[key]).sort_index()
     return list(series.values())
 
-def _obsshydro_from_element(element, statut):
+def _obsshydro_from_element(element, statut, version, tags):
     """Return a sorted obshydro.Observations from a <ObssHydro> element."""
     if element is not None:
         # prepare a list of Observation
@@ -1013,10 +1029,18 @@ def _obsshydro_from_element(element, statut):
             qal = _value(o, 'QualifObsHydro', int)
             if qal is not None:
                 args['qal'] = qal
-            continuite = _value(o, 'ContObsHydro', bool)
+            if version == '2':
+                continuite = _value(o, 'ContObsHydro', int)
+                statut = _value(o, tags.statutobshydro)
+                if statut is not None:
+                    args['statut'] = statut
+            else:
+                continuite = _value(o, 'ContObsHydro', bool)
+                if statut is not None:
+                    args['statut'] = statut  # statut de la série
             if continuite is not None:
                 args['cnt'] = continuite
-            args['statut'] = statut
+
             observations.append(_obshydro.Observation(**args))
         # build the Observations and return
         return _obshydro.Observations(*observations).sort_index()
@@ -1185,14 +1209,22 @@ _jaugeages_from_element = _global_function_builder(
 _courbescorrection_from_element = _global_function_builder(
     './CourbeCorrH', _courbecorrection_from_element)
 # return a list of obshydro.Serie from a <Series> element
-_serieshydro_from_element = _global_function_builder(
-    './Serie', _seriehydro_from_element)
+# _serieshydro_from_element = _global_function_builder(
+#     './Serie', _seriehydro_from_element)
 # return a list of obsmeteo.Serie from a <SeriesObsMeteo> element
 _seriesmeteo_from_element_v2 = _global_function_builder(
     './SerieObsMeteo', _seriemeteo_from_element_v2)
 # return a list of simulation.Simulation from a <Simuls> element
 _simulations_from_element = _global_function_builder(
     './Simul', _simulation_from_element)
+
+
+def _serieshydro_from_element(elem, version, tags):
+    serieshydro = []
+    if elem is not None:
+        for item in elem.findall('./' + tags.seriehydro):
+            serieshydro.append(_seriehydro_from_element(item, version, tags))
+    return serieshydro
 
 
 # these 2 functions doesn't fit with the _global_function_builder :-\

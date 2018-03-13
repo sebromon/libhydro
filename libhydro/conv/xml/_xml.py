@@ -15,7 +15,7 @@ import os as _os
 
 from lxml import etree as _etree
 
-from . import (_from_xml, _to_xml)
+from . import (_from_xml, _to_xml, sandre_tags as _sandre_tags)
 from libhydro.core import (
     _composant,
     intervenant as _intervenant,
@@ -236,9 +236,19 @@ class Message(object):
             for alias in nsmap:
                 _remove_namespace(tree.getroot(), nsmap[alias])
 
+        scenario = _from_xml._scenario_from_element(tree.find('Scenario'))
+
+        if scenario.version == '2':
+            tags = _sandre_tags.SandreTagsV2
+            seriesmeteo = _from_xml._seriesmeteo_from_element_v2(
+                tree.find('Donnees/SeriesObsMeteo'))
+        else:
+            tags = _sandre_tags.SandreTagsV1
+            seriesmeteo = _from_xml._seriesmeteo_from_element(
+                tree.find('Donnees/ObssMeteo'))
+
         return Message(
-            scenario=_from_xml._scenario_from_element(
-                tree.find('Scenario')),
+            scenario=scenario,
             intervenants=_from_xml._intervenants_from_element(
                 tree.find('RefHyd/Intervenants')),
             siteshydro=_from_xml._siteshydro_from_element(
@@ -259,9 +269,9 @@ class Message(object):
             courbescorrection=_from_xml._courbescorrection_from_element(
                 tree.find('Donnees/CourbesCorrH')),
             serieshydro=_from_xml._serieshydro_from_element(
-                tree.find('Donnees/Series')),
-            seriesmeteo=_from_xml._seriesmeteo_from_element(
-                tree.find('Donnees/ObssMeteo')),
+                tree.find('Donnees/' + tags.serieshydro),
+                scenario.version, tags),
+            seriesmeteo=seriesmeteo,
             seriesobselab=_from_xml._seriesobselab_from_element(
                 tree.find('Donnees/ObssElabHydro')),
             simulations=_from_xml._simulations_from_element(

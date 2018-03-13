@@ -25,6 +25,7 @@ from libhydro.core import (
     _composant, sitehydro as _sitehydro, sitemeteo as _sitemeteo,
     seuil as _seuil, courbetarage as _courbetarage)
 
+from libhydro.conv.xml import sandre_tags as _sandre_tags
 
 # -- strings ------------------------------------------------------------------
 # contributor Sébastien ROMON
@@ -1076,9 +1077,9 @@ def _courbecorrection_to_element(courbe, bdhydro=False, strict=True, version='1.
 
 def _pivotcc_to_element(pivotcc, strict=True, version='1.1'):
     _required(pivotcc, ['dte','deltah'])
-    
+
     story = _collections.OrderedDict()
-    
+
     story['DtPointPivot'] = {'value': pivotcc.dte.strftime('%Y-%m-%dT%H:%M:%S')}
     story['DeltaHPointPivot'] = {'value': pivotcc.deltah}
     if pivotcc.dtactivation is not None:
@@ -1087,17 +1088,21 @@ def _pivotcc_to_element(pivotcc, strict=True, version='1.1'):
     if pivotcc.dtdesactivation is not None:
         story['DtDesactivPointPivot'] = {'value':
             pivotcc.dtdesactivation.strftime('%Y-%m-%dT%H:%M:%S')}
-    
-    return _factory(root=_etree.Element('PointPivot'), story=story)
-        
 
-def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True, version='1.1'):
+    return _factory(root=_etree.Element('PointPivot'), story=story)
+
+
+def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True,
+                           version='1.1', tags=_sandre_tags.SandreTagsV1):
     """Return a <Serie> element from a obshydro.Serie."""
 
     if seriehydro is not None:
 
         # prerequisite
-        _required(seriehydro, ['entite', 'dtdeb', 'dtfin', 'dtprod'])
+        if version == '2':
+            _required(seriehydro, ['entite'])
+        else:
+            _required(seriehydro, ['entite', 'dtdeb', 'dtfin', 'dtprod'])
         if strict:
             _required(seriehydro.entite, ['code'])
             _required(seriehydro, ['grandeur'])
@@ -1108,42 +1113,52 @@ def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True, version='1.1'
         story['Cd{}'.format(CLS_MAPPINGS[seriehydro.entite.__class__])] = {
             'value': seriehydro.entite.code}
         # suite
-        story['GrdSerie'] = {'value': seriehydro.grandeur}
-        story['DtDebSerie'] = {
-            'value': seriehydro.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')}
-        story['DtFinSerie'] = {
-            'value': seriehydro.dtfin.strftime('%Y-%m-%dT%H:%M:%S')}
+        story[tags.grdseriehydro] = {'value': seriehydro.grandeur}
+        if seriehydro.dtdeb is not None:
+            story[tags.dtdebseriehydro] = {
+                'value': seriehydro.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')}
+        if seriehydro.dtfin is not None:
+            story[tags.dtfinseriehydro] = {
+                'value': seriehydro.dtfin.strftime('%Y-%m-%dT%H:%M:%S')}
 
-        if len(seriehydro.observations) == 0:
-            statut = 0
-        else:
-            # iloc return Series with float
-            statut = int(seriehydro.observations.iloc[0]['statut'].item())
-        story['StatutSerie'] = {'value': str(statut)}
+        if version == '1.1':
+            if len(seriehydro.observations) == 0:
+                statut = 0
+            else:
+                statut = int(seriehydro.observations.iloc[0]['statut'].item())
+            story['StatutSerie'] = {'value': str(statut)}
 
-        story['DtProdSerie'] = {
-            'value': seriehydro.dtprod.strftime('%Y-%m-%dT%H:%M:%S')}
+        if seriehydro.dtprod is not None:
+            story[tags.dtprodseriehydro] = {
+                'value': seriehydro.dtprod.strftime('%Y-%m-%dT%H:%M:%S')}
+
         if seriehydro.sysalti is not None:
-            story['SysAltiSerie'] = {'value': str(seriehydro.sysalti)}
+            story[tags.sysaltiseriehydro] = {'value': str(seriehydro.sysalti)}
         if seriehydro.perime is not None:
-            story['SeriePerim'] = {
+            story[tags.serieperimhydro] = {
                 'value': str(seriehydro.perime).lower()}
+
+        if seriehydro.pdt is not None:
+            story[tags.pdtseriehydro] = {'value': str(seriehydro.pdt.to_int())}
+
         story['CdContact'] = {
             'value': getattr(
                 getattr(seriehydro, 'contact', None), 'code', None)}
 
         # make element <Serie>
-        element = _factory(root=_etree.Element('Serie'), story=story)
+        element = _factory(root=_etree.Element(tags.seriehydro), story=story)
 
         # add the observations
         if seriehydro.observations is not None:
-            element.append(_observations_to_element(seriehydro.observations))
+            element.append(_observations_to_element(
+                observations=seriehydro.observations, version=version))
 
         # return
         return element
 
 
-def _observations_to_element(observations, bdhydro=False, strict=True, version='1.1'):
+def _observations_to_element(observations, bdhydro=False, strict=True,
+                             version='1.1'):
     """Return a <ObssHydro> element from a obshydro.Observations."""
 
     if observations is not None:
@@ -1158,21 +1173,48 @@ def _observations_to_element(observations, bdhydro=False, strict=True, version='
             child = _etree.SubElement(obs, 'ResObsHydro')
             child.text = str(observation.res)
             # while mth, qal and cnt aren't
+            mth_elt = None
             if observation.mth is not None:
-                # Conversion liste 512 en 507
+                # Conversion liste 512 en 507 Sandre V1.1
                 mth = observation.mth
-                if mth in [8, 14]:
-                    mth = 12
-                elif mth == 10:
-                    mth = 4
-                child = _etree.SubElement(obs, 'MethObsHydro')
-                child.text = str(mth)
+                if version == '1.1':
+                    if mth in [8, 14]:
+                        mth = 12
+                    elif mth == 10:
+                        mth = 4
+                # child = _etree.SubElement(obs, 'MethObsHydro')
+                # child.text = unicode(mth)
+                mth_elt = _etree.Element('MethObsHydro')
+                mth_elt.text = str(mth)
+
+            qal_elt = None
             if observation.qal is not None:
-                child = _etree.SubElement(obs, 'QualifObsHydro')
-                child.text = str(observation.qal)
-            if observation. cnt is not None:
+                # child = _etree.SubElement(obs, 'QualifObsHydro')
+                # child.text = unicode(observation.qal)
+                qal_elt = _etree.Element('QualifObsHydro')
+                qal_elt.text = str(observation.qal)
+
+            if version == '2':
+                if qal_elt is not None:
+                    obs.append(qal_elt)
+                if mth_elt is not None:
+                    obs.append(mth_elt)
+            else:
+                if mth_elt is not None:
+                    obs.append(mth_elt)
+                if qal_elt is not None:
+                    obs.append(qal_elt)
+
+            if observation.cnt is not None:
                 child = _etree.SubElement(obs, 'ContObsHydro')
-                child.text = 'true' if observation.cnt == 0 else 'false'
+                if version == '2':
+                    child.text = str(observation.cnt)
+                else:
+                    child.text = 'true' if observation.cnt == 0 else 'false'
+
+            if version == '2' and observation.statut is not None:
+                _etree.SubElement(obs, 'StObsHydro').text = \
+                    str(observation.statut)
         # return
         return element
 
@@ -1372,12 +1414,28 @@ _jaugeages_to_element = _global_function_builder(
 _courbescorrection_to_element = _global_function_builder(
     'CourbesCorrH', _courbecorrection_to_element)
 # return a <Series> element from a list of obshydro.Serie
-_serieshydro_to_element = _global_function_builder(
-    'Series', _seriehydro_to_element)
+# _serieshydro_to_element = _global_function_builder(
+#     'Series', _seriehydro_to_element)
 # return a <Simuls> element from a list of simulation.Simulation
 _simulations_to_element = _global_function_builder(
     'Simuls', _simulation_to_element)
 
+
+def _serieshydro_to_element(serieshydro, bdhydro=False, strict=True,
+                            version='1.1'):
+    if serieshydro is None:
+        return
+    if version == '2':
+        tags = _sandre_tags.SandreTagsV2
+    else:
+        tags = _sandre_tags.SandreTagsV1
+
+    element = _etree.Element(tags.serieshydro)
+    for seriehydro in serieshydro:
+        element.append(_seriehydro_to_element(
+            seriehydro, bdhydro=bdhydro, strict=strict,
+            version=version, tags=tags))
+    return element
 
 # these 3 functions doesn't fit with the _global_function_builder :-\
 def _seriesmeteo_to_element(seriesmeteo, bdhydro=False, strict=True,
