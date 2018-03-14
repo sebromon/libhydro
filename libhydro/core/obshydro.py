@@ -133,7 +133,7 @@ class Observation(_numpy.ndarray):
         (str('statut'), _numpy.int8)
     ])
 
-    def __new__(cls, dte, res, mth=0, qal=16, cnt=0, statut=4):
+    def __new__(cls, dte, res, mth=0, qal=16, cnt=0, statut=0):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
         if int(mth) not in _NOMENCLATURE[512]:

@@ -74,7 +74,7 @@
             <ContxtObsMeteo>0</ContxtObsMeteo>
             <QualifObsMeteo>16</QualifObsMeteo>
             <MethObsMeteo>0</MethObsMeteo>
-            <StObsMeteo>4</StObsMeteo>
+            <StObsMeteo>0</StObsMeteo>
           </ObsMeteo>
         </ObssMeteo>
       </SerieObsMeteo>

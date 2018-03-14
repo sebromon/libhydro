@@ -106,7 +106,7 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
         self.assertEqual(serie.pdt, None)
         self.assertEqual(len(serie.observations), 1)
         self.assertEqual(serie.observations.loc['2014-11-04 11:05:00'].tolist(),
-                         [1547.1, 0, 16, 0, 4])
+                         [1547.1, 0, 16, 0, 0])
 
     def test_serie_without_obs(self):
         """Serie without obs"""
@@ -201,6 +201,7 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
         self.assertEqual(serie.observations.iloc[0].tolist()[:3],
                          [23.1, 0, 16])
         self.assertTrue(math.isnan(serie.observations.iloc[0]['qua'].item()))
+        self.assertEqual(serie.observations.iloc[0]['statut'].item(), 0)
         # self.assertEqual(serie.observations.loc['2010-02-26 13:00'].tolist(),
         #                  [8, 0, 16, 75])
 
