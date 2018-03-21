@@ -215,3 +215,99 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
         """Serie with one obs but without res ."""
         serie = self.data['seriesmeteo'][3]
         self.assertIsNotNone(serie.observations)
+
+
+# -- class TestFromXmlSeriesMeteo ---------------------------------------------
+class TestFromXmlSeriesObsElab(unittest.TestCase):
+
+    """FromXmlSeriesObsElab( class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '2', 'obsselab.xml'))
+
+    def test_base(self):
+        """Check keys test."""
+        self.assertEqual(
+            set(self.data.keys()),
+            set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
+                 'seuilshydro', 'modelesprevision', 'evenements',
+                 'courbestarage', 'jaugeages', 'courbescorrection',
+                 'serieshydro', 'seriesmeteo', 'seriesobselab',
+                 'simulations')))
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertEqual(self.data['intervenants'], [])
+        self.assertEqual(self.data['siteshydro'], [])
+        self.assertEqual(self.data['sitesmeteo'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['seriesmeteo'], [])
+        self.assertEqual(self.data['simulations'], [])
+        self.assertNotEqual(self.data['seriesobselab'], [])
+
+    def test_scenario(self):
+        """Scenario test."""
+        scenario = self.data['scenario']
+        self.assertEqual(scenario.code, 'hydrometrie')
+        self.assertEqual(scenario.version, '2')
+        self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
+        self.assertEqual(scenario.dtprod,
+                         datetime.datetime(2010, 2, 26, 23, 55, 30))
+        self.assertEqual(scenario.emetteur.contact.code, '1')
+        self.assertEqual(scenario.emetteur.intervenant.code, 1537)
+        self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
+        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
+
+    def test_serie_qmnj(self):
+        """Serie QMNJ test."""
+        serie = self.data['seriesobselab'][0]
+        self.assertEqual(serie.entite.code, 'K1234567')
+        self.assertEqual(serie.pdt.to_int(), 3)
+        self.assertEqual(serie.dtdeb,
+                         datetime.datetime(2011, 12, 9, 17, 11, 23))
+        self.assertEqual(serie.dtfin,
+                         datetime.datetime(2012, 2, 4, 15, 9, 37))
+        self.assertEqual(serie.dtprod,
+                         datetime.datetime(2013, 4, 17, 8, 27, 48))
+        self.assertEqual(serie.dtdesactivation,
+                         datetime.datetime(2015, 8, 11, 13, 4, 12))
+        self.assertEqual(serie.dtactivation,
+                         datetime.datetime(2010, 11, 3, 14, 51, 40))
+
+        self.assertEqual(serie.sysalti, 1)
+        self.assertEqual(serie.glissante, False)
+
+        self.assertEqual(serie.dtdebrefalti,
+                         datetime.datetime(2008, 3, 24, 6, 11, 27))
+        self.assertEqual(serie.contact.code, '54')
+
+        # (dte) res mth qal qua ctxt statut
+        self.assertEqual(serie.observations.iloc[0].tolist(),
+                         [873.1, 4, 20, 1, 8])
+#         self.assertEqual(serie.observations.loc['2015-01-02 16:00'].tolist(),
+#                          [13.9, 10, 16, 100, 0, 4])
+#         self.assertEqual(serie.observations['statut'].tolist(),
+#                          [8, 4, 0, 16])
+
+    @unittest.skip("todo: obs without res")
+    def test_serie_TA(self):
+        """Serie TA test."""
+        pass
+        # self.assertEqual(serie.observations.loc['2010-02-26 13:00'].tolist(),
+        #                  [8, 0, 16, 75])
+
+    @unittest.skip("todo: obs without res")
+    def test_without_obs(self):
+        """Serie without obs test."""
+        serie = self.data['seriesmeteo'][2]
+        self.assertIsNone(serie.observations)
+
+    @unittest.skip("todo: obs without res")
+    def test_without_res(self):
+        """Serie with one obs but without res ."""
+        serie = self.data['seriesmeteo'][3]
+        self.assertIsNotNone(serie.observations)
+

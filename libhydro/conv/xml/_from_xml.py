@@ -236,13 +236,14 @@ class Scenario(object):
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
-        return 'Message du {dt}\n Emetteur: {ei} [{ec}]\n' \
+        return 'Message du {dt} de version {ver}\n Emetteur: {ei} [{ec}]\n' \
                'Destinataire: {di} [{dc}]'.format(
                    dt=self.dtprod,
                    ei=str(self.emetteur.intervenant),
                    ec=str(self.emetteur.contact) or '<sans contact>',
                    di=str(self.destinataire.intervenant),
-                   dc=str(self.destinataire.contact) or '<sans contact>')
+                   dc=str(self.destinataire.contact) or '<sans contact>',
+                   ver=self.version)
 
     __str__ = _composant.__str__
 
@@ -300,10 +301,14 @@ def _parse(src, ordered=True):
         tags = _sandre_tags.SandreTagsV2
         seriesmeteo = _seriesmeteo_from_element_v2(
             tree.find('Donnees/SeriesObsMeteo'))
+        seriesobselab = _seriesobselab_from_element_v2(
+            tree.find('Donnees/' + tags.seriesobselabhydro))
     else:
         tags = _sandre_tags.SandreTagsV1
         seriesmeteo = _seriesmeteo_from_element(
             tree.find('Donnees/ObssMeteo'))
+        seriesobselab = _seriesobselab_from_element(
+            tree.find('Donnees/' + tags.seriesobselabhydro))
 
     return {
         'scenario': scenario,
@@ -327,8 +332,7 @@ def _parse(src, ordered=True):
             tree.find('Donnees/' + tags.serieshydro),
             version=scenario.version, tags=tags),
         'seriesmeteo': seriesmeteo,
-        'seriesobselab': _seriesobselab_from_element(
-            tree.find('Donnees/ObssElabHydro')),
+        'seriesobselab': seriesobselab,
         # 'gradshydro'
         # 'qualifsannee'
         # 'alarmes'
@@ -993,7 +997,7 @@ def _serieobselab_from_element(element):
         args = {}
         args['dte'] = _value(obs, 'DtObsElabHydro')  # mandatory
         args['res'] = _value(obs, 'ResObsElabHydro', float)  # mandatory
-        statut = _value(element, 'StatutObsElabHydro')
+        statut = _value(obs, 'StatutObsElabHydro', int)
         if statut is not None:
             args['statut'] = statut
         qal = _value(obs, 'QualifObsElabHydro', int)
@@ -1028,6 +1032,89 @@ def _serieobselab_from_element(element):
         serie.observations = _obselaboreehydro.ObservationsElaborees(
             *observations[key]).sort_index()
     return list(series.values())
+
+
+def _serieobselab_from_element_v2(element):
+    """Return a obselaboreehydro.SerieObsElab
+       from a SerieObsElaborHydro element.
+    """
+    args_serie = {}
+    if element.find('CdSiteHydro') is not None:
+        code = _value(element, 'CdSiteHydro')
+        args_serie['entite'] = _sitehydro.Sitehydro(
+            code=code)
+    elif element.find('CdStationHydro') is not None:
+        code = _value(element, 'CdStationHydro')
+        args_serie['entite'] = _sitehydro.Station(
+            code=code)
+
+    args_serie['dtprod'] = _value(element, 'DtProdSerieObsElaborHydro')
+
+    args_serie['typegrd'] = _value(element, 'TypDeGrdSerieObsElaborHydro')  # mandatory
+
+    unite = None
+    if args_serie['typegrd'][-1] == 'J':
+        unite = _composant.PasDeTemps.JOURS
+    elif args_serie['typegrd'][-1] == 'H':
+        unite = _composant.PasDeTemps.HEURES
+
+    pdt = None
+    duree = _value(element, 'PDTSerieObsElaborHydro', int)
+    if duree is not None:
+        args_serie['pdt'] = _composant.PasDeTemps(duree=duree,
+                                                  unite=unite)
+
+    args_serie['dtdeb'] = _value(element, 'DtDebPlagSerieObsElaborHydro')
+    args_serie['dtfin'] = _value(element, 'DtFinPlagSerieObsElaborHydro')
+    args_serie['dtdesactivation'] = _value(
+        element, 'DtDesactivationSerieObsElaborHydro')
+    args_serie['dtactivation'] = _value(element,
+                                        'DtActivationSerieObsElaborHydro')
+
+    sysalti = _value(element, 'SysAltiSerieObsElaborHydro', int)
+    if sysalti is not None:
+        args_serie['sysalti'] = sysalti
+
+    glissante = _value(element, 'GlissanteSerieObsElaborHydro', bool)
+    if glissante is not None:
+        args_serie['glissante'] = glissante
+
+    args_serie['dtdebrefalti'] = _value(element, 'DtDebutRefAlti')
+
+    cdcontact = _value(element, 'CdContact')
+    if cdcontact is not None:
+        args_serie['contact'] = _intervenant.Contact(code=cdcontact)
+
+    serie = _obselaboreehydro.SerieObsElab(**args_serie)
+
+    observations = []
+    for obs in element.findall('./ObssElaborHydro/ObsElaborHydro'):
+        args = {}
+        args['dte'] = _value(obs, 'DtObsElaborHydro')  # mandatory
+        args['res'] = _value(obs, 'ResObsElaborHydro', float)  # mandatory
+
+        cnt = _value(obs, 'ContObsElaborHydro', int)
+        if cnt is not None:
+            args['cnt'] = cnt
+
+        statut = _value(obs, 'StObsElaborHydro', int)
+        if statut is not None:
+            args['statut'] = statut
+
+        qal = _value(obs, 'QualifObsElaborHydro', int)
+        if qal is not None:
+            args['qal'] = qal
+        mth = _value(obs, 'MethObsElaborHydro', int)
+        if mth is not None:
+            args['mth'] = mth
+        observations.append(_obselaboreehydro.ObservationElaboree(**args))
+
+    # add observations to serie
+    if len(observations) > 0:
+        serie.observations = _obselaboreehydro.ObservationsElaborees(
+            *observations).sort_index()
+    return serie
+
 
 def _obsshydro_from_element(element, statut, version, tags):
     """Return a sorted obshydro.Observations from a <ObssHydro> element."""
@@ -1359,6 +1446,17 @@ def _seriesobselab_from_element(element):
         series.extend(_serieobselab_from_element(typegrd))
     return series
 
+
+def _seriesobselab_from_element_v2(element):
+    """return a list of obselaboreehydro.SerieObsElab
+    from a <SeriesObsElaborHydro> element
+    """
+    series = []
+    if element is None:
+        return series
+    for serie in element.findall('./SerieObsElaborHydro'):
+        series.append(_serieobselab_from_element_v2(serie))
+    return series
 
 # -- utility functions --------------------------------------------------------
 def _UTC(dte):

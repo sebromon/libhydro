@@ -114,7 +114,7 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
             courbestarage=None, jaugeages=None, courbescorrection=None,
             serieshydro=None, seriesmeteo=None, seriesobselab=None,
             simulations=None, bdhydro=False, strict=True, ordered=False,
-            version='1.1'):
+            version=None):
     """Return a etree.Element a partir des donnees passes en argument.
 
     Cette fonction est privee et les utilisateurs sont invites a utiliser la
@@ -142,7 +142,8 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
         strict (bool, defaut True) = controle de conformite XML Hydrometrie
         ordered (bool, default False) = essaie de conserver l'ordre de certains
             elements
-        version (str) = version Sandre 1.1 ou 2
+        version (str or None) = version Sandre 1.1 ou 2 ou None
+            si None utilisation du la version du scenario
 
     """
     # make a deep copy of locals() which is a dict {arg_name: arg_value, ...}
@@ -164,6 +165,8 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
 
     # TODO - this is awful :/ we should factorize those lines
 
+    if version is None and args['scenario'] is not None:
+        version = args['scenario'].version
     # add the scenario
     if args['scenario'] is not None:
         tree.append(
@@ -1514,7 +1517,13 @@ def _seriemeteo_v2(serie, bdhydro=False, strict=True):
 
 
 
-def _seriesobselab_to_element(seriesobselab, bdhydro=False, strict=True, version='1.1'):
+def _seriesobselab_to_element(seriesobselab, bdhydro=False, strict=True,
+                              version='1.1'):
+    if version == '2':
+        return _seriesobselab_v2(seriesobselab, bdhydro, strict)
+    return _seriesobselab_v1(seriesobselab, bdhydro, strict)
+
+def _seriesobselab_v1(seriesobselab, bdhydro=False, strict=True):
     """Return a <ObssElabHydro> element
     from a list of obselaboreehydro.SerieObsElab.
     """
@@ -1540,6 +1549,95 @@ def _seriesobselab_to_element(seriesobselab, bdhydro=False, strict=True, version
                         serie, row, bdhydro=bdhydro, strict=strict))
         # print(_etree.tostring(element, method='xml'))
         return element
+
+
+def _seriesobselab_v2(seriesobselab, bdhydro=False, strict=True):
+    """Return a <ObssElabHydro> element
+    from a list of obselaboreehydro.SerieObsElab.
+    """
+    if seriesobselab is None:
+        return
+
+    element = _etree.Element('SeriesObsElaborHydro')
+    # First series are group by typegrd
+    for serie in seriesobselab:
+        element.append(_serieobselab_v2(serie, bdhydro, strict))
+
+    # print(_etree.tostring(element, method='xml'))
+    return element
+
+
+def _serieobselab_v2(serieobselab, bdhydro=False, strict=True):
+    if serieobselab is None:
+        return
+    element = _etree.Element('SerieObsElaborHydro')
+
+    _etree.SubElement(element, 'DtProdSerieObsElaborHydro').text = \
+        serieobselab.dtprod.strftime('%Y-%m-%dT%H:%M:%S')
+    _etree.SubElement(element, 'TypDeGrdSerieObsElaborHydro').text = \
+        serieobselab.typegrd
+
+    if serieobselab.pdt is not None:
+        _etree.SubElement(element, 'PDTSerieObsElaborHydro').text = \
+            str(serieobselab.pdt.to_int())
+
+    if serieobselab.dtdeb is not None:
+        _etree.SubElement(element, 'DtDebPlagSerieObsElaborHydro').text = \
+            serieobselab.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')
+
+    if serieobselab.dtfin is not None:
+        _etree.SubElement(element, 'DtFinPlagSerieObsElaborHydro').text = \
+            serieobselab.dtfin.strftime('%Y-%m-%dT%H:%M:%S')
+
+    if serieobselab.dtdesactivation is not None:
+        _etree.SubElement(element, 'DtDesactivationSerieObsElaborHydro').text = \
+            serieobselab.dtdesactivation.strftime('%Y-%m-%dT%H:%M:%S')
+
+    if serieobselab.dtactivation is not None:
+        _etree.SubElement(element, 'DtActivationSerieObsElaborHydro').text = \
+            serieobselab.dtactivation.strftime('%Y-%m-%dT%H:%M:%S')
+
+    if serieobselab.sysalti is not None:
+        _etree.SubElement(element, 'SysAltiSerieObsElaborHydro').text = \
+            str(serieobselab.sysalti)
+
+    if serieobselab.glissante is not None:
+        _etree.SubElement(element, 'GlissanteSerieObsElaborHydro').text = \
+            str(serieobselab.glissante).lower()
+
+    if serieobselab.dtdebrefalti is not None:
+        _etree.SubElement(element, 'DtDebutRefAlti').text = \
+            serieobselab.dtdebrefalti.strftime('%Y-%m-%dT%H:%M:%S')
+
+    if serieobselab.contact is not None:
+        _etree.SubElement(element, 'CdContact').text = \
+            serieobselab.contact.code
+
+    if isinstance(serieobselab.entite, _sitehydro.Sitehydro):
+        _etree.SubElement(element, 'CdSiteHydro').text = \
+            serieobselab.entite.code
+    else:
+        _etree.SubElement(element, 'CdStationHydro').text = \
+            serieobselab.entite.code
+
+    if serieobselab.observations is not None:
+        obss = _etree.SubElement(element, 'ObssElaborHydro')
+        for obs in serieobselab.observations.itertuples():
+            obs_el = _etree.SubElement(obss, 'ObsElaborHydro')
+            _etree.SubElement(obs_el, 'DtObsElaborHydro').text = \
+                obs.Index.strftime('%Y-%m-%dT%H:%M:%S')
+            _etree.SubElement(obs_el, 'ResObsElaborHydro').text = \
+                str(obs.res)
+            _etree.SubElement(obs_el, 'QualifObsElaborHydro').text = \
+                str(obs.qal)
+            _etree.SubElement(obs_el, 'MethObsElaborHydro').text = \
+                str(obs.mth)
+            _etree.SubElement(obs_el, 'ContObsElaborHydro').text = \
+                str(obs.cnt)
+            _etree.SubElement(obs_el, 'StObsElaborHydro').text = \
+                str(obs.statut)
+
+    return element
 
 
 def _seuilshydro_to_element(seuilshydro, ordered=False,

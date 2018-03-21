@@ -242,10 +242,14 @@ class Message(object):
             tags = _sandre_tags.SandreTagsV2
             seriesmeteo = _from_xml._seriesmeteo_from_element_v2(
                 tree.find('Donnees/SeriesObsMeteo'))
+            seriesobselab = _from_xml._seriesobselab_from_element_v2(
+                tree.find('Donnees/' + tags.seriesobselabhydro))
         else:
             tags = _sandre_tags.SandreTagsV1
             seriesmeteo = _from_xml._seriesmeteo_from_element(
                 tree.find('Donnees/ObssMeteo'))
+            seriesobselab = _from_xml._seriesobselab_from_element(
+                tree.find('Donnees/' + tags.seriesobselabhydro))
 
         return Message(
             scenario=scenario,
@@ -272,8 +276,7 @@ class Message(object):
                 tree.find('Donnees/' + tags.serieshydro),
                 scenario.version, tags),
             seriesmeteo=seriesmeteo,
-            seriesobselab=_from_xml._seriesobselab_from_element(
-                tree.find('Donnees/ObssElabHydro')),
+            seriesobselab=seriesobselab,
             simulations=_from_xml._simulations_from_element(
                 tree.find('Donnees/Simuls')))
 
@@ -320,7 +323,7 @@ class Message(object):
             except Exception as e:
                 raise ValueError('bad element, {}'.format(e))
 
-    def _to_element(self, bdhydro=False, ordered=False, version='1.1'):
+    def _to_element(self, bdhydro=False, ordered=False, version=None):
         """Return etree.Element from Message"""
         return _to_xml._to_xml(
                 scenario=self.scenario,
@@ -343,7 +346,7 @@ class Message(object):
                 version=version)
 
     def write(self, file, encoding='utf-8', compression=0, force=False,
-              bdhydro=False, ordered=False, pretty_print=False, version='1.1'):
+              bdhydro=False, ordered=False, pretty_print=False, version=None):
         """Ecrit le Message dans le fichier <file>.
 
         Cette methode est un wrapper autour de lxml.etree.ElementTree.write.
@@ -358,7 +361,8 @@ class Message(object):
             ordered (bool, defaut False) = si True essaie de conserver l'ordre
                 de certains elements
             pretty_print (bool, defaut False) = option de debogage
-            version (str) = version Sandre 1.1 ou 2
+            version (str or None) = version Sandre 1.1 ou 2
+                récupération de la version du scenario si None
 
         """
         # check for an exisitng file
@@ -374,7 +378,7 @@ class Message(object):
             compression=compression)
 
     def show(self, bdhydro=False, ordered=False, pretty_print=False,
-             version='1.1'):
+             version=None):
         """Return a pretty print XML.
 
        Arguments:
@@ -390,7 +394,7 @@ class Message(object):
             xml_declaration=True,
             pretty_print=pretty_print)
 
-    def to_string(self, bdhydro=False, ordered=False, version='1.1'):
+    def to_string(self, bdhydro=False, ordered=False, version=None):
         """Return an unicode xml"""
         # encoding=unicode doesn't support xml_declaration
         return _etree.tostring(

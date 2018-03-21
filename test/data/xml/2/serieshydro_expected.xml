@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hydrometrie xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2/sandre_sc_hydrometrie.xsd">
 <!-- <hydrometrie> -->
- <Scenario>
+  <Scenario>
     <CodeScenario>hydrometrie</CodeScenario>
     <VersionScenario>2</VersionScenario>
     <NomScenario>Echange de données hydrométriques</NomScenario>
