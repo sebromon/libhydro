@@ -563,7 +563,6 @@ class TestCourbeTarage(unittest.TestCase):
         CourbeTarage(code=code, station=station, libelle=libelle,
                      pivots=pivots, strict=False)
 
-
     def test_str_01(self):
         """test __str__ strict mode"""
         code = 'courbe 123'
