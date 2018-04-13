@@ -642,6 +642,58 @@ class TestSerieConcat(unittest.TestCase):
         )
         serie = obshydro.Serie.concat([serie1, serie2])
 
+    def test_base_02(self):
+        """Test concat different contact"""
+        site1 = sitehydro.Sitehydro(
+            code='A0445810', libelle='Le Rhône à Marseille'
+        )
+        g = 'Q'
+        obs1 = obshydro.Observations(
+            obshydro.Observation('2012-10-03 06:00', 33, statut=4),
+            obshydro.Observation('2012-10-03 07:00', 37, statut=4),
+            obshydro.Observation('2012-10-03 08:00', 42, statut=4)
+        )
+        obs2 = obshydro.Observations(
+            obshydro.Observation('2012-10-04 06:00', 330, statut=8),
+            obshydro.Observation('2012-10-04 07:00', 370, statut=8),
+            obshydro.Observation('2012-10-04 08:00', 420, statut=8)
+        )
+        dtdeb1 = '2012-10-03 05:00'
+        dtfin1 = '2012-10-03 09:00'
+        dtdeb2 = '2012-10-04 05:00'
+        dtfin2 = '2012-10-04 09:00'
+        dtprod = '2012-10-03 10:00'
+        i = True
+        sysalti = 0
+        perime = False
+        contact = intervenant.Contact(code='158')
+        serie1 = obshydro.Serie(
+            entite=site1, grandeur=g, observations=obs1, strict=i,
+            dtdeb=dtdeb1, dtfin=dtfin1, dtprod=dtprod, sysalti=sysalti,
+            perime=perime, contact=contact
+        )
+        serie2 = obshydro.Serie(
+            entite=site1, grandeur=g, observations=obs2, strict=i,
+            dtdeb=dtdeb2, dtfin=dtfin2, dtprod=dtprod, sysalti=sysalti,
+            perime=perime, contact=contact
+        )
+        serie = obshydro.Serie.concat([serie1, serie2])
+        self.assertEqual(serie.contact.code, contact.code)
+
+        serie1.contact = None
+        serie = obshydro.Serie.concat([serie1, serie2])
+        self.assertIsNone(serie.contact)
+
+        serie1.contact = contact
+        serie2.contact = None
+        serie = obshydro.Serie.concat([serie1, serie2])
+        self.assertIsNone(serie.contact)
+
+        serie1.contact = contact
+        serie2.contact = intervenant.Contact(code=contact.code)
+        serie = obshydro.Serie.concat([serie1, serie2])
+        self.assertEqual(serie.contact.code, contact.code)
+
     def test_error_01(self):
         """Test error observations with same dte"""
         site1 = sitehydro.Sitehydro(
