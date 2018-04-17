@@ -343,6 +343,10 @@ NOMENCLATURE = {
           11: 'Autres'
           },
 
+    # Type de la série d'observations élaborées météorologiques
+    876: {1: 'Observation pondérée',
+          2: 'Indice de précipitations antérieures'},
+
     # Continuité de la donnée de l'observation hydro
     923: {
         0: 'Valeur continue',
