@@ -282,60 +282,6 @@ class Ipa(object):
     __str__ = _composant.__str__
 
 
-class SitemeteoPondere(object):
-    """Classe SiteMeteoPondere
-
-    Classe permettant de manipuler des sites météo pondérés
-    Proprietes:
-        sitemeteo (Sitemeteo): Site météo
-        pondération (float): Pondération du site
-    """
-    def __init__(self, sitemeteo, ponderation):
-        self._sitemeteo = None
-        self.sitemeteo = sitemeteo
-        self._ponderation = None
-        self.ponderation = ponderation
-
-    # -- property entite --
-    @property
-    def sitemeteo(self):
-        """Return entite hydro."""
-        return self._sitemeteo
-
-    @sitemeteo.setter
-    def sitemeteo(self, sitemeteo):
-        """Set entite."""
-        try:
-            # sitemeteo must be a Sitemeteo
-            if not isinstance(sitemeteo, _sitemeteo.Sitemeteo):
-                raise TypeError('sitemeteo must be a Sitemeteo')
-
-            self._sitemeteo = sitemeteo
-
-        except Exception:
-            raise
-
-    # -- property ponderation --
-    @property
-    def ponderation(self):
-        """Return ponderation."""
-        return self._ponderation
-
-    @ponderation.setter
-    def ponderation(self, ponderation):
-        """Set ponderation."""
-        try:
-            self._ponderation = float(ponderation)
-        except Exception:
-            raise TypeError('ponderation must be a numeric')
-
-    def __unicode__(self):
-        return "Site météo {0} avec pondération {1}".format(
-            self.sitemeteo.code, self.ponderation)
-
-    __str__ = _composant.__str__
-
-
 # -- class SerieObsElab -------------------------------------------------------
 class SerieObsElabMeteo(object):
     """Classe SerieObsElabMeteo
@@ -359,7 +305,7 @@ class SerieObsElabMeteo(object):
     typeserie = _composant.Nomenclatureitem(nomenclature=876)
 
     def __init__(self, site=None, grandeur=None, typeserie=None, dtprod=None,
-                 dtdeb=None, dtfin=None, duree=None, ipas=None,
+                 dtdeb=None, dtfin=None, duree=None, ipa=None,
                  observations=None, strict=True):
         """Constructeur"""
         self.grandeur = grandeur
@@ -375,8 +321,8 @@ class SerieObsElabMeteo(object):
         self._duree = None
         self.duree = duree
 
-        self._ipas = None
-        self.ipas = ipas
+        self._ipa = None
+        self.ipa = ipa
 
         self._observations = None
         self.observations = observations
@@ -393,7 +339,7 @@ class SerieObsElabMeteo(object):
         try:
             if self._strict and \
                     not isinstance(site, (_sitehydro.Sitehydro,
-                                          SitemeteoPondere)):
+                                          _sitemeteo.SitemeteoPondere)):
                 raise
             self._site = site
         except:
@@ -418,32 +364,27 @@ class SerieObsElabMeteo(object):
                 if duree < 0:
                     raise ValueError(
                         'duree must be a timedelta or a positive integer')
-                duree = _datetime.timedelta(minutes=duree)
+                duree = _datetime.timedelta(seconds=duree)
         except:
             raise
         self._duree = duree
 
-    # -- property ipas --
+    # -- property ipa --
     @property
-    def ipas(self):
-        """Return observations."""
-        return self._ipas
+    def ipa(self):
+        """Return ipa."""
+        return self._ipa
 
-    @ipas.setter
-    def ipas(self, ipas):
+    @ipa.setter
+    def ipa(self, ipa):
         """Set ipas."""
-        if ipas is None:
-            self._ipas = ipas
+        if ipa is None:
+            self._ipa = ipa
             return
-        try:
-            if self._strict:
-                for ipa in ipas:
-                    if not isinstance(ipa, Ipa):
-                        raise TypeError('ipas is not an iterable of Ipa')
+        if self._strict and not isinstance(ipa, Ipa):
+            raise TypeError('ipa is not an instance of Ipa')
 
-            self._ipas = ipas
-        except Exception:
-            raise TypeError('ipas incorrect')
+        self._ipa = ipa
 
     # -- property observations --
     @property
@@ -469,3 +410,10 @@ class SerieObsElabMeteo(object):
 
         except Exception:
             raise TypeError('observations incorrect')
+
+    # -- special methods --
+    __all__attrs__ = ('site', 'grandeur', 'typeserie', 'duree', 'dtdeb',
+                      'dtfin', 'dtprod', 'ipa', 'observations')
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__

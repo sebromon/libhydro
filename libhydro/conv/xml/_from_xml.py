@@ -29,7 +29,8 @@ from libhydro.core import (
     modeleprevision as _modeleprevision, obshydro as _obshydro,
     obsmeteo as _obsmeteo, simulation as _simulation, evenement as _evenement,
     courbetarage as _courbetarage, courbecorrection as _courbecorrection,
-    jaugeage as _jaugeage, obselaboreehydro as _obselaboreehydro)
+    jaugeage as _jaugeage, obselaboreehydro as _obselaboreehydro,
+    obselaboreemeteo as _obselaboreemeteo)
 
 from libhydro.conv.xml import sandre_tags as _sandre_tags
 
@@ -275,6 +276,7 @@ def _parse(src, ordered=True):
             # serieshydro: liste de obshydro.Serie
             # seriesmeteo: liste de obsmeteo.Serie
             # seriesobselab: liste de obselaboreehydro.SerieObsElab
+            # seriesobselabmeteo: liste de obselaboreemeteo.SerieObsElabMeteo
             # simulations: liste de simulation.Simulation
     """
 
@@ -303,9 +305,12 @@ def _parse(src, ordered=True):
             tree.find('Donnees/SeriesObsMeteo'))
         seriesobselab = _seriesobselab_from_element_v2(
             tree.find('Donnees/' + tags.seriesobselabhydro))
+        seriesobselabmeteo = _seriesobselabmeteo_from_element_v2(
+            tree.find('Donnees/SeriesObsElaborMeteo'))
     else:
         tags = _sandre_tags.SandreTagsV1
-        seriesmeteo = _seriesmeteo_from_element(
+        # on récupére des obs élaboré depuis des séries météo
+        seriesmeteo, seriesobselabmeteo = _seriesmeteo_from_element(
             tree.find('Donnees/ObssMeteo'))
         seriesobselab = _seriesobselab_from_element(
             tree.find('Donnees/' + tags.seriesobselabhydro))
@@ -333,6 +338,7 @@ def _parse(src, ordered=True):
             version=scenario.version, tags=tags),
         'seriesmeteo': seriesmeteo,
         'seriesobselab': seriesobselab,
+        'seriesobselabmeteo': seriesobselabmeteo,
         # 'gradshydro'
         # 'qualifsannee'
         # 'alarmes'
@@ -920,21 +926,30 @@ def _seriemeteo_from_element(element):
 
     """
     if element is not None:
-        # build a Grandeur
-        grandeur = _sitemeteo.Grandeur(
-            typemesure=_value(element, 'CdGrdMeteo'),
-            sitemeteo=_sitemeteo.Sitemeteo(_value(element, 'CdSiteMeteo')))
-        # prepare the duree in minutes
+                # prepare the duree in minutes
         duree = _value(element, 'DureeObsMeteo', int) or 0
         # build a Contact
         contact = _intervenant.Contact(code=_value(element, 'CdContact'))
-        # build a Serie without the observations and return
-        return _obsmeteo.Serie(
-            grandeur=grandeur,
-            duree=duree * 60,
-            dtprod=_value(element, 'DtProdObsMeteo'),
-            contact=contact)
 
+        cdsitemeteo = _value(element, 'CdSiteMeteo')
+        if cdsitemeteo is not None:
+            # build a Grandeur
+            grandeur = _sitemeteo.Grandeur(
+                typemesure=_value(element, 'CdGrdMeteo'),
+                sitemeteo=_sitemeteo.Sitemeteo(cdsitemeteo))
+            # build a Serie without the observations and return
+            return _obsmeteo.Serie(
+                grandeur=grandeur,
+                duree=duree * 60,
+                dtprod=_value(element, 'DtProdObsMeteo'),
+                contact=contact)
+        else:
+            sitehydro = _sitehydro.Sitehydro(_value(element, 'CdSiteHydro'))
+            return _obselaboreemeteo.SerieObsElabMeteo(site=sitehydro,
+                                                       grandeur='RR',
+                                                       typeserie=1,
+                                                       dtprod=_value(element, 'DtProdObsMeteo'),
+                                                       duree=duree * 60)
 
 def _seriemeteo_from_element_v2(element):
     """Return a obsmeteo.Serie from a <SerieObsMeteo> element."""
@@ -1399,10 +1414,12 @@ def _seriesmeteo_from_element(element):
 
     """
     seriesmeteo = []  # set()
+    serieselabmeteo = []
     # TempSerie : a serie with a list of observations
     # use a temporary serie to make only once a dataframe
     TmpSerie = _collections.namedtuple('TmpSerie', ['serie', 'obss'])
-    tmpseries = []
+    tmpseriesmeteo = []
+    tmpserieselab = []
     if element is not None:
 
         for obsmeteo in element.findall('./ObsMeteo'):
@@ -1411,7 +1428,10 @@ def _seriesmeteo_from_element(element):
             obs = _obsmeteo_from_element(obsmeteo, version='1.1')
             if obs is None:
                 continue
-
+            if isinstance(ser, _obsmeteo.Serie):
+                tmpseries = tmpseriesmeteo
+            else:
+                tmpseries = tmpserieselab
             for tmpserie in tmpseries:
                 # if serie == ser:
                 if tmpserie.serie.__eq__(ser, ignore=['observations',
@@ -1425,14 +1445,22 @@ def _seriesmeteo_from_element(element):
                 # new serie
                 tmpseries.append(TmpSerie(serie=ser, obss=[obs]))
         # Add observations to serie
-        for tmpserie in tmpseries:
+        for tmpserie in tmpseriesmeteo:
             serie = tmpserie.serie
             serie.observations = _obsmeteo.Observations(*tmpserie.obss)
             serie.dtdeb = min(serie.observations.index)
             serie.dtfin = max(serie.observations.index)
             seriesmeteo.append(serie)
 
-    return seriesmeteo
+        # Add observations to serie
+        for tmpserie in tmpserieselab:
+            serie = tmpserie.serie
+            serie.observations = _obsmeteo.Observations(*tmpserie.obss)
+            serie.dtdeb = min(serie.observations.index)
+            serie.dtfin = max(serie.observations.index)
+            serieselabmeteo.append(serie)
+
+    return seriesmeteo, serieselabmeteo
 
 
 def _seriesobselab_from_element(element):
@@ -1457,6 +1485,82 @@ def _seriesobselab_from_element_v2(element):
     for serie in element.findall('./SerieObsElaborHydro'):
         series.append(_serieobselab_from_element_v2(serie))
     return series
+
+
+def _seriesobselabmeteo_from_element_v2(element):
+    """return a list of obselaboreemeteo.SerieObsElabMeteo
+        from a <SeriesObsElaborMeteo> element"""
+    series = []
+    if element is None:
+        return series
+    for serie in element.findall('./SerieObsElaborMeteo'):
+        series.append(_serieobselabmeteo_from_element_v2(serie))
+    return series
+
+
+def _serieobselabmeteo_from_element_v2(element):
+    """Return a obselaboreemeteo.SerieObsElabMeteo
+       from a SeriesObsElaborMeteo element.
+    """
+    args_serie = {}
+    if element.find('CdSiteHydro') is not None:
+        code = _value(element, 'CdSiteHydro')
+        args_serie['site'] = _sitehydro.Sitehydro(
+            code=code)
+    elif element.find('CdSiteMeteo') is not None:
+        code = _value(element, 'CdSiteMeteo')
+        ponderation = _value(element, 'ValPondSiteMeteo', float)
+        args_serie['site'] = _sitemeteo.SitemeteoPondere(
+            sitemeteo=_sitemeteo.Sitemeteo(code=code),
+            ponderation=ponderation)
+    args_serie['grandeur'] = _value(element, 'CdGrdSerieObsElaborMeteo')
+    args_serie['typeserie'] = _value(element, 'TypSerieObsElaborMeteo')
+    dtdeb = _value(element, 'DtDebSerieObsElaborMeteo')
+    if dtdeb is not None:
+        args_serie['dtdeb'] = dtdeb
+    dtfin = _value(element, 'DtFinSerieObsElaborMeteo')
+    if dtfin is not None:
+        args_serie['dtfin'] = dtfin
+    duree = _value(element, 'DureeSerieObsElaborMeteo', int)
+    if duree is not None:
+        args_serie['duree'] = 60 * duree
+    ipa = element.find('SerieObsElaborMeteoIpa')
+    if ipa is not None:
+        args_ipa = {}
+        args_ipa['coefk'] = _value(ipa, 'KSerieObsElaborMeteoIpa', float)
+        npdt = _value(ipa, 'PDTSerieObsElaborMeteoIpa', int)
+        if npdt is not None:
+            args_ipa['npdt'] = npdt
+        args_serie['ipa'] = _obselaboreemeteo.Ipa(**args_ipa)
+
+    serie = _obselaboreemeteo.SerieObsElabMeteo(**args_serie)
+
+    observations = []
+    for obs in element.findall('./ObssElaborMeteo/ObsElaborMeteo'):
+        args = {}
+        args['dte'] = _value(obs, 'DtObsElaborMeteo')  # mandatory
+        args['res'] = _value(obs, 'ResObsElaborMeteo', float)  # mandatory
+        qua = _value(obs, 'IndiceQualObsElaborMeteo', float)
+        if qua is not None:
+            args['qua'] = qua
+        qal = _value(obs, 'QualifObsElaborMeteo', int)
+        if qal is not None:
+            args['qal'] = qal
+        mth = _value(obs, 'MethObsElaborMeteo', int)
+        if mth is not None:
+            args['mth'] = mth
+        statut = _value(obs, 'StObsElaborMeteo', int)
+        if statut is not None:
+            args['statut'] = statut
+
+        observations.append(_obselaboreemeteo.ObsElabMeteo(**args))
+
+    # add observations to serie
+    if len(observations) > 0:
+        serie.observations = _obselaboreemeteo.ObssElabMeteo(
+            *observations).sort_index()
+    return serie
+
 
 # -- utility functions --------------------------------------------------------
 def _UTC(dte):

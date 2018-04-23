@@ -437,17 +437,15 @@ class TestSerieObsElabMeteo(unittest.TestCase):
         """test full serie obs elab meteo"""
         sitemeteo = _sitemeteo.Sitemeteo(code='123456789')
         ponderation = 0.58
-        sitepondere = _obselaboreemeteo.SitemeteoPondere(sitemeteo=sitemeteo,
+        sitepondere = _sitemeteo.SitemeteoPondere(sitemeteo=sitemeteo,
                                                          ponderation=ponderation)
         grandeur = 'RR'
         dtprod = _datetime.datetime(2016, 10, 8, 14, 23, 29)
         dtdeb = _datetime.datetime(2016, 3, 4, 11, 28, 50)
         dtfin = _datetime.datetime(2016, 4, 2, 14, 33, 42)
         typeserie = 2
-        duree = 60
-        ipa1 = _obselaboreemeteo.Ipa(coefk=0.14, npdt=5)
-        ipa2 = _obselaboreemeteo.Ipa(coefk=0.26, npdt=8)
-        ipas = [ipa1, ipa2]
+        duree = 3600
+        ipa = _obselaboreemeteo.Ipa(coefk=0.14, npdt=5)
         obss = [_obselaboreemeteo.ObsElabMeteo(
                     dte=_datetime.datetime(2015, 8, 1, 11, 0, 0), res=157.4),
                 _obselaboreemeteo.ObsElabMeteo(
@@ -460,13 +458,13 @@ class TestSerieObsElabMeteo(unittest.TestCase):
                                                     dtdeb=dtdeb,
                                                     dtfin=dtfin,
                                                     duree=duree,
-                                                    ipas=ipas,
+                                                    ipa=ipa,
                                                     observations=observations)
 
         self.assertEqual((serie.site, serie.grandeur, serie.typeserie,
-                          serie.dtprod, serie.dtdeb, serie.dtfin, serie.ipas),
+                          serie.dtprod, serie.dtdeb, serie.dtfin, serie.ipa),
                          (sitepondere, grandeur, typeserie, dtprod, dtdeb,
-                          dtfin, ipas))
+                          dtfin, ipa))
         self.assertEqual(len(serie.observations), 2)
         self.assertEqual(serie.observations.iloc[0, 0], 157.4)
         self.assertEqual(serie.observations.loc['2015-08-01 12:00:00', 'res'],
@@ -478,7 +476,7 @@ class TestSerieObsElabMeteo(unittest.TestCase):
         sitemeteo = _sitemeteo.Sitemeteo(code=code)
         ponderation = 0.58
         sites = [_sitehydro.Sitehydro(code='A1234567'),
-                 _obselaboreemeteo.SitemeteoPondere(sitemeteo=sitemeteo,
+                 _sitemeteo.SitemeteoPondere(sitemeteo=sitemeteo,
                                                     ponderation=ponderation)]
         grandeur = 'RR'
         typeserie = 1
@@ -512,29 +510,27 @@ class TestSerieObsElabMeteo(unittest.TestCase):
                                                     typeserie=typeserie,
                                                     duree=duree)
 
-    def test_ipas(self):
-        """Test property ipas"""
+    def test_ipa(self):
+        """Test property ipa"""
         code = '123456789'
         sitemeteo = _sitemeteo.Sitemeteo(code=code)
         ponderation = 0.58
-        site = _obselaboreemeteo.SitemeteoPondere(sitemeteo=sitemeteo,
+        site = _sitemeteo.SitemeteoPondere(sitemeteo=sitemeteo,
                                                   ponderation=ponderation)
         grandeur = 'RR'
         typeserie = 2
-        ipa1 = _obselaboreemeteo.Ipa(coefk=0.14, npdt=5)
-        ipa2 = _obselaboreemeteo.Ipa(coefk=0.26, npdt=8)
-        ipas = [ipa1, ipa2]
-        for ipas in [None, [], [ipa1], [ipa1, ipa2]]:
+
+        for ipa in [None, _obselaboreemeteo.Ipa(coefk=0.14, npdt=5)]:
             _obselaboreemeteo.SerieObsElabMeteo(site=site,
                                                 grandeur=grandeur,
                                                 typeserie=typeserie,
-                                                ipas=ipas)
-        for ipas in [[ipa1, 0.8]]:
+                                                ipa=ipa)
+        for ipa in ['toto', 0.8]:
             with self.assertRaises(TypeError) as cm:
                 _obselaboreemeteo.SerieObsElabMeteo(site=site,
                                                     grandeur=grandeur,
                                                     typeserie=typeserie,
-                                                    ipas=ipas)
+                                                    ipa=ipa)
 
     def test_observations(self):
         """Test property observations"""
@@ -566,9 +562,8 @@ class TestSerieObsElabMeteo(unittest.TestCase):
         dtdeb = _datetime.datetime(2016, 3, 4, 11, 28, 50)
         dtfin = _datetime.datetime(2016, 4, 2, 14, 33, 42)
         typeserie = 2
-        duree = 60
-        ipa1 = _obselaboreemeteo.Ipa(coefk=0.14, npdt=5)
-        ipas = [ipa1, 0.14]
+        duree = 3600
+        ipa = 0.14
         observations = [154.6, 159.4]
         serie = _obselaboreemeteo.SerieObsElabMeteo(site=cdsitemeteo,
                                                     grandeur=grandeur,
@@ -577,63 +572,12 @@ class TestSerieObsElabMeteo(unittest.TestCase):
                                                     dtdeb=dtdeb,
                                                     dtfin=dtfin,
                                                     duree=duree,
-                                                    ipas=ipas,
+                                                    ipa=ipa,
                                                     observations=observations,
                                                     strict=False)
 
         self.assertEqual((serie.site, serie.grandeur, serie.typeserie,
-                          serie.dtprod, serie.dtdeb, serie.dtfin, serie.ipas),
+                          serie.dtprod, serie.dtdeb, serie.dtfin, serie.ipa),
                          (cdsitemeteo, grandeur, typeserie, dtprod, dtdeb,
-                          dtfin, ipas))
+                          dtfin, ipa))
         self.assertEqual(serie.duree, _datetime.timedelta(minutes=60))
-
-
-# -- class TestSitemeteoPondere --------------------------------------------
-class TestSitemeteoPondere(unittest.TestCase):
-    """SitemeteoPondere class tests."""
-
-    def test_01(self):
-        """ Test simple SitemeteoPondere"""
-        sitemeteo = _sitemeteo.Sitemeteo(code='987654321')
-        ponderation = 0.54
-        sitepondere = _obselaboreemeteo.SitemeteoPondere(
-            sitemeteo=sitemeteo, ponderation=ponderation)
-        self.assertEqual((sitepondere.sitemeteo, sitepondere.ponderation),
-                         (sitemeteo, ponderation))
-
-    def test_sitemeteo(self):
-        """Test property sitemeteo"""
-        code = '987654321'
-        sitemeteo = _sitemeteo.Sitemeteo(code=code)
-        ponderation = 0.54
-        _obselaboreemeteo.SitemeteoPondere(sitemeteo=sitemeteo,
-                                           ponderation=ponderation)
-
-        for sitemeteo in [code, None]:
-            with self.assertRaises(TypeError):
-                _obselaboreemeteo.SitemeteoPondere(
-                    sitemeteo=sitemeteo, ponderation=ponderation)
-
-    def test_ponderation(self):
-        """Test property ponderation"""
-        code = '987654321'
-        sitemeteo = _sitemeteo.Sitemeteo(code=code)
-        ponderation = 0.54
-        _obselaboreemeteo.SitemeteoPondere(sitemeteo=sitemeteo,
-                                           ponderation=ponderation)
-
-        for ponderation in ['toto', None]:
-            with self.assertRaises(TypeError):
-                _obselaboreemeteo.SitemeteoPondere(
-                    sitemeteo=sitemeteo, ponderation=ponderation)
-
-    def test_str(self):
-        """Test representation"""
-        code = '987654321'
-        sitemeteo = _sitemeteo.Sitemeteo(code=code)
-        ponderation = '0.54'
-        site = _obselaboreemeteo.SitemeteoPondere(sitemeteo=sitemeteo,
-                                                  ponderation=ponderation)
-        site_str = site.__str__()
-        self.assertTrue(site_str.find(code) != -1)
-        self.assertTrue(site_str.find(ponderation) != -1)

@@ -98,6 +98,15 @@
           </ObsHydro>
         </ObssHydro>
       </Serie>
+      <!-- serie 3 without observations -->
+      <Serie>
+        <CdStationHydro>C987654321</CdStationHydro>
+        <GrdSerie>H</GrdSerie>
+        <DtDebSerie>2015-09-08T08:11:54</DtDebSerie>
+        <DtFinSerie>2015-09-11T15:34:26</DtFinSerie>
+        <StatutSerie>16</StatutSerie>
+        <DtProdSerie>2016-03-18T11:12:13</DtProdSerie>
+      </Serie>
     </Series>
   </Donnees>
 </hydrometrie>

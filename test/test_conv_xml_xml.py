@@ -220,11 +220,15 @@ class TestMessage(unittest.TestCase):
         self.file_serm = os.path.join(FILES_PATH, 'seriesmeteo.xml')
         self.file_sim = os.path.join(FILES_PATH, 'simulations.xml')
         self.file_serelab = os.path.join(FILES_PATH, 'obsselaboree.xml')
+        self.file_serelabmeteo = os.path.join(FILES_PATH,
+                                              'obsselaboreemeteo.xml')
 
         # XML version2
         self.file_serh_v2 = os.path.join(FILES_PATH_V2, 'serieshydro.xml')
         self.file_serm_v2 = os.path.join(FILES_PATH_V2, 'seriesmeteo.xml')
         self.file_serelab_v2 = os.path.join(FILES_PATH_V2, 'obsselab.xml')
+        self.file_serelabmeteo_v2 = os.path.join(FILES_PATH_V2,
+                                                 'obsselabmeteo.xml')
 
         self.tmp_dir = tempfile.mkdtemp(prefix='test_xml_')
         self.tmp_file = tempfile.mktemp(dir=self.tmp_dir)
@@ -375,6 +379,18 @@ class TestMessage(unittest.TestCase):
         msg = Message.from_file(self.file_serelab_v2)
         msg.write(self.tmp_file, force=True, version='2')
         self.assertNotEqual(msg.seriesobselab, [])
+
+    def test_base_20(self):
+        """Message from file obsselab Sandre V1.1"""
+        msg = Message.from_file(self.file_serelabmeteo)
+        msg.write(self.tmp_file, force=True, version='1.1')
+        self.assertNotEqual(msg.seriesobselabmeteo, [])
+
+    def test_base_21(self):
+        """Message from file obsselabmeteo Sandre V2"""
+        msg = Message.from_file(self.file_serelabmeteo_v2)
+        msg.write(self.tmp_file, force=True, version='2')
+        self.assertNotEqual(msg.seriesobselabmeteo, [])
 
     def test_str_01(self):
         """Test __str__ method with basic values."""

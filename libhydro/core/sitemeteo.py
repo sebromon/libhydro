@@ -330,6 +330,61 @@ class Grandeur(object):
 
     __str__ = _composant.__str__
 
+
+class SitemeteoPondere(object):
+    """Classe SiteMeteoPondere
+
+    Classe permettant de manipuler des sites météo pondérés
+    Proprietes:
+        sitemeteo (Sitemeteo): Site météo
+        pondération (float): Pondération du site
+    """
+    def __init__(self, sitemeteo, ponderation):
+        self._sitemeteo = None
+        self.sitemeteo = sitemeteo
+        self._ponderation = None
+        self.ponderation = ponderation
+
+    # -- property entite --
+    @property
+    def sitemeteo(self):
+        """Return entite hydro."""
+        return self._sitemeteo
+
+    @sitemeteo.setter
+    def sitemeteo(self, sitemeteo):
+        """Set entite."""
+        try:
+            # sitemeteo must be a Sitemeteo
+            if not isinstance(sitemeteo, Sitemeteo):
+                raise TypeError('sitemeteo must be a Sitemeteo')
+
+            self._sitemeteo = sitemeteo
+
+        except Exception:
+            raise
+
+    # -- property ponderation --
+    @property
+    def ponderation(self):
+        """Return ponderation."""
+        return self._ponderation
+
+    @ponderation.setter
+    def ponderation(self, ponderation):
+        """Set ponderation."""
+        try:
+            self._ponderation = float(ponderation)
+        except Exception:
+            raise TypeError('ponderation must be a numeric')
+
+    def __unicode__(self):
+        return "Site météo {0} avec pondération {1}".format(
+            self.sitemeteo.code, self.ponderation)
+
+    __str__ = _composant.__str__
+
+
 # -- class Visite -------------------------------------------------------------
 # class Visite(object):
 #

@@ -67,7 +67,7 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
                  'seuilshydro', 'modelesprevision', 'evenements',
                  'courbestarage', 'jaugeages', 'courbescorrection',
                  'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'simulations')))
+                 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -139,7 +139,7 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
                  'seuilshydro', 'modelesprevision', 'evenements',
                  'courbestarage', 'jaugeages', 'courbescorrection',
                  'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'simulations')))
+                 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -235,7 +235,7 @@ class TestFromXmlSeriesObsElab(unittest.TestCase):
                  'seuilshydro', 'modelesprevision', 'evenements',
                  'courbestarage', 'jaugeages', 'courbescorrection',
                  'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'simulations')))
+                 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -311,3 +311,108 @@ class TestFromXmlSeriesObsElab(unittest.TestCase):
         serie = self.data['seriesmeteo'][3]
         self.assertIsNotNone(serie.observations)
 
+
+# -- class TestFromXmlSeriesObsElabMeteo --------------------------------------
+class TestFromXmlSeriesObsElabMeteo(unittest.TestCase):
+
+    """XmlSeriesObsElabMeteo class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '2', 'obsselabmeteo.xml'))
+
+    def test_base(self):
+        """Check keys test."""
+        self.assertEqual(
+            set(self.data.keys()),
+            set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
+                 'seuilshydro', 'modelesprevision', 'evenements',
+                 'courbestarage', 'jaugeages', 'courbescorrection',
+                 'serieshydro', 'seriesmeteo', 'seriesobselab',
+                 'seriesobselabmeteo', 'simulations')))
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertEqual(self.data['intervenants'], [])
+        self.assertEqual(self.data['siteshydro'], [])
+        self.assertEqual(self.data['sitesmeteo'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['seriesmeteo'], [])
+        self.assertEqual(self.data['simulations'], [])
+        self.assertEqual(self.data['seriesobselab'], [])
+        self.assertNotEqual(self.data['seriesobselabmeteo'], [])
+
+    def test_scenario(self):
+        """Scenario test."""
+        scenario = self.data['scenario']
+        self.assertEqual(scenario.code, 'hydrometrie')
+        self.assertEqual(scenario.version, '2')
+        self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
+        self.assertEqual(scenario.dtprod,
+                         datetime.datetime(2010, 2, 26, 23, 55, 30))
+        self.assertEqual(scenario.emetteur.contact.code, '1')
+        self.assertEqual(scenario.emetteur.intervenant.code, 1537)
+        self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
+        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
+
+    def test_serie_ipa(self):
+        serie = self.data['seriesobselabmeteo'][0]
+        self.assertEqual(serie.site.sitemeteo.code, '012345678')
+        self.assertEqual(serie.site.ponderation, 0.51)
+        self.assertEqual(serie.grandeur, 'RR')
+        self.assertEqual(serie.typeserie, 2)
+        self.assertEqual(serie.dtdeb,
+                         datetime.datetime(2017, 4, 18, 15, 16, 14))
+        self.assertEqual(serie.dtfin,
+                         datetime.datetime(2017, 5, 2, 8, 51, 43))
+        self.assertEqual(serie.duree, datetime.timedelta(seconds=3600))
+
+        self.assertEqual(serie.ipa.coefk, 0.21)
+        self.assertEqual(serie.ipa.npdt, 5)
+        self.assertEqual(len(serie.observations), 2)
+        self.assertEqual(serie.observations.iloc[0].tolist(),
+                         [10.4, 12.0, 20.0, 88.4, 16.0])
+        obs = serie.observations.loc['2017-04-20 13:21:08'].iloc[0].tolist()
+        self.assertEqual(obs[0:3], [11.9, 0.0, 16.0])
+        self.assertTrue(math.isnan(obs[3]))
+        self.assertEqual(obs[4], 0.0)
+
+    def test_serie_lamedeau(self):
+        serie = self.data['seriesobselabmeteo'][1]
+        self.assertEqual(serie.site.code, 'Z7654321')
+        self.assertEqual(serie.grandeur, 'RR')
+        self.assertEqual(serie.typeserie, 1)
+        self.assertEqual(serie.dtdeb,
+                         datetime.datetime(2011, 8, 17, 19, 24, 16))
+        self.assertEqual(serie.dtfin,
+                         datetime.datetime(2012, 2, 8, 15, 29, 31))
+        self.assertEqual(serie.duree, datetime.timedelta(seconds=1800))
+
+        self.assertIsNone(serie.ipa)
+
+        self.assertEqual(len(serie.observations), 2)
+        self.assertEqual(serie.observations.iloc[0].tolist(),
+                         [28.8, 12.0, 0.0, 33.1, 12.0])
+        obs = serie.observations.loc['2011-12-15 08:09:10'].iloc[0].tolist()
+        self.assertEqual(obs[0:3], [38.1, 0.0, 16.0])
+        self.assertTrue(math.isnan(obs[3]))
+        self.assertEqual(obs[4], 0.0)
+
+    def test_minimal_serie(self):
+        serie = self.data['seriesobselabmeteo'][2]
+        self.assertEqual(serie.site.code, 'F3214321')
+        self.assertEqual(serie.grandeur, 'RR')
+        self.assertEqual(serie.typeserie, 1)
+        self.assertIsNone(serie.dtdeb)
+        self.assertIsNone(serie.dtfin)
+        self.assertIsNone(serie.duree)
+
+        self.assertIsNone(serie.ipa)
+
+        self.assertEqual(len(serie.observations), 1)
+        obs = serie.observations.loc['2013-05-04 13:11:26'].iloc[0].tolist()
+        self.assertEqual(obs[0:3], [55.8, 0.0, 16.0])
+        self.assertTrue(math.isnan(obs[3]))
+        self.assertEqual(obs[4], 0.0)

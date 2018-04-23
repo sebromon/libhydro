@@ -286,3 +286,54 @@ class TestGrandeur(unittest.TestCase):
         )
         with self.assertRaises(TypeError):
             g.__setattr__('sitemeteo', 'junk site !')
+
+
+# -- class TestSitemeteoPondere --------------------------------------------
+class TestSitemeteoPondere(unittest.TestCase):
+    """SitemeteoPondere class tests."""
+
+    def test_01(self):
+        """ Test simple SitemeteoPondere"""
+        site = sitemeteo.Sitemeteo(code='987654321')
+        ponderation = 0.54
+        sitepondere = sitemeteo.SitemeteoPondere(
+            sitemeteo=site, ponderation=ponderation)
+        self.assertEqual((sitepondere.sitemeteo, sitepondere.ponderation),
+                         (site, ponderation))
+
+    def test_sitemeteo(self):
+        """Test property sitemeteo"""
+        code = '987654321'
+        site = sitemeteo.Sitemeteo(code=code)
+        ponderation = 0.54
+        sitemeteo.SitemeteoPondere(sitemeteo=site,
+                                   ponderation=ponderation)
+
+        for site in [code, None]:
+            with self.assertRaises(TypeError):
+                sitemeteo.SitemeteoPondere(
+                    sitemeteo=site, ponderation=ponderation)
+
+    def test_ponderation(self):
+        """Test property ponderation"""
+        code = '987654321'
+        site = sitemeteo.Sitemeteo(code=code)
+        ponderation = 0.54
+        sitemeteo.SitemeteoPondere(sitemeteo=site,
+                                   ponderation=ponderation)
+
+        for ponderation in ['toto', None]:
+            with self.assertRaises(TypeError):
+                sitemeteo.SitemeteoPondere(
+                    sitemeteo=sitemeteo, ponderation=ponderation)
+
+    def test_str(self):
+        """Test representation"""
+        code = '987654321'
+        site = sitemeteo.Sitemeteo(code=code)
+        ponderation = '0.54'
+        site_pond = sitemeteo.SitemeteoPondere(sitemeteo=site,
+                                               ponderation=ponderation)
+        site_str = site_pond.__str__()
+        self.assertTrue(site_str.find(code) != -1)
+        self.assertTrue(site_str.find(ponderation) != -1)

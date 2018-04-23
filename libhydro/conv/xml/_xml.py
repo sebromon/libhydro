@@ -30,7 +30,8 @@ from libhydro.core import (
     obsmeteo as _obsmeteo,
     simulation as _simulation,
     jaugeage as _jaugeage,
-    obselaboreehydro as _obselaboreehydro)
+    obselaboreehydro as _obselaboreehydro,
+    obselaboreemeteo as _obselaboreemeteo)
 
 
 # -- strings ------------------------------------------------------------------
@@ -74,6 +75,7 @@ class Message(object):
         serieshydro (liste de obshydro.Serie)
         seriesmeteo (liste de obsmeteo.Serie)
         seriesobselab (liste de obselaboree.SerieObsElab)
+        seriesobselabmeteo (liste de obselaboreemeteo.SerieObsElabMeteo)
         simulations (liste de simulation.Simulation)
 
     """
@@ -97,13 +99,15 @@ class Message(object):
     serieshydro = _composant.Rlistproperty(cls=_obshydro.Serie)
     seriesmeteo = _composant.Rlistproperty(cls=_obsmeteo.Serie)
     seriesobselab = _composant.Rlistproperty(cls=_obselaboreehydro.SerieObsElab)
+    seriesobselabmeteo = _composant.Rlistproperty(cls=_obselaboreemeteo.SerieObsElabMeteo)
     simulations = _composant.Rlistproperty(cls=_simulation.Simulation)
 
     def __init__(self, scenario, intervenants=None, siteshydro=None,
                  sitesmeteo=None, seuilshydro=None, modelesprevision=None,
                  evenements=None, courbestarage=None, jaugeages=None,
                  courbescorrection=None, serieshydro=None, seriesmeteo=None,
-                 seriesobselab=None, simulations=None, strict=True):
+                 seriesobselab=None, seriesobselabmeteo=None, simulations=None,
+                 strict=True):
         """Initialisation.
 
         Arguments:
@@ -119,7 +123,8 @@ class Message(object):
             courbescorrection (courbecorrection.CourbeCorrection ou None)
             serieshydro (obshydro.Serie iterable ou None)
             seriesmeteo (obsmeteo.Serie iterable ou None)
-            seriesobselab (obselaboreehydro.SerieObsElab ou None)
+            seriesobselab (obselaboreehydro.SerieObsElab iterable ou None)
+            seriesobselabmeteo (obselaboreemeteo.SerieObsElabMeteo iterable ou None)
             simulations (simulation.Simulation iterable ou None)
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite des elements
@@ -147,6 +152,7 @@ class Message(object):
         self.serieshydro = serieshydro or []
         self.seriesmeteo = seriesmeteo or []
         self.seriesobselab = seriesobselab or []
+        self.seriesobselabmeteo = seriesobselabmeteo or []
         self.simulations = simulations or []
 
         # -- full properties --
@@ -244,9 +250,11 @@ class Message(object):
                 tree.find('Donnees/SeriesObsMeteo'))
             seriesobselab = _from_xml._seriesobselab_from_element_v2(
                 tree.find('Donnees/' + tags.seriesobselabhydro))
+            seriesobselabmeteo = _from_xml._seriesobselabmeteo_from_element_v2(
+                tree.find('Donnees/SeriesObsElaborMeteo'))
         else:
             tags = _sandre_tags.SandreTagsV1
-            seriesmeteo = _from_xml._seriesmeteo_from_element(
+            seriesmeteo, seriesobselabmeteo = _from_xml._seriesmeteo_from_element(
                 tree.find('Donnees/ObssMeteo'))
             seriesobselab = _from_xml._seriesobselab_from_element(
                 tree.find('Donnees/' + tags.seriesobselabhydro))
@@ -277,6 +285,7 @@ class Message(object):
                 scenario.version, tags),
             seriesmeteo=seriesmeteo,
             seriesobselab=seriesobselab,
+            seriesobselabmeteo=seriesobselabmeteo,
             simulations=_from_xml._simulations_from_element(
                 tree.find('Donnees/Simuls')))
 
