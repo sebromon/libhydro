@@ -416,3 +416,181 @@ class TestFromXmlSeriesObsElabMeteo(unittest.TestCase):
         self.assertEqual(obs[0:3], [55.8, 0.0, 16.0])
         self.assertTrue(math.isnan(obs[3]))
         self.assertEqual(obs[4], 0.0)
+
+
+# -- class TestFromXmlCourbesTarage --------------------------------------
+class TestFromXmlCourbesTarage(unittest.TestCase):
+    """XmlSeriesObsElabMeteo class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '2', 'courbestarage.xml'))
+
+    def test_base(self):
+        """Check keys test."""
+        self.assertEqual(
+            set(self.data.keys()),
+            set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
+                 'seuilshydro', 'modelesprevision', 'evenements',
+                 'courbestarage', 'jaugeages', 'courbescorrection',
+                 'serieshydro', 'seriesmeteo', 'seriesobselab',
+                 'seriesobselabmeteo', 'simulations')))
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertEqual(self.data['intervenants'], [])
+        self.assertEqual(self.data['siteshydro'], [])
+        self.assertEqual(self.data['sitesmeteo'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['seriesmeteo'], [])
+        self.assertEqual(self.data['simulations'], [])
+        self.assertEqual(self.data['seriesobselab'], [])
+        self.assertEqual(self.data['seriesobselabmeteo'], [])
+        self.assertNotEqual(self.data['courbestarage'], [])
+
+    def test_scenario(self):
+        """Scenario test."""
+        scenario = self.data['scenario']
+        self.assertEqual(scenario.code, 'hydrometrie')
+        self.assertEqual(scenario.version, '2')
+        self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
+        self.assertEqual(scenario.dtprod,
+                         datetime.datetime(2010, 2, 26, 23, 55, 30))
+        self.assertEqual(scenario.emetteur.contact.code, '1')
+        self.assertEqual(scenario.emetteur.intervenant.code, 1537)
+        self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
+        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
+
+    def test_full_courbetarage(self):
+        courbe = self.data['courbestarage'][0]
+        self.assertEqual(courbe.code, '1514')
+        self.assertEqual(courbe.libelle, 'Libellé courbe')
+        self.assertEqual(courbe.typect, 0)
+        self.assertEqual(courbe.dtcreation, datetime.datetime(2015, 5, 4,
+                                                              11, 16, 49))
+        self.assertEqual(courbe.limiteinf, 136.5)
+        self.assertEqual(courbe.limitesup, 289.4)
+        self.assertEqual(courbe.limiteinfpub, 138.4)
+        self.assertEqual(courbe.limitesuppub, 256.7)
+        self.assertEqual(courbe.dn, 1.4)
+        self.assertEqual(courbe.alpha, 1.1)
+        self.assertEqual(courbe.beta, 1.3)
+        self.assertEqual(courbe.commentaire, 'Commentaire')
+        self.assertEqual(courbe.station.code, 'A123456789')
+        self.assertEqual(courbe.contact.code, '144')
+
+        self.assertEqual(len(courbe.pivots), 2)
+        pivot1 = courbe.pivots[0]
+        self.assertEqual(pivot1.hauteur, 58.4)
+        self.assertEqual(pivot1.debit, 1547.1)
+        pivot2 = courbe.pivots[1]
+        self.assertEqual(pivot2.hauteur, 300.4)
+        self.assertEqual(pivot2.debit, 3541.3)
+
+        self.assertEqual(len(courbe.periodes), 2)
+        periode = courbe.periodes[0]
+        self.assertEqual(periode.dtdeb, datetime.datetime(2010, 9, 23,
+                                                          8, 15, 41))
+        self.assertEqual(periode.dtfin, datetime.datetime(2018, 4, 14,
+                                                          17, 54, 49))
+        self.assertEqual(periode.etat, 12)
+        self.assertEqual(len(periode.histos), 2)
+        histo1 = periode.histos[0]
+        self.assertEqual(histo1.dtactivation, datetime.datetime(2015, 2, 22,
+                                                                11, 12, 4))
+        self.assertEqual(histo1.dtdesactivation, datetime.datetime(2016, 10, 2,
+                                                                   16, 50, 11))
+
+        histo2 = periode.histos[1]
+        self.assertEqual(histo2.dtactivation, datetime.datetime(2017, 1, 17,
+                                                                12, 10, 33))
+        self.assertEqual(histo2.dtdesactivation, datetime.datetime(2018, 3, 15,
+                                                                   14, 13, 8))
+
+        # période2
+        periode2 = courbe.periodes[1]
+        self.assertEqual(periode2.dtdeb, datetime.datetime(2018, 5, 1,
+                                                           7, 19, 51))
+        self.assertIsNone(periode2.dtfin)
+        self.assertEqual(periode2.etat, 4)
+        self.assertEqual(len(periode2.histos), 1)
+        histo = periode2.histos[0]
+        self.assertEqual(histo.dtactivation, datetime.datetime(2018, 5, 2,
+                                                               17, 18, 37))
+        self.assertIsNone(histo.dtdesactivation)
+
+        self.assertEqual(courbe.dtmaj, datetime.datetime(2018, 4, 16,
+                                                         7, 9, 3))
+        self.assertEqual(courbe.commentaireprive, 'Commentaire privé')
+
+    def test_min_courbetarage(self):
+        courbe = self.data['courbestarage'][1]
+        self.assertEqual(courbe.code, '159874')
+        self.assertEqual(courbe.libelle, 'Lb')
+        self.assertEqual(courbe.typect, 4)
+        self.assertIsNone(courbe.dtcreation)
+        self.assertIsNone(courbe.limiteinf)
+        self.assertIsNone(courbe.limitesup)
+        self.assertIsNone(courbe.limiteinfpub)
+        self.assertIsNone(courbe.limitesuppub)
+        self.assertIsNone(courbe.dn)
+        self.assertIsNone(courbe.alpha)
+        self.assertIsNone(courbe.beta)
+        self.assertIsNone(courbe.commentaire)
+        self.assertEqual(courbe.station.code, 'Z987654321')
+        self.assertIsNone(courbe.contact)
+
+        self.assertEqual(len(courbe.pivots), 0)
+
+        self.assertEqual(len(courbe.periodes), 0)
+
+        self.assertIsNone(courbe.dtmaj)
+        self.assertIsNone(courbe.commentaireprive)
+
+    def test_courbetarage_puissance(self):
+        courbe = self.data['courbestarage'][2]
+        self.assertEqual(courbe.code, '4321')
+        self.assertEqual(courbe.libelle, 'Courbe puissance')
+        self.assertEqual(courbe.typect, 4)
+        self.assertIsNone(courbe.dtcreation)
+        self.assertIsNone(courbe.limiteinf)
+        self.assertIsNone(courbe.limitesup)
+        self.assertIsNone(courbe.limiteinfpub)
+        self.assertIsNone(courbe.limitesuppub)
+        self.assertIsNone(courbe.dn)
+        self.assertIsNone(courbe.alpha)
+        self.assertIsNone(courbe.beta)
+        self.assertIsNone(courbe.commentaire)
+        self.assertEqual(courbe.station.code, 'C123454321')
+        self.assertEqual(courbe.contact.code, '22')
+
+        self.assertEqual(len(courbe.pivots), 2)
+        pivot1 = courbe.pivots[0]
+        self.assertEqual(pivot1.hauteur, 76.4)
+        self.assertEqual(pivot1.vara, 1)
+        self.assertEqual(pivot1.varb, 1)
+        self.assertEqual(pivot1.varh, 1)
+        pivot2 = courbe.pivots[1]
+        self.assertEqual(pivot2.hauteur, 541.3)
+        self.assertEqual(pivot2.vara, 1.3)
+        self.assertEqual(pivot2.varb, 1.1)
+        self.assertEqual(pivot2.varh, 512.9)
+
+        self.assertEqual(len(courbe.periodes), 1)
+        periode = courbe.periodes[0]
+        self.assertEqual(periode.dtdeb, datetime.datetime(2016, 7, 11,
+                                                          15, 8, 34))
+        self.assertEqual(periode.dtfin, datetime.datetime(2050, 2, 1,
+                                                          10, 0, 0))
+        self.assertEqual(periode.etat, 8)
+        self.assertEqual(len(periode.histos), 1)
+        histo1 = periode.histos[0]
+        self.assertEqual(histo1.dtactivation, datetime.datetime(2017, 1, 17,
+                                                                12, 10, 33))
+        self.assertIsNone(histo1.dtdesactivation)
+
+        self.assertEqual(courbe.dtmaj, datetime.datetime(2017, 12, 9,
+                                                         11, 51, 50))
+        self.assertIsNone(courbe.commentaireprive)

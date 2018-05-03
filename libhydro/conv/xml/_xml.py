@@ -275,7 +275,8 @@ class Message(object):
             evenements=_from_xml._evenements_from_element(
                 tree.find('Donnees/Evenements')),
             courbestarage=_from_xml._courbestarage_from_element(
-                tree.find('Donnees/CourbesTarage')),
+                tree.find('Donnees/CourbesTarage'),
+                scenario.version, tags),
             jaugeages=_from_xml._jaugeages_from_element(
                 tree.find('Donnees/Jaugeages')),
             courbescorrection=_from_xml._courbescorrection_from_element(

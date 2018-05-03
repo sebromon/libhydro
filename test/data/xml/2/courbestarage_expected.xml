@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hydrometrie xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2/sandre_sc_hydrometrie.xsd">
+<!-- <hydrometrie> -->
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>2</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2010-02-26T23:55:30</DateHeureCreationFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact>1</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+    </Destinataire>
+  </Scenario>
+  <Donnees>
+      <CourbesTarage>
+          <CourbeTarage>
+              <CdCourbeTarage>1514</CdCourbeTarage>
+              <LbCourbeTarage>Libellé courbe</LbCourbeTarage>
+              <TypCourbeTarage>0</TypCourbeTarage>
+              <DtCreatCourbeTarage>2015-05-04T11:16:49</DtCreatCourbeTarage>
+              <LimiteInfCourbeTarage>136.5</LimiteInfCourbeTarage>
+              <LimiteSupCourbeTarage>289.4</LimiteSupCourbeTarage>
+              <LimiteInfPubCourbeTarage>138.4</LimiteInfPubCourbeTarage>
+              <LimiteSupPubCourbeTarage>256.7</LimiteSupPubCourbeTarage>
+              <DnCourbeTarage>1.4</DnCourbeTarage>
+              <AlphaCourbeTarage>1.1</AlphaCourbeTarage>
+              <BetaCourbeTarage>1.3</BetaCourbeTarage>
+              <ComCourbeTarage>Commentaire</ComCourbeTarage>
+              <CdStationHydro>A123456789</CdStationHydro>
+              <CdContact>144</CdContact>
+              <PivotsCourbeTarage>
+                  <PivotCourbeTarage>
+                      <HtPivotCourbeTarage>58.4</HtPivotCourbeTarage>
+                      <QPivotCourbeTarage>1547.1</QPivotCourbeTarage>
+                  </PivotCourbeTarage>
+                  <PivotCourbeTarage>
+                      <HtPivotCourbeTarage>300.4</HtPivotCourbeTarage>
+                      <QPivotCourbeTarage>3541.3</QPivotCourbeTarage>
+                  </PivotCourbeTarage>
+              </PivotsCourbeTarage>
+              <PeriodesUtilisationCourbeTarage>
+                  <PeriodeUtilisationCourbeTarage>
+                      <DtDebPeriodeUtilisationCourbeTarage>2010-09-23T08:15:41</DtDebPeriodeUtilisationCourbeTarage>
+                      <DtFinPeriodeUtilisationCourbeTarage>2018-04-14T17:54:49</DtFinPeriodeUtilisationCourbeTarage>
+                      <EtatPeriodeUtilisationCourbeTarage>12</EtatPeriodeUtilisationCourbeTarage>
+                      <HistosActivationPeriode>
+                          <HistoActivationPeriode>
+                              <DtActivationHistoActivationPeriode>2015-02-22T11:12:04</DtActivationHistoActivationPeriode>
+                              <DtDesactivationHistoActivationPeriode>2016-10-02T16:50:11</DtDesactivationHistoActivationPeriode>
+                          </HistoActivationPeriode>
+                          <HistoActivationPeriode>
+                              <DtActivationHistoActivationPeriode>2017-01-17T12:10:33</DtActivationHistoActivationPeriode>
+                              <DtDesactivationHistoActivationPeriode>2018-03-15T14:13:08</DtDesactivationHistoActivationPeriode>
+                          </HistoActivationPeriode>
+                      </HistosActivationPeriode>
+                  </PeriodeUtilisationCourbeTarage>
+                  <PeriodeUtilisationCourbeTarage>
+                      <DtDebPeriodeUtilisationCourbeTarage>2018-05-01T07:19:51</DtDebPeriodeUtilisationCourbeTarage>
+                      <EtatPeriodeUtilisationCourbeTarage>4</EtatPeriodeUtilisationCourbeTarage>
+                      <HistosActivationPeriode>
+                          <HistoActivationPeriode>
+                              <DtActivationHistoActivationPeriode>2018-05-02T17:18:37</DtActivationHistoActivationPeriode>
+                          </HistoActivationPeriode>
+                      </HistosActivationPeriode>
+                  </PeriodeUtilisationCourbeTarage>
+              </PeriodesUtilisationCourbeTarage>
+              <DtMajCourbeTarage>2018-04-16T07:09:03</DtMajCourbeTarage>
+              <ComPrivCourbeTarage>Commentaire privé</ComPrivCourbeTarage>
+          </CourbeTarage>
+          <CourbeTarage>
+              <CdCourbeTarage>159874</CdCourbeTarage>
+              <LbCourbeTarage>Lb</LbCourbeTarage>
+              <TypCourbeTarage>4</TypCourbeTarage>
+              <CdStationHydro>Z987654321</CdStationHydro>
+          </CourbeTarage>
+          <CourbeTarage>
+              <CdCourbeTarage>4321</CdCourbeTarage>
+              <LbCourbeTarage>Courbe puissance</LbCourbeTarage>
+              <TypCourbeTarage>4</TypCourbeTarage>
+              <CdStationHydro>C123454321</CdStationHydro>
+              <CdContact>22</CdContact>
+              <PivotsCourbeTarage>
+                  <PivotCourbeTarage>
+                      <HtPivotCourbeTarage>76.4</HtPivotCourbeTarage>
+                      <VarAPivotCourbeTarage>1.0</VarAPivotCourbeTarage>
+                      <VarBPivotCourbeTarage>1.0</VarBPivotCourbeTarage>
+                      <VarHPivotCourbeTarage>1.0</VarHPivotCourbeTarage>
+                  </PivotCourbeTarage>
+                  <PivotCourbeTarage>
+                      <HtPivotCourbeTarage>541.3</HtPivotCourbeTarage>
+                      <VarAPivotCourbeTarage>1.3</VarAPivotCourbeTarage>
+                      <VarBPivotCourbeTarage>1.1</VarBPivotCourbeTarage>
+                      <VarHPivotCourbeTarage>512.9</VarHPivotCourbeTarage>
+                  </PivotCourbeTarage>
+              </PivotsCourbeTarage>
+              <PeriodesUtilisationCourbeTarage>
+                  <PeriodeUtilisationCourbeTarage>
+                      <DtDebPeriodeUtilisationCourbeTarage>2016-07-11T15:08:34</DtDebPeriodeUtilisationCourbeTarage>
+                      <DtFinPeriodeUtilisationCourbeTarage>2050-02-01T10:00:00</DtFinPeriodeUtilisationCourbeTarage>
+                      <EtatPeriodeUtilisationCourbeTarage>8</EtatPeriodeUtilisationCourbeTarage>
+                      <HistosActivationPeriode>
+                          <HistoActivationPeriode>
+                              <DtActivationHistoActivationPeriode>2017-01-17T12:10:33</DtActivationHistoActivationPeriode>
+                          </HistoActivationPeriode>
+                      </HistosActivationPeriode>
+                  </PeriodeUtilisationCourbeTarage>
+              </PeriodesUtilisationCourbeTarage>
+              <DtMajCourbeTarage>2017-12-09T11:51:50</DtMajCourbeTarage>
+          </CourbeTarage>
+      </CourbesTarage>
+  </Donnees>
+</hydrometrie>

@@ -864,6 +864,10 @@ def _courbetarage_to_element(courbe, bdhydro=False, strict=True, version='1.1'):
     """Return a <CourbeTarage> element from a courbetarage.CourbeTarage."""
 
     if courbe is not None:
+        if version == '2':
+            tags = _sandre_tags.SandreTagsV2
+        else:
+            tags = _sandre_tags.SandreTagsV1
 
         # prerequisite
         _required(courbe, ['code', 'libelle', 'typect', 'station'])
@@ -878,8 +882,14 @@ def _courbetarage_to_element(courbe, bdhydro=False, strict=True, version='1.1'):
         story['CdCourbeTarage'] = {'value': courbe.code}
         story['LbCourbeTarage'] = {'value': courbe.libelle}
         story['TypCourbeTarage'] = {'value': courbe.typect}
+        if version == '2'and courbe.dtcreation is not None:
+            story['DtCreatCourbeTarage'] = {
+                'value': courbe.dtcreation.strftime('%Y-%m-%dT%H:%M:%S')}
         story['LimiteInfCourbeTarage'] = {'value': courbe.limiteinf}
         story['LimiteSupCourbeTarage'] = {'value': courbe.limitesup}
+        if version == '2':
+            story['LimiteInfPubCourbeTarage'] = {'value': courbe.limiteinfpub}
+            story['LimiteSupPubCourbeTarage'] = {'value': courbe.limitesuppub}
         story['DnCourbeTarage'] = {'value': courbe.dn}
         story['AlphaCourbeTarage'] = {'value': courbe.alpha}
         story['BetaCourbeTarage'] = {'value': courbe.beta}
@@ -895,7 +905,8 @@ def _courbetarage_to_element(courbe, bdhydro=False, strict=True, version='1.1'):
         story['DtMajCourbeTarage'] = {
             'value': None if courbe.dtmaj is None
             else courbe.dtmaj.strftime('%Y-%m-%dT%H:%M:%S')}
-
+        if version == '2':
+            story['ComPrivCourbeTarage'] = {'value': courbe.commentaireprive}
         # make element <CourbeTarage>
         element = _factory(root=_etree.Element('CourbeTarage'), story=story)
 
@@ -907,7 +918,7 @@ def _courbetarage_to_element(courbe, bdhydro=False, strict=True, version='1.1'):
             for pivot in courbe.pivots:
                 child.append(
                     _pivotct_to_element(
-                        pivot, strict=strict))
+                        pivot, strict=strict, version=version))
 
         # add periodes if necssary
         if len(courbe.periodes) > 0:
@@ -915,20 +926,21 @@ def _courbetarage_to_element(courbe, bdhydro=False, strict=True, version='1.1'):
             for periode in courbe.periodes:
                 child.append(
                     _periodect_to_element(
-                        periode, strict=strict))
+                        periode, strict=strict, version=version, tags=tags))
                 # return
         return element
+
 
 def _pivotct_to_element(pivot, strict=True, version='1.1'):
     _required(pivot, ['hauteur'])
     story = _collections.OrderedDict()
     story['HtPivotCourbeTarage'] = {'value': pivot.hauteur}
-    story['QualifPivotCourbeTarage'] = {'value': pivot.qualif}
+    if version == '1.1':
+        story['QualifPivotCourbeTarage'] = {'value': pivot.qualif}
 
     if isinstance(pivot, _courbetarage.PivotCTPoly):
         _required(pivot, ['debit'])
         story['QPivotCourbeTarage'] = {'value': pivot.debit}
-        pass
     elif isinstance(pivot, _courbetarage.PivotCTPuissance):
         _required(pivot, ['vara', 'varb', 'varh'])
         story['VarAPivotCourbeTarage'] = {'value': pivot.vara}
@@ -940,10 +952,12 @@ def _pivotct_to_element(pivot, strict=True, version='1.1'):
 
     return _factory(root=_etree.Element('PivotCourbeTarage'), story=story)
 
-def _periodect_to_element(periode, strict=True, version='1.1'):
+
+def _periodect_to_element(periode, strict=True, version='1.1',
+                          tags=_sandre_tags.SandreTagsV1):
     _required(periode, ['dtdeb', 'etat'])
     story = _collections.OrderedDict()
-    story['DtDebutPeriodeUtilisationCourbeTarage'] = {
+    story[tags.dtdebperiodeutilct] = {
         'value': periode.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')}
     if periode.dtfin is not None:
         story['DtFinPeriodeUtilisationCourbeTarage'] = {
@@ -952,29 +966,32 @@ def _periodect_to_element(periode, strict=True, version='1.1'):
         story['EtatPeriodeUtilisationCourbeTarage'] = {
             'value': periode.etat}
     if len(periode.histos) > 0:
-        story['HistosActivPeriod'] = {
+        story[tags.histosactivationperiode] = {
             'value': None, 'force': True}
     element = _factory(root=_etree.Element('PeriodeUtilisationCourbeTarage'), story=story)
 
     # Add histos if necessary
     if len(periode.histos) > 0:
-        child = element.find('HistosActivPeriod')
+        child = element.find(tags.histosactivationperiode)
         for histo in periode.histos:
             child.append(
                 _histoperiode_to_element(
-                    histo, strict=strict))
+                    histo, strict=strict, version=version, tags=tags))
     return element
 
-def _histoperiode_to_element(histo, strict=True, version='1.1'):
+
+def _histoperiode_to_element(histo, strict=True, version='1.1',
+                             tags=_sandre_tags.SandreTagsV1):
     _required(histo, ['dtactivation'])
     story = _collections.OrderedDict()
-    story['DtActivHistoActivPeriod'] = {
+    story[tags.dtactivationhistoperiode] = {
         'value': histo.dtactivation.strftime('%Y-%m-%dT%H:%M:%S')}
     if histo.dtdesactivation is not None:
-        story['DtDesactivHistoActivPeriod'] = {
+        story[tags.dtdesactivationhistoperiode] = {
             'value': histo.dtdesactivation.strftime('%Y-%m-%dT%H:%M:%S')}
 
-    return _factory(root=_etree.Element('HistoActivPeriod'), story=story)
+    return _factory(root=_etree.Element(tags.histoactivationperiode),
+                    story=story)
 
 
 def _jaugeage_to_element(jaugeage, bdhydro=False, strict=True, version='1.1'):

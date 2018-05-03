@@ -328,7 +328,8 @@ def _parse(src, ordered=True):
         'evenements': _evenements_from_element(
             tree.find('Donnees/Evenements')),
         'courbestarage': _courbestarage_from_element(
-            tree.find('Donnees/CourbesTarage')),
+            tree.find('Donnees/CourbesTarage'),
+            version=scenario.version, tags=tags),
         'jaugeages': _jaugeages_from_element(
             tree.find('Donnees/Jaugeages')),
         'courbescorrection': _courbescorrection_from_element(
@@ -703,7 +704,8 @@ def _evenement_from_element(element):
             publication=_value(element, 'TypPublicationEvenement'),
             dtmaj=_value(element, 'DtMajEvenement'))
 
-def _courbetarage_from_element(element):
+
+def _courbetarage_from_element(element, version, tags):
     """Return a courbetarage.CourbeTarage from a <CourbeTarage> element."""
     if element is None:
         raise TypeError("CourbesTarage must not be empty")
@@ -727,11 +729,19 @@ def _courbetarage_from_element(element):
         'contact': contact,
         'pivots': [_pivotct_from_element(e, typect)
             for e in element.findall('PivotsCourbeTarage/PivotCourbeTarage')],
-        'periodes': [_periodect_from_element(e)
+        'periodes': [_periodect_from_element(e, version, tags)
             for e in element.findall(('PeriodesUtilisationCourbeTarage/'
                                       'PeriodeUtilisationCourbeTarage'))],
         'dtmaj': _value(element, 'DtMajCourbeTarage')
         }
+
+    if version == '2':
+        args['limiteinfpub'] = _value(element, 'LimiteInfPubCourbeTarage',
+                                      float)
+        args['limitesuppub'] = _value(element, 'LimiteSupPubCourbeTarage',
+                                      float)
+        args['dtcreation'] = _value(element, 'DtCreatCourbeTarage')
+        args['commentaireprive'] = _value(element, 'ComPrivCourbeTarage')
 
     return _courbetarage.CourbeTarage(**args)
 
@@ -759,21 +769,22 @@ def _pivotct_from_element(element, typect):
         raise ValueError('TypCourbeTarage must be 0 or 4')
 
 
-def _periodect_from_element(element):
+def _periodect_from_element(element, version, tags):
     """Return a PeriodeCT from  <PeriodeUtilisationCourbeTarage> element."""
     return _courbetarage.PeriodeCT(
-        dtdeb=_value(element, 'DtDebutPeriodeUtilisationCourbeTarage'),
+        dtdeb=_value(element, tags.dtdebperiodeutilct),
         dtfin=_value(element, 'DtFinPeriodeUtilisationCourbeTarage'),
         etat=_value(element, 'EtatPeriodeUtilisationCourbeTarage', int),
-        histos=[_histoactiveperiode_from_element(e)
-            for e in element.findall('HistosActivPeriod/HistoActivPeriod')]
+        histos=[_histoactiveperiode_from_element(e, tags)
+            for e in element.findall(tags.histosactivationperiode + '/' + 
+                                     tags.histoactivationperiode)]
         )
 
-def _histoactiveperiode_from_element(element):
+def _histoactiveperiode_from_element(element, tags):
     """Return HistoActivePeriode from <HistoActivPeriod>"""
     return _courbetarage.HistoActivePeriode(
-        dtactivation=_value(element, 'DtActivHistoActivPeriod'),
-        dtdesactivation=_value(element, 'DtDesactivHistoActivPeriod')
+        dtactivation=_value(element, tags.dtactivationhistoperiode),
+        dtdesactivation=_value(element, tags.dtdesactivationhistoperiode)
         )
 
 
@@ -1322,8 +1333,8 @@ _modelesprevision_from_element = _global_function_builder(
 _evenements_from_element = _global_function_builder(
     './Evenement', _evenement_from_element)
 # return a list of courbetarage.CourbeTarage from a <CourbesTarage> element
-_courbestarage_from_element = _global_function_builder(
-    './CourbeTarage', _courbetarage_from_element)
+# _courbestarage_from_element = _global_function_builder(
+#     './CourbeTarage', _courbetarage_from_element)
 # return a list of jaugeage.Jaugeage from a <Jaugeage> element
 _jaugeages_from_element = _global_function_builder(
     './Jaugeage', _jaugeage_from_element)
@@ -1339,6 +1350,15 @@ _seriesmeteo_from_element_v2 = _global_function_builder(
 # return a list of simulation.Simulation from a <Simuls> element
 _simulations_from_element = _global_function_builder(
     './Simul', _simulation_from_element)
+
+
+def _courbestarage_from_element(elem, version, tags):
+    courbestarage = []
+    if elem is not None:
+        for item in elem.findall('./CourbeTarage'):
+            courbestarage.append(_courbetarage_from_element(item, version,
+                                                            tags))
+    return courbestarage
 
 
 def _serieshydro_from_element(elem, version, tags):

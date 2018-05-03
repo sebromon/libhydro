@@ -33,6 +33,13 @@ class SandreTagsV1(object):
     seriesobselabhydro = 'ObssElabHydro'
     serieobselabhydro = 'ObsElabHydro'
 
+    # Courbes de tarage
+    dtdebperiodeutilct = 'DtDebutPeriodeUtilisationCourbeTarage'
+    histosactivationperiode = 'HistosActivPeriod'
+    histoactivationperiode = 'HistoActivPeriod'
+    dtactivationhistoperiode = 'DtActivHistoActivPeriod'
+    dtdesactivationhistoperiode = 'DtDesactivHistoActivPeriod'
+
 
 class SandreTagsV2(object):
     """Balises Sandre V2"""
@@ -51,3 +58,10 @@ class SandreTagsV2(object):
 
     seriesobselabhydro = 'SeriesObsElaborHydro'
     serieobselabhydro = 'SerieObsElaborHydro'
+
+    # Courbes de tarage
+    dtdebperiodeutilct = 'DtDebPeriodeUtilisationCourbeTarage'
+    histosactivationperiode = 'HistosActivationPeriode'
+    histoactivationperiode = 'HistoActivationPeriode'
+    dtactivationhistoperiode = 'DtActivationHistoActivationPeriode'
+    dtdesactivationhistoperiode = 'DtDesactivationHistoActivationPeriode'
