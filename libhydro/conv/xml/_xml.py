@@ -280,7 +280,8 @@ class Message(object):
             jaugeages=_from_xml._jaugeages_from_element(
                 tree.find('Donnees/Jaugeages')),
             courbescorrection=_from_xml._courbescorrection_from_element(
-                tree.find('Donnees/CourbesCorrH')),
+                tree.find('Donnees/CourbesCorrH'),
+                scenario.version, tags),
             serieshydro=_from_xml._serieshydro_from_element(
                 tree.find('Donnees/' + tags.serieshydro),
                 scenario.version, tags),

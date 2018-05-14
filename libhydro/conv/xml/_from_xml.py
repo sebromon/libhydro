@@ -333,7 +333,8 @@ def _parse(src, ordered=True):
         'jaugeages': _jaugeages_from_element(
             tree.find('Donnees/Jaugeages')),
         'courbescorrection': _courbescorrection_from_element(
-            tree.find('Donnees/CourbesCorrH')),
+            tree.find('Donnees/CourbesCorrH'),
+            version=scenario.version, tags=tags),
         'serieshydro': _serieshydro_from_element(
             tree.find('Donnees/' + tags.serieshydro),
             version=scenario.version, tags=tags),
@@ -845,7 +846,7 @@ def _hjaug_from_element(element):
     return _jaugeage.HauteurJaugeage(**args)
 
 
-def _courbecorrection_from_element(element):
+def _courbecorrection_from_element(element, version, tags):
     """Return a courbecorrection.CourbeCorrection from a <CourbeCorrH> element."""
     if element is None:
         raise TypeError("CourbesCorrH must not be empty")
@@ -853,21 +854,23 @@ def _courbecorrection_from_element(element):
         'station': _sitehydro.Station(code=_value(element, 'CdStationHydro')),
         'libelle': _value(element, 'LbCourbeCorrH'),
         'commentaire': _value(element, 'ComCourbeCorrH'),
-        'pivots': [_pivotcc_from_element(e)
-            for e in element.findall('PointsPivot/PointPivot')],
+        'pivots': [_pivotcc_from_element(e, version, tags)
+                   for e in element.findall('PointsPivot/PointPivot')],
         'dtmaj': _value(element, 'DtMajCourbeCorrH')
         }
 
     return _courbecorrection.CourbeCorrection(**args)
 
-def _pivotcc_from_element(element):
+
+def _pivotcc_from_element(element, version, tags):
     """Return courbecorrection.PivotCC from a <PointPivot> element."""
     return _courbecorrection.PivotCC(
         dte=_value(element, 'DtPointPivot'),
         deltah=_value(element, 'DeltaHPointPivot', float),
         dtactivation=_value(element, 'DtActivationPointPivot'),
-        dtdesactivation=_value(element, 'DtDesactivPointPivot')
+        dtdesactivation=_value(element, tags.dtdesactivationpointpivot)
         )
+
 
 def _seriehydro_from_element(element, version, tags):
     """Return a obshydro.Serie from a <Serie> element."""
@@ -1339,8 +1342,8 @@ _evenements_from_element = _global_function_builder(
 _jaugeages_from_element = _global_function_builder(
     './Jaugeage', _jaugeage_from_element)
 # return a list of courbecorrection.CourbeCorrection from a <CourbesCorrH> element
-_courbescorrection_from_element = _global_function_builder(
-    './CourbeCorrH', _courbecorrection_from_element)
+# _courbescorrection_from_element = _global_function_builder(
+#     './CourbeCorrH', _courbecorrection_from_element)
 # return a list of obshydro.Serie from a <Series> element
 # _serieshydro_from_element = _global_function_builder(
 #     './Serie', _seriehydro_from_element)
@@ -1350,6 +1353,14 @@ _seriesmeteo_from_element_v2 = _global_function_builder(
 # return a list of simulation.Simulation from a <Simuls> element
 _simulations_from_element = _global_function_builder(
     './Simul', _simulation_from_element)
+
+
+def _courbescorrection_from_element(elem, version, tags):
+    courbes = []
+    if elem is not None:
+        for item in elem.findall('./CourbeCorrH'):
+            courbes.append(_courbecorrection_from_element(item, version, tags))
+    return courbes
 
 
 def _courbestarage_from_element(elem, version, tags):

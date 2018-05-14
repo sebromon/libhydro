@@ -40,6 +40,9 @@ class SandreTagsV1(object):
     dtactivationhistoperiode = 'DtActivHistoActivPeriod'
     dtdesactivationhistoperiode = 'DtDesactivHistoActivPeriod'
 
+    # Courbes de correction
+    dtdesactivationpointpivot = 'DtDesactivPointPivot'
+
 
 class SandreTagsV2(object):
     """Balises Sandre V2"""
@@ -65,3 +68,7 @@ class SandreTagsV2(object):
     histoactivationperiode = 'HistoActivationPeriode'
     dtactivationhistoperiode = 'DtActivationHistoActivationPeriode'
     dtdesactivationhistoperiode = 'DtDesactivationHistoActivationPeriode'
+
+    # Courbes de correction
+    dtdesactivationpointpivot = 'DtDesactivationPointPivot'
+

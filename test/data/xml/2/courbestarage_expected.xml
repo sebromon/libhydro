@@ -110,6 +110,28 @@
               </PeriodesUtilisationCourbeTarage>
               <DtMajCourbeTarage>2017-12-09T11:51:50</DtMajCourbeTarage>
           </CourbeTarage>
+          <!-- courbe with 1 point pivot -->
+          <CourbeTarage>
+              <CdCourbeTarage>8761</CdCourbeTarage>
+              <LbCourbeTarage>Courbe 1 point</LbCourbeTarage>
+              <TypCourbeTarage>0</TypCourbeTarage>
+              <CdStationHydro>M543298751</CdStationHydro>
+              <CdContact>324</CdContact>
+              <PivotsCourbeTarage>
+                  <PivotCourbeTarage>
+                      <HtPivotCourbeTarage>71.6</HtPivotCourbeTarage>
+                      <QPivotCourbeTarage>36432.1</QPivotCourbeTarage>
+                  </PivotCourbeTarage>
+              </PivotsCourbeTarage>
+          </CourbeTarage>
+        <!-- courbe without point pivot -->
+          <CourbeTarage>
+              <CdCourbeTarage>1534</CdCourbeTarage>
+              <LbCourbeTarage>Sans points</LbCourbeTarage>
+              <TypCourbeTarage>0</TypCourbeTarage>
+              <CdStationHydro>Z543298745</CdStationHydro>
+              <CdContact>810</CdContact>
+          </CourbeTarage>
       </CourbesTarage>
   </Donnees>
 </hydrometrie>

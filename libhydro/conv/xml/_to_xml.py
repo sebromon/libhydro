@@ -911,7 +911,7 @@ def _courbetarage_to_element(courbe, bdhydro=False, strict=True, version='1.1'):
         element = _factory(root=_etree.Element('CourbeTarage'), story=story)
 
         # add pivots if necessary
-        if len(courbe.pivots) == 1:
+        if version == '1.1' and len(courbe.pivots) == 1:
             raise ValueError('Courbe cannot have only one pivot')
         if len(courbe.pivots) > 0:
             child = element.find('PivotsCourbeTarage')
@@ -1103,18 +1103,24 @@ def _courbecorrection_to_element(courbe, bdhydro=False, strict=True, version='1.
         element = _factory(root=_etree.Element('CourbeCorrH'), story=story)
 
         # add pivots if necessary
-        if len(courbe.pivots) == 1:
+        if version == '1.1' and len(courbe.pivots) == 1:
             raise ValueError('Courbe cannot have only one pivot')
-        if len(courbe.pivots) > 1:
+        if len(courbe.pivots) > 0:
             child = element.find('PointsPivot')
             for pivot in courbe.pivots:
                 child.append(
                     _pivotcc_to_element(
-                        pivot, strict=strict))
+                        pivot, strict=strict, version=version))
         return element
 
+
 def _pivotcc_to_element(pivotcc, strict=True, version='1.1'):
-    _required(pivotcc, ['dte','deltah'])
+    _required(pivotcc, ['dte', 'deltah'])
+
+    if version == '2':
+        tags = _sandre_tags.SandreTagsV2
+    else:
+        tags = _sandre_tags.SandreTagsV1
 
     story = _collections.OrderedDict()
 
@@ -1124,7 +1130,7 @@ def _pivotcc_to_element(pivotcc, strict=True, version='1.1'):
         story['DtActivationPointPivot'] = {'value':
             pivotcc.dtactivation.strftime('%Y-%m-%dT%H:%M:%S')}
     if pivotcc.dtdesactivation is not None:
-        story['DtDesactivPointPivot'] = {'value':
+        story[tags.dtdesactivationpointpivot] = {'value':
             pivotcc.dtdesactivation.strftime('%Y-%m-%dT%H:%M:%S')}
 
     return _factory(root=_etree.Element('PointPivot'), story=story)

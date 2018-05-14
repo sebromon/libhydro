@@ -594,3 +594,98 @@ class TestFromXmlCourbesTarage(unittest.TestCase):
         self.assertEqual(courbe.dtmaj, datetime.datetime(2017, 12, 9,
                                                          11, 51, 50))
         self.assertIsNone(courbe.commentaireprive)
+
+
+# -- class TestFromXmlCourbesCorrection --------------------------------------
+class TestFromXmlCourbesCorrection(unittest.TestCase):
+    """XmlSeriesObsElabMeteo class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '2', 'courbescorrection.xml'))
+
+    def test_base(self):
+        """Check keys test."""
+        self.assertEqual(
+            set(self.data.keys()),
+            set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
+                 'seuilshydro', 'modelesprevision', 'evenements',
+                 'courbestarage', 'jaugeages', 'courbescorrection',
+                 'serieshydro', 'seriesmeteo', 'seriesobselab',
+                 'seriesobselabmeteo', 'simulations')))
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertEqual(self.data['intervenants'], [])
+        self.assertEqual(self.data['siteshydro'], [])
+        self.assertEqual(self.data['sitesmeteo'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['seriesmeteo'], [])
+        self.assertEqual(self.data['simulations'], [])
+        self.assertEqual(self.data['seriesobselab'], [])
+        self.assertEqual(self.data['seriesobselabmeteo'], [])
+        self.assertEqual(self.data['courbestarage'], [])
+        self.assertEqual(len(self.data['courbescorrection']), 3)
+
+
+    def test_scenario(self):
+        """Scenario test."""
+        scenario = self.data['scenario']
+        self.assertEqual(scenario.code, 'hydrometrie')
+        self.assertEqual(scenario.version, '2')
+        self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
+        self.assertEqual(scenario.dtprod,
+                         datetime.datetime(2010, 2, 26, 23, 55, 30))
+        self.assertEqual(scenario.emetteur.contact.code, '1')
+        self.assertEqual(scenario.emetteur.intervenant.code, 1537)
+        self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
+        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
+
+    def test_full_courbecorrection(self):
+        """test full courbecorrection"""
+        courbe = self.data['courbescorrection'][0]
+        self.assertEqual(courbe.station.code, 'A123456789')
+        self.assertEqual(courbe.libelle, 'Courbe de correction')
+        self.assertEqual(courbe.commentaire, 'cmnt')
+        self.assertEqual(len(courbe.pivots), 2)
+        pivot1 = courbe.pivots[0]
+        pivot2 = courbe.pivots[1]
+        self.assertEqual(pivot1.dte, datetime.datetime(2015, 10, 2, 9, 10, 54))
+        self.assertEqual(pivot1.deltah, -10)
+        self.assertEqual(pivot1.dtactivation,
+                         datetime.datetime(2016, 5, 7, 11, 51, 32))
+        self.assertEqual(pivot1.dtdesactivation,
+                         datetime.datetime(2017, 4, 11, 7, 14, 58))
+
+        self.assertEqual(pivot2.dte, datetime.datetime(2016, 1, 3, 17, 14, 23))
+        self.assertEqual(pivot2.deltah, 15.4)
+        self.assertIsNone(pivot2.dtactivation)
+        self.assertIsNone(pivot2.dtdesactivation)
+        self.assertEqual(courbe.dtmaj,
+                         datetime.datetime(2018, 5, 14, 12, 23, 31))
+
+    def test_courbecorrection_1point(self):
+        """test courbecorrection 1 point"""
+        courbe = self.data['courbescorrection'][1]
+        self.assertEqual(courbe.station.code, 'K123412340')
+        self.assertEqual(courbe.libelle, 'Courbe')
+        self.assertEqual(courbe.commentaire, 'com')
+        self.assertEqual(len(courbe.pivots), 1)
+        pivot1 = courbe.pivots[0]
+        self.assertEqual(pivot1.dte, datetime.datetime(2018, 4, 20, 13, 18, 8))
+        self.assertEqual(pivot1.deltah, 0)
+        self.assertEqual(pivot1.dtactivation,
+                         datetime.datetime(2018, 3, 15, 18, 36, 44))
+        self.assertIsNone(pivot1.dtdesactivation)
+        self.assertIsNone(courbe.dtmaj)
+
+    def test_courbecorrection_0point(self):
+        """test courbecorrection 0 point"""
+        courbe = self.data['courbescorrection'][2]
+        self.assertEqual(courbe.station.code, 'K123412340')
+        self.assertIsNone(courbe.libelle, 'Courbe')
+        self.assertIsNone(courbe.commentaire, 'com')
+        self.assertEqual(len(courbe.pivots), 0)
+        self.assertIsNone(courbe.dtmaj)

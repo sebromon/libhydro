@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hydrometrie xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2/sandre_sc_hydrometrie.xsd">
+<!-- <hydrometrie> -->
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>2</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2010-02-26T23:55:30</DateHeureCreationFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact>1</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+    </Destinataire>
+  </Scenario>
+  <Donnees>
+      <CourbesCorrH>
+          <!-- Courbe avec deux points pivots -->
+          <CourbeCorrH>
+              <CdStationHydro>A123456789</CdStationHydro>
+              <LbCourbeCorrH>Courbe de correction</LbCourbeCorrH>
+              <ComCourbeCorrH>cmnt</ComCourbeCorrH>
+              <PointsPivot>
+                  <PointPivot>
+                      <DtPointPivot>2015-10-02T09:10:54</DtPointPivot>
+                      <DeltaHPointPivot>-10.0</DeltaHPointPivot>
+                      <DtActivationPointPivot>2016-05-07T11:51:32</DtActivationPointPivot>
+                      <DtDesactivationPointPivot>2017-04-11T07:14:58</DtDesactivationPointPivot>
+                  </PointPivot>
+                  <PointPivot>
+                      <DtPointPivot>2016-01-03T17:14:23</DtPointPivot>
+                      <DeltaHPointPivot>15.4</DeltaHPointPivot>
+                  </PointPivot>
+              </PointsPivot>
+              <DtMajCourbeCorrH>2018-05-14T12:23:31</DtMajCourbeCorrH>
+          </CourbeCorrH>
+          <!-- Courbe avec 1 point pivot -->
+          <CourbeCorrH>
+              <CdStationHydro>K123412340</CdStationHydro>
+              <LbCourbeCorrH>Courbe</LbCourbeCorrH>
+              <ComCourbeCorrH>com</ComCourbeCorrH>
+              <PointsPivot>
+                  <PointPivot>
+                      <DtPointPivot>2018-04-20T13:18:08</DtPointPivot>
+                      <DeltaHPointPivot>0.0</DeltaHPointPivot>
+                      <DtActivationPointPivot>2018-03-15T18:36:44</DtActivationPointPivot>
+                  </PointPivot>
+              </PointsPivot>
+          </CourbeCorrH>
+          <!-- Courbe sans point pivot -->
+          <CourbeCorrH>
+              <CdStationHydro>K123412340</CdStationHydro>
+          </CourbeCorrH>
+      </CourbesCorrH>
+  </Donnees>
+</hydrometrie>
