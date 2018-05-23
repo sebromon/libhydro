@@ -331,7 +331,8 @@ def _parse(src, ordered=True):
             tree.find('Donnees/CourbesTarage'),
             version=scenario.version, tags=tags),
         'jaugeages': _jaugeages_from_element(
-            tree.find('Donnees/Jaugeages')),
+            tree.find('Donnees/Jaugeages'),
+            version=scenario.version, tags=tags),
         'courbescorrection': _courbescorrection_from_element(
             tree.find('Donnees/CourbesCorrH'),
             version=scenario.version, tags=tags),
@@ -789,7 +790,7 @@ def _histoactiveperiode_from_element(element, tags):
         )
 
 
-def _jaugeage_from_element(element):
+def _jaugeage_from_element(element, version, tags):
     """Return a jaugeage.Jaugeage from a <Jaugeage> element."""
     if element is None:
         raise TypeError("Jaugeages must not be empty")
@@ -810,7 +811,7 @@ def _jaugeage_from_element(element):
         'commentaire': _value(element, 'ComJaugeage'),
         'vitessemoy': _value(element, 'VitesseMoyJaugeage', float),
         'vitessemax': _value(element, 'VitesseMaxJaugeage', float),
-        'vitessemoy_surface': _value(element, 'VitesseMoySurfaceJaugeage',
+        'vitessemax_surface': _value(element, tags.vitessemaxsurface,
                                      float),
         'site': site,
         'hauteurs': [_hjaug_from_element(e)
@@ -820,7 +821,28 @@ def _jaugeage_from_element(element):
     if mode is not None:
         args['mode'] = mode
 
+    if version == '2':
+        args['numero'] = _value(element, 'NumJaugeage')
+        args['incertitude_calculee'] = _value(element, 'IncertCalJaugeage',
+                                              float)
+        args['incertitude_retenue'] = _value(element, 'IncertRetenueJaugeage',
+                                             float)
+        qualification = _value(element, 'QualifJaugeage')
+        if qualification is not None:
+            args['qualification'] = qualification
+        args['commentaire_prive'] = _value(element, 'ComPrivJaugeage')
+        args['courbestarage'] = [_ctjaugeage_from_element(e)
+                                 for e in element.findall(
+                                     'CourbesTarage/CourbeTarage')]
+
     return _jaugeage.Jaugeage(**args)
+
+
+def _ctjaugeage_from_element(element):
+    """Return a jaugeage.CourbeTarageJaugeage from a <CourbeTarage> element"""
+    return _jaugeage.CourbeTarageJaugeage(
+        code=_value(element, 'CdCourbeTarage', int),
+        libelle=_value(element, 'LbCourbeTarage'))
 
 
 def _hjaug_from_element(element):
@@ -1339,8 +1361,8 @@ _evenements_from_element = _global_function_builder(
 # _courbestarage_from_element = _global_function_builder(
 #     './CourbeTarage', _courbetarage_from_element)
 # return a list of jaugeage.Jaugeage from a <Jaugeage> element
-_jaugeages_from_element = _global_function_builder(
-    './Jaugeage', _jaugeage_from_element)
+# _jaugeages_from_element = _global_function_builder(
+#     './Jaugeage', _jaugeage_from_element)
 # return a list of courbecorrection.CourbeCorrection from a <CourbesCorrH> element
 # _courbescorrection_from_element = _global_function_builder(
 #     './CourbeCorrH', _courbecorrection_from_element)
@@ -1354,6 +1376,13 @@ _seriesmeteo_from_element_v2 = _global_function_builder(
 _simulations_from_element = _global_function_builder(
     './Simul', _simulation_from_element)
 
+
+def _jaugeages_from_element(elem, version, tags):
+    jaugeages = []
+    if elem is not None:
+        for item in elem.findall('./Jaugeage'):
+            jaugeages.append(_jaugeage_from_element(item, version, tags))
+    return jaugeages
 
 def _courbescorrection_from_element(elem, version, tags):
     courbes = []

@@ -997,7 +997,12 @@ def _histoperiode_to_element(histo, strict=True, version='1.1',
 def _jaugeage_to_element(jaugeage, bdhydro=False, strict=True, version='1.1'):
     """Return a <Jaugeage> element from a jaugeage.Jaugeage."""
     if jaugeage is not None:
-        _required(jaugeage, ['code', 'site'])
+        if version == '1.1':
+            _required(jaugeage, ['code', 'site'])
+            tags = _sandre_tags.SandreTagsV1
+        else:
+            _required(jaugeage, ['site', 'dtdeb'])
+            tags = _sandre_tags.SandreTagsV2
         if strict:
             _required(jaugeage.site, ['code'])
         # template for seriehydro simple elements
@@ -1020,8 +1025,8 @@ def _jaugeage_to_element(jaugeage, bdhydro=False, strict=True, version='1.1'):
         story['ComJaugeage'] = {'value': jaugeage.commentaire}
         story['VitesseMoyJaugeage'] = {'value': jaugeage.vitessemoy}
         story['VitesseMaxJaugeage'] = {'value': jaugeage.vitessemax}
-        story['VitesseMoySurfaceJaugeage'] = {
-            'value': jaugeage.vitessemoy_surface}
+        story[tags.vitessemaxsurface] = {
+            'value': jaugeage.vitessemax_surface}
         # TODO fuzzy mode
         story['CdSiteHydro'] = {'value': jaugeage.site.code}
 
@@ -1034,6 +1039,21 @@ def _jaugeage_to_element(jaugeage, bdhydro=False, strict=True, version='1.1'):
             story['DtMajJaugeage'] = {
                 'value': jaugeage.dtmaj.strftime('%Y-%m-%dT%H:%M:%S')}
 
+        if version == '2':
+            if jaugeage.numero is not None:
+                story['NumJaugeage'] = {'value': jaugeage.numero}
+            if jaugeage.incertitude_calculee is not None:
+                story['IncertCalJaugeage'] = {'value': jaugeage.incertitude_calculee}
+            if jaugeage.incertitude_retenue is not None:
+                story['IncertRetenueJaugeage'] = {'value': jaugeage.incertitude_retenue}
+            if jaugeage.qualification is not None:
+                story['QualifJaugeage'] = {'value': jaugeage.qualification}
+            if jaugeage.commentaire_prive is not None:
+                story['ComPrivJaugeage'] = {'value': jaugeage.commentaire_prive}
+            if len(jaugeage.courbestarage) > 0:
+                story['CourbesTarage'] = {'value': None,
+                                          'force': True}
+
         # make element <CourbeTarage>
         element = _factory(root=_etree.Element('Jaugeage'), story=story)
 
@@ -1043,6 +1063,14 @@ def _jaugeage_to_element(jaugeage, bdhydro=False, strict=True, version='1.1'):
                 child.append(
                     _hjaug_to_element(
                         hauteur, strict=strict))
+
+        if version == '2' and len(jaugeage.courbestarage) > 0:
+            child = element.find('CourbesTarage')
+            for courbe in jaugeage.courbestarage:
+                ctel = _etree.SubElement(child, 'CourbeTarage')
+                _etree.SubElement(ctel, 'CdCourbeTarage').text = str(courbe.code)
+                if courbe.libelle is not None:
+                    _etree.SubElement(ctel, 'LbCourbeTarage').text = courbe.libelle
 
         return element
 

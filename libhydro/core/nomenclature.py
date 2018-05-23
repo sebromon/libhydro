@@ -347,6 +347,11 @@ NOMENCLATURE = {
     876: {1: 'Observation pondérée',
           2: 'Indice de précipitations antérieures'},
 
+    # Qualification du jeugeage
+    877: {0: 'Inconnu',
+          1: 'Douteux',
+          2: 'Bon'},
+
     # Continuité de la donnée de l'observation hydro
     923: {
         0: 'Valeur continue',

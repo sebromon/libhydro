@@ -16,13 +16,18 @@ from __future__ import (
     print_function as _print_function
 )
 
-from . import (_composant, sitehydro as _sitehydro)
+import collections as _collections
+
+from . import (_composant, sitehydro as _sitehydro,
+               courbetarage as _courbetarage)
 
 # -- strings ------------------------------------------------------------------
 __author__ = """Sebastien ROMON"""
 __version__ = """0.1"""
 __date__ = """2017-06-30"""
 
+CourbeTarageJaugeage = _collections.namedtuple('CourbeTarageJaugeage',
+                                               ['code', 'libelle'])
 
 class HauteurJaugeage(object):
     """Class HauteurJaugeage
@@ -212,12 +217,17 @@ class Jaugeage(object):
     dtmaj = _composant.Datefromeverything(required=False)
 
     mode = _composant.Nomenclatureitem(nomenclature=873, required=False)
+    qualification = _composant.Nomenclatureitem(nomenclature=877,
+                                                required=False)
 
     def __init__(self, code=None, dte=None, debit=None, dtdeb=None, dtfin=None,
                  section_mouillee=None, perimetre_mouille=None,
-                 largeur_miroir=None, mode=None, commentaire=None,
-                 vitessemoy=None, vitessemax=None, vitessemoy_surface=None,
-                 site=None, hauteurs=None, dtmaj=None, tri_hauteurs=True, strict=True):
+                 largeur_miroir=None, mode=0, commentaire=None,
+                 vitessemoy=None, vitessemax=None, vitessemax_surface=None,
+                 site=None, hauteurs=None, dtmaj=None, numero=None,
+                 incertitude_calculee=None, incertitude_retenue=None,
+                 qualification=0, commentaire_prive=None,
+                 courbestarage=None, tri_hauteurs=True, strict=True):
 
         self._strict = bool(strict)
         self._tri_hauteurs = bool(tri_hauteurs)
@@ -225,11 +235,15 @@ class Jaugeage(object):
         self.commentaire = str(commentaire) \
             if commentaire is not None else None
 
+        self.commentaire_prive = str(commentaire_prive) \
+            if commentaire_prive is not None else None
+
         self.dte = dte
         self.dtdeb = dtdeb
         self.dtfin = dtfin
         self.dtmaj = dtmaj
         self.mode = mode
+        self.qualification = qualification
 
         # -- full properties --
         self._code = None
@@ -254,11 +268,21 @@ class Jaugeage(object):
         self.vitessemoy = vitessemoy
         self._vitessemax = None
         self.vitessemax = vitessemax
-        self._vitessemoy_surface = None
-        self.vitessemoy_surface = vitessemoy_surface
+        self._vitessemax_surface = None
+        self.vitessemax_surface = vitessemax_surface
 
         self._hauteurs = []
         self.hauteurs = hauteurs
+
+        self._numero = numero
+        self.numero = numero
+        self._incertitude_retenue = None
+        self.incertitude_retenue = incertitude_retenue
+        self._incertitude_calculee = None
+        self.incertitude_calculee = incertitude_calculee
+
+        self._courbestarage = []
+        self.courbestarage = courbestarage
 
     @property
     def code(self):
@@ -268,10 +292,8 @@ class Jaugeage(object):
     @code.setter
     def code(self, code):
         """Set code."""
-        if code is None:
-            raise TypeError('code is required')
-        else:
-            code = str(code)
+        if code is not None:
+            code = int(code)
         # all is well
         self._code = code
 
@@ -354,17 +376,17 @@ class Jaugeage(object):
         self._vitessemax = vitessemax
 
     @property
-    def vitessemoy_surface(self):
-        """Return vitessemoy_surface."""
-        return self._vitessemoy_surface
+    def vitessemax_surface(self):
+        """Return vitessemax_surface."""
+        return self._vitessemax_surface
 
-    @vitessemoy_surface.setter
-    def vitessemoy_surface(self, vitessemoy_surface):
-        """Set vitessemoy_surface."""
-        if vitessemoy_surface is not None:
-            vitessemoy_surface = float(vitessemoy_surface)
+    @vitessemax_surface.setter
+    def vitessemax_surface(self, vitessemax_surface):
+        """Set vitessemax_surface."""
+        if vitessemax_surface is not None:
+            vitessemax_surface = float(vitessemax_surface)
         # all is well
-        self._vitessemoy_surface = vitessemoy_surface
+        self._vitessemax_surface = vitessemax_surface
 
     # -- property station --
     @property
@@ -409,6 +431,73 @@ class Jaugeage(object):
             self._hauteurs.append(hauteur)
         if self._tri_hauteurs:
             self._hauteurs.sort()
+
+    @property
+    def numero(self):
+        """Return numero."""
+        return self._numero
+
+    @numero.setter
+    def numero(self, numero):
+        """Set numero."""
+        if numero is not None:
+            numero = str(numero)
+            if len(numero) > 10:
+                raise ValueError('max length of numero muset be 10')
+        # all is well
+        self._numero = numero
+
+    @property
+    def incertitude_retenue(self):
+        """Return incertitude_retenue."""
+        return self._incertitude_retenue
+
+    @incertitude_retenue.setter
+    def incertitude_retenue(self, incertitude_retenue):
+        """Set incertitude_retenue."""
+        if incertitude_retenue is not None:
+            incertitude_retenue = float(incertitude_retenue)
+        # all is well
+        self._incertitude_retenue = incertitude_retenue
+
+    @property
+    def incertitude_calculee(self):
+        """Return incertitude_calculee."""
+        return self._incertitude_calculee
+
+    @incertitude_calculee.setter
+    def incertitude_calculee(self, incertitude_calculee):
+        """Set incertitude_calculee."""
+        if incertitude_calculee is not None:
+            incertitude_calculee = float(incertitude_calculee)
+        # all is well
+        self._incertitude_calculee = incertitude_calculee
+
+    # -- property courbestarage --
+    @property
+    def courbestarage(self):
+        """Return hauteurs."""
+        return self._courbestarage
+
+    @courbestarage.setter
+    def courbestarage(self, courbestarage):
+        """Set hauteurs."""
+        self._courbestarage = []
+        if courbestarage is None:
+            return
+        if hasattr(courbestarage, 'code'):
+            courbestarage = [courbestarage]
+        for courbe in courbestarage:
+            if hasattr(courbe, 'code'):
+                code = int(courbe.code)
+                libelle = None
+                if hasattr(courbe, 'libelle') and courbe.libelle is not None:
+                    libelle = str(courbe.libelle)
+                self._courbestarage.append(
+                    CourbeTarageJaugeage(code=code, libelle=libelle))
+            else:
+                raise TypeError('courbestarage is not an iterable'
+                                ' of objects with code property')
 
     def __unicode__(self):
         code = self.code if self.code is not None else '<sans code>'

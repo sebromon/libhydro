@@ -231,6 +231,7 @@ class TestMessage(unittest.TestCase):
                                                  'obsselabmeteo.xml')
         self.file_ct_v2 = os.path.join(FILES_PATH_V2, 'courbestarage.xml')
         self.file_cc_v2 = os.path.join(FILES_PATH_V2, 'courbescorrection.xml')
+        self.file_jau_v2 = os.path.join(FILES_PATH_V2, 'jaugeages.xml')
 
         self.tmp_dir = tempfile.mkdtemp(prefix='test_xml_')
         self.tmp_file = tempfile.mktemp(dir=self.tmp_dir)
@@ -405,6 +406,12 @@ class TestMessage(unittest.TestCase):
         msg = Message.from_file(self.file_cc_v2)
         msg.write(self.tmp_file, force=True, version='2')
         self.assertNotEqual(msg.courbescorrection, [])
+
+    def test_base_24(self):
+        """Message from file jaugeages Sandre V2"""
+        msg = Message.from_file(self.file_jau_v2)
+        msg.write(self.tmp_file, force=True, version='2')
+        self.assertNotEqual(msg.jaugeages, [])
 
     def test_str_01(self):
         """Test __str__ method with basic values."""

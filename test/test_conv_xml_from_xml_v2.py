@@ -628,7 +628,6 @@ class TestFromXmlCourbesCorrection(unittest.TestCase):
         self.assertEqual(self.data['courbestarage'], [])
         self.assertEqual(len(self.data['courbescorrection']), 3)
 
-
     def test_scenario(self):
         """Scenario test."""
         scenario = self.data['scenario']
@@ -689,3 +688,105 @@ class TestFromXmlCourbesCorrection(unittest.TestCase):
         self.assertIsNone(courbe.commentaire, 'com')
         self.assertEqual(len(courbe.pivots), 0)
         self.assertIsNone(courbe.dtmaj)
+
+# -- class TestFromXmlJaugeages --------------------------------------
+class TestFromXmlJaugeages(unittest.TestCase):
+    """Xml Jaugeages class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '2', 'jaugeages.xml'))
+
+    def test_base(self):
+        """Check keys test."""
+        self.assertEqual(
+            set(self.data.keys()),
+            set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
+                 'seuilshydro', 'modelesprevision', 'evenements',
+                 'courbestarage', 'jaugeages', 'courbescorrection',
+                 'serieshydro', 'seriesmeteo', 'seriesobselab',
+                 'seriesobselabmeteo', 'simulations')))
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertEqual(self.data['intervenants'], [])
+        self.assertEqual(self.data['siteshydro'], [])
+        self.assertEqual(self.data['sitesmeteo'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['seriesmeteo'], [])
+        self.assertEqual(self.data['simulations'], [])
+        self.assertEqual(self.data['seriesobselab'], [])
+        self.assertEqual(self.data['seriesobselabmeteo'], [])
+        self.assertEqual(self.data['courbestarage'], [])
+        self.assertEqual(self.data['courbescorrection'], [])
+        self.assertNotEqual(self.data['jaugeages'], [])
+
+    def test_full_jaugeage(self):
+        """test full courbecorrection"""
+        jaug = self.data['jaugeages'][0]
+        # TODO code integer
+        self.assertEqual(jaug.code, 1354)
+        self.assertEqual(jaug.debit, 2513.2)
+        self.assertEqual(jaug.dtdeb,
+                         datetime.datetime(2015, 11, 23, 7, 11, 44))
+        self.assertEqual(jaug.dtfin,
+                         datetime.datetime(2015, 11, 23, 8, 24, 37))
+        self.assertEqual(jaug.section_mouillee, 5436.1)
+        self.assertEqual(jaug.perimetre_mouille, 1658.3)
+        self.assertEqual(jaug.largeur_miroir, 42.3)
+        self.assertEqual(jaug.mode, 7)
+        self.assertEqual(jaug.commentaire, 'Commentaire')
+        self.assertEqual(jaug.vitessemoy, 15.6)
+        self.assertEqual(jaug.vitessemax, 16.2)
+        self.assertEqual(jaug.vitessemax_surface, 18.4)
+        self.assertEqual(jaug.site.code, 'A7654321')
+        self.assertEqual(len(jaug.hauteurs), 1)
+
+        self.assertEqual(jaug.dtmaj,
+                         datetime.datetime(2016, 3, 14, 13, 26, 57))
+        self.assertEqual(jaug.numero, 'N15')
+        self.assertEqual(jaug.incertitude_calculee, 15.4)
+        self.assertEqual(jaug.incertitude_retenue, 15.2)
+        self.assertEqual(jaug.qualification, 2)
+        self.assertEqual(jaug.commentaire_prive, 'Commentaire privé')
+        self.assertEqual(len(jaug.courbestarage), 2)
+        ct1 = jaug.courbestarage[0]
+        ct2 = jaug.courbestarage[1]
+        self.assertEqual(ct1.code, 157)
+        self.assertEqual(ct1.libelle, 'Libellé CT')
+        self.assertEqual(ct2.code, 9831)
+        self.assertIsNone(ct2.libelle)
+
+    def test_min_jaugeage(self):
+        """test minimal jaugeage"""
+        jaug = self.data['jaugeages'][1]
+        # TODO code integer
+        self.assertIsNone(jaug.code)
+        self.assertIsNone(jaug.debit)
+        self.assertEqual(jaug.dtdeb,
+                         datetime.datetime(2016, 3, 14, 18, 54, 13))
+
+        self.assertIsNone(jaug.dtfin)
+        self.assertIsNone(jaug.section_mouillee, 5436.1)
+        self.assertIsNone(jaug.perimetre_mouille, 1658.3)
+        self.assertIsNone(jaug.largeur_miroir, 42.3)
+        self.assertEqual(jaug.mode, 0)
+        self.assertIsNone(jaug.commentaire)
+        self.assertIsNone(jaug.vitessemoy)
+        self.assertIsNone(jaug.vitessemax)
+        self.assertIsNone(jaug.vitessemax_surface)
+
+        self.assertEqual(jaug.site.code, 'R1212654')
+
+        self.assertEqual(len(jaug.hauteurs), 0)
+
+        self.assertIsNone(jaug.dtmaj)
+        self.assertIsNone(jaug.numero)
+        self.assertIsNone(jaug.incertitude_calculee)
+        self.assertIsNone(jaug.incertitude_retenue)
+
+        self.assertEqual(jaug.qualification, 0)
+
+        self.assertIsNone(jaug.commentaire_prive)
+        self.assertEqual(len(jaug.courbestarage), 0)

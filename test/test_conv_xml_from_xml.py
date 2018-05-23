@@ -740,7 +740,7 @@ class TestFromXmlJaugeages(unittest.TestCase):
     def test_jaugeage_01(self):
         """check simple jaugeage"""
         jaugeage = self.data['jaugeages'][0]
-        self.assertEqual(jaugeage.code, '184')
+        self.assertEqual(jaugeage.code, 184)
 
         self.assertIsNone(jaugeage.dte)
         self.assertIsNone(jaugeage.dtdeb)
@@ -750,11 +750,11 @@ class TestFromXmlJaugeages(unittest.TestCase):
         self.assertIsNone(jaugeage.section_mouillee)
         self.assertIsNone(jaugeage.perimetre_mouille)
         self.assertIsNone(jaugeage.largeur_miroir)
-        self.assertIsNone(jaugeage.mode)
+        self.assertEqual(jaugeage.mode, 0)
         self.assertIsNone(jaugeage.commentaire)
         self.assertIsNone(jaugeage.vitessemoy)
         self.assertIsNone(jaugeage.vitessemax)
-        self.assertIsNone(jaugeage.vitessemoy_surface)
+        self.assertIsNone(jaugeage.vitessemax_surface)
 
         self.assertEqual(jaugeage.site.code, 'K0101010')
         self.assertEqual(len(jaugeage.hauteurs), 0)
@@ -763,7 +763,7 @@ class TestFromXmlJaugeages(unittest.TestCase):
     def test_jaugeage_02(self):
         """check full jaugeage"""
         jaugeage = self.data['jaugeages'][1]
-        self.assertEqual(jaugeage.code, '159')
+        self.assertEqual(jaugeage.code, 159)
         self.assertEqual(jaugeage.dte, datetime.datetime(2015, 8, 3, 4, 5, 17))
         self.assertEqual(jaugeage.dtdeb,
                          datetime.datetime(2015, 8, 2, 6, 13, 34))
@@ -777,7 +777,7 @@ class TestFromXmlJaugeages(unittest.TestCase):
         self.assertEqual(jaugeage.commentaire, 'Commentaire')
         self.assertEqual(jaugeage.vitessemoy, 17.54)
         self.assertEqual(jaugeage.vitessemax, 19.43)
-        self.assertEqual(jaugeage.vitessemoy_surface, 18.87)
+        self.assertEqual(jaugeage.vitessemax_surface, 18.87)
         self.assertEqual(jaugeage.site.code, 'A1234567')
 
         self.assertEqual(len(jaugeage.hauteurs), 3)

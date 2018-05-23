@@ -278,7 +278,8 @@ class Message(object):
                 tree.find('Donnees/CourbesTarage'),
                 scenario.version, tags),
             jaugeages=_from_xml._jaugeages_from_element(
-                tree.find('Donnees/Jaugeages')),
+                tree.find('Donnees/Jaugeages'),
+                scenario.version, tags),
             courbescorrection=_from_xml._courbescorrection_from_element(
                 tree.find('Donnees/CourbesCorrH'),
                 scenario.version, tags),

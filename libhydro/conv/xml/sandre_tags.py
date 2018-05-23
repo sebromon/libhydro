@@ -43,6 +43,9 @@ class SandreTagsV1(object):
     # Courbes de correction
     dtdesactivationpointpivot = 'DtDesactivPointPivot'
 
+    # Jaugeage
+    vitessemaxsurface = 'VitesseMoySurfaceJaugeage'
+
 
 class SandreTagsV2(object):
     """Balises Sandre V2"""
@@ -72,3 +75,5 @@ class SandreTagsV2(object):
     # Courbes de correction
     dtdesactivationpointpivot = 'DtDesactivationPointPivot'
 
+    # Jaugeage
+    vitessemaxsurface = 'VitesseMaxSurfaceJaugeage'

@@ -20,6 +20,7 @@
       <!-- minimal jaugeage -->
       <Jaugeage>
         <CdJaugeage>184</CdJaugeage>
+        <ModeJaugeage>0</ModeJaugeage>
         <CdSiteHydro>K0101010</CdSiteHydro>
       </Jaugeage>
       <!-- full jaugeage -->

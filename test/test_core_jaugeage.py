@@ -19,7 +19,9 @@ from __future__ import (
 import unittest
 from datetime import datetime
 
-from libhydro.core.jaugeage import (HauteurJaugeage, Jaugeage)
+from libhydro.core.jaugeage import (HauteurJaugeage, Jaugeage,
+                                    CourbeTarageJaugeage)
+import libhydro.core.courbetarage as _courbetarage
 import libhydro.core.sitehydro as _sitehydro
 
 # -- strings ------------------------------------------------------------------
@@ -252,11 +254,12 @@ class TestJaugeage(unittest.TestCase):
 
     def test_base_01(self):
         """simple jaugeage"""
-        code = '156'
+        code = 156
         site = _sitehydro.Sitehydro(code='O1234567')
         jaug = Jaugeage(code=code, site=site)
         self.assertEqual((jaug.code, jaug.site),
                          (code, site))
+        self.assertEqual(len(jaug.courbestarage), 0)
 
     def test_base_02(self):
         """full jaugeage"""
@@ -267,7 +270,7 @@ class TestJaugeage(unittest.TestCase):
         hjaug = HauteurJaugeage(station=station, sysalti=sysalti,
                                 coteretenue=coteretenue)
 
-        code = '156'
+        code = 156
         dte = datetime(2017, 6, 30, 16, 35, 43)
         debit = 10556.12
         dtdeb = datetime(2017, 6, 29, 14, 29, 35)
@@ -279,28 +282,47 @@ class TestJaugeage(unittest.TestCase):
         commentaire = 'un jaugeage'
         vitessemoy = 16.45
         vitessemax = 19.87
-        vitessemoy_surface = 17.14
+        vitessemax_surface = 17.14
         site = _sitehydro.Sitehydro(code='O1234567')
         hauteurs = [hjaug]
 
         dtmaj = datetime(2017, 6, 30, 16, 37, 10)
+
+        numero = 'A124'
+        incertitude_retenue = 10.5
+        incertitude_calculee = 10.3
+        qualification = 2
+        commentaire_prive = 'Commentaire privé'
+        courbestarage = [CourbeTarageJaugeage(code=58, libelle='courbe'),
+                         CourbeTarageJaugeage(code=165, libelle='courbe2')]
+
         jaug = Jaugeage(code=code, dte=dte, debit=debit, dtdeb=dtdeb,
                         dtfin=dtfin, section_mouillee=section_mouillee,
                         perimetre_mouille=perimetre_mouille,
                         largeur_miroir=largeur_miroir,
                         mode=mode, commentaire=commentaire,
                         vitessemoy=vitessemoy, vitessemax=vitessemax,
-                        vitessemoy_surface=vitessemoy_surface, site=site,
-                        hauteurs=hauteurs, dtmaj=dtmaj)
+                        vitessemax_surface=vitessemax_surface, site=site,
+                        hauteurs=hauteurs, dtmaj=dtmaj, numero=numero,
+                        incertitude_retenue=incertitude_retenue,
+                        incertitude_calculee=incertitude_calculee,
+                        qualification=qualification,
+                        commentaire_prive=commentaire_prive,
+                        courbestarage=courbestarage)
         self.assertEqual(
             (jaug.code, jaug.dte, jaug.debit, jaug.dtdeb, jaug.dtfin,
              jaug.section_mouillee, jaug.perimetre_mouille,
              jaug.largeur_miroir, jaug.mode, jaug.commentaire, jaug.vitessemoy,
-             jaug.vitessemax, jaug.vitessemoy_surface, jaug.site,
-             jaug.hauteurs, jaug.dtmaj),
+             jaug.vitessemax, jaug.vitessemax_surface, jaug.site,
+             jaug.hauteurs, jaug.dtmaj, jaug.numero, jaug.incertitude_retenue,
+             jaug.incertitude_calculee, jaug.qualification,
+             jaug.commentaire_prive, jaug.courbestarage),
             (code, dte, debit, dtdeb, dtfin, section_mouillee,
              perimetre_mouille, largeur_miroir, mode, commentaire, vitessemoy,
-             vitessemax, vitessemoy_surface, site, hauteurs, dtmaj)
+             vitessemax, vitessemax_surface, site, hauteurs, dtmaj,
+             numero, incertitude_retenue, incertitude_calculee, qualification,
+             commentaire_prive, courbestarage
+             )
             )
 
     def test_base_04(self):
@@ -315,7 +337,7 @@ class TestJaugeage(unittest.TestCase):
         hjaug2 = HauteurJaugeage(station=station, sysalti=sysalti,
                                  coteretenue=coteretenue2)
 
-        code = '156'
+        code = 156
         site = _sitehydro.Sitehydro(code='O1234567')
 
         hauteurs = None
@@ -336,7 +358,7 @@ class TestJaugeage(unittest.TestCase):
 
     def test_fuzzy_01(self):
         """fuzzy mode"""
-        code = '875'
+        code = 875
         site = 'O1234567'
         hauteurs = [100.45, 100.86, 101.54]
         jaug = Jaugeage(code=code, site=site, hauteurs=hauteurs, strict=False)
@@ -354,7 +376,7 @@ class TestJaugeage(unittest.TestCase):
         hjaug2 = HauteurJaugeage(station=station, sysalti=sysalti,
                                  coteretenue=coteretenue2)
 
-        code = '156'
+        code = 156
         site = _sitehydro.Sitehydro(code='O1234567')
         hauteurs = [hjaug1, hjaug2]
         jaug = Jaugeage(code=code, site=site, hauteurs=hauteurs,
@@ -376,7 +398,7 @@ class TestJaugeage(unittest.TestCase):
 
             hauteurs = [hjaug1, hjaug2, hjaug3, hjaug4]
 
-            code = '156'
+            code = 156
             site = _sitehydro.Sitehydro(code='O1234567')
             jaug = Jaugeage(code=code, site=site, hauteurs=hauteurs,
                             tri_hauteurs=True, strict=False)
@@ -428,19 +450,17 @@ class TestJaugeage(unittest.TestCase):
 
     def test_error_01(self):
         """code error"""
-        code = '156'
         site = _sitehydro.Sitehydro(code='O1234567')
-        Jaugeage(code=code, site=site)
-
-        code = None
-        with self.assertRaises(TypeError) as context:
+        for code in ['156', 156, None]:
             Jaugeage(code=code, site=site)
-        self.assertEqual(str(context.exception),
-                         'code is required')
+
+        code = 'C15'
+        with self.assertRaises(Exception):
+            Jaugeage(code=code, site=site)
 
     def test_error_02(self):
         """site error"""
-        code = '156'
+        code = 156
         site = _sitehydro.Sitehydro(code='O1234567')
         Jaugeage(code=code, site=site)
 
@@ -462,11 +482,12 @@ class TestJaugeage(unittest.TestCase):
                                'perimetre_mouille',
                                'largeur_miroir',
                                'vitessemoy', 'vitessemax',
-                               'vitessemoy_surface']
+                               'vitessemax_surface',
+                               'incertitude_retenue', 'incertitude_calculee']
 
         for prop in properties_to_check:
             args = {}
-            args['code'] = '156'
+            args['code'] = 156
             args['site'] = _sitehydro.Sitehydro(code='A1234567')
             args[prop] = 147.45
             Jaugeage(**args)
@@ -477,7 +498,7 @@ class TestJaugeage(unittest.TestCase):
 
     def test_error_04(self):
         """hauteurs error"""
-        code = '156'
+        code = 156
         site = _sitehydro.Sitehydro(code='A1234567')
 
         station = _sitehydro.Station(code='O123456789')
@@ -501,7 +522,7 @@ class TestJaugeage(unittest.TestCase):
 
     def test_error_05(self):
         """check dte dtdeb, dtfin and dtmaj"""
-        code = '156'
+        code = 156
         site = _sitehydro.Sitehydro(code='O1234567')
         dte = datetime(2016, 10, 3, 10, 45, 12)
         dtdeb = datetime(2016, 10, 3, 9, 4, 15)
@@ -520,3 +541,58 @@ class TestJaugeage(unittest.TestCase):
             jaug.dtfin = 'AA'
         with self.assertRaises(Exception):
             jaug.dtmaj = 'AA'
+
+    def test_error_06(self):
+        """Check numero"""
+        code = 156
+        site = _sitehydro.Sitehydro(code='O1234567')
+        dtdeb = datetime(2016, 10, 3, 9, 4, 15)
+        dtfin = datetime(2016, 10, 3, 11, 17, 54)
+        dtmaj = datetime(2017, 7, 3, 5, 54, 1)
+        for numero in ['A1254', 15, 'ABCDE']:
+            Jaugeage(code=code, site=site, dtdeb=dtdeb,
+                     dtfin=dtfin, dtmaj=dtmaj, numero=numero)
+        numero = 'A' * 15
+        with self.assertRaises(ValueError):
+            Jaugeage(code=code, site=site, dtdeb=dtdeb,
+                     dtfin=dtfin, dtmaj=dtmaj, numero=numero)
+
+    def test_error_07(self):
+        """Check qualification jaugeage"""
+        code = 156
+        site = _sitehydro.Sitehydro(code='O1234567')
+        dtdeb = datetime(2016, 10, 3, 9, 4, 15)
+        dtfin = datetime(2016, 10, 3, 11, 17, 54)
+        dtmaj = datetime(2017, 7, 3, 5, 54, 1)
+        for qualification in [None, 0, 1, 2]:
+            Jaugeage(code=code, site=site, dtdeb=dtdeb,
+                     dtfin=dtfin, dtmaj=dtmaj, qualification=qualification)
+        for qualification in ['toto', -5, 3]:
+            with self.assertRaises(ValueError):
+                Jaugeage(code=code, site=site, dtdeb=dtdeb,
+                         dtfin=dtfin, dtmaj=dtmaj, qualification=qualification)
+
+    def test_error_08(self):
+        """Check courbes tarage error"""
+        code = 15487
+        site = _sitehydro.Sitehydro(code='O1234567')
+        station = _sitehydro.Station(code='O123456789')
+        dtdeb = datetime(2016, 10, 3, 9, 4, 15)
+        dtfin = datetime(2016, 10, 3, 11, 17, 54)
+        liste = [[CourbeTarageJaugeage(code=58, libelle='courbe'),
+                  CourbeTarageJaugeage(code=165, libelle='courbe2')],
+                 CourbeTarageJaugeage(code=37, libelle='ééé'),
+                 _courbetarage.CourbeTarage(code=1597, libelle='cd',
+                                            station=station)
+                 ]
+        for courbestarage in liste:
+            Jaugeage(code=code, site=site, dtdeb=dtdeb, dtfin=dtfin,
+                     courbestarage=courbestarage)
+
+        liste_error = [CourbeTarageJaugeage(code='abc', libelle='courbe'),
+                       156, 'toto', [154]]
+        for courbestarage in liste_error:
+            with self.assertRaises(Exception):
+                Jaugeage(code=code, site=site, dtdeb=dtdeb,
+                         dtfin=dtfin, courbestarage=courbestarage)
+

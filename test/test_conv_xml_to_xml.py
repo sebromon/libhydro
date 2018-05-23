@@ -248,7 +248,7 @@ class TestAllXmlBaseTests(unittest.TestCase):
                             'obsselaboreemeteo', 'simulations')
     version_units['2'] = ('serieshydro', 'seriesmeteo', 'obsselab',
                           'obsselabmeteo', 'courbestarage',
-                          'courbescorrection')
+                          'courbescorrection', 'jaugeages')
     for version, units in version_units.items():
         for unit in units:
             suite.addTest(
