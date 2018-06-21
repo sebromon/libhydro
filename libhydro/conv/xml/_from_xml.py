@@ -30,7 +30,7 @@ from libhydro.core import (
     obsmeteo as _obsmeteo, simulation as _simulation, evenement as _evenement,
     courbetarage as _courbetarage, courbecorrection as _courbecorrection,
     jaugeage as _jaugeage, obselaboreehydro as _obselaboreehydro,
-    obselaboreemeteo as _obselaboreemeteo)
+    obselaboreemeteo as _obselaboreemeteo, nomenclature as _nomenclature)
 
 from libhydro.conv.xml import sandre_tags as _sandre_tags
 
@@ -798,7 +798,22 @@ def _jaugeage_from_element(element, version, tags):
     codesite = _value(element, 'CdSiteHydro')
     site = _sitehydro.Sitehydro(code=codesite)
     # mode not mandatory -> constructor default value
-    mode = _value(element, 'ModeJaugeage', int)
+
+    mode = _value(element, 'ModeJaugeage')
+    if mode is not None:
+        if version == '1.1':
+            if len(mode) != 2:
+                raise ValueError('Length of mode jaugeage must be 2')
+            found = False
+            for key, mnemo in _nomenclature.MODEJAUGEAGEMNEMO.items():
+                if mnemo == mode:
+                    mode = key
+                    found = True
+                    break
+            if not found:
+                raise ValueError('mode jaugeage not in nomenclature 873')
+        else:
+            mode = int(mode)
     args = {
         'code': _value(element, 'CdJaugeage'),
         'dte': _value(element, 'DtJaugeage'),

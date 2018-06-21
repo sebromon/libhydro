@@ -24,7 +24,7 @@ import numpy as _numpy
 from libhydro.core import (
     _composant, sitehydro as _sitehydro, sitemeteo as _sitemeteo,
     seuil as _seuil, courbetarage as _courbetarage,
-    obsmeteo as _obsmeteo)
+    obsmeteo as _obsmeteo, nomenclature as _nomenclature)
 
 from libhydro.conv.xml import sandre_tags as _sandre_tags
 
@@ -1021,7 +1021,14 @@ def _jaugeage_to_element(jaugeage, bdhydro=False, strict=True, version='1.1'):
         story['SectionMouilJaugeage'] = {'value': jaugeage.section_mouillee}
         story['PerimMouilleJaugeage'] = {'value': jaugeage.perimetre_mouille}
         story['LargMiroirJaugeage'] = {'value': jaugeage.largeur_miroir}
-        story['ModeJaugeage'] = {'value': jaugeage.mode}
+
+        if version == '1.1':
+            if jaugeage.mode != 0:
+                story['ModeJaugeage'] = {
+                    'value': _nomenclature.MODEJAUGEAGEMNEMO[jaugeage.mode]}
+        else:
+            story['ModeJaugeage'] = {'value': jaugeage.mode}
+
         story['ComJaugeage'] = {'value': jaugeage.commentaire}
         story['VitesseMoyJaugeage'] = {'value': jaugeage.vitessemoy}
         story['VitesseMaxJaugeage'] = {'value': jaugeage.vitessemax}

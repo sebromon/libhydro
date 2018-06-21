@@ -773,7 +773,7 @@ class TestFromXmlJaugeages(unittest.TestCase):
         self.assertEqual(jaugeage.section_mouillee, 341.25)
         self.assertEqual(jaugeage.perimetre_mouille, 987.54)
         self.assertEqual(jaugeage.largeur_miroir, 156423.12)
-        self.assertEqual(jaugeage.mode, 5)
+        self.assertEqual(jaugeage.mode, 3)
         self.assertEqual(jaugeage.commentaire, 'Commentaire')
         self.assertEqual(jaugeage.vitessemoy, 17.54)
         self.assertEqual(jaugeage.vitessemax, 19.43)

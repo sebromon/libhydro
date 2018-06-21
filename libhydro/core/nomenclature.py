@@ -363,3 +363,18 @@ NOMENCLATURE = {
 }
 
 NOMENCLATURES = list(NOMENCLATURE.keys())
+
+MODEJAUGEAGEMNEMO = {
+    0: 'Inconnu',
+    1: 'SP',
+    2: 'SI',
+    3: 'PP',
+    4: 'PI',
+    5: 'DI',
+    6: 'DC',
+    7: 'FL',
+    8: 'QD',
+    9: 'AP',
+    10: 'AU',
+    11: 'VS'
+    }
