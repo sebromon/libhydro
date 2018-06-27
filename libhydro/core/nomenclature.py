@@ -343,6 +343,20 @@ NOMENCLATURE = {
           11: 'Autres'
           },
 
+    # Type de publication évènements
+    874: {
+        0: 'Inconnu',
+        10: 'Public hautes eaux',
+        11: 'Public basses eaux',
+        12: 'Public tous régimes',
+        20: 'Privé hautes eaux',
+        21: 'Privé basses eaux',
+        22: 'Privé tous régimes',
+        30: 'Protégé hautes eaux',
+        31: 'Protégé basses eaux',
+        32: 'Protégé tous régimes'
+    },
+
     # Type de la série d'observations élaborées météorologiques
     876: {1: 'Observation pondérée',
           2: 'Indice de précipitations antérieures'},
@@ -351,6 +365,18 @@ NOMENCLATURE = {
     877: {0: 'Inconnu',
           1: 'Douteux',
           2: 'Bon'},
+
+    # Type d'événement hydrométrique ou météorologique
+    891: {
+        0: 'Inconnu',
+        1: 'Recalage hauteur',
+        2: 'Recalage temps',
+        3: 'Déplacement',
+        4: 'Dérangement',
+        5: 'Hauteur influencée',
+        6: 'Lecture échelle',
+        7: 'Commentaire Vigicrues'
+    },
 
     # Continuité de la donnée de l'observation hydro
     923: {

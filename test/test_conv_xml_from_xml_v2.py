@@ -790,3 +790,82 @@ class TestFromXmlJaugeages(unittest.TestCase):
 
         self.assertIsNone(jaug.commentaire_prive)
         self.assertEqual(len(jaug.courbestarage), 0)
+
+
+# -- class TestFromXmlEvenements --------------------------------------
+class TestFromXmlEvenements(unittest.TestCase):
+    """Xml Evenements class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '2', 'evenements.xml'))
+
+    def test_base(self):
+        """Check keys test."""
+        self.assertEqual(
+            set(self.data.keys()),
+            set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
+                 'seuilshydro', 'modelesprevision', 'evenements',
+                 'courbestarage', 'jaugeages', 'courbescorrection',
+                 'serieshydro', 'seriesmeteo', 'seriesobselab',
+                 'seriesobselabmeteo', 'simulations')))
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertEqual(self.data['intervenants'], [])
+        self.assertEqual(self.data['siteshydro'], [])
+        self.assertEqual(self.data['sitesmeteo'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertNotEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['seriesmeteo'], [])
+        self.assertEqual(self.data['simulations'], [])
+        self.assertEqual(self.data['seriesobselab'], [])
+        self.assertEqual(self.data['seriesobselabmeteo'], [])
+        self.assertEqual(self.data['courbestarage'], [])
+        self.assertEqual(self.data['courbescorrection'], [])
+        self.assertEqual(self.data['jaugeages'], [])
+
+    def test_full_evenement(self):
+        """test full evenement"""
+        evt = self.data['evenements'][0]
+        self.assertEqual(evt.entite.code, 'A123456789')
+        self.assertEqual(evt.contact.code, '897')
+        self.assertEqual(evt.dt, datetime.datetime(2015, 6, 21, 9, 54, 32))
+        self.assertEqual(evt.typeevt, 4)
+        self.assertEqual(evt.descriptif, 'Evènement')
+        self.assertEqual(evt.publication, 32)
+        self.assertEqual(evt.dtmaj, datetime.datetime(2017, 7, 23, 11, 12, 3))
+        self.assertEqual(len(evt.ressources), 2)
+        ressource1 = evt.ressources[0]
+        self.assertEqual(ressource1.url, 'www.toto.fr')
+        self.assertEqual(ressource1.libelle, 'Libellé1')
+        ressource2 = evt.ressources[1]
+        self.assertEqual(ressource2.url, 'www.tata.fr')
+        self.assertIsNone(ressource2.libelle)
+        self.assertEqual(evt.dtfin, datetime.datetime(2016, 10, 9, 16, 14, 38))
+
+    def test_min_evenement(self):
+        """test minimal evenement"""
+        evt = self.data['evenements'][1]
+        self.assertEqual(evt.entite.code, 'Z7654321')
+        self.assertEqual(evt.contact.code, '1503')
+        self.assertEqual(evt.dt, datetime.datetime(2010, 1, 15, 11, 23, 43))
+        self.assertEqual(evt.typeevt, 0)
+        self.assertEqual(evt.descriptif, 'Absence de données')
+        self.assertEqual(evt.publication, 0)
+        self.assertIsNone(evt.dtmaj)
+        self.assertEqual(len(evt.ressources), 0)
+        self.assertIsNone(evt.dtfin)
+
+    def test_meteo_evenement(self):
+        """test evenement on site meteo"""
+        evt = self.data['evenements'][2]
+        self.assertEqual(evt.entite.code, '001234567')
+        self.assertEqual(evt.contact.code, '43')
+        self.assertEqual(evt.dt, datetime.datetime(2018, 6, 25, 10, 4, 37))
+        self.assertEqual(evt.typeevt, 3)
+        self.assertEqual(evt.descriptif, 'Site météo vandalisé')
+        self.assertEqual(evt.publication, 12)
+        self.assertIsNone(evt.dtmaj)
+        self.assertEqual(len(evt.ressources), 0)
+        self.assertIsNone(evt.dtfin)

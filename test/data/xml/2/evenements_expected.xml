@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hydrometrie xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2/sandre_sc_hydrometrie.xsd">
+<!-- <hydrometrie> -->
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>2</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2010-02-26T23:55:30</DateHeureCreationFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact>1</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+    </Destinataire>
+  </Scenario>
+  <Donnees>
+      <Evenements>
+          <!-- Full evenement -->
+          <Evenement>
+              <CdContact>897</CdContact>
+              <CdStationHydro>A123456789</CdStationHydro>
+              <DtEvenement>2015-06-21T09:54:32</DtEvenement>
+              <TypEvenement>4</TypEvenement>
+              <DescEvenement>Evènement</DescEvenement>
+              <TypPubliEvenement>32</TypPubliEvenement>
+              <DtMajEvenement>2017-07-23T11:12:03</DtMajEvenement>
+              <RessEvenement>
+                <ResEvenement>
+                    <UrlResEvenement>www.toto.fr</UrlResEvenement>
+                    <LbResEvenement>Libellé1</LbResEvenement>
+                </ResEvenement>
+                <ResEvenement>
+                    <UrlResEvenement>www.tata.fr</UrlResEvenement>
+                </ResEvenement>
+              </RessEvenement>
+              <DtFinEvenement>2016-10-09T16:14:38</DtFinEvenement>
+          </Evenement>
+          <!-- minimal evenement -->
+          <Evenement>
+              <CdContact>1503</CdContact>
+              <CdSiteHydro>Z7654321</CdSiteHydro>
+              <DtEvenement>2010-01-15T11:23:43</DtEvenement>
+              <TypEvenement>0</TypEvenement>
+              <DescEvenement>Absence de données</DescEvenement>
+              <TypPubliEvenement>0</TypPubliEvenement>
+          </Evenement>
+          <!-- site meteo evebement -->
+          <Evenement>
+              <CdContact>43</CdContact>
+              <CdSiteMeteo>001234567</CdSiteMeteo>
+              <DtEvenement>2018-06-25T10:04:37</DtEvenement>
+              <TypEvenement>3</TypEvenement>
+              <DescEvenement>Site météo vandalisé</DescEvenement>
+              <TypPubliEvenement>12</TypPubliEvenement>
+          </Evenement>
+      </Evenements>
+  </Donnees>
+</hydrometrie>

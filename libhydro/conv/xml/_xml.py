@@ -273,7 +273,7 @@ class Message(object):
             modelesprevision=_from_xml._modelesprevision_from_element(
                 tree.find('RefHyd/ModelesPrevision')),
             evenements=_from_xml._evenements_from_element(
-                tree.find('Donnees/Evenements')),
+                tree.find('Donnees/Evenements'), scenario.version, tags),
             courbestarage=_from_xml._courbestarage_from_element(
                 tree.find('Donnees/CourbesTarage'),
                 scenario.version, tags),

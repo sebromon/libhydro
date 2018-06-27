@@ -845,19 +845,68 @@ def _evenement_to_element(evenement, bdhydro=False, strict=True, version='1.1'):
         story = _collections.OrderedDict()
         story['CdContact'] = {'value': evenement.contact.code}
         # entite can be a Sitehydro, a Station or a Sitemeteo
+        if isinstance(evenement.entite, _sitemeteo.Sitemeteo):
+            code = _codesitemeteo_to_value(sitemeteo=evenement.entite,
+                                           bdhydro=bdhydro, strict=strict,
+                                           version=version)
+        else:
+            code = evenement.entite.code
+
         story['Cd{}'.format(CLS_MAPPINGS[evenement.entite.__class__])] = {
-            'value': evenement.entite.code}
+            'value': code}
         # suite
         story['DtEvenement'] = {
             'value': evenement.dt.strftime('%Y-%m-%dT%H:%M:%S')}
+
+        if version == '2':
+            story['TypEvenement'] = {'value': evenement.typeevt}
+
         story['DescEvenement'] = {'value': evenement.descriptif}
-        story['TypPublicationEvenement'] = {'value': evenement.publication}
+
+        if version == '1.1':
+            if evenement.publication != 0:
+                if evenement.publication in (20, 21, 22):
+                    publication = 100  # prive
+                elif evenement.publication in (30, 31, 32):
+                    if evenement.typeevt == 7:
+                        publication = 20  # uniquement vigicrues
+                    else:
+                        publication = 100  # privé
+                else:  # 10 11 12
+                    if evenement.typeevt == 7:
+                        publication = 10
+                    else:
+                        publication = 1  # public
+                story['TypPublicationEvenement'] = {'value': publication}
+            elif evenement.typeevt == 7:
+                #  uniquement vigicures
+                story['TypPublicationEvenement'] = {'value': 20}
+        else:
+            story['TypPubliEvenement'] = {'value': evenement.publication}
+
         story['DtMajEvenement'] = {
             'value': None if evenement.dtmaj is None
             else evenement.dtmaj.strftime('%Y-%m-%dT%H:%M:%S')}
 
+        if version == '2':
+            if len(evenement.ressources) > 0:
+                story['RessEvenement'] = {'value': None,
+                                          'force': True}
+            if evenement.dtfin is not None:
+                story['DtFinEvenement'] = {
+                    'value': evenement.dtfin.strftime('%Y-%m-%dT%H:%M:%S')}
+
         # action !
-        return _factory(root=_etree.Element('Evenement'), story=story)
+        element = _factory(root=_etree.Element('Evenement'), story=story)
+        child = element.find('RessEvenement')
+        for ressource in evenement.ressources:
+            res_el = _etree.SubElement(child, 'ResEvenement')
+            _etree.SubElement(res_el, 'UrlResEvenement').text = \
+                str(ressource.url)
+            if ressource.libelle is not None:
+                _etree.SubElement(res_el, 'LbResEvenement').text = \
+                    str(ressource.libelle)
+        return element
 
 
 def _courbetarage_to_element(courbe, bdhydro=False, strict=True, version='1.1'):

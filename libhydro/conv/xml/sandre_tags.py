@@ -46,6 +46,9 @@ class SandreTagsV1(object):
     # Jaugeage
     vitessemaxsurface = 'VitesseMoySurfaceJaugeage'
 
+    # Evenements
+    publicationevenement = 'TypPublicationEvenement'
+
 
 class SandreTagsV2(object):
     """Balises Sandre V2"""
@@ -77,3 +80,6 @@ class SandreTagsV2(object):
 
     # Jaugeage
     vitessemaxsurface = 'VitesseMaxSurfaceJaugeage'
+
+    # Evenements
+    publicationevenement = 'TypPubliEvenement'

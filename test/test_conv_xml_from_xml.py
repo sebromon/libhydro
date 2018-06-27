@@ -678,7 +678,7 @@ class TestFromXmlEvenements(unittest.TestCase):
         self.assertEqual(evenement.contact.code, '1')
         self.assertEqual(evenement.dt, datetime.datetime(1999, 8, 12, 0, 5))
         self.assertEqual(evenement.descriptif, "Arrachement de l'échelle")
-        self.assertEqual(evenement.publication, 1)
+        self.assertEqual(evenement.publication, 12)
         self.assertEqual(evenement.dtmaj,
                          datetime.datetime(2000, 5, 10, 22, 5))
 
@@ -691,7 +691,8 @@ class TestFromXmlEvenements(unittest.TestCase):
         self.assertEqual(evenement.dt, datetime.datetime(2010, 2, 26, 9, 5))
         self.assertEqual(evenement.descriptif,
                          'Déplacement de la station de 22.5m')
-        self.assertEqual(evenement.publication, 20)
+        self.assertEqual(evenement.publication, 32)
+        self.assertEqual(evenement.typeevt, 7)
         self.assertEqual(evenement.dtmaj,
                          datetime.datetime(2011, 1, 13, 10, 5))
 
@@ -704,9 +705,36 @@ class TestFromXmlEvenements(unittest.TestCase):
         self.assertEqual(evenement.dt, datetime.datetime(1968, 2, 2, 23, 0))
         self.assertEqual(evenement.descriptif,
                          'Débouchage de la sonde de température')
-        self.assertEqual(evenement.publication, 100)
+        self.assertEqual(evenement.publication, 22)
         self.assertEqual(evenement.dtmaj,
                          datetime.datetime(2000, 1, 1, 22, 0))
+
+    def test_evenement_3(self):
+        """Evenement 3 test."""
+        evenement = self.data['evenements'][3]
+        self.assertEqual(evenement.entite.code, 'Z853011234')
+        self.assertEqual(evenement.contact.code, '1234')
+        self.assertEqual(evenement.dt,
+                         datetime.datetime(2018, 3, 27, 10, 6, 1))
+        self.assertEqual(evenement.descriptif,
+                         'Déplacement de la station de 34.5m')
+        self.assertEqual(evenement.publication, 12)
+        self.assertEqual(evenement.typeevt, 7)
+        self.assertEqual(evenement.dtmaj,
+                         datetime.datetime(2018, 6, 26, 11, 7, 34))
+
+    def test_evenement_4(self):
+        """Evenement 4 test."""
+        evenement = self.data['evenements'][4]
+        self.assertEqual(evenement.entite.code, 'Z853014321')
+        self.assertEqual(evenement.contact.code, '4321')
+        self.assertEqual(evenement.dt,
+                         datetime.datetime(2017, 1, 25, 8, 4, 59))
+        self.assertEqual(evenement.descriptif,
+                         'Déplacement de la station de 59.5m')
+        self.assertEqual(evenement.publication, 12)
+        self.assertEqual(evenement.dtmaj,
+                         datetime.datetime(2017, 7, 11, 9, 11, 17))
 
 
 # -- class TestFromXmlJaugeages ----------------------------------------------

@@ -326,7 +326,7 @@ def _parse(src, ordered=True):
         'modelesprevision': _modelesprevision_from_element(
             tree.find('RefHyd/ModelesPrevision')),
         'evenements': _evenements_from_element(
-            tree.find('Donnees/Evenements')),
+            tree.find('Donnees/Evenements'), scenario.version, tags),
         'courbestarage': _courbestarage_from_element(
             tree.find('Donnees/CourbesTarage'),
             version=scenario.version, tags=tags),
@@ -681,11 +681,12 @@ def _modeleprevision_from_element(element):
         return _modeleprevision.Modeleprevision(**args)
 
 
-def _evenement_from_element(element):
+def _evenement_from_element(element, version, tags):
     """Return a evenement.Evenement from a <Evenement> element."""
     if element is not None:
         # prepare args
         # entite can be a Sitehydro, a Station or a Sitemeteo
+        args = {}
         entite = None
         if element.find('CdSiteHydro') is not None:
             entite = _sitehydro.Sitehydro(
@@ -696,15 +697,49 @@ def _evenement_from_element(element):
         elif element.find('CdSiteMeteo') is not None:
             entite = _sitemeteo.Sitemeteo(
                 code=_value(element, 'CdSiteMeteo'))
-        # build an Evenement and return
-        return _evenement.Evenement(
-            entite=entite,
-            descriptif=_value(element, 'DescEvenement'),
-            contact=_intervenant.Contact(
-                code=_value(element, 'CdContact')),
-            dt=_value(element, 'DtEvenement'),
-            publication=_value(element, 'TypPublicationEvenement'),
-            dtmaj=_value(element, 'DtMajEvenement'))
+        args['entite'] = entite
+        # Conversion nomenclature 534 en 874
+        publication = _value(element, tags.publicationevenement, int)
+        if publication is not None:
+            if version == '1.1':
+                # Conversion nomenclature 534
+                if publication == 10:  # vigicrues et tableaux
+                    publication = 12  # public tous régimes
+                    args['typeevt'] = 7  # publication vigicrues
+                elif publication == 20:  # uniquement vigicrues
+                    publication = 32  # protégé tous régimes
+                    args['typeevt'] = 7  # publication vigicrues
+                elif publication in (1, 30):  # fiches ou dernières valeurs
+                    publication = 12
+                elif publication == 100:  # privé
+                    publication = 22
+                else:
+                    raise ValueError('publication not in nomenclature 534')
+            args['publication'] = publication
+
+        args['descriptif'] = _value(element, 'DescEvenement')
+        args['contact'] = _intervenant.Contact(
+            code=_value(element, 'CdContact'))
+        args['dt'] = _value(element, 'DtEvenement')
+        args['dtmaj'] = _value(element, 'DtMajEvenement')
+
+        if version == '2':
+            typeevt = _value(element, 'TypEvenement')
+            if typeevt is not None:
+                args['typeevt'] = typeevt
+            ressources = []
+            for ressource in element.findall('RessEvenement/ResEvenement'):
+                url = str(_value(ressource, 'UrlResEvenement'))
+                libelle = _value(ressource, 'LbResEvenement')
+                if libelle is not None:
+                    libelle = str(libelle)
+                ressources.append(_evenement.Ressource(url=url,
+                                                       libelle=libelle))
+            args['ressources'] = ressources
+            args['dtfin'] = _value(element, 'DtFinEvenement')
+
+        # build an Eveement and return
+        return _evenement.Evenement(**args)
 
 
 def _courbetarage_from_element(element, version, tags):
@@ -1370,8 +1405,8 @@ _sitesmeteo_from_element = _global_function_builder(
 _modelesprevision_from_element = _global_function_builder(
     './ModelePrevision', _modeleprevision_from_element)
 # return a list of evenement.Evenement from a <Evenements> element
-_evenements_from_element = _global_function_builder(
-    './Evenement', _evenement_from_element)
+# _evenements_from_element = _global_function_builder(
+#     './Evenement', _evenement_from_element)
 # return a list of courbetarage.CourbeTarage from a <CourbesTarage> element
 # _courbestarage_from_element = _global_function_builder(
 #     './CourbeTarage', _courbetarage_from_element)
@@ -1390,6 +1425,14 @@ _seriesmeteo_from_element_v2 = _global_function_builder(
 # return a list of simulation.Simulation from a <Simuls> element
 _simulations_from_element = _global_function_builder(
     './Simul', _simulation_from_element)
+
+
+def _evenements_from_element(elem, version, tags):
+    evts = []
+    if elem is not None:
+        for item in elem.findall('./Evenement'):
+            evts.append(_evenement_from_element(item, version, tags))
+    return evts
 
 
 def _jaugeages_from_element(elem, version, tags):
