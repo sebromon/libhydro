@@ -862,23 +862,23 @@ def _evenement_to_element(evenement, bdhydro=False, strict=True, version='1.1'):
             story['TypEvenement'] = {'value': evenement.typeevt}
 
         story['DescEvenement'] = {'value': evenement.descriptif}
-
+        # Conversion Sandre V1.1 874 et 891 en 534
         if version == '1.1':
             if evenement.publication != 0:
                 if evenement.publication in (20, 21, 22):
                     publication = 100  # prive
                 elif evenement.publication in (30, 31, 32):
-                    if evenement.typeevt == 7:
+                    if evenement.typeevt == 7:  # cmnt vigicrues
                         publication = 20  # uniquement vigicrues
                     else:
                         publication = 100  # privé
-                else:  # 10 11 12
-                    if evenement.typeevt == 7:
-                        publication = 10
+                else:  # public 10 11 12
+                    if evenement.typeevt == 7:  # cmnt vigicrues
+                        publication = 10  # public + vigicrues
                     else:
                         publication = 1  # public
                 story['TypPublicationEvenement'] = {'value': publication}
-            elif evenement.typeevt == 7:
+            elif evenement.typeevt == 7:  # inconnue et vigicrues
                 #  uniquement vigicures
                 story['TypPublicationEvenement'] = {'value': 20}
         else:

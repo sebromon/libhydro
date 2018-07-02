@@ -53,8 +53,8 @@ class Testevenement(unittest.TestCase):
         )
         self.assertEqual(
             (e.entite, e.descriptif, e.contact, e.publication, e.typeevt,
-             e.ressources, e.dtfin),
-            (entite, descriptif, contact, 0, 0, [], None)
+             e.ressources, e.dtfin, e.dt, e.dtmaj),
+            (entite, descriptif, contact, 0, 0, [], None, None, None)
         )
 
     def test_base_02(self):

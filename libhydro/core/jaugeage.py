@@ -511,13 +511,15 @@ class Jaugeage(object):
             else:
                 site = self.site
         # dte to string
-        if self.dte is not None:
+        if self.dtdeb is not None:
+            dte = self.dtdeb.isoformat()
+        elif self.dte is not None:
             dte = self.dte.isoformat()
         else:
             dte = '<sans date>'
         nhauteurs = len(self.hauteurs)
         return 'Jaugeage {} du site {}\n' \
-               'Date: {}\n' \
+               'à {}\n' \
                'Debit {} associe a {} hauteur(s)\n'.format(code, site, dte,
                                                            debit, nhauteurs)
 

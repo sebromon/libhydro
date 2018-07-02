@@ -69,8 +69,8 @@ class Evenement(object):
 
     def __init__(
         self, entite, descriptif, contact,
-        dt=_datetime.datetime.utcnow(), publication=0,
-        dtmaj=_datetime.datetime.utcnow(), typeevt=0, ressources=None,
+        dt=None, publication=0,
+        dtmaj=None, typeevt=0, ressources=None,
         dtfin=None, strict=True
     ):
         """Initialisation.

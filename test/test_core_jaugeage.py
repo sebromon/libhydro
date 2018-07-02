@@ -448,6 +448,21 @@ class TestJaugeage(unittest.TestCase):
         self.assertTrue(jaug_str.find('2015-04-07') > -1)
         self.assertTrue(jaug_str.find('00:17:23') > -1)
 
+    def test_str_04(self):
+        """check str with dtdeb"""
+        code = '156'
+        codesite = 'O1234567'
+        site = _sitehydro.Sitehydro(code=codesite)
+        dte = datetime(2015, 4, 7, 0, 17, 23)
+        dtdeb = datetime(2015, 3, 9, 4, 56, 13)
+        jaug = Jaugeage(code=code, site=site, dte=dte, dtdeb=dtdeb)
+        jaug_str = jaug.__str__()
+
+        self.assertTrue(jaug_str.find(code) > -1)
+        self.assertTrue(jaug_str.find(codesite) > -1)
+        self.assertTrue(jaug_str.find('2015-03-09') > -1)
+        self.assertTrue(jaug_str.find('04:56:13') > -1)
+
     def test_error_01(self):
         """code error"""
         site = _sitehydro.Sitehydro(code='O1234567')
