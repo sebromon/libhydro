@@ -736,6 +736,18 @@ class TestFromXmlEvenements(unittest.TestCase):
         self.assertEqual(evenement.dtmaj,
                          datetime.datetime(2017, 7, 11, 9, 11, 17))
 
+    def test_evenement_5(self):
+        """Evènement archivé"""
+        evt = self.data['evenements'][5]
+        dtmaj = datetime.datetime(2016, 11, 2, 7, 15, 53)
+        self.assertEqual(evt.dtmaj, dtmaj)
+        self.assertEqual(evt.dtfin, dtmaj)
+
+    def test_evenement_6(self):
+        """Evènement archivé sans dtmaj"""
+        evt = self.data['evenements'][6]
+        self.assertIsNone(evt.dtmaj)
+        self.assertIsNotNone(evt.dtfin)
 
 # -- class TestFromXmlJaugeages ----------------------------------------------
 class TestFromXmlJaugeages(unittest.TestCase):

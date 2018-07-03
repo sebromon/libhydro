@@ -881,6 +881,8 @@ def _evenement_to_element(evenement, bdhydro=False, strict=True, version='1.1'):
             elif evenement.typeevt == 7:  # inconnue et vigicrues
                 #  uniquement vigicures
                 story['TypPublicationEvenement'] = {'value': 20}
+            elif evenement.dtfin is not None:
+                story['TypPublicationEvenement'] = {'value': 25}
         else:
             story['TypPubliEvenement'] = {'value': evenement.publication}
 

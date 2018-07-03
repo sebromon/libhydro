@@ -64,6 +64,24 @@
         <TypPublicationEvenement>1</TypPublicationEvenement>
         <DtMajEvenement>2017-07-11T09:11:17</DtMajEvenement>
       </Evenement>
+      <!-- Evenement archivé -->
+       <Evenement>
+        <CdContact>9876</CdContact>
+        <CdStationHydro>Z853014321</CdStationHydro>
+        <DtEvenement>2016-10-23T14:13:12</DtEvenement>
+        <DescEvenement>Déplacement de la station de 59.5m</DescEvenement>
+        <TypPublicationEvenement>25</TypPublicationEvenement>
+        <DtMajEvenement>2016-11-02T07:15:53</DtMajEvenement>
+      </Evenement>
+      <!-- Evenement archivé sans dtmaj-->
+       <Evenement>
+        <CdContact>9876</CdContact>
+        <CdStationHydro>Z853014321</CdStationHydro>
+        <DtEvenement>2016-10-23T14:13:12</DtEvenement>
+        <DescEvenement>Déplacement de la station de 59.5m</DescEvenement>
+        <TypPublicationEvenement>25</TypPublicationEvenement>
+        <!-- <DtMajEvenement>2016-11-02T07:15:53</DtMajEvenement> -->
+      </Evenement>
     </Evenements>
   </Donnees>
 </hydrometrie>

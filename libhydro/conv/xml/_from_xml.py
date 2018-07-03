@@ -698,6 +698,7 @@ def _evenement_from_element(element, version, tags):
             entite = _sitemeteo.Sitemeteo(
                 code=_value(element, 'CdSiteMeteo'))
         args['entite'] = entite
+        args['dtmaj'] = _value(element, 'DtMajEvenement')
         # Conversion nomenclature 534 en 874
         publication = _value(element, tags.publicationevenement, int)
         if publication is not None:
@@ -713,6 +714,13 @@ def _evenement_from_element(element, version, tags):
                     publication = 12
                 elif publication == 100:  # privé
                     publication = 22
+                elif publication == 25:  # evt archivé
+                    publication = 0
+                    if args['dtmaj'] is not None:
+                        args['dtfin'] = args['dtmaj']
+                    else:
+                        args['dtfin'] = \
+                            _datetime.datetime.utcnow().replace(microsecond=0)
                 else:
                     raise ValueError('publication not in nomenclature 534')
             args['publication'] = publication
@@ -721,7 +729,6 @@ def _evenement_from_element(element, version, tags):
         args['contact'] = _intervenant.Contact(
             code=_value(element, 'CdContact'))
         args['dt'] = _value(element, 'DtEvenement')
-        args['dtmaj'] = _value(element, 'DtMajEvenement')
 
         if version == '2':
             typeevt = _value(element, 'TypEvenement')
