@@ -708,7 +708,7 @@ def _evenement_from_element(element, version, tags):
                     publication = 12  # public tous régimes
                     args['typeevt'] = 7  # publication vigicrues
                 elif publication == 20:  # uniquement vigicrues
-                    publication = 32  # protégé tous régimes
+                    publication = 12  # public tous régimes
                     args['typeevt'] = 7  # publication vigicrues
                 elif publication in (1, 30):  # fiches ou dernières valeurs
                     publication = 12

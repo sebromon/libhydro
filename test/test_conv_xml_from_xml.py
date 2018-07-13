@@ -691,7 +691,7 @@ class TestFromXmlEvenements(unittest.TestCase):
         self.assertEqual(evenement.dt, datetime.datetime(2010, 2, 26, 9, 5))
         self.assertEqual(evenement.descriptif,
                          'Déplacement de la station de 22.5m')
-        self.assertEqual(evenement.publication, 32)
+        self.assertEqual(evenement.publication, 12)
         self.assertEqual(evenement.typeevt, 7)
         self.assertEqual(evenement.dtmaj,
                          datetime.datetime(2011, 1, 13, 10, 5))

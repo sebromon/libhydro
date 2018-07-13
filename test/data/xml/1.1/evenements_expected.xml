@@ -34,7 +34,7 @@
         <CdStationHydro>Z853010101</CdStationHydro>
         <DtEvenement>2010-02-26T09:05:00</DtEvenement>
         <DescEvenement>Déplacement de la station de 22.5m</DescEvenement>
-        <TypPublicationEvenement>20</TypPublicationEvenement>
+        <TypPublicationEvenement>10</TypPublicationEvenement>
         <DtMajEvenement>2011-01-13T10:05:00</DtMajEvenement>
       </Evenement>
       <!-- Evenement 2 -->
