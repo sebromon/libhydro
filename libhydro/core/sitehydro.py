@@ -13,7 +13,7 @@ from __future__ import (
     unicode_literals as _unicode_literals, absolute_import as _absolute_import,
     division as _division, print_function as _print_function)
 
-from . import _composant, _composant_site
+from . import _composant, _composant_site, sitemeteo as _sitemeteo
 from libhydro.core.nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
@@ -114,7 +114,7 @@ class _Entitehydro(object):
             # all is well
             self._code = code
 
-        except:
+        except Exception:
             raise
 
     # -- property codeh2 --
@@ -134,7 +134,7 @@ class _Entitehydro(object):
             # all is well
             self._codeh2 = code
 
-        except:
+        except Exception:
             raise
 
     # -- special methods --
@@ -198,6 +198,114 @@ class _Site_or_station(_Entitehydro):
                         raise TypeError('coord incorrect')
 
 
+# -- class Sitehydroattache
+class Sitehydroattache(object):
+    """Classe Sitehydroattache.
+
+    Classe pour manipuler des sites hydrometriques attachés.
+
+    Proprietes:
+        code (string(8)) = code hydro
+        ponderation = pondération du site
+        decalage = décalage en minutes de l'hydrogramme
+        dtdeb = date de début
+        dtfin = date de fin
+        dtdebactivation = date de début d'activation
+        dtfinactivation = date de fin d'activation
+    """
+
+    dtdeb = _composant.Datefromeverything(required=False)
+    dtfin = _composant.Datefromeverything(required=False)
+    dtdebactivation = _composant.Datefromeverything(required=False)
+    dtfinactivation = _composant.Datefromeverything(required=False)
+
+    def __init__(self, sitehydro=None, ponderation=None, decalage=None,
+                 dtdeb=None, dtfin=None, dtdebactivation=None,
+                 dtfinactivation=None):
+        """Constructor.
+
+        Arguments:
+            code (string(8)) = code hydro
+            ponderation = pondération du site
+            decalage = décalage en minutes de l'hydrogramme
+            dtdeb = date de début
+            dtfin = date de fin
+            dtdebactivation = date de début d'activation
+            dtfinactivation = date de fin d'activation
+        """
+        self.dtdeb = dtdeb
+        self.dtfin = dtfin
+        self.dtdebactivation = dtdebactivation
+        self.dtfinactivation = dtfinactivation
+
+        self._sitehydro = None
+        self.sitehydro = sitehydro
+        self._ponderation = None
+        self.ponderation = ponderation
+        self._decalage = None
+        self.decalage = decalage
+
+    # -- property sitehydro --
+    @property
+    def sitehydro(self):
+        """Return sitehydro."""
+        return self._sitehydro
+
+    @sitehydro.setter
+    def sitehydro(self, sitehydro):
+        """Set sitehydro."""
+        # None case
+        if not isinstance(sitehydro, Sitehydro):
+            raise TypeError('sitehydro must be a Sitehydro')
+        self._sitehydro = sitehydro
+
+    # -- property ponderation --
+    @property
+    def ponderation(self):
+        """Return ponderation."""
+        return self._ponderation
+
+    @ponderation.setter
+    def ponderation(self, ponderation):
+        """Set ponderation."""
+        # None case
+        if ponderation is None:
+            self._ponderation = None
+        else:
+            self._ponderation = float(ponderation)
+
+    # -- property decalage --
+    @property
+    def decalage(self):
+        """Return decalage."""
+        return self._decalage
+
+    @decalage.setter
+    def decalage(self, decalage):
+        """Set decalage."""
+        # None case
+        if decalage is None:
+            self._decalage = None
+        else:
+            self._decalage = int(decalage)
+
+    # -- special methods --
+    __all__attrs__ = (
+        'code', 'ponderation', 'decalage', 'dtdeb', 'dtfin',
+        'dtdebactivation', 'dtfinactivation')
+
+    def __unicode__(self):
+        """Return unicode representation."""
+        decalage = '{0} minutes'.format(self.decalage) \
+            if self.decalage is not None else '<sans décalage>'
+        return 'Site attaché {0} de pondération {1} décalé de {2}'.format(
+            self.sitehydro.code or '<sans code>',
+            self.ponderation or '<sans libelle>',
+            decalage)
+
+    __str__ = _composant.__str__
+
+
 # -- class Sitehydro ----------------------------------------------------------
 class Sitehydro(_Site_or_station):
 
@@ -221,43 +329,64 @@ class Sitehydro(_Site_or_station):
         zonehydro (string(4)) = zone hydrographique
         tronconhydro (string(8)) = troncon hydrographique
         precisioncoursdeau (string) = precision du cours d'eau
+        mnemo (string ou None) = mnémo du site
+        complementlibelle (string ou None) = complément du libellé
+        pkamont (float ou None) = pk amont
+        pkaval (float ou None) = pk aval
+        altitude (_composant_site.Altitude ou None) = Altitude du site
+        dtmaj (datetime.datetime ou None) = Date de mise à jour
+        bvtopo (float ou None = bassin versant topologique
+        bvhydro (float ou None) = bassin versant hydrologique
+        fuseau (int parmi NOMENCLATURE[530]) = fuseau horaire
+        statut (int parmi NOMENCLATURE[460]) = statut du site
+        dtpremieredonnee (datetime.datetime ou None) =
+            date de la première donnée
+        moisetiage (int ou None) = mois étiage
+        moisanneehydro (int ou None) = mois année hydro
+        dureecrues (int ou None) = durée caractéristique des crues
+        publication (int parmi NOMENCLATURE[871]) = droit de publication
+        essai (bool ou None) = site d'essai
+        influence (int parmi NOMENCLATURE[104]) = influende du site
+        influencecommentaire (unicode ou None) = commentaire de l'influence
+        commentaire (unicode ou None) = commentaire
+        siteassocie (Sitehydro ou None) = site associé
+        sitesattaches (iterable of Sitehydroattache) = sites attachés
+        massedeau (unidoe ou None) = masse d'eau
+        loisstat (iterable of _composant_site.LoiStat = lois statistiques
+        entitesvigicrues (iterable of _composant_site.EntiteVigiCrues) =
+            entités de vigilance crues
+        lamesdeau (iterable of SitemeteoPondere) = lames d'eau associées
+        sitesamont (iterable of Sitehydro) = sites hydro amont
+        sitesaval (iterbale of Sitehydro) = sites hydro aval
     """
 
     # Sitehydro other properties
 
-    # libellecomplement
-    # mnemonique
-    # precisionce
-    # pkamont
-    # pkaval
-    # altitude, sysalti
-    # dtmaj
-    # bv
-    # fuseau
-    # statut
     # ponctuel
-    # dtpremieredonnee
-    # moisetiage
-    # moisanneehydro
-    # publication
-    # essai
-    # influence
-    # influencecommentaire
-    # commentaire
-
-    # siteattache
-    # siteassocie
-    # masses d'eau
-    # loistats
     # images
     # rolecontact
 
     typesite = _composant.Nomenclatureitem(nomenclature=530)
+    statut = _composant.Nomenclatureitem(nomenclature=460, required=False)
+    publication = _composant.Nomenclatureitem(nomenclature=871, required=False)
+    influence = _composant.Nomenclatureitem(nomenclature=104, required=False)
+    dtmaj = _composant.Datefromeverything(required=False)
+    dtpremieredonnee = _composant.Datefromeverything(required=False)
 
     def __init__(self, code, codeh2=None, typesite='REEL', libelle=None,
                  libelleusuel=None, coord=None, stations=None, communes=None,
                  tronconsvigilance=None, entitehydro=None, zonehydro=None,
-                 tronconhydro=None, precisioncoursdeau=None, strict=True):
+                 tronconhydro=None, precisioncoursdeau=None, mnemo=None,
+                 complementlibelle=None, pkamont=None, pkaval=None,
+                 altitude=None, dtmaj=None, bvtopo=None,
+                 bvhydro=None, fuseau=None, statut=None,
+                 dtpremieredonnee=None, moisetiage=None,
+                 moisanneehydro=None, dureecrues=None, publication=None,
+                 essai=None, influence=None, influencecommentaire=None,
+                 commentaire=None, siteassocie=None, sitesattaches=None,
+                 massedeau=None, loisstat=None, entitesvigicrues=None,
+                 lamesdeau=None, sitesamont=None, sitesaval=None,
+                 strict=True):
         """Initialisation.
 
         Arguments:
@@ -276,6 +405,35 @@ class Sitehydro(_Site_or_station):
             zonehydro (string(4)) = zone hydrographique
             tronconhydro (string(8)) = troncon hydrographique
             precisioncoursdeau (string) = precision du cours d'eau
+            mnemo (string ou None) = mnémo du site
+            complementlibelle (string ou None) = complément du libellé
+            pkamont (float ou None) = pk amont
+            pkaval (float ou None) = pk aval
+            altitude (_composant_site.Altitude ou None) = Altitude du site
+            dtmaj (datetime.datetime ou None) = Date de mise à jour
+            bvtopo (float ou None = bassin versant topologique
+            bvhydro (float ou None) = bassin versant hydrologique
+            fuseau (int parmi NOMENCLATURE[530]) = fuseau horaire
+            statut (int parmi NOMENCLATURE[460]) = statut du site
+            dtpremieredonnee (datetime.datetime ou None) =
+                date de la première donnée
+            moisetiage (int ou None) = mois étiage
+            moisanneehydro (int ou None) = mois année hydro
+            dureecrues (int ou None) = durée caractéristique des crues
+            publication (int parmi NOMENCLATURE[871]) = droit de publication
+            essai (bool ou None) = site d'essai
+            influence (int parmi NOMENCLATURE[104]) = influende du site
+            influencecommentaire (unicode ou None) = commentaire de l'influence
+            commentaire (unicode ou None) = commentaire
+            siteassocie (Sitehydro ou None) = site associé
+            sitesattaches (iterable of Sitehydroattache) = sites attachés
+            massedeau (unidoe ou None) = masse d'eau
+            loisstat (iterable of _composant_site.LoiStat = lois statistiques
+            entitesvigicrues (iterable of _composant_site.EntiteVigiCrues) =
+                entités de vigilance crues
+            lamesdeau (iterable of SitemeteoPondere) = lames d'eau associées
+            sitesamont (iterable of Sitehydro) = sites hydro amont
+            sitesaval (iterbale of Sitehydro) = sites hydro aval
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite du type, du code et des stations
 
@@ -294,9 +452,23 @@ class Sitehydro(_Site_or_station):
             if (libelleusuel is not None) else None
         self.precisioncoursdeau = str(precisioncoursdeau) \
             if (precisioncoursdeau is not None) else None
+        self.mnemo = str(mnemo) if mnemo is not None else None
+        self.complementlibelle = str(complementlibelle) \
+            if (complementlibelle is not None) else None
+        self.influencecommentaire = str(influencecommentaire) \
+            if (influencecommentaire is not None) else None
+        self.commentaire = str(commentaire) \
+            if (commentaire is not None) else None
+        self.massedeau = str(massedeau) \
+            if (massedeau is not None) else None
 
         # -- descriptors --
         self.typesite = typesite
+        self.dtmaj = dtmaj
+        self.statut = statut
+        self.publication = publication
+        self.influence = influence
+        self.dtpremieredonnee = dtpremieredonnee
 
         # -- full properties --
         self._stations = self._communes = self._tronconsvigilance = []
@@ -309,6 +481,40 @@ class Sitehydro(_Site_or_station):
         self.tronconhydro = tronconhydro
         self._zonehydro = None
         self.zonehydro = zonehydro
+        self._pkaval = None
+        self.pkaval = pkaval
+        self._pkamont = None
+        self.pkamont = pkamont
+        self._altitude = None
+        self.altitude = altitude
+        self._bvtopo = None
+        self.bvtopo = bvtopo
+        self._bvhydro = None
+        self.bvhydro = bvhydro
+        self._fuseau = None
+        self.fuseau = fuseau
+        self._moisetiage = None
+        self.moisetiage = moisetiage
+        self._moisanneehydro = None
+        self.moisanneehydro = moisanneehydro
+        self._dureecrues = None
+        self.dureecrues = dureecrues
+        self._essai = None
+        self.essai = essai
+        self._siteassocie = None
+        self.siteassocie = siteassocie
+        self._sitesattaches = []
+        self.sitesattaches = sitesattaches
+        self._loisstat = []
+        self.loisstat = loisstat
+        self._entitesvigicrues = []
+        self.entitesvigicrues = entitesvigicrues
+        self._lamesdeau = []
+        self.lamesdeau = lamesdeau
+        self._sitesamont = []
+        self.sitesamont = sitesamont
+        self._sitesaval = []
+        self.sitesaval = sitesaval
 
     # -- property stations --
     @property
@@ -447,11 +653,347 @@ class Sitehydro(_Site_or_station):
                 'length of entite hydro ({}) must be 8'.format(entitehydro))
         self._entitehydro = entitehydro
 
+    # -- property pkamont --
+    @property
+    def pkamont(self):
+        """Return pkamont."""
+        return self._pkamont
+
+    @pkamont.setter
+    def pkamont(self, pkamont):
+        """Set pkamont."""
+        # None case
+        if pkamont is None:
+            self._pkamont = None
+        else:
+            self._pkamont = float(pkamont)
+
+    # -- property pkaval --
+    @property
+    def pkaval(self):
+        """Return pkaval."""
+        return self._pkaval
+
+    @pkaval.setter
+    def pkaval(self, pkaval):
+        """Set pkaval."""
+        # None case
+        if pkaval is None:
+            self._pkaval = None
+        else:
+            self._pkaval = float(pkaval)
+
+    # -- property altitude --
+    @property
+    def altitude(self):
+        """Return altitude."""
+        return self._altitude
+
+    @altitude.setter
+    def altitude(self, altitude):
+        """Set altitude."""
+        # None case
+        if altitude is None:
+            self._altitude = None
+        else:
+            if not isinstance(altitude, _composant_site.Altitude) \
+                    and self._strict:
+                raise TypeError('altitude must be a _composant_site.Altitude')
+            self._altitude = altitude
+
+    # -- property bvtopo --
+    @property
+    def bvtopo(self):
+        """Return bvtopo."""
+        return self._bvtopo
+
+    @bvtopo.setter
+    def bvtopo(self, bvtopo):
+        """Set bvtopo."""
+        # None case
+        if bvtopo is None:
+            self._bvtopo = None
+        else:
+            self._bvtopo = float(bvtopo)
+
+    # -- property bvhydro --
+    @property
+    def bvhydro(self):
+        """Return bvhydro."""
+        return self._bvhydro
+
+    @bvhydro.setter
+    def bvhydro(self, bvhydro):
+        """Set bvhydro."""
+        # None case
+        if bvhydro is None:
+            self._bvhydro = None
+        else:
+            self._bvhydro = float(bvhydro)
+
+    # -- property fuseau --
+    @property
+    def fuseau(self):
+        """Return fuseau."""
+        return self._fuseau
+
+    @fuseau.setter
+    def fuseau(self, fuseau):
+        """Set fuseau."""
+        # None case
+        # TODO check fuseau
+        if fuseau is None:
+            self._fuseau = None
+        else:
+            self._fuseau = int(fuseau)
+
+    # -- property moisetiage --
+    @property
+    def moisetiage(self):
+        """Return moisetiage."""
+        return self._moisetiage
+
+    @moisetiage.setter
+    def moisetiage(self, moisetiage):
+        """Set moisetiage."""
+        # None case
+        if moisetiage is None:
+            self._moisetiage = None
+        else:
+            self._moisetiage = int(moisetiage)
+
+    # -- property moisanneehydro --
+    @property
+    def moisanneehydro(self):
+        """Return moisanneehydro."""
+        return self._moisanneehydro
+
+    @moisanneehydro.setter
+    def moisanneehydro(self, moisanneehydro):
+        """Set moisanneehydro."""
+        # None case
+        if moisanneehydro is None:
+            self._moisanneehydro = None
+        else:
+            self._moisanneehydro = int(moisanneehydro)
+
+    # -- property dureecrues --
+    @property
+    def dureecrues(self):
+        """Return dureecrues."""
+        return self._dureecrues
+
+    @dureecrues.setter
+    def dureecrues(self, dureecrues):
+        """Set dureecrues."""
+        # None case
+        if dureecrues is None:
+            self._dureecrues = None
+        else:
+            self._dureecrues = int(dureecrues)
+
+    # -- property essai --
+    @property
+    def essai(self):
+        """Return essai."""
+        return self._essai
+
+    @essai.setter
+    def essai(self, essai):
+        """Set essai."""
+        # None case
+        if essai is None:
+            self._essai = None
+        else:
+            self._essai = bool(essai)
+
+    # -- property siteassocie --
+    @property
+    def siteassocie(self):
+        """Return siteassocie."""
+        return self._siteassocie
+
+    @siteassocie.setter
+    def siteassocie(self, siteassocie):
+        """Set siteassocie."""
+        # None case
+        if siteassocie is None:
+            self._siteassocie = None
+        else:
+            if not isinstance(siteassocie, Sitehydro):
+                raise TypeError('siteasocie must be a Sitehydro')
+            self._siteassocie = siteassocie
+
+    # -- property sitesattaches --
+    @property
+    def sitesattaches(self):
+        """Return sitesattaches."""
+        return self._sitesattaches
+
+    @sitesattaches.setter
+    def sitesattaches(self, sitesattaches):
+        """Set sitesattaches."""
+        self._sitesattaches = []
+        # None case
+        if sitesattaches is None:
+            return
+        # one station, we make a list with it
+        if isinstance(sitesattaches, Sitehydroattache):
+            sitesattaches = [sitesattaches]
+        # an iterable of sitesattaches
+        for site in sitesattaches:
+            # some checks
+            if self._strict:
+                if not isinstance(site, Sitehydroattache):
+                    raise TypeError(
+                        'sitesattaches must be a Sitehydroattache'
+                        ' or an iterable of Sitehydroattache'
+                    )
+            # add site1
+            self._sitesattaches.append(site)
+
+    # -- property loisstat --
+    @property
+    def loisstat(self):
+        """Return loisstat."""
+        return self._loisstat
+
+    @loisstat.setter
+    def loisstat(self, loisstat):
+        """Set loisstat."""
+        self._loisstat = []
+        # None case
+        if loisstat is None:
+            return
+        # one station, we make a list with it
+        if isinstance(loisstat, _composant_site.LoiStat):
+            loisstat = [loisstat]
+        # an iterable of loisstat
+        for loi in loisstat:
+            # some checks
+            if self._strict:
+                if not isinstance(loi, _composant_site.LoiStat):
+                    raise TypeError(
+                        'loisstat must be a LoiStat'
+                        ' or an iterable of LoiStat'
+                    )
+            # add site1
+            self._loisstat.append(loi)
+
+    # -- property entitesvigicrues --
+    @property
+    def entitesvigicrues(self):
+        """Return entitesvigicrues."""
+        return self._entitesvigicrues
+
+    @entitesvigicrues.setter
+    def entitesvigicrues(self, entitesvigicrues):
+        """Set entitesvigicrues."""
+        self._entitesvigicrues = []
+        # None case
+        if entitesvigicrues is None:
+            return
+        # one station, we make a list with it
+        if isinstance(entitesvigicrues, _composant_site.EntiteVigiCrues):
+            entitesvigicrues = [entitesvigicrues]
+        # an iterable of entitesvigicrues
+        for entite in entitesvigicrues:
+            # some checks
+            if self._strict:
+                if not isinstance(entite, _composant_site.EntiteVigiCrues):
+                    raise TypeError(
+                        'entitesvigicrues must be a EntiteVigiCrues'
+                        ' or an iterable of EntiteVigiCrues'
+                    )
+            # add site1
+            self._entitesvigicrues.append(entite)
+
+    # -- property lamesdeau --
+    @property
+    def lamesdeau(self):
+        """Return lamesdeau."""
+        return self._lamesdeau
+
+    @lamesdeau.setter
+    def lamesdeau(self, lamesdeau):
+        """Set lamesdeau."""
+        self._lamesdeau = []
+        # None case
+        if lamesdeau is None:
+            return
+        # one station, we make a list with it
+        if isinstance(lamesdeau, _sitemeteo.SitemeteoPondere):
+            lamesdeau = [lamesdeau]
+        # an iterable of lamesdeau
+        for lame in lamesdeau:
+            # some checks
+            if self._strict:
+                if not isinstance(lame, _sitemeteo.SitemeteoPondere):
+                    raise TypeError(
+                        'lamesdeau must be a SitemeteoPondere'
+                        ' or an iterable of SitemeteoPondere'
+                    )
+            # add site1
+            self._lamesdeau.append(lame)
+
+    # -- property sitesamont --
+    @property
+    def sitesamont(self):
+        """Return sitesamont."""
+        return self._sitesamont
+
+    @sitesamont.setter
+    def sitesamont(self, sitesamont):
+        """Set sitesamont."""
+        # None case
+        if sitesamont is None:
+            self._sitesamont = []
+        else:
+            if isinstance(sitesamont, Sitehydro):
+                self._sitesamont = [sitesamont]
+            else:
+                for site in sitesamont:
+                    if not isinstance(site, Sitehydro):
+                        raise TypeError('sitesamont must be a Sitehydro'
+                                        'or an iterbale of Sitehydro')
+                self._sitesamont = sitesamont
+
+    # -- property sitesaval --
+    @property
+    def sitesaval(self):
+        """Return sitesaval."""
+        return self._sitesaval
+
+    @sitesaval.setter
+    def sitesaval(self, sitesaval):
+        """Set sitesaval."""
+        # None case
+        if sitesaval is None:
+            self._sitesaval = []
+        else:
+            if isinstance(sitesaval, Sitehydro):
+                self._sitesaval = [sitesaval]
+            else:
+                for site in sitesaval:
+                    if not isinstance(site, Sitehydro):
+                        raise TypeError('sitesaval must be a Sitehydro'
+                                        'or an iterbale of Sitehydro')
+                self._sitesaval = sitesaval
+
     # -- special methods --
     __all__attrs__ = (
         'code', 'codeh2', 'typesite', 'libelle', 'libelleusuel', 'coord',
-        'stations', 'communes', 'tronconsvigilance',  'entitehydro',
-        'zonehydro', 'tronconhydro', 'precisioncoursdeau')
+        'stations', 'communes', 'tronconsvigilance', 'entitehydro',
+        'zonehydro', 'tronconhydro', 'precisioncoursdeau', 'mnemo',
+        'complementlibelle', 'pkamont', 'pkaval',
+        'altitude', 'dtmaj', 'bvtopo',
+        'bvhydro', 'fuseau', 'statut',
+        'dtpremieredonnee', 'moisetiage',
+        'moisanneehydro', 'dureecrues', 'publication',
+        'essai', 'influence', 'influencecommentaire',
+        'commentaire', 'siteassocie', 'sitesattaches',
+        'massedeau', 'loisstat', 'entitesvigicrues',
+        'lamesdeau', 'sitesamont', 'sitesaval')
 
     def __unicode__(self):
         """Return unicode representation."""
@@ -977,6 +1519,7 @@ _ARTICLE = {
 _CODE_HYDRO_LENGTH = {
     # class name: hydro code length
     Sitehydro: 8,
+    Sitehydroattache: 8,
     Station: 10,
     Capteur: 12}
 

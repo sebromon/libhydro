@@ -139,3 +139,153 @@ class TestCoord(unittest.TestCase):
             composant_site.Coord,
             **{'x': '1', 'y': 8156941.2368, 'proj': 8591674}
         )
+
+
+# -- class TestAltitude -------------------------------------------------------
+class TestAltitude(unittest.TestCase):
+
+    """Altitude class tests."""
+
+    # def setUp(self):
+    # """Hook method for setting up the test fixture before exercising it."""
+    # pass
+
+    # def tearDown(self):
+    # """Hook method for deconstructing the test fixture after testing it."""
+    # pass
+
+    def test_base_01(self):
+        """Base test."""
+        altitude = 158.4
+        sysalti = 1
+        alt = composant_site.Altitude(altitude=altitude,
+                                      sysalti=sysalti)
+        self.assertEqual(
+            (alt.altitude, alt.sysalti),
+            (altitude, sysalti)
+        )
+
+    def test_altitude(self):
+        """Altitude test"""
+        altitudes = ['15.4', 1, 156.4, -18.4]
+        expected = [15.4, 1, 156.4, -18.4]
+        sysalti = 5
+        for index, altitude in enumerate(altitudes):
+            alt = composant_site.Altitude(altitude=altitude,
+                                          sysalti=sysalti)
+            self.assertEqual(alt.altitude, expected[index])
+
+    def test_sysalti(self):
+        """Sysalti test"""
+        sysaltis = [0, 1, 31]
+        altitude = 147.3
+        alt = composant_site.Altitude(altitude=altitude)
+        self.assertEqual(alt.sysalti, 31)
+        for sysalti in sysaltis:
+            alt = composant_site.Altitude(altitude=altitude,
+                                          sysalti=sysalti)
+            self.assertEqual(alt.sysalti, sysalti)
+
+    def test_error_altitude(self):
+        """Altitude error test"""
+        altitude = 13.4
+        sysalti = 1
+        composant_site.Altitude(altitude=altitude,
+                                sysalti=sysalti)
+        for altitude in [None, 'toto']:
+            with self.assertRaises(Exception):
+                composant_site.Altitude(altitude=altitude,
+                                        sysalti=sysalti)
+
+    def test_error_sysalti(self):
+        """Sysalti error test"""
+        altitude = 13.4
+        sysalti = 1
+        composant_site.Altitude(altitude=altitude,
+                                sysalti=sysalti)
+        for sysalti in [None, -5, 32]:
+            with self.assertRaises(Exception):
+                composant_site.Altitude(altitude=altitude,
+                                        sysalti=sysalti)
+
+    def test_strict(self):
+        """Altitude witout altitude and sysalti"""
+        strict = False
+        composant_site.Altitude(strict=strict)
+
+    def test_str(self):
+        """Representation test"""
+        sysalti = 1
+        altitude = '84.1'
+        alt = composant_site.Altitude(altitude=altitude, sysalti=sysalti)
+        str_alt = alt.__str__()
+        self.assertTrue(str_alt.find('Bourdeloue') > -1)
+        self.assertTrue(str_alt.find(altitude) > -1)
+
+
+# -- class TestLoiStat -------------------------------------------------------
+class TestLoiStat(unittest.TestCase):
+    """LoiStat class tests."""
+    def test_01(self):
+        """simple test"""
+        contexte = 3
+        loi = 2
+        loistat = composant_site.LoiStat(contexte=contexte, loi=loi)
+        self.assertEqual((loistat.contexte, loistat.loi),
+                         (contexte, loi))
+
+    def test_error_contexte(self):
+        """contexte error"""
+        contexte = 3
+        loi = 2
+        for contexte in [1, 3]:
+            composant_site.LoiStat(contexte=contexte, loi=loi)
+        for contexte in [None, -5, 0, 4, 'toto']:
+            with self.assertRaises(Exception):
+                composant_site.LoiStat(contexte=contexte, loi=loi)
+
+    def test_error_loi(self):
+        """loi error"""
+        contexte = 3
+        loi = 2
+        for loi in [0, 3]:
+            composant_site.LoiStat(contexte=contexte, loi=loi)
+        for loi in [None, -5, 4, 'toto']:
+            with self.assertRaises(Exception):
+                composant_site.LoiStat(contexte=contexte, loi=loi)
+
+    def test_str(self):
+        """Representation test"""
+        contexte = 3
+        loi = 2
+        loistat = composant_site.LoiStat(contexte=contexte, loi=loi)
+        self.assertTrue(loistat.__str__().find('Gauss') > -1)
+        self.assertTrue(loistat.__str__().find('Etiage') > -1)
+
+
+# -- class TestEntiteVigiCrues -----------------------------------------------
+class TestEntiteVigiCrues(unittest.TestCase):
+    """EntiteVigiCrues class tests."""
+
+    def test_01(self):
+        """ simple test"""
+        code = 'LA215'
+        entite = composant_site.EntiteVigiCrues(code=code)
+        self.assertEqual((entite.code, entite.nom),
+                         (code, None))
+
+    def test_02(self):
+        """Full EntiteVigiCrues"""
+        code = 'LA215'
+        nom = 'entité'
+        entite = composant_site.EntiteVigiCrues(code=code, nom=nom)
+        self.assertEqual((entite.code, entite.nom),
+                         (code, nom))
+
+    def test_str(self):
+        """Representation test"""
+        code = 'LA215'
+        nom = 'entité'
+        entite = composant_site.EntiteVigiCrues(code=code, nom=nom)
+        self.assertTrue(entite.__str__().find(code) > -1)
+        self.assertTrue(entite.__str__().find(nom) > -1)

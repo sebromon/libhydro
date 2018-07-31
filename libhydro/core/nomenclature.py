@@ -149,6 +149,28 @@ NOMENCLATURE = {
         31: 'TN'
     },
 
+    # Influence générale hydro
+    104: {
+        0: 'Inconnue',
+        1: 'Nulle',
+        2: 'Etiage seulement',
+        3: 'Forte',
+        4: 'Hautes eaux seulement'
+    },
+
+    # Loi pour le module
+    114: {
+        0: 'Inconnue',
+        1: 'Galton',
+        2: 'Gauss',
+        3: 'Gumbel'
+    },
+
+    # Statut hydrlogique du site hydro
+    460: {1: 'Avec signification hydrologique',
+          2: 'Sans signification hydrologique',
+          3: 'Source captée'},
+
     # Type de courbe de tarage
     503: {0: 'Polyligne', 4: 'Fonction puissance'},
 
@@ -241,6 +263,13 @@ NOMENCLATURE = {
     # Type de mesure du capteur hydrometrique
     520: {'H': 'Hauteur', 'Q': 'Debit'},
 
+    # Type de contexte loi statistique
+    521: {
+        1: 'Module',
+        2: 'Crue',
+        3: 'Etiage'
+    },
+
     # Grandeur meteorologique
     523: {
         'RR': "Cumul de precipitations",
@@ -316,6 +345,13 @@ NOMENCLATURE = {
 
     # Civilite du contact
     538: {1: 'Monsieur', 2: 'Madame', 3: 'Mademoiselle'},
+
+    # Droit de publication site hydrométrique
+    871: {
+        10: 'Public',
+        20: 'Restreint',
+        30: 'Privé'
+    },
 
     # Contexte de production de l'observation météorologique
     872: {

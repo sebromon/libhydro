@@ -22,7 +22,7 @@ from __future__ import (
 import datetime as _datetime
 import unittest
 
-from libhydro.core import sitehydro
+from libhydro.core import sitehydro, sitemeteo as _sitemeteo
 from libhydro.core import _composant_site as composant_site
 
 
@@ -59,10 +59,23 @@ class TestSitehydro(unittest.TestCase):
             (
                 s.code, s.codeh2, s.typesite, s.libelle, s.libelleusuel,
                 s.stations, s.communes, s.tronconsvigilance, s.entitehydro,
-                s.zonehydro, s.tronconhydro, s.precisioncoursdeau
+                s.zonehydro, s.tronconhydro, s.precisioncoursdeau,
+                s.pkamont, s.pkaval, s.dtmaj, s.bvtopo,
+                s.bvhydro, s.altitude, s.fuseau, s.statut, s.dtpremieredonnee,
+                s.moisetiage, s.moisanneehydro, s.dureecrues, s.publication,
+                s.essai, s.influence, s.influencecommentaire, s.commentaire,
+                s.siteassocie, s.sitesattaches, s.loisstat, s.entitesvigicrues,
+                s.lamesdeau, s.sitesamont, s.sitesaval
             ),
-            (code, None, 'REEL', None, None, [], [], [], None, None, None,
-             None)
+            (code, None, 'REEL', None, None,
+             [], [], [], None,
+             None, None,  None,
+             None, None, None, None,
+             None, None, None, None, None,
+             None, None, None, None,
+             None, None, None, None,
+             None, [], [], [],
+             [], [], [])
         )
 
     def test_base_02(self):
@@ -84,6 +97,60 @@ class TestSitehydro(unittest.TestCase):
         tronconhydro = 'O0240430'
         zonehydro = 'O987'
         precisioncoursdeau = 'totale'
+        pkamont = 31.5
+        pkaval = 54.2
+        dtmaj = _datetime.datetime(2017, 3, 9, 14, 16, 24)
+        bvtopo = 1516.3
+        bvhydro = 1432.7
+        altitude = composant_site.Altitude(altitude=98.2, sysalti=2)
+        fuseau = 9
+        statut = 3
+        dtpremieredonnee = _datetime.datetime(2010, 4, 13)
+        moisetiage = 5
+        moisanneehydro = 7
+        dureecrues = 15
+        publication = 30
+        essai = True
+        influence = 4
+        influencecommentaire = 'Commentaire sur l\'influence'
+        commentaire = 'Commentaire du site'
+        siteassocie = sitehydro.Sitehydro(code='A7654321')
+
+        siteattache1 = sitehydro.Sitehydroattache(
+            sitehydro=sitehydro.Sitehydro(code='C1212121'), ponderation=0.4,
+            decalage=15)
+        siteattache2 = sitehydro.Sitehydroattache(
+            sitehydro=sitehydro.Sitehydro(code='C1212121'), ponderation=0.6,
+            decalage=28)
+        sitesattaches = [siteattache1, siteattache2]
+
+        loi1 = composant_site.LoiStat(contexte=1, loi=2)
+        loi2 = composant_site.LoiStat(contexte=2, loi=1)
+        loisstat = [loi1, loi2]
+
+        entitevigicrues1 = composant_site.EntiteVigiCrues(code='LA1',
+                                                          nom='entité')
+        entitevigicrues2 = composant_site.EntiteVigiCrues(code='Z98')
+        entitesvigicrues = [entitevigicrues1, entitevigicrues2]
+
+        lamedeau1 = _sitemeteo.SitemeteoPondere(
+            _sitemeteo.Sitemeteo(code='01234567'),
+            ponderation=0.6
+            )
+        lamedeau2 = _sitemeteo.SitemeteoPondere(
+            _sitemeteo.Sitemeteo(code='12345678'),
+            ponderation=0.4
+            )
+        lamesdeau = [lamedeau1, lamedeau2]
+
+        siteamont1 = sitehydro.Sitehydro(code='C9412683')
+        siteamont2 = sitehydro.Sitehydro(code='K1123321')
+        sitesamont = [siteamont1, siteamont2]
+
+        siteaval1 = sitehydro.Sitehydro(code='J8754921')
+        siteaval2 = sitehydro.Sitehydro(code='K2659170')
+        sitesaval = [siteaval1, siteaval2]
+
         s = sitehydro.Sitehydro(
             code=code, codeh2=codeh2, typesite=typesite,
             libelle=libelle, libelleusuel=libelleusuel,
@@ -92,7 +159,31 @@ class TestSitehydro(unittest.TestCase):
             entitehydro=entitehydro,
             tronconhydro=tronconhydro,
             zonehydro=zonehydro,
-            precisioncoursdeau=precisioncoursdeau
+            precisioncoursdeau=precisioncoursdeau,
+            pkamont=pkamont,
+            pkaval=pkaval,
+            altitude=altitude,
+            dtmaj=dtmaj,
+            bvtopo=bvtopo,
+            bvhydro=bvhydro,
+            fuseau=fuseau,
+            statut=statut,
+            dtpremieredonnee=dtpremieredonnee,
+            moisetiage=moisetiage,
+            moisanneehydro=moisanneehydro,
+            dureecrues=dureecrues,
+            publication=publication,
+            essai=essai,
+            influence=influence,
+            influencecommentaire=influencecommentaire,
+            commentaire=commentaire,
+            siteassocie=siteassocie,
+            sitesattaches=sitesattaches,
+            loisstat=loisstat,
+            entitesvigicrues=entitesvigicrues,
+            lamesdeau=lamesdeau,
+            sitesamont=sitesamont,
+            sitesaval=sitesaval
         )
 
         self.assertEqual(
@@ -100,13 +191,23 @@ class TestSitehydro(unittest.TestCase):
                 s.code, s.codeh2, s.typesite, s.libelle, s.libelleusuel,
                 s.coord, s.stations, s.communes, s.tronconsvigilance,
                 s.entitehydro, s.zonehydro, s.tronconhydro,
-                s.precisioncoursdeau
+                s.precisioncoursdeau, s.pkamont, s.pkaval, s.dtmaj, s.bvtopo,
+                s.bvhydro, s.altitude, s.fuseau, s.statut, s.dtpremieredonnee,
+                s.moisetiage, s.moisanneehydro, s.dureecrues, s.publication,
+                s.essai, s.influence, s.influencecommentaire, s.commentaire,
+                s.siteassocie, s.sitesattaches, s.loisstat, s.entitesvigicrues,
+                s.lamesdeau, s.sitesamont, s.sitesaval
             ),
             (
                 code, codeh2, typesite, libelle, libelleusuel,
                 composant_site.Coord(*coord), [station], [str(commune)],
                 [tronconvigilance], entitehydro, zonehydro, tronconhydro,
-                precisioncoursdeau
+                precisioncoursdeau, pkamont, pkaval, dtmaj, bvtopo,
+                bvhydro, altitude, fuseau, statut, dtpremieredonnee,
+                moisetiage, moisanneehydro, dureecrues, publication,
+                essai, influence, influencecommentaire, commentaire,
+                siteassocie, sitesattaches, loisstat, entitesvigicrues,
+                lamesdeau, sitesamont, sitesaval
             )
         )
 
@@ -360,6 +461,138 @@ class TestSitehydro(unittest.TestCase):
                 code=code, entitehydro=entitehydro
             )
 
+    def test_error_10(self):
+        """pkamont pkaval error"""
+        code = 'A2351010'
+        for pk in ['1.8', 165.4, None]:
+            sitehydro.Sitehydro(
+                code=code,
+                pkamont=pk)
+            sitehydro.Sitehydro(
+                code=code,
+                pkaval=pk)
+        pk = 'toto'
+        with self.assertRaises(Exception):
+            sitehydro.Sitehydro(
+                code=code, pkamont=pk
+            )
+        with self.assertRaises(Exception):
+            sitehydro.Sitehydro(
+                code=code, pkaval=pk
+            )
+
+    def test_error_11_altitude(self):
+        """altitude error"""
+        code = 'A2351010'
+        altitude = composant_site.Altitude(altitude=98.2, sysalti=2)
+        sitehydro.Sitehydro(
+            code=code, altitude=altitude
+        )
+        for altitude in [189.4, 'toto']:
+            with self.assertRaises(Exception):
+                sitehydro.Sitehydro(
+                    code=code, altitude=altitude
+                )
+
+    def test_error_12_bv(self):
+        """bvhydro et bvtopo error"""
+        code = 'A2351010'
+        for bv in [1578989.4, None]:
+            sitehydro.Sitehydro(
+                code=code, bvhydro=bv
+            )
+            sitehydro.Sitehydro(
+                code=code, bvtopo=bv
+            )
+        bv = 'tata'
+        with self.assertRaises(Exception):
+            sitehydro.Sitehydro(
+                code=code, bvhydro=bv
+            )
+        with self.assertRaises(Exception):
+            sitehydro.Sitehydro(
+                code=code, bvtopo=bv
+            )
+
+    def test_error_13_fuseau(self):
+        """fuseau error"""
+        code = 'A2351010'
+        for fuseau in [1, '5', None]:
+            sitehydro.Sitehydro(
+                code=code, fuseau=fuseau
+            )
+        for fuseau in ['toto']:
+            with self.assertRaises(Exception):
+                sitehydro.Sitehydro(code=code, fuseau=fuseau)
+
+    def test_error_xx_siteassocie(self):
+        siteassocie = sitehydro.Sitehydro(code='K5463981')
+        sitehydro.Sitehydro(code='L4545456',
+                            siteassocie=siteassocie)
+        siteassocie = 'A12234567'
+        with self.assertRaises(Exception):
+            sitehydro.Sitehydro(code='L4545456', siteassocie=siteassocie)
+
+    def test_error_xx_sitesattaches(self):
+        siteattache1 = sitehydro.Sitehydroattache(
+            sitehydro=sitehydro.Sitehydro(code='K5463981'))
+        siteattache2 = sitehydro.Sitehydroattache(
+            sitehydro=sitehydro.Sitehydro(code='L1239546'))
+        for sites in [[siteattache1, siteattache2], [], None, siteattache1]:
+            sitehydro.Sitehydro(code='L4545456',
+                                sitesattaches=sites)
+        for sites in ['toto', ['toto'], [siteattache1, 'tata']]:
+            with self.assertRaises(Exception):
+                sitehydro.Sitehydro(code='L4545456', sitesattaches=sites)
+
+    def test_error_xx_loisstat(self):
+        loi1 = composant_site.LoiStat(contexte=1, loi=2)
+        loi2 = composant_site.LoiStat(contexte=2, loi=1)
+        for lois in [[loi1, loi2], [], None, loi1]:
+            sitehydro.Sitehydro(code='L4545456',
+                                loisstat=lois)
+        for lois in [1, 'toto', ['toto'], [loi1, 1]]:
+            with self.assertRaises(Exception):
+                sitehydro.Sitehydro(code='L4545456', loisstat=lois)
+
+    def test_error_xx_entitesvigicrues(self):
+        entitevigicrues1 = composant_site.EntiteVigiCrues(code='LA1',
+                                                          nom='entité')
+        entitevigicrues2 = composant_site.EntiteVigiCrues(code='Z98')
+        for entites in [None, [], entitevigicrues1,
+                        [entitevigicrues1, entitevigicrues2]]:
+            sitehydro.Sitehydro(code='L4545456', entitesvigicrues=entites)
+        for entites in ['LA1', [entitevigicrues1, 'LA1']]:
+            with self.assertRaises(Exception):
+                sitehydro.Sitehydro(code='L4545456', entitesvigicrues=entites)
+
+    def test_error_xx_lamesdeau(self):
+        lamedeau1 = _sitemeteo.SitemeteoPondere(
+            _sitemeteo.Sitemeteo(code='01234567'),
+            ponderation=0.6
+            )
+        lamedeau2 = _sitemeteo.SitemeteoPondere(
+            _sitemeteo.Sitemeteo(code='12345678'),
+            ponderation=0.4
+            )
+        for lames in [None, [], lamedeau1, [lamedeau1, lamedeau2]]:
+            sitehydro.Sitehydro(code='L4545456', lamesdeau=lames)
+        for lames in ['01234567', [lamedeau1, '01234567']]:
+            with self.assertRaises(Exception):
+                sitehydro.Sitehydro(code='L4545456', lamesdeau=lames)
+
+    def test_error_xx__sitesmontaval(self):
+        site1 = sitehydro.Sitehydro(code='Z4564564')
+        site2 = sitehydro.Sitehydro(code='Z4564564')
+        for sites in [None, [], site1, [site1, site2]]:
+            sitehydro.Sitehydro(code='L4545456', sitesamont=sites)
+            sitehydro.Sitehydro(code='L4545456', sitesaval=sites)
+        for sites in ['Z4564564', [site1, 'Z4564564']]:
+            with self.assertRaises(Exception):
+                sitehydro.Sitehydro(code='L4545456', sitesamont=sites)
+            with self.assertRaises(Exception):
+                sitehydro.Sitehydro(code='L4545456', sitesaval=sites)
+
     def test_inheritance(self):
         """Test inheritance."""
         class Sitehydro(sitehydro.Sitehydro):
@@ -374,6 +607,84 @@ class TestSitehydro(unittest.TestCase):
         self.assertEqual(x.code, code)
         self.assertEqual(x.prop, prop)
         self.assertEqual(x.communes, [commune])
+
+
+# -- class TestSitehydroattache -----------------------------------------------
+class TestSitehydroattache(unittest.TestCase):
+    def test_01(self):
+        shy = sitehydro.Sitehydro(code='A1234567')
+        site = sitehydro.Sitehydroattache(sitehydro=shy)
+        self.assertEqual((site.sitehydro, site.ponderation, site.decalage,
+                          site.dtdeb, site.dtfin, site.dtdebactivation,
+                          site.dtfinactivation),
+                         (shy, None, None, None, None, None, None))
+
+    def test_02(self):
+        shy = sitehydro.Sitehydro(code='Z7654321')
+        ponderation = 0.7
+        decalage = 30
+        dtdeb = _datetime.datetime(2013, 4, 9, 10, 54, 31)
+        dtfin = _datetime.datetime(2015, 8, 17, 21, 17, 5)
+        dtdebactivation = _datetime.datetime(2014, 3, 25, 12, 20, 43)
+        dtfinactivation = _datetime.datetime(2014, 3, 25, 12, 20, 43)
+        site = sitehydro.Sitehydroattache(sitehydro=shy,
+                                          ponderation=ponderation,
+                                          decalage=decalage, dtdeb=dtdeb,
+                                          dtfin=dtfin,
+                                          dtdebactivation=dtdebactivation,
+                                          dtfinactivation=dtfinactivation)
+        self.assertEqual((site.sitehydro, site.ponderation, site.decalage,
+                          site.dtdeb, site.dtfin, site.dtdebactivation,
+                          site.dtfinactivation),
+                         (shy, ponderation, decalage, dtdeb, dtfin,
+                          dtdebactivation, dtfinactivation))
+
+    def test_str(self):
+        code = 'Z7654321'
+        shy = sitehydro.Sitehydro(code=code)
+        ponderation = '0.7'
+        decalage = '38'
+        site = sitehydro.Sitehydroattache(sitehydro=shy,
+                                          ponderation=ponderation,
+                                          decalage=decalage)
+        self.assertTrue(site.__unicode__().find(code) > -1)
+        self.assertTrue(site.__unicode__().find(ponderation) > -1)
+        self.assertTrue(site.__unicode__().find(decalage) > -1)
+
+    def test_error_code(self):
+        code = 'A1234567'
+        shy = sitehydro.Sitehydro(code=code)
+        sitehydro.Sitehydroattache(sitehydro=shy)
+        shy = None
+        with self.assertRaises(TypeError):
+            sitehydro.Sitehydroattache(sitehydro=shy)
+
+        shy = 'A123456789'
+        with self.assertRaises(TypeError):
+            sitehydro.Sitehydroattache(sitehydro=shy)
+
+    def test_error_ponderation(self):
+        code = 'A1234567'
+        shy = sitehydro.Sitehydro(code=code)
+        ponderation = 0.4
+        sitehydro.Sitehydroattache(sitehydro=shy, ponderation=ponderation)
+
+        ponderation = 'toto'
+        with self.assertRaises(Exception):
+            sitehydro.Sitehydroattache(sitehydro=shy, ponderation=ponderation)
+
+    def test_error_decalage(self):
+        code = 'A1234567'
+        shy = sitehydro.Sitehydro(code=code)
+        ponderation = 0.4
+        decalage = 30
+        sitehydro.Sitehydroattache(sitehydro=shy, ponderation=ponderation,
+                                   decalage=decalage)
+
+        decalage = 'toto'
+        with self.assertRaises(Exception):
+            sitehydro.Sitehydroattache(sitehydro=shy, ponderation=ponderation,
+                                       decalage=decalage)
 
 
 # -- class TestStation --------------------------------------------------------
