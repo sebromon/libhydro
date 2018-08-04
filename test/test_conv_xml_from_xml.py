@@ -22,7 +22,7 @@ import datetime
 import math
 
 from libhydro.conv.xml import _from_xml as from_xml
-from libhydro.core import (sitehydro, sitemeteo, _composant)
+from libhydro.core import (sitehydro, sitemeteo, _composant, _composant_site)
 
 
 # -- strings ------------------------------------------------------------------
@@ -194,7 +194,9 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(sh.libelleusuel, 'St-Martin-du-Touch')
         self.assertEqual(sh.typesite, 'SOURCE')
         self.assertEqual(sh.code, 'O1984310')
-        self.assertEqual(sh.communes, ['11354', '11355', '2B021'])
+        self.assertEqual(sh.communes, [_composant_site.Commune(code='11354'),
+                                       _composant_site.Commune(code='11355'),
+                                       _composant_site.Commune(code='2B021')])
         self.assertEqual(len(sh.stations), 3)
         # check stations
         for i in range(1, 3):
@@ -250,11 +252,11 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(site.coord.y, 1781803)
         self.assertEqual(site.coord.proj, 26)
         self.assertEqual(site.codeh2, 'O1235401')
-        self.assertEqual(len(site.tronconsvigilance), 2)
-        self.assertEqual(site.tronconsvigilance[0].code, 'AG3')
-        self.assertEqual(site.tronconsvigilance[1].code, 'AG5')
+        self.assertEqual(len(site.entitesvigicrues), 2)
+        self.assertEqual(site.entitesvigicrues[0].code, 'AG3')
+        self.assertEqual(site.entitesvigicrues[1].code, 'AG5')
         self.assertEqual(
-            site.tronconsvigilance[1].libelle, 'Troncon Adour àvâl')
+            site.entitesvigicrues[1].nom, 'Troncon Adour àvâl')
         self.assertEqual(site.entitehydro, 'Y1524018')
         self.assertEqual(site.tronconhydro, 'O0011532')
         self.assertEqual(site.zonehydro, 'H420')

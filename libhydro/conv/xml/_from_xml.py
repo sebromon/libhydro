@@ -30,7 +30,8 @@ from libhydro.core import (
     obsmeteo as _obsmeteo, simulation as _simulation, evenement as _evenement,
     courbetarage as _courbetarage, courbecorrection as _courbecorrection,
     jaugeage as _jaugeage, obselaboreehydro as _obselaboreehydro,
-    obselaboreemeteo as _obselaboreemeteo, nomenclature as _nomenclature)
+    obselaboreemeteo as _obselaboreemeteo, nomenclature as _nomenclature,
+    _composant_site)
 
 from libhydro.conv.xml import sandre_tags as _sandre_tags
 
@@ -319,10 +320,13 @@ def _parse(src, ordered=True):
         'scenario': scenario,
         'intervenants': _intervenants_from_element(
             tree.find('RefHyd/Intervenants')),
-        'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro')),
+        'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro'),
+                                               version=scenario.version,
+                                               tags=tags),
         'sitesmeteo': _sitesmeteo_from_element(tree.find('RefHyd/SitesMeteo')),
         'seuilshydro': _seuilshydro_from_element(
-            element=tree.find('RefHyd/SitesHydro'), ordered=ordered),
+            element=tree.find('RefHyd/SitesHydro'), version=scenario.version,
+            tags=tags, ordered=ordered),
         'modelesprevision': _modelesprevision_from_element(
             tree.find('RefHyd/ModelesPrevision')),
         'evenements': _evenements_from_element(
@@ -413,7 +417,7 @@ def _contact_from_element(element, intervenant=None):
         return _intervenant.Contact(**args)
 
 
-def _sitehydro_from_element(element):
+def _sitehydro_from_element(element, version, tags):
     """Return a sitehydro.Sitehydro from a <SiteHydro> element."""
     if element is not None:
         # prepare args
@@ -430,19 +434,111 @@ def _sitehydro_from_element(element):
         args['stations'] = [
             _station_from_element(e)
             for e in element.findall('StationsHydro/StationHydro')]
-        args['communes'] = [
-            str(e.text) for e in element.findall('CdCommune')]
-        args['tronconsvigilance'] = [
-            _tronconvigilance_from_element(e)
-            for e in element.findall(
-                'TronconsVigilanceSiteHydro/TronconVigilanceSiteHydro')]
+        if version == '1.1':
+            args['communes'] = [
+                    _composant_site.Commune(code=str(e.text))
+                    for e in element.findall('CdCommune')]
+        else:
+            args['communes'] = [_commune_from_element(communeel)
+                                for communeel in element.findall(
+                                    'Communes/Commune')]
+        args['entitesvigicrues'] = [
+            _tronconvigilance_from_element(e, version, tags)
+            for e in element.findall(tags.entsvigicru + '/' + tags.entvigicru)]
         args['entitehydro'] = _value(element, 'CdEntiteHydrographique')
         args['tronconhydro'] = _value(element, 'CdTronconHydrographique')
         args['zonehydro'] = _value(element, 'CdZoneHydro')
         args['precisioncoursdeau'] = _value(element,
                                             'PrecisionCoursDEauSiteHydro')
+        args['mnemo'] = _value(element, 'MnSiteHydro')
+        args['complementlibelle'] = _value(element, tags.comtlbsitehydro)
+        args['pkamont'] = _value(element, 'PkAmontSiteHydro', float)
+        args['pkaval'] = _value(element, 'PkAvalSiteHydro', float)
+        altel = element.find('AltiSiteHydro')
+        if altel is not None:
+            altitude = _value(altel, 'AltitudeSiteHydro')
+            sysalti = _value(altel, 'SysAltimetriqueSiteHydro', int)
+            args['altitude'] = _composant_site.Altitude(altitude=altitude,
+                                                        sysalti=sysalti)
+
+        args['dtmaj'] = _value(element, tags.dtmajsitehydro)
+        args['bvtopo'] = _value(element, 'BassinVersantSiteHydro', float)
+        args['bvhydro'] = _value(element, 'BassinVersantHydroSiteHydro', float)
+        args['fuseau'] = _value(element, 'FuseauHoraireSiteHydro', int)
+
+        args['statut'] = _value(element, tags.stsitehydro, int)
+
+        args['dtpremieredonnee'] = _value(element, 'DtPremDonSiteHydro')
+        args['moisetiage'] = _value(element, 'PremMoisEtiageSiteHydro', int)
+        args['moisanneehydro'] = _value(element, 'PremMoisAnHydSiteHydro', int)
+        args['dureecrues'] = _value(element, 'DureeCarCruSiteHydro', int)
+        args['publication'] = _value(element, 'DroitPublicationSiteHydro', int)
+        args['essai'] = _value(element, 'EssaiSiteHydro', bool)
+        args['influence'] = _value(element, 'InfluGeneSiteHydro', int)
+        args['influencecommentaire'] = _value(element, 'ComInfluGeneSiteHydro')
+        args['commentaire'] = _value(element, 'ComSiteHydro')
+        if version == '2':
+            siteassociecode = element.find('SiteHydroAssocie/CdSiteHydro')
+            if siteassociecode is not None:
+                code = str(siteassociecode.text)
+                args['siteassocie'] = _sitehydro.Sitehydro(code=code)
+
+        args['sitesattaches'] = [
+            _siteattache_from_element(e, version, tags)
+            for e in element.findall('SitesHydroAttaches/SiteHydroAttache')]
+
+        args['massedeau'] = _value(element, 'CdEuMasseDEau')
+
+        args['loisstat'] = [
+            _loistat_from_element(e)
+            for e in element.findall(
+                'LoisStatContexteSiteHydro/LoiStatContexteSiteHydro')]
+
+        # args['entitesvigicrues'] = _value(element, 'MnSiteHydro')
+        # args['lamesdeau'] = _value(element, 'MnSiteHydro')
+        # args['sitesamont'] = _value(element, 'MnSiteHydro')
+        # args['sitesaval'] = _value(element, 'MnSiteHydro')
         # build a Sitehydro and return
         return _sitehydro.Sitehydro(**args)
+
+
+def _commune_from_element(element):
+    """Return a _composant_site.Commune
+       from a <Commune> element.
+    """
+    args = {}
+    args['code'] = _value(element, 'CdCommune')
+    args['libelle'] = _value(element, 'LbCommune')
+    return _composant_site.Commune(**args)
+
+
+def _siteattache_from_element(element, version, tags):
+    """Return asitehydro.Sitehydroattache
+       from a <SiteHydroAttache> element.
+    """
+    code = _value(element, 'CdSiteHydro')
+    args = {}
+    args['sitehydro'] = _sitehydro.Sitehydro(code=code)
+    args['ponderation'] = _value(element, 'PonderationSiteHydroAttache', float)
+    if version == '2':
+        args['decalage'] = _value(element, 'DecalSiteHydroAttache', int)
+        args['dtdeb'] = _value(element, 'DtDebSiteHydroAttache')
+        args['dtfin'] = _value(element, 'DtFinSiteHydroAttache')
+        args['dtdebactivation'] = \
+            _value(element, 'DtDebActivationSiteHydroAttache')
+        args['dtfinactivation'] = \
+            _value(element, 'DtFinActivationSiteHydroAttache')
+    return _sitehydro.Sitehydroattache(**args)
+
+
+def _loistat_from_element(element):
+    """Return an composant_site.LoiStat
+       from a <LoiStatContexteSiteHydro> element.
+    """
+    args = {}
+    args['contexte'] = _value(element, 'TypContexteLoiStat', int)
+    args['loi'] = _value(element, 'TypLoiSiteHydro', int)
+    return _composant_site.LoiStat(**args)
 
 
 def _sitemeteo_from_element(element):
@@ -466,16 +562,17 @@ def _sitemeteo_from_element(element):
         return sitemeteo
 
 
-def _tronconvigilance_from_element(element):
+def _tronconvigilance_from_element(element, version, tags):
     """Return a sitehydro.Tronconvigilance from a <TronconVigilanceSiteHydro>
+    or <EntVigiCru>
     element."""
     if element is not None:
         # prepare args
         args = {}
-        args['code'] = _value(element, 'CdTronconVigilance')
-        args['libelle'] = _value(element, 'NomCTronconVigilance')
+        args['code'] = _value(element, tags.cdentvigicru)
+        args['nom'] = _value(element, tags.nomentvigicru)
         # build a Tronconvigilance and return
-        return _sitehydro.Tronconvigilance(**args)
+        return _composant_site.EntiteVigiCrues(**args)
 
 
 def _station_from_element(element):
@@ -1403,8 +1500,8 @@ def _global_function_builder(xpath, func):
 _intervenants_from_element = _global_function_builder(
     './Intervenant', _intervenant_from_element)
 # return a list of sitehydro.Sitehydro from a <SitesHydro> element
-_siteshydro_from_element = _global_function_builder(
-    './SiteHydro', _sitehydro_from_element)
+# _siteshydro_from_element = _global_function_builder(
+#     './SiteHydro', _sitehydro_from_element)
 # return a list of sitemeteo.Sitemeteo from a <SitesMeteo> element
 _sitesmeteo_from_element = _global_function_builder(
     './SiteMeteo', _sitemeteo_from_element)
@@ -1474,8 +1571,16 @@ def _serieshydro_from_element(elem, version, tags):
     return serieshydro
 
 
+def _siteshydro_from_element(elem, version, tags):
+    siteshydro = []
+    if elem is not None:
+        for item in elem.findall('./SiteHydro'):
+            siteshydro.append(_sitehydro_from_element(item, version, tags))
+    return siteshydro
+
+
 # these 2 functions doesn't fit with the _global_function_builder :-\
-def _seuilshydro_from_element(element, ordered=False):
+def _seuilshydro_from_element(element, version, tags, ordered=False):
     """Return a list of seuil.Seuilhydro from a <SitesHydro> element.
 
     When ordered is True, we use an OrderedDict to keep the XML initial order.
@@ -1498,7 +1603,7 @@ def _seuilshydro_from_element(element, ordered=False):
     seuilshydro = _collections.OrderedDict() if ordered else {}
     for elementsitehydro in element.findall('./SiteHydro'):
         # FIXME - we should/could use the already build sitehydro
-        sitehydro = _sitehydro_from_element(elementsitehydro)
+        sitehydro = _sitehydro_from_element(elementsitehydro, version, tags)
         for elementseuilhydro in elementsitehydro.findall(
                 './ValeursSeuilsSiteHydro/ValeursSeuilSiteHydro'):
             seuilhydro = _seuilhydro_from_element(elementseuilhydro, sitehydro)

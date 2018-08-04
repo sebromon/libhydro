@@ -58,7 +58,7 @@ class TestSitehydro(unittest.TestCase):
         self.assertEqual(
             (
                 s.code, s.codeh2, s.typesite, s.libelle, s.libelleusuel,
-                s.stations, s.communes, s.tronconsvigilance, s.entitehydro,
+                s.stations, s.communes, s.entitehydro,
                 s.zonehydro, s.tronconhydro, s.precisioncoursdeau,
                 s.pkamont, s.pkaval, s.dtmaj, s.bvtopo,
                 s.bvhydro, s.altitude, s.fuseau, s.statut, s.dtpremieredonnee,
@@ -68,7 +68,7 @@ class TestSitehydro(unittest.TestCase):
                 s.lamesdeau, s.sitesamont, s.sitesaval
             ),
             (code, None, 'REEL', None, None,
-             [], [], [], None,
+             [], [], None,
              None, None,  None,
              None, None, None, None,
              None, None, None, None, None,
@@ -89,10 +89,7 @@ class TestSitehydro(unittest.TestCase):
         station = sitehydro.Station(
             code='%s01' % code, typestation='LIMNI'
         )
-        commune = 32150
-        tronconvigilance = sitehydro.Tronconvigilance(
-            code='AC1', libelle='La Liane'
-        )
+        commune = composant_site.Commune(code=32150)
         entitehydro = 'O---0000'
         tronconhydro = 'O0240430'
         zonehydro = 'O987'
@@ -155,7 +152,6 @@ class TestSitehydro(unittest.TestCase):
             code=code, codeh2=codeh2, typesite=typesite,
             libelle=libelle, libelleusuel=libelleusuel,
             coord=coord, stations=station, communes=commune,
-            tronconsvigilance=tronconvigilance,
             entitehydro=entitehydro,
             tronconhydro=tronconhydro,
             zonehydro=zonehydro,
@@ -189,7 +185,7 @@ class TestSitehydro(unittest.TestCase):
         self.assertEqual(
             (
                 s.code, s.codeh2, s.typesite, s.libelle, s.libelleusuel,
-                s.coord, s.stations, s.communes, s.tronconsvigilance,
+                s.coord, s.stations, s.communes,
                 s.entitehydro, s.zonehydro, s.tronconhydro,
                 s.precisioncoursdeau, s.pkamont, s.pkaval, s.dtmaj, s.bvtopo,
                 s.bvhydro, s.altitude, s.fuseau, s.statut, s.dtpremieredonnee,
@@ -200,8 +196,8 @@ class TestSitehydro(unittest.TestCase):
             ),
             (
                 code, codeh2, typesite, libelle, libelleusuel,
-                composant_site.Coord(*coord), [station], [str(commune)],
-                [tronconvigilance], entitehydro, zonehydro, tronconhydro,
+                composant_site.Coord(*coord), [station], [commune],
+                entitehydro, zonehydro, tronconhydro,
                 precisioncoursdeau, pkamont, pkaval, dtmaj, bvtopo,
                 bvhydro, altitude, fuseau, statut, dtpremieredonnee,
                 moisetiage, moisanneehydro, dureecrues, publication,
@@ -228,33 +224,34 @@ class TestSitehydro(unittest.TestCase):
                 code='%s03' % code, typestation='LIMNIFILLE'
             )
         )
-        communes = [32150, 31100]
-        tronconsvigilance = (
-            sitehydro.Tronconvigilance(
-                code='AC1', libelle='La Liane 1'
+        communes = [composant_site.Commune(32150),
+                    composant_site.Commune(31100)]
+        entitesvigicrues = (
+            composant_site.EntiteVigiCrues(
+                code='AC1', nom='La Liane 1'
             ),
-            sitehydro.Tronconvigilance(
-                code='AC2', libelle='La Liane 2'
+            composant_site.EntiteVigiCrues(
+                code='AC2', nom='La Liane 2'
             ),
-            sitehydro.Tronconvigilance(
-                code='AC3', libelle='La Liane 3'
+            composant_site.EntiteVigiCrues(
+                code='AC3', nom='La Liane 3'
             )
         )
         s = sitehydro.Sitehydro(
             code=code, typesite=typesite, libelle=libelle,
             coord=coord, stations=stations, communes=communes,
-            tronconsvigilance=tronconsvigilance
+            entitesvigicrues=entitesvigicrues
         )
         self.assertEqual(
             (
                 s.code, s.typesite, s.libelle, s.coord,
-                s.stations, s.communes, s.tronconsvigilance
+                s.stations, s.communes, s.entitesvigicrues
             ),
             (
                 code, typesite, libelle, composant_site.Coord(**coord),
                 [st for st in stations],
-                [str(commune) for commune in communes],
-                [tronconvigilance for tronconvigilance in tronconsvigilance]
+                communes,
+                [entitevigicrues for entitevigicrues in entitesvigicrues]
             )
         )
 
@@ -300,19 +297,22 @@ class TestSitehydro(unittest.TestCase):
         self.assertEqual(s.stations, stations)
         self.assertEqual(s.coord, coord)
         self.assertEqual(s.communes, [])
-        s.communes = 32150
-        s.communes = '2B810'
-        s.communes = ['2A001', 33810, 44056, '2B033']
+        s.communes = composant_site.Commune(32150)
+        s.communes = composant_site.Commune('2B810')
+        s.communes = [composant_site.Commune('2A001'),
+                      composant_site.Commune(33810),
+                      composant_site.Commune(44056),
+                      composant_site.Commune('2B033')]
         s.communes = None
-        self.assertEqual(s.tronconsvigilance, [])
-        t = sitehydro.Tronconvigilance(
+        self.assertEqual(s.entitesvigicrues, [])
+        entite = composant_site.EntiteVigiCrues(
             code='XX33',
-            libelle='Le Târtémpion'
+            nom='Le Târtémpion'
         )
-        s.tronconsvigilance = t
-        self.assertEqual(s.tronconsvigilance, [t])
-        s.tronconsvigilance = (t, t, t)
-        self.assertEqual(s.tronconsvigilance, [t, t, t])
+        s.entitesvigicrues = entite
+        self.assertEqual(s.entitesvigicrues, [entite])
+        s.entitesvigicrues = (entite, entite, entite)
+        self.assertEqual(s.entitesvigicrues, [entite, entite, entite])
 
     def test_str_01(self):
         """Test __str__ method with None values."""
@@ -331,11 +331,11 @@ class TestSitehydro(unittest.TestCase):
         code = stations = None
         trv = ['tr1']
         s = sitehydro.Sitehydro(
-            code=code,  stations=stations, tronconsvigilance=trv,
+            code=code,  stations=stations, entitesvigicrues=trv,
             strict=False
         )
         self.assertEqual(
-            (s.typesite, s.code, s.stations, s.tronconsvigilance),
+            (s.typesite, s.code, s.stations, s.entitesvigicrues),
             ('REEL', code, [], trv)
         )
 
@@ -411,15 +411,15 @@ class TestSitehydro(unittest.TestCase):
             sitehydro.Sitehydro(code=code, coord=coord[0])
 
     def test_error_06(self):
-        """Tronconsvigilance error."""
+        """Entitesvigicrues error."""
         code = 'A2351010'
         sitehydro.Sitehydro(
             code=code,
-            tronconsvigilance=sitehydro.Tronconvigilance()
+            entitesvigicrues=composant_site.EntiteVigiCrues()
         )
         with self.assertRaises(TypeError):
             sitehydro.Sitehydro(
-                code=code, tronconsvigilance='I am not a troncon'
+                code=code, entitesvigicrues='I am not a troncon'
             )
 
     def test_error_07(self):
@@ -602,7 +602,7 @@ class TestSitehydro(unittest.TestCase):
 
         code = 'A3331020'
         prop = 10
-        commune = '32001'
+        commune = composant_site.Commune('32001')
         x = Sitehydro(code=code, prop=prop, communes=commune)
         self.assertEqual(x.code, code)
         self.assertEqual(x.prop, prop)

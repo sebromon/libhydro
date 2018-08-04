@@ -323,8 +323,7 @@ class Sitehydro(_Site_or_station):
             x, y (float)
             proj (int parmi NOMENCLATURE[22]) = systeme de projection
         stations (une liste de Station)
-        communes (une liste de codes communes, string(5)) = code INSEE commune
-        tronconsvigilance (une liste de Tronconvigilance)
+        communes (une liste de _composant_site.Commune) = liste de communes
         entitehydro (string(8) = entité hydrographique
         zonehydro (string(4)) = zone hydrographique
         tronconhydro (string(8)) = troncon hydrographique
@@ -375,7 +374,7 @@ class Sitehydro(_Site_or_station):
 
     def __init__(self, code, codeh2=None, typesite='REEL', libelle=None,
                  libelleusuel=None, coord=None, stations=None, communes=None,
-                 tronconsvigilance=None, entitehydro=None, zonehydro=None,
+                 entitehydro=None, zonehydro=None,
                  tronconhydro=None, precisioncoursdeau=None, mnemo=None,
                  complementlibelle=None, pkamont=None, pkaval=None,
                  altitude=None, dtmaj=None, bvtopo=None,
@@ -399,8 +398,8 @@ class Sitehydro(_Site_or_station):
                 (x, y, proj) ou {'x': x, 'y': y, 'proj': proj}
                 avec proj (int parmi NOMENCLATURE[22]) = systeme de projection
             stations (une Station ou un iterable de Station)
-            communes (un code commmune ou un iterable de codes)
-            tronconsvigilance (un Tronconvigilance ou un iterable)
+            communes (a _composant_site.Commune
+                or an iterable of _composant_site.Commune))
             entitehydro (string(8) = entité hydrographique
             zonehydro (string(4)) = zone hydrographique
             tronconhydro (string(8)) = troncon hydrographique
@@ -471,10 +470,9 @@ class Sitehydro(_Site_or_station):
         self.dtpremieredonnee = dtpremieredonnee
 
         # -- full properties --
-        self._stations = self._communes = self._tronconsvigilance = []
+        self._stations = self._communes = []
         self.stations = stations
         self.communes = communes
-        self.tronconsvigilance = tronconsvigilance
         self._entitehydro = None
         self.entitehydro = entitehydro
         self._tronconhydro = None
@@ -561,40 +559,14 @@ class Sitehydro(_Site_or_station):
         # None case
         if communes is None:
             return
-        # one commune, we make a list with it
-        if _composant.is_code_insee(communes, length=5, errors='ignore'):
+        if isinstance(communes, _composant_site.Commune):
             communes = [communes]
         # an iterable of communes
         for commune in communes:
-            if _composant.is_code_insee(commune, length=5, errors='strict'):
-                self._communes.append(str(commune))
-
-    # -- property tronconsvigilance --
-    @property
-    def tronconsvigilance(self):
-        """Return tronconsvigilance."""
-        return self._tronconsvigilance
-
-    @tronconsvigilance.setter
-    def tronconsvigilance(self, tronconsvigilance):
-        """Set tronconsvigilance."""
-        self._tronconsvigilance = []
-        # None case
-        if tronconsvigilance is None:
-            return
-        # one troncon, we make a list with it
-        if isinstance(tronconsvigilance, Tronconvigilance):
-            tronconsvigilance = [tronconsvigilance]
-        # an iterable of tronconsvigilance
-        for tronconvigilance in tronconsvigilance:
-            # some checks
-            if self._strict:
-                if not isinstance(tronconvigilance, Tronconvigilance):
-                    raise TypeError(
-                        'tronconsvigilance must be a Tronconvigilance '
-                        'or an iterable of Tronconvigilance')
-            # add station
-            self._tronconsvigilance.append(tronconvigilance)
+            if not isinstance(commune, _composant_site.Commune):
+                raise TypeError('communes must be a _composant_site.Commune'
+                                ' or an iterable of _composant_site.Commune')
+            self._communes.append(commune)
 
     # -- property zonehydro --
     @property
@@ -983,7 +955,7 @@ class Sitehydro(_Site_or_station):
     # -- special methods --
     __all__attrs__ = (
         'code', 'codeh2', 'typesite', 'libelle', 'libelleusuel', 'coord',
-        'stations', 'communes', 'tronconsvigilance', 'entitehydro',
+        'stations', 'communes', 'entitehydro',
         'zonehydro', 'tronconhydro', 'precisioncoursdeau', 'mnemo',
         'complementlibelle', 'pkamont', 'pkaval',
         'altitude', 'dtmaj', 'bvtopo',

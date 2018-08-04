@@ -289,3 +289,38 @@ class TestEntiteVigiCrues(unittest.TestCase):
         entite = composant_site.EntiteVigiCrues(code=code, nom=nom)
         self.assertTrue(entite.__str__().find(code) > -1)
         self.assertTrue(entite.__str__().find(nom) > -1)
+
+
+# -- class TestCommune -----------------------------------------------
+class TestCommune(unittest.TestCase):
+    """Commune class tests."""
+
+    def test_01(self):
+        """ simple test"""
+        code = '12345'
+        commune = composant_site.Commune(code=code)
+        self.assertEqual((commune.code, commune.libelle),
+                         (code, None))
+
+    def test_02(self):
+        """Full Commune"""
+        code = '54321'
+        libelle = 'Libellé commune'
+        commune = composant_site.Commune(code=code, libelle=libelle)
+        self.assertEqual((commune.code, commune.libelle),
+                         (code, libelle))
+
+    def test_str(self):
+        """Representation test"""
+        code = '01234'
+        libelle = 'Libellé'
+        commune = composant_site.Commune(code=code, libelle=libelle)
+        self.assertTrue(commune.__str__().find(code) > -1)
+        self.assertTrue(commune.__str__().find(libelle) > -1)
+
+    def test_error_code(self):
+        for code in [12345, '54321', '2A123']:
+            composant_site.Commune(code=code)
+        for code in [None, 1234, '123456', 'A5432']:
+            with self.assertRaises(Exception):
+                composant_site.Commune(code=code)

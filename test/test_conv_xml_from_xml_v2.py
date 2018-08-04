@@ -22,7 +22,7 @@ import datetime
 import math
 
 from libhydro.conv.xml import _from_xml as from_xml
-from libhydro.core import (sitehydro, sitemeteo, _composant)
+from libhydro.core import (sitehydro, sitemeteo, _composant, _composant_site)
 
 
 # -- strings ------------------------------------------------------------------
@@ -869,3 +869,246 @@ class TestFromXmlEvenements(unittest.TestCase):
         self.assertIsNone(evt.dtmaj)
         self.assertEqual(len(evt.ressources), 0)
         self.assertIsNone(evt.dtfin)
+
+
+# -- class TestFromXmlSitesHydro ----------------------------------------------
+class TestFromXmlSitesHydros(unittest.TestCase):
+
+    """FromXmlSitesHydro class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '2', 'siteshydro.xml'))
+
+    def test_base(self):
+        """Check Keys test."""
+        self.assertEqual(
+            set(self.data.keys()),
+            set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
+                 'seuilshydro', 'modelesprevision', 'evenements',
+                 'courbestarage', 'jaugeages', 'courbescorrection',
+                 'serieshydro', 'seriesmeteo', 'seriesobselab',
+                 'seriesobselabmeteo', 'simulations')))
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertEqual(self.data['intervenants'], [])
+        self.assertNotEqual(self.data['siteshydro'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['simulations'], [])
+
+    def test_scenario(self):
+        """Scenario test."""
+        scenario = self.data['scenario']
+        self.assertEqual(scenario.code, 'hydrometrie')
+        self.assertEqual(scenario.version, '2')
+        self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
+        self.assertEqual(
+            scenario.dtprod, datetime.datetime(2010, 2, 26, 12, 53, 10))
+        self.assertEqual(scenario.emetteur.contact.code, '1069')
+        self.assertEqual(scenario.emetteur.intervenant.code, 25)
+        self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
+        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
+
+    def test_sitehydro_0(self):
+        """Sitehydro 0 test."""
+        sh = self.data['siteshydro'][0]
+        self.assertEqual(sh.code, 'A1984310')
+        self.assertEqual(sh.typesite, 'REEL')
+
+    def test_sitehydro_1(self):
+        """Sitehydro 1 test."""
+        # check site
+        sh = self.data['siteshydro'][1]
+        self.assertEqual(sh.code, 'O1984310')
+        self.assertEqual(
+            sh.libelle, 'Le Touch à Toulouse [Saint-Martin-du-Touch]')
+        self.assertEqual(sh.libelleusuel, 'St-Martin-du-Touch')
+        self.assertEqual(sh.typesite, 'SOURCE')
+        self.assertEqual(sh.code, 'O1984310')
+        self.assertEqual(sh.communes, [
+                _composant_site.Commune(code='11354', libelle='1ère commune'),
+                _composant_site.Commune(code='11355'),
+                _composant_site.Commune(code='2B021')])
+        self.assertEqual(len(sh.stations), 3)
+        # check stations
+        for i in range(1, 3):
+            self.assertEqual(sh.stations[i - 1].code, 'O19843100%i' % i)
+            self.assertEqual(sh.stations[i - 1].libelle,
+                             '%s - station %i' % (sh.libelle, i))
+            self.assertEqual(sh.stations[i - 1].typestation, 'LIMNI')
+            self.assertEqual(sh.stations[i - 1].libellecomplement,
+                             'station %i' % i)
+
+        # check plages d'utilisation
+        self.assertEqual(len(sh.stations[0].plages), 2)
+        plage = sh.stations[0].plages[0]
+        self.assertEqual(plage.dtdeb,
+                         datetime.datetime(2015, 2, 14, 11, 54, 6))
+        self.assertEqual(plage.dtfin,
+                         datetime.datetime(2016, 9, 21, 6, 19, 31))
+        self.assertEqual(plage.dtactivation,
+                         datetime.datetime(2017, 3, 17, 17, 38, 21))
+        self.assertEqual(plage.dtdesactivation,
+                         datetime.datetime(2017, 4, 29, 19, 51, 48))
+        self.assertEqual(plage.active, False)
+
+        plage = sh.stations[0].plages[1]
+        self.assertEqual(plage.dtdeb,
+                         datetime.datetime(2020, 11, 3, 15, 2, 3))
+        self.assertIsNone(plage.dtfin)
+        self.assertIsNone(plage.dtactivation)
+        self.assertIsNone(plage.dtdesactivation)
+        self.assertIsNone(plage.active)
+
+        self.assertEqual(sh.stations[0].niveauaffichage, 911)
+        self.assertEqual(sh.stations[1].niveauaffichage, 0)
+
+    def test_sitehydro_2(self):
+        """Sitehydro 2 test."""
+        # check site
+        sh = self.data['siteshydro'][2]
+        self.assertEqual(sh.code, 'O2000040')
+        self.assertEqual(sh.typesite, 'REEL')
+        # check station
+        station = sh.stations[0]
+        self.assertEqual(station.libellecomplement, 'échelle principale')
+        self.assertEqual(station.coord.x, 15)
+        self.assertEqual(station.coord.y, 16)
+        self.assertEqual(station.coord.proj, 26)
+
+    def test_sitehydro_3(self):
+        """Sitehydro 3 test."""
+        # check site
+        site = self.data['siteshydro'][3]
+        self.assertEqual(site.coord.x, 618766)
+        self.assertEqual(site.coord.y, 1781803)
+        self.assertEqual(site.coord.proj, 26)
+        self.assertEqual(site.codeh2, 'O1235401')
+        self.assertEqual(len(site.entitesvigicrues), 2)
+        self.assertEqual(site.entitesvigicrues[0].code, 'AG3')
+        self.assertEqual(site.entitesvigicrues[1].code, 'AG5')
+        self.assertEqual(
+            site.entitesvigicrues[1].nom, 'Troncon Adour àvâl')
+        self.assertEqual(site.entitehydro, 'Y1524018')
+        self.assertEqual(site.tronconhydro, 'O0011532')
+        self.assertEqual(site.zonehydro, 'H420')
+        self.assertEqual(site.precisioncoursdeau, 'bras principal')
+        self.assertEqual(site.mnemo, 'Mnémo')
+        self.assertEqual(site.complementlibelle, 'Complément libellé')
+        self.assertEqual(site.pkamont, 990000.3)
+        self.assertEqual(site.pkaval, 880000.8)
+        self.assertIsNotNone(site.altitude)
+        self.assertEqual(site.altitude.altitude, 175.4)
+        self.assertEqual(site.altitude.sysalti, 3)
+        self.assertEqual(site.dtmaj, datetime.datetime(2017, 1, 17, 11, 6, 29))
+        self.assertEqual(site.bvtopo, 69.3)
+        self.assertEqual(site.bvhydro, 68.4)
+        self.assertEqual(site.fuseau, 2)
+        self.assertEqual(site.statut, 1)
+        self.assertEqual(site.dtpremieredonnee,
+                         datetime.datetime(2007, 3, 1, 9, 16, 44))
+        self.assertEqual(site.moisetiage, 9)
+        self.assertEqual(site.moisanneehydro, 3)
+        self.assertEqual(site.dureecrues, 240)
+        self.assertEqual(site.publication, 10)
+        self.assertEqual(site.essai, False)
+        self.assertEqual(site.influence, 2)
+        self.assertEqual(site.influencecommentaire, 'Commentaire influence')
+        self.assertEqual(site.commentaire, 'Commentaire du site')
+        self.assertIsNotNone(site.siteassocie)
+        self.assertEqual(site.siteassocie.code, 'A8742651')
+        
+        self.assertEqual(len(site.sitesattaches), 2)
+        siteattache1 = site.sitesattaches[0]
+        self.assertEqual(siteattache1.sitehydro.code, 'B1256982')
+        self.assertEqual(siteattache1.ponderation, 0.7)
+        self.assertEqual(siteattache1.decalage, 15)
+        self.assertEqual(siteattache1.dtdeb,
+                         datetime.datetime(2015, 3, 17, 11, 26, 34))
+        self.assertEqual(siteattache1.dtfin,
+                         datetime.datetime(2017, 9, 11, 17, 38, 53))
+        self.assertEqual(siteattache1.dtdebactivation,
+                         datetime.datetime(2016, 12, 13, 21, 14, 30))
+        self.assertEqual(siteattache1.dtfinactivation,
+                         datetime.datetime(2018, 4, 27, 8, 54, 50))
+
+        siteattache2 = site.sitesattaches[1]
+        self.assertEqual(siteattache2.sitehydro.code, 'L3542168')
+        self.assertEqual(siteattache2.ponderation, 0.3)
+        self.assertIsNone(siteattache2.decalage)
+        self.assertIsNone(siteattache2.dtdeb)
+        self.assertIsNone(siteattache2.dtfin)
+        self.assertIsNone(siteattache2.dtdebactivation)
+        self.assertIsNone(siteattache2.dtfinactivation)
+
+        self.assertEqual(site.massedeau, 'FRGG111')
+
+        self.assertEqual(len(site.loisstat), 3)
+        loi1 = site.loisstat[0]
+        self.assertEqual(loi1.contexte, 1)
+        self.assertEqual(loi1.loi, 2)
+        loi2 = site.loisstat[1]
+        self.assertEqual(loi2.contexte, 2)
+        self.assertEqual(loi2.loi, 0)
+        loi3 = site.loisstat[2]
+        self.assertEqual(loi3.contexte, 3)
+        self.assertEqual(loi3.loi, 3)
+        
+        # check station
+        station = site.stations[0]
+        self.assertEqual(station.ddcs, ['10', '1000000001'])
+        self.assertEqual(station.commune, '11354')
+        self.assertEqual(station.codeh2, 'O1712510')
+        self.assertEqual(station.niveauaffichage, 1)
+        self.assertEqual(station.libellecomplement, 'Complément du libellé')
+        self.assertEqual(station.descriptif, 'Station située à Auterive')
+        self.assertEqual(station.dtmaj,
+                         datetime.datetime(2017, 7, 17, 11, 23, 34))
+        self.assertEqual(station.pointk, 153.71)
+        self.assertEqual(station.dtmiseservice,
+                         datetime.datetime(1991, 10, 7, 14, 15, 16))
+        self.assertEqual(station.dtfermeture,
+                         datetime.datetime(2012, 4, 21, 19, 58, 3))
+        self.assertEqual(station.surveillance, True)
+        # checkcapteurs
+        capteurs = station.capteurs
+        self.assertEqual(len(capteurs), 2)
+        self.assertEqual(capteurs[0].code, 'O17125100102')
+        self.assertEqual(capteurs[0].typemesure, 'H')
+        self.assertEqual(capteurs[0].typecapteur, 0)  # default type
+        self.assertEqual(capteurs[1].code, 'O17125100101')
+        self.assertEqual(capteurs[1].typemesure, 'H')
+        self.assertEqual(capteurs[1].codeh2, 'O1712510')
+        self.assertEqual(capteurs[1].typecapteur, 3)
+
+        # check plages utilisatino capteurs
+        self.assertEqual(len(capteurs[0].plages), 0)
+        self.assertEqual(len(capteurs[1].plages), 2)
+        plage = capteurs[1].plages[0]
+        self.assertEqual(plage.dtdeb,
+                         datetime.datetime(2009, 11, 3, 15, 19, 18))
+        self.assertEqual(plage.dtfin,
+                         datetime.datetime(2015, 3, 21, 11, 14, 47))
+        self.assertEqual(plage.dtactivation,
+                         datetime.datetime(2014, 12, 14, 18, 27, 32))
+        self.assertEqual(plage.dtdesactivation,
+                         datetime.datetime(2015, 10, 25, 19, 13, 4))
+        self.assertEqual(plage.active, True)
+
+        plage = capteurs[1].plages[1]
+        self.assertEqual(plage.dtdeb,
+                         datetime.datetime(2016, 1, 15, 12, 14, 13))
+        self.assertIsNone(plage.dtfin)
+        self.assertIsNone(plage.dtactivation)
+        self.assertIsNone(plage.dtdesactivation)
+        self.assertIsNone(plage.active)
+
+#    def test_error_1(self):
+#        """Xml file with namespace error test."""
+#        with self.assertRaises(ValueError):
+#            # *([os.path.join('data', 'xml', '1.1', 'siteshydro.xml')])
+#            from_xml._parse(*([os.path.join(
+#                'data', 'xml', '1.1', 'siteshydro_with_namespace.xml')]))

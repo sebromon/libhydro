@@ -49,6 +49,17 @@ class SandreTagsV1(object):
     # Evenements
     publicationevenement = 'TypPublicationEvenement'
 
+    # SiteHydro
+    stsitehydro = 'StatutSiteHydro'
+    comtlbsitehydro = 'ComtLbSiteHydro'
+    dtmajsitehydro = 'DtMAJSiteHydro'
+
+    # entites vigicrues / tronconvigilance
+    entsvigicru = 'TronconsVigilanceSiteHydro'
+    entvigicru = 'TronconVigilanceSiteHydro'
+    cdentvigicru = 'CdTronconVigilance'
+    nomentvigicru = 'NomCTronconVigilance'
+
 
 class SandreTagsV2(object):
     """Balises Sandre V2"""
@@ -83,3 +94,14 @@ class SandreTagsV2(object):
 
     # Evenements
     publicationevenement = 'TypPubliEvenement'
+
+    # SiteHydro
+    stsitehydro = 'StSiteHydro'
+    comtlbsitehydro = 'ComplementLbSiteHydro'
+    dtmajsitehydro = 'DtMajSiteHydro'
+    
+    # entites vigicrues / tronconvigilance
+    entsvigicru = 'EntsVigiCru'
+    entvigicru = 'EntVigiCru'
+    cdentvigicru = 'CdEntVigiCru'
+    nomentvigicru = 'NomEntVigiCru'

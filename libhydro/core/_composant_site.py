@@ -258,3 +258,59 @@ class EntiteVigiCrues(object):
         )
 
     __str__ = _composant.__str__
+
+
+# -- class Commune ----------------------------------------------------
+class Commune(object):
+
+    """Classe Commune.
+
+    Classe pour manipuler des communes.
+
+    Proprietes:
+        code (str(5)) = code insee de la commune
+        libelle (str ou None) = Nom de la commune
+    """
+
+    def __init__(self, code=None, libelle=None):
+        """Initialisation.
+
+        Arguments:
+            code (str(5)) = code insee de la commune
+            nom (str ou None) = Nom de la commune
+
+        """
+        # -- simple properties --
+        self.libelle = str(libelle) if libelle is not None else None
+
+        # -- descriptors --
+        self._code = None
+        self.code = code
+
+    # -- property code --
+    @property
+    def code(self):
+        """Return code."""
+        return self._code
+
+    @code.setter
+    def code(self, code):
+        """Set code."""
+        if _composant.is_code_insee(code, length=5, errors='strict'):
+            self._code = (code)
+
+    # -- other methods --
+    __all__attrs__ = ('code', 'libelle')
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
+
+    def __unicode__(self):
+        """Return unicode representation."""
+
+        return 'Commune {0} ({1})'.format(
+            self.code,
+            self.libelle if self.libelle is not None else '<Sans libelle>'
+        )
+
+    __str__ = _composant.__str__

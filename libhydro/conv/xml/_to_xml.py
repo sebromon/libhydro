@@ -197,7 +197,8 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
             subsiteshydro = _etree.SubElement(sub, 'SitesHydro')
             if args['siteshydro'] is not None:
                 element = _siteshydro_to_element(
-                    args['siteshydro'], bdhydro=bdhydro, strict=strict)
+                    args['siteshydro'], bdhydro=bdhydro, strict=strict,
+                    version=version)
                 for elementsitehydro in element.findall('./SiteHydro'):
                     subsiteshydro.append(elementsitehydro)
             if args['seuilshydro'] is not None:
@@ -380,6 +381,11 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
 
     if sitehydro is not None:
 
+        if version == '2':
+            tags = _sandre_tags.SandreTagsV2
+        else:
+            tags = _sandre_tags.SandreTagsV1
+
         if seuilshydro is None:
             seuilshydro = []
 
@@ -387,33 +393,89 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
         if strict:
             _required(sitehydro, ['code'])
 
+        dtmaj = sitehydro.dtmaj.strftime('%Y-%m-%dT%H:%M:%S') \
+            if sitehydro.dtmaj is not None else None
+        dtpremdonnee = None
+        if sitehydro.dtpremieredonnee is not None:
+            if version == '1.1':
+                dtpremdonnee = sitehydro.dtpremieredonnee.strftime('%Y-%m-%d')
+            else:
+                dtpremdonnee = sitehydro.dtpremieredonnee.strftime(
+                        '%Y-%m-%dT%H:%M:%S')
+        essai = None
+        if sitehydro.essai is not None:
+            if sitehydro.essai:
+                essai = 'true'
+            else:
+                essai = 'false'
         # template for sitehydro simple elements
         story = _collections.OrderedDict((
             ('CdSiteHydro', {'value': sitehydro.code}),
             ('LbSiteHydro', {'value': sitehydro.libelle}),
             ('LbUsuelSiteHydro', {'value': sitehydro.libelleusuel}),
             ('TypSiteHydro', {'value': sitehydro.typesite}),
+            ('MnSiteHydro', {'value': sitehydro.mnemo}),
+            (tags.comtlbsitehydro, {'value': sitehydro.complementlibelle}),
             ('CoordSiteHydro', {
                 'value': None,
                 'force': True if sitehydro.coord is not None else False}),
-            ('CdEntiteHydrographique', {'value': sitehydro.entitehydro}),
-            ('CdTronconHydrographique', {'value': sitehydro.tronconhydro}),
-            ('TronconsVigilanceSiteHydro', {
+            ('PkAmontSiteHydro', {'value': sitehydro.pkamont}),
+            ('PkAvalSiteHydro', {'value': sitehydro.pkaval}),
+            ('AltiSiteHydro', {
                 'value': None,
-                'force': True if (
-                    len(sitehydro.tronconsvigilance) > 0
-                ) else False}),
-            ('CdCommune', {'value': sitehydro.communes}),
-            ('CdSiteHydroAncienRef', {'value': sitehydro.codeh2}),
-            ('StationsHydro', {
+                'force': True if sitehydro.altitude is not None else False}),
+            (tags.dtmajsitehydro, {'value': dtmaj})))
+        story['BassinVersantSiteHydro'] = {'value': sitehydro.bvtopo}
+        if version == '2':
+            story['BassinVersantHydroSiteHydro'] = {'value': sitehydro.bvhydro}
+        story['FuseauHoraireSiteHydro'] = {'value': sitehydro.fuseau}
+        story[tags.stsitehydro] = {'value': sitehydro.statut}
+        # TODO version 1.1 balise Donponct
+        story['DtPremDonSiteHydro'] = {'value': dtpremdonnee}
+        story['PremMoisEtiageSiteHydro'] = {'value': sitehydro.moisetiage}
+        story['PremMoisAnHydSiteHydro'] = {'value': sitehydro.moisanneehydro}
+        if version == '2':
+            story['DureeCarCruSiteHydro'] = {'value': sitehydro.dureecrues}
+        story['DroitPublicationSiteHydro'] = {'value': sitehydro.publication}
+        story['EssaiSiteHydro'] = {'value': essai}
+        story['InfluGeneSiteHydro'] = {'value': sitehydro.influence}
+        story['ComInfluGeneSiteHydro'] = {
+                'value': sitehydro.influencecommentaire}
+        story['ComSiteHydro'] = {'value': sitehydro.commentaire}
+        if sitehydro.siteassocie is not None:
+            story['SiteHydroAssocie'] = {
+                'sub': _collections.OrderedDict((
+                    ('CdSiteHydro', {'value': sitehydro.siteassocie.code}), ))}
+        if len(sitehydro.sitesattaches) > 0:
+            story['SitesHydroAttaches'] = {'value': None, 'force': True}
+        story['CdEuMasseDEau'] = {'value': sitehydro.massedeau}
+        story['CdEntiteHydrographique'] = {'value': sitehydro.entitehydro}
+        if len(sitehydro.loisstat) > 0:
+            story['LoisStatContexteSiteHydro'] = {'value': None, 'force': True}
+
+        story['CdTronconHydrographique'] = {'value': sitehydro.tronconhydro}
+        if len(sitehydro.entitesvigicrues) > 0:
+            story[tags.entsvigicru] = {'value': None, 'force': True}
+        # Communes Version 1.1
+        story['CdCommune'] = {
+                'value': [commune.code for commune in sitehydro.communes]
+                if version == '1.1' else None}
+        # Communes version 2
+        story['Communes'] = {
+                    'value': None,
+                    'force': True if (
+                        version == '2' and len(sitehydro.communes) > 0
+                    ) else False}
+        story['CdSiteHydroAncienRef'] = {'value': sitehydro.codeh2}
+        story['StationsHydro'] = {
                 'value': None,
-                'force': True if (len(sitehydro.stations) > 0) else False}),
-            ('ValeursSeuilsSiteHydro', {
+                'force': True if (len(sitehydro.stations) > 0) else False}
+        story['ValeursSeuilsSiteHydro'] = {
                 'value': None,
-                'force': True if (len(seuilshydro) > 0) else False}),
-            ('CdZoneHydro', {'value': sitehydro.zonehydro}),
-            ('PrecisionCoursDEauSiteHydro',
-             {'value': sitehydro.precisioncoursdeau})))
+                'force': True if (len(seuilshydro) > 0) else False}
+        story['CdZoneHydro'] = {'value': sitehydro.zonehydro}
+        story['PrecisionCoursDEauSiteHydro'] = {
+            'value': sitehydro.precisioncoursdeau}
 
         # update the coord if necessary
         if sitehydro.coord is not None:
@@ -423,16 +485,45 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
                     ('CoordYSiteHydro', {'value': sitehydro.coord.y}),
                     ('ProjCoordSiteHydro', {'value': sitehydro.coord.proj})))}
 
+        # update the coord if necessary
+        if sitehydro.altitude is not None:
+            story['AltiSiteHydro'] = {
+                'sub': _collections.OrderedDict((
+                    ('AltitudeSiteHydro',
+                     {'value': sitehydro.altitude.altitude}),
+                    ('SysAltimetriqueSiteHydro',
+                     {'value': sitehydro.altitude.sysalti}),
+                    ))}
+
         # make element <SiteHydro>
         element = _factory(root=_etree.Element('SiteHydro'), story=story)
+        
+        # add communes for version == 2 if necessary
+        if version == '2' and len(sitehydro.communes) > 0:
+            child = element.find('Communes')
+            for commune in sitehydro.communes:
+                child.append(_commune_to_element(commune=commune))
+
+        # add sites attaches if necessary
+        if len(sitehydro.sitesattaches) > 0:
+            child = element.find('SitesHydroAttaches')
+            for siteattache in sitehydro.sitesattaches:
+                child.append(_siteattache_to_element(siteattache=siteattache,
+                                                     version=version))
+
+        # add lois stat if necessary
+        if len(sitehydro.loisstat) > 0:
+            child = element.find('LoisStatContexteSiteHydro')
+            for loistat in sitehydro.loisstat:
+                child.append(_loistat_to_element(loistat=loistat))
 
         # add the tronconsvigilance if necessary
-        if len(sitehydro.tronconsvigilance) > 0:
-            child = element.find('TronconsVigilanceSiteHydro')
-            for tronconvigilance in sitehydro.tronconsvigilance:
+        if len(sitehydro.entitesvigicrues) > 0:
+            child = element.find(tags.entsvigicru)
+            for entitevigicrues in sitehydro.entitesvigicrues:
                 child.append(
                     _tronconvigilance_to_element(
-                        tronconvigilance, strict=strict))
+                        entitevigicrues, strict=strict, version=version))
 
         # add the stations if necessary
         if len(sitehydro.stations) > 0:
@@ -450,6 +541,57 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
 
         # return
         return element
+
+
+def _commune_to_element(commune):
+    """Return a <Commune> element from a _composant_site.commune"""
+    if commune is None:
+        return
+    story = _collections.OrderedDict((
+        ('CdCommune', {'value': commune.code}),
+        ('LbCommune', {'value': commune.libelle})))
+
+    return _factory(root=_etree.Element('Commune'), story=story)
+
+
+def _siteattache_to_element(siteattache, version):
+    """Return a <SiteHydroAttache> element from a sitehydro.Sitehydroattache"""
+    if siteattache is None:
+        return
+    story = _collections.OrderedDict((
+        ('CdSiteHydro', {'value': siteattache.sitehydro.code}),
+        ('PonderationSiteHydroAttache', {'value': siteattache.ponderation})))
+
+    if version == '2':
+        dtdeb = siteattache.dtdeb.strftime('%Y-%m-%dT%H:%M:%S') \
+            if siteattache.dtdeb is not None else None
+        dtfin = siteattache.dtfin.strftime('%Y-%m-%dT%H:%M:%S') \
+            if siteattache.dtfin is not None else None
+        dtdebactivation = siteattache.dtdebactivation.strftime(
+            '%Y-%m-%dT%H:%M:%S') if siteattache.dtdebactivation is not None \
+            else None
+        dtfinactivation = siteattache.dtfinactivation.strftime(
+            '%Y-%m-%dT%H:%M:%S') if siteattache.dtfinactivation is not None \
+            else None
+        story['DecalSiteHydroAttache'] = {'value': siteattache.decalage}
+        story['DtDebSiteHydroAttache'] = {'value': dtdeb}
+        story['DtFinSiteHydroAttache'] = {'value': dtfin}
+        story['DtDebActivationSiteHydroAttache'] = {'value': dtdebactivation}
+        story['DtFinActivationSiteHydroAttache'] = {'value': dtfinactivation}
+
+    return _factory(root=_etree.Element('SiteHydroAttache'), story=story)
+
+
+def _loistat_to_element(loistat):
+    """Return a <LoiStatContexteSiteHydro> element
+    from a _composant_site.LoiStat"""
+    if loistat is None:
+        return
+    story = _collections.OrderedDict((
+        ('TypContexteLoiStat', {'value': loistat.contexte}),
+        ('TypLoiSiteHydro', {'value': loistat.loi})))
+    return _factory(root=_etree.Element('LoiStatContexteSiteHydro'),
+                    story=story)
 
 
 def _codesitemeteo_to_value(sitemeteo, bdhydro=False, strict=True, version='1.1'):
@@ -504,23 +646,29 @@ def _sitemeteo_to_element(sitemeteo, bdhydro=False, strict=True, version='1.1'):
         return element
 
 
-def _tronconvigilance_to_element(tronconvigilance, bdhydro=False, strict=True, version='1.1'):
-    """Return a <TronconVigilanceSiteHydro> element from a """
-    """sitehydro.Tronconvigilance."""
-    if tronconvigilance is not None:
+def _tronconvigilance_to_element(entitevigicrues, bdhydro=False, strict=True,
+                                 version='1.1'):
+    """Return a <TronconVigilanceSiteHydro> element or a <EntVigiCru> from a
+    sitehydro.Tronconvigilance."""
 
-        # prerequisites
-        if strict:
-            _required(tronconvigilance, ['code'])
+    if entitevigicrues is None:
+        return
+    if version == '2':
+        tags = _sandre_tags.SandreTagsV2
+    else:
+        tags = _sandre_tags.SandreTagsV1
+    # prerequisites
+    if strict:
+        _required(entitevigicrues, ['code'])
 
-        # template for tronconvigilance simple elements
-        story = _collections.OrderedDict((
-            ('CdTronconVigilance', {'value': tronconvigilance.code}),
-            ('NomCTronconVigilance', {'value': tronconvigilance.libelle})))
+    # template for tronconvigilance simple elements
+    story = _collections.OrderedDict((
+        (tags.cdentvigicru, {'value': entitevigicrues.code}),
+        (tags.nomentvigicru, {'value': entitevigicrues.nom})))
 
-        # action !
-        return _factory(
-            root=_etree.Element('TronconVigilanceSiteHydro'), story=story)
+    # action !
+    return _factory(
+        root=_etree.Element(tags.entvigicru), story=story)
 
 
 def _seuilhydro_to_element(seuilhydro, bdhydro=False, strict=True, version='1.1'):

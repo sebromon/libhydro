@@ -264,11 +264,12 @@ class Message(object):
             intervenants=_from_xml._intervenants_from_element(
                 tree.find('RefHyd/Intervenants')),
             siteshydro=_from_xml._siteshydro_from_element(
-                tree.find('RefHyd/SitesHydro')),
+                tree.find('RefHyd/SitesHydro'), scenario.version, tags),
             sitesmeteo=_from_xml._sitesmeteo_from_element(
                 tree.find('RefHyd/SitesMeteo')),
             seuilshydro=_from_xml._seuilshydro_from_element(
                 element=tree.find('RefHyd/SitesHydro'),
+                version=scenario.version, tags=tags,
                 ordered=ordered),
             modelesprevision=_from_xml._modelesprevision_from_element(
                 tree.find('RefHyd/ModelesPrevision')),
