@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <hydrometrie xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1/sandre_sc_hydrometrie.xsd"> -->
+<hydrometrie>
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>2</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2010-02-26T12:53:10</DateHeureCreationFichier>
+    <RefFichier>fichier.xml</RefFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">25</CdIntervenant>
+      <CdContact>1069</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+    </Destinataire>
+  </Scenario>
+  <RefHyd>
+    <SitesHydro>
+      <!-- SITE 0 - 1 site avec juste un code -->
+      <SiteHydro>
+        <CdSiteHydro>A1984310</CdSiteHydro>
+      </SiteHydro>
+      <!--SITE 1 -  1 site + 3 stations -->
+      <SiteHydro>
+        <CdSiteHydro>O1984310</CdSiteHydro>
+        <LbSiteHydro>Le Touch à Toulouse [Saint-Martin-du-Touch]</LbSiteHydro>
+        <LbUsuelSiteHydro>St-Martin-du-Touch</LbUsuelSiteHydro>
+        <TypSiteHydro>SOURCE</TypSiteHydro>
+        <Communes>
+            <Commune>
+                <CdCommune>11354</CdCommune>
+                <LbCommune>1ère commune</LbCommune>
+            </Commune>
+            <Commune>
+                <CdCommune>11355</CdCommune>
+            </Commune>
+            <Commune>
+                <CdCommune>2B021</CdCommune>
+            </Commune>
+        </Communes>
+        <StationsHydro>
+          <!--STATION 1.1 -->
+          <StationHydro>
+            <CdStationHydro>O198431001</CdStationHydro>
+            <LbStationHydro>Le Touch à Toulouse [Saint-Martin-du-Touch] - station 1</LbStationHydro>
+            <TypStationHydro>LIMNI</TypStationHydro>
+            <ComplementLibelleStationHydro>station 1</ComplementLibelleStationHydro>
+            <NiveauAffichageStationHydro>911</NiveauAffichageStationHydro>
+            <PlagesUtilStationHydro>
+                <PlageUtilStationHydro>
+                    <DtDebPlageUtilStationHydro>2015-02-14T11:54:06</DtDebPlageUtilStationHydro>
+                    <DtFinPlageUtilStationHydro>2016-09-21T06:19:31</DtFinPlageUtilStationHydro>
+                    <DtActivationPlageUtilStationHydro>2017-03-17T17:38:21</DtActivationPlageUtilStationHydro>
+                    <DtDesactivationPlageUtilStationHydro>2017-04-29T19:51:48</DtDesactivationPlageUtilStationHydro>
+                    <ActivePlageUtilStationHydro>0</ActivePlageUtilStationHydro>
+                </PlageUtilStationHydro>
+                <PlageUtilStationHydro>
+                    <DtDebPlageUtilStationHydro>2020-11-03T15:02:03</DtDebPlageUtilStationHydro>
+                </PlageUtilStationHydro>
+            </PlagesUtilStationHydro>
+          </StationHydro>
+          <!--STATION 1.2 -->
+          <StationHydro>
+            <CdStationHydro>O198431002</CdStationHydro>
+            <LbStationHydro>Le Touch à Toulouse [Saint-Martin-du-Touch] - station 2</LbStationHydro>
+            <TypStationHydro>LIMNI</TypStationHydro>
+            <ComplementLibelleStationHydro>station 2</ComplementLibelleStationHydro>
+            <NiveauAffichageStationHydro>0</NiveauAffichageStationHydro>
+          </StationHydro>
+          <!--STATION 1.3 -->
+          <StationHydro>
+            <CdStationHydro>O198431003</CdStationHydro>
+            <LbStationHydro>station 3</LbStationHydro>
+            <TypStationHydro>LIMNI</TypStationHydro>
+          </StationHydro>
+        </StationsHydro>
+      </SiteHydro>
+      <!-- SITE 2 - 1 site + 1 station -->
+      <SiteHydro>
+        <CdSiteHydro>O2000040</CdSiteHydro>
+        <LbSiteHydro>La Garonne à Toulouse</LbSiteHydro>
+        <LbUsuelSiteHydro>Toulouse</LbUsuelSiteHydro>
+        <TypSiteHydro>REEL</TypSiteHydro>
+        <StationsHydro>
+          <!--STATION 2.1 -->
+          <StationHydro>
+            <CdStationHydro>O200004001</CdStationHydro>
+            <LbStationHydro>La Garonne à Toulouse - station 1</LbStationHydro>
+            <TypStationHydro>LIMNI</TypStationHydro>
+            <ComplementLibelleStationHydro>échelle principale</ComplementLibelleStationHydro>
+            <CoordStationHydro>
+              <CoordXStationHydro>15.0</CoordXStationHydro>
+              <CoordYStationHydro>16.0</CoordYStationHydro>
+              <ProjCoordStationHydro>26</ProjCoordStationHydro>
+            </CoordStationHydro>
+            <PkStationHydro>1.0</PkStationHydro>
+          </StationHydro>
+        </StationsHydro>
+      </SiteHydro>
+      <!-- SITE 3 - 1 site + 1 station + 2 capteurs -->
+      <SiteHydro>
+        <CdSiteHydro>O1712510</CdSiteHydro>
+        <LbSiteHydro>L'Ariège à Auterive</LbSiteHydro>
+        <LbUsuelSiteHydro>AUTERIVE</LbUsuelSiteHydro>
+        <TypSiteHydro>REEL</TypSiteHydro>
+        <MnSiteHydro>Mnémo</MnSiteHydro>
+        <ComplementLbSiteHydro>Complément libellé</ComplementLbSiteHydro>
+        <CoordSiteHydro>
+          <CoordXSiteHydro>618766</CoordXSiteHydro>
+          <CoordYSiteHydro>1781803</CoordYSiteHydro>
+          <ProjCoordSiteHydro>26</ProjCoordSiteHydro>
+        </CoordSiteHydro>
+        <PkAmontSiteHydro>990000.3</PkAmontSiteHydro>
+        <PkAvalSiteHydro>880000.8</PkAvalSiteHydro>
+        <AltiSiteHydro>
+          <AltitudeSiteHydro>175.4</AltitudeSiteHydro>
+          <SysAltimetriqueSiteHydro>3</SysAltimetriqueSiteHydro>
+        </AltiSiteHydro>
+        <DtMajSiteHydro>2017-01-17T11:06:29</DtMajSiteHydro>
+        <BassinVersantSiteHydro>69.3</BassinVersantSiteHydro>
+        <BassinVersantHydroSiteHydro>68.4</BassinVersantHydroSiteHydro>
+        <FuseauHoraireSiteHydro>2</FuseauHoraireSiteHydro>
+        <StSiteHydro>1</StSiteHydro>
+        <!-- <DonPonctSiteHydro>false</DonPonctSiteHydro> -->
+        <DtPremDonSiteHydro>2007-03-01T09:16:44</DtPremDonSiteHydro>
+        <PremMoisEtiageSiteHydro>9</PremMoisEtiageSiteHydro>
+        <PremMoisAnHydSiteHydro>3</PremMoisAnHydSiteHydro>
+        <DureeCarCruSiteHydro>240</DureeCarCruSiteHydro>
+        <DroitPublicationSiteHydro>10</DroitPublicationSiteHydro>
+        <EssaiSiteHydro>false</EssaiSiteHydro>
+        <InfluGeneSiteHydro>2</InfluGeneSiteHydro>
+        <ComInfluGeneSiteHydro>Commentaire influence</ComInfluGeneSiteHydro>
+        <ComSiteHydro>Commentaire du site</ComSiteHydro>
+        <SiteHydroAssocie>
+            <CdSiteHydro>A8742651</CdSiteHydro>
+        </SiteHydroAssocie>
+        <SitesHydroAttaches>
+            <SiteHydroAttache>
+                <CdSiteHydro>B1256982</CdSiteHydro>
+                <PonderationSiteHydroAttache>0.7</PonderationSiteHydroAttache>
+                <DecalSiteHydroAttache>15</DecalSiteHydroAttache>
+                <DtDebSiteHydroAttache>2015-03-17T11:26:34</DtDebSiteHydroAttache>
+                <DtFinSiteHydroAttache>2017-09-11T17:38:53</DtFinSiteHydroAttache>
+                <DtDebActivationSiteHydroAttache>2016-12-13T21:14:30</DtDebActivationSiteHydroAttache>
+                <DtFinActivationSiteHydroAttache>2018-04-27T08:54:50</DtFinActivationSiteHydroAttache>
+            </SiteHydroAttache>
+            <SiteHydroAttache>
+                <CdSiteHydro>L3542168</CdSiteHydro>
+                <PonderationSiteHydroAttache>0.3</PonderationSiteHydroAttache>
+            </SiteHydroAttache>
+        </SitesHydroAttaches>
+        <CdEuMasseDEau>FRGG111</CdEuMasseDEau>
+        <CdEntiteHydrographique>Y1524018</CdEntiteHydrographique>
+        <LoisStatContexteSiteHydro>
+          <LoiStatContexteSiteHydro>
+            <TypContexteLoiStat>1</TypContexteLoiStat>
+            <TypLoiSiteHydro>2</TypLoiSiteHydro>
+          </LoiStatContexteSiteHydro>
+          <LoiStatContexteSiteHydro>
+            <TypContexteLoiStat>2</TypContexteLoiStat>
+            <TypLoiSiteHydro>0</TypLoiSiteHydro>
+          </LoiStatContexteSiteHydro>
+          <LoiStatContexteSiteHydro>
+            <TypContexteLoiStat>3</TypContexteLoiStat>
+            <TypLoiSiteHydro>3</TypLoiSiteHydro>
+          </LoiStatContexteSiteHydro>
+        </LoisStatContexteSiteHydro>
+        <!-- <ImagesSiteHydro> -->
+        <!--   <ImageSiteHydro> -->
+        <!--     <AdressedelImageSiteHydro>http://image1.jpeg</AdressedelImageSiteHydro> -->
+        <!--     <TypIllSiteHydro>1</TypIllSiteHydro> -->
+        <!--     <FormatIllSiteHydro>image/jpeg</FormatIllSiteHydro> -->
+        <!--   </ImageSiteHydro> -->
+        <!--   <ImageSiteHydro> -->
+        <!--     <AdressedelImageSiteHydro>http://image2.bmp</AdressedelImageSiteHydro> -->
+        <!--     <TypIllSiteHydro>2</TypIllSiteHydro> -->
+        <!--     <FormatIllSiteHydro>image/bmp</FormatIllSiteHydro> -->
+        <!--   </ImageSiteHydro> -->
+        <!-- </ImagesSiteHydro> -->
+        <!-- <RolesContactSiteHydro> -->
+        <!--   <RoleContactSiteHydro> -->
+        <!--     <CdContact schemeAgencyID="SANDRE">2</CdContact> -->
+        <!--     <RoleContactSiteHydro>ADM</RoleContactSiteHydro> -->
+        <!--   </RoleContactSiteHydro> -->
+        <!-- </RolesContactSiteHydro> -->
+        <CdTronconHydrographique>O0011532</CdTronconHydrographique>
+        <EntsVigiCru>
+          <EntVigiCru>
+            <CdEntVigiCru>AG3</CdEntVigiCru>
+          </EntVigiCru>
+          <EntVigiCru>
+            <CdEntVigiCru>AG5</CdEntVigiCru>
+            <NomEntVigiCru>Troncon Adour àvâl</NomEntVigiCru>
+          </EntVigiCru>
+        </EntsVigiCru>
+
+        <CdSiteHydroAncienRef>O1235401</CdSiteHydroAncienRef>
+        <StationsHydro>
+          <!--STATION 3.1 - avec 2 capteurs -->
+          <StationHydro>
+            <CdStationHydro>O171251001</CdStationHydro>
+            <LbStationHydro>L'Ariège à Auterive - station de secours</LbStationHydro>
+            <TypStationHydro>LIMNI</TypStationHydro>
+            <ComplementLibelleStationHydro>Complément du libellé</ComplementLibelleStationHydro>
+            <DescriptifStationHydro>Station située à Auterive</DescriptifStationHydro>
+            <DtMAJStationHydro>2017-07-17T11:23:34</DtMAJStationHydro>
+            <CoordStationHydro>
+              <CoordXStationHydro>15.0</CoordXStationHydro>
+              <CoordYStationHydro>16.0</CoordYStationHydro>
+              <ProjCoordStationHydro>26</ProjCoordStationHydro>
+            </CoordStationHydro>
+            <PkStationHydro>153.71</PkStationHydro>
+            <DtMiseServiceStationHydro>1991-10-07T14:15:16</DtMiseServiceStationHydro>
+            <DtFermetureStationHydro>2012-04-21T19:58:03</DtFermetureStationHydro>
+            <ASurveillerStationHydro>true</ASurveillerStationHydro>
+            <NiveauAffichageStationHydro>1</NiveauAffichageStationHydro>
+            <!-- <DroitPublicationStationHydro>20</DroitPublicationStationHydro> -->
+            <!-- <EssaiStationHydro>false</EssaiStationHydro> -->
+            <!-- <InfluLocaleStationHydro>2</InfluLocaleStationHydro> -->
+            <!-- <ComInfluLocaleStationHydro>Libellé influence</ComInfluLocaleStationHydro> -->
+            <!-- <ComStationHydro>commentaire1 création station hydro</ComStationHydro> -->
+            <!-- <QualifsDonneesStationHydro> -->
+            <!--   <QualifDonneesStationHydro> -->
+            <!--     <CdRegime>1</CdRegime> -->
+            <!--     <QualifDonStationHydro>12</QualifDonStationHydro> -->
+            <!--   </QualifDonneesStationHydro> -->
+            <!--   <QualifDonneesStationHydro> -->
+            <!--     <CdRegime>2</CdRegime> -->
+            <!--     <QualifDonStationHydro>16</QualifDonStationHydro> -->
+            <!--   </QualifDonneesStationHydro> -->
+            <!-- </QualifsDonneesStationHydro> -->
+            <!-- <FinalitesStationHydro> -->
+            <!--   <CdFinaliteStationHydro>1</CdFinaliteStationHydro> -->
+            <!--   <CdFinaliteStationHydro>2</CdFinaliteStationHydro> -->
+            <!-- </FinalitesStationHydro> -->
+            <!-- <LoisStatContexteStationHydro> -->
+            <!--   <LoiStatContexteStationHydro> -->
+            <!--     <TypContexteLoiStat>1</TypContexteLoiStat> -->
+            <!--     <TypLoiStationHydro>1</TypLoiStationHydro> -->
+            <!--   </LoiStatContexteStationHydro> -->
+            <!--   <LoiStatContexteStationHydro> -->
+            <!--     <TypContexteLoiStat>3</TypContexteLoiStat> -->
+            <!--     <TypLoiStationHydro>2</TypLoiStationHydro> -->
+            <!--   </LoiStatContexteStationHydro> -->
+            <!--   <LoiStatContexteStationHydro> -->
+            <!--     <TypContexteLoiStat>2</TypContexteLoiStat> -->
+            <!--     <TypLoiStationHydro>3</TypLoiStationHydro> -->
+            <!--   </LoiStatContexteStationHydro> -->
+            <!-- </LoisStatContexteStationHydro> -->
+            <!-- <RolesContactStationHydro> -->
+            <!--   <RoleContactStationHydro> -->
+            <!--     <CdContact schemeAgencyID="SANDRE">2</CdContact> -->
+            <!--     <RoleContact>ADM</RoleContact> -->
+            <!--   </RoleContactStationHydro> -->
+            <!-- </RolesContactStationHydro> -->
+            <!-- <PlagesUtilStationHydro> -->
+            <!--   <PlageUtilStationHydro> -->
+            <!--     <DtDebPlageUtilStationHydro>2006-04-25T16:00:00</DtDebPlageUtilStationHydro> -->
+            <!--     <DtFinPlageUtilStationHydro>2006-04-30T17:00:00</DtFinPlageUtilStationHydro> -->
+            <!--     <ActivePlageUtilStationHydro>true</ActivePlageUtilStationHydro> -->
+            <!--   </PlageUtilStationHydro> -->
+            <!--   <PlageUtilStationHydro> -->
+            <!--     <DtDebPlageUtilStationHydro>2006-05-25T16:00:00</DtDebPlageUtilStationHydro> -->
+            <!--     <DtFinPlageUtilStationHydro>2006-05-30T17:00:00</DtFinPlageUtilStationHydro> -->
+            <!--     <ActivePlageUtilStationHydro>true</ActivePlageUtilStationHydro> -->
+            <!--   </PlageUtilStationHydro> -->
+            <!-- </PlagesUtilStationHydro> -->
+            <ReseauxMesureStationHydro>
+              <CodeSandreRdd>10</CodeSandreRdd>
+              <CodeSandreRdd>1000000001</CodeSandreRdd>
+            </ReseauxMesureStationHydro>
+            <Capteurs>
+              <!--CAPTEUR 3.1.1 -->
+              <Capteur>
+                <CdCapteur>O17125100102</CdCapteur>
+                <LbCapteur>Radar</LbCapteur>
+                <!-- <MnCapteur>Rad</MnCapteur> -->
+                <!-- <TypCapteur>2</TypCapteur> -->
+                <TypMesureCapteur>H</TypMesureCapteur>
+              </Capteur>
+              <!--CAPTEUR 3.1.2 -->
+              <Capteur>
+                <CdCapteur>O17125100101</CdCapteur>
+                <LbCapteur>Ultrasons principal</LbCapteur>
+                <!-- <MnCapteur>UP</MnCapteur> -->
+                <TypCapteur>3</TypCapteur>
+                <TypMesureCapteur>H</TypMesureCapteur>
+                <!-- <EssaiCapteur>false</EssaiCapteur> -->
+                <!-- <ComCapteur>Capteur jaune</ComCapteur> -->
+                <!-- <Observateur> -->
+                <!--   <CdContact schemeAgencyID="SANDRE">3</CdContact> -->
+                <!-- </Observateur> -->
+                <PlagesUtilCapteur>
+                  <PlageUtilCapteur>
+                    <DtDebPlageUtilCapteur>2009-11-03T15:19:18</DtDebPlageUtilCapteur>
+                    <DtFinPlageUtilCapteur>2015-03-21T11:14:47</DtFinPlageUtilCapteur>
+                    <DtActivationPlageUtilCapteur>2014-12-14T18:27:32</DtActivationPlageUtilCapteur>
+                    <DtDesactivationPlageUtilCapteur>2015-10-25T19:13:04</DtDesactivationPlageUtilCapteur>
+                    <ActivePlageUtilCapteur>true</ActivePlageUtilCapteur>
+                  </PlageUtilCapteur>
+                  <PlageUtilCapteur>
+                    <DtDebPlageUtilCapteur>2016-01-15T12:14:13</DtDebPlageUtilCapteur>
+                  </PlageUtilCapteur>
+                </PlagesUtilCapteur>
+                <CdCapteurAncienRef>O1712510</CdCapteurAncienRef>
+              </Capteur>
+            </Capteurs>
+            <!-- <RefsAlti> -->
+            <!--   <RefAlti> -->
+            <!--     <DtDebutRefAlti>2006-01-01T08:00:00</DtDebutRefAlti> -->
+            <!--     <DtFinRefAlti>2006-01-31T10:00:00</DtFinRefAlti> -->
+            <!--     <AltiRefAlti> -->
+            <!--       <AltitudeRefAlti>999</AltitudeRefAlti> -->
+            <!--       <SysAltiRefAlti>4</SysAltiRefAlti> -->
+            <!--     </AltiRefAlti> -->
+            <!--   </RefAlti> -->
+            <!--   <RefAlti> -->
+            <!--     <DtDebutRefAlti>2006-02-01T08:00:00</DtDebutRefAlti> -->
+            <!--     <DtFinRefAlti>2006-02-28T10:00:00</DtFinRefAlti> -->
+            <!--     <AltiRefAlti> -->
+            <!--       <AltitudeRefAlti>777</AltitudeRefAlti> -->
+            <!--       <SysAltiRefAlti>7</SysAltiRefAlti> -->
+            <!--     </AltiRefAlti> -->
+            <!--   </RefAlti> -->
+            <!-- </RefsAlti> -->
+            <CdStationHydroAncienRef>O1712510</CdStationHydroAncienRef>
+            <CdCommune>11354</CdCommune>
+          </StationHydro>
+        </StationsHydro>
+        <!-- <LamesDEau> -->
+        <!--   <LameDEau> -->
+        <!--     <CdSiteMeteo>031200001</CdSiteMeteo> -->
+        <!--     <PonderationLameDEau>10</PonderationLameDEau> -->
+        <!--   </LameDEau> -->
+        <!--   <LameDEau> -->
+        <!--     <CdSiteMeteo>031200005</CdSiteMeteo> -->
+        <!--     <PonderationLameDEau>20</PonderationLameDEau> -->
+        <!--   </LameDEau> -->
+        <!-- </LamesDEau> -->
+        <CdZoneHydro>H420</CdZoneHydro>
+        <PrecisionCoursDEauSiteHydro>bras principal</PrecisionCoursDEauSiteHydro>
+      </SiteHydro>
+    </SitesHydro>
+  </RefHyd>
+</hydrometrie>
