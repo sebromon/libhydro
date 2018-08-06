@@ -518,7 +518,7 @@ def _siteattache_from_element(element, version, tags):
     """
     code = _value(element, 'CdSiteHydro')
     args = {}
-    args['sitehydro'] = _sitehydro.Sitehydro(code=code)
+    args['code'] = code
     args['ponderation'] = _value(element, 'PonderationSiteHydroAttache', float)
     if version == '2':
         args['decalage'] = _value(element, 'DecalSiteHydroAttache', int)
@@ -1741,7 +1741,7 @@ def _serieobselabmeteo_from_element_v2(element):
         code = _value(element, 'CdSiteMeteo')
         ponderation = _value(element, 'ValPondSiteMeteo', float)
         args_serie['site'] = _sitemeteo.SitemeteoPondere(
-            sitemeteo=_sitemeteo.Sitemeteo(code=code),
+            code=code,
             ponderation=ponderation)
     args_serie['grandeur'] = _value(element, 'CdGrdSerieObsElaborMeteo')
     args_serie['typeserie'] = _value(element, 'TypSerieObsElaborMeteo')

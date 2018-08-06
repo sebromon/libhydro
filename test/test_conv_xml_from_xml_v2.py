@@ -359,7 +359,7 @@ class TestFromXmlSeriesObsElabMeteo(unittest.TestCase):
 
     def test_serie_ipa(self):
         serie = self.data['seriesobselabmeteo'][0]
-        self.assertEqual(serie.site.sitemeteo.code, '012345678')
+        self.assertEqual(serie.site.code, '012345678')
         self.assertEqual(serie.site.ponderation, 0.51)
         self.assertEqual(serie.grandeur, 'RR')
         self.assertEqual(serie.typeserie, 2)
@@ -1023,7 +1023,7 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         
         self.assertEqual(len(site.sitesattaches), 2)
         siteattache1 = site.sitesattaches[0]
-        self.assertEqual(siteattache1.sitehydro.code, 'B1256982')
+        self.assertEqual(siteattache1.code, 'B1256982')
         self.assertEqual(siteattache1.ponderation, 0.7)
         self.assertEqual(siteattache1.decalage, 15)
         self.assertEqual(siteattache1.dtdeb,
@@ -1036,7 +1036,7 @@ class TestFromXmlSitesHydros(unittest.TestCase):
                          datetime.datetime(2018, 4, 27, 8, 54, 50))
 
         siteattache2 = site.sitesattaches[1]
-        self.assertEqual(siteattache2.sitehydro.code, 'L3542168')
+        self.assertEqual(siteattache2.code, 'L3542168')
         self.assertEqual(siteattache2.ponderation, 0.3)
         self.assertIsNone(siteattache2.decalage)
         self.assertIsNone(siteattache2.dtdeb)

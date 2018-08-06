@@ -114,10 +114,10 @@ class TestSitehydro(unittest.TestCase):
         siteassocie = sitehydro.Sitehydro(code='A7654321')
 
         siteattache1 = sitehydro.Sitehydroattache(
-            sitehydro=sitehydro.Sitehydro(code='C1212121'), ponderation=0.4,
+            code='C1212121', ponderation=0.4,
             decalage=15)
         siteattache2 = sitehydro.Sitehydroattache(
-            sitehydro=sitehydro.Sitehydro(code='C1212121'), ponderation=0.6,
+            code='C1212121', ponderation=0.6,
             decalage=28)
         sitesattaches = [siteattache1, siteattache2]
 
@@ -131,11 +131,11 @@ class TestSitehydro(unittest.TestCase):
         entitesvigicrues = [entitevigicrues1, entitevigicrues2]
 
         lamedeau1 = _sitemeteo.SitemeteoPondere(
-            _sitemeteo.Sitemeteo(code='01234567'),
+            code='01234567',
             ponderation=0.6
             )
         lamedeau2 = _sitemeteo.SitemeteoPondere(
-            _sitemeteo.Sitemeteo(code='12345678'),
+            code='12345678',
             ponderation=0.4
             )
         lamesdeau = [lamedeau1, lamedeau2]
@@ -534,10 +534,8 @@ class TestSitehydro(unittest.TestCase):
             sitehydro.Sitehydro(code='L4545456', siteassocie=siteassocie)
 
     def test_error_xx_sitesattaches(self):
-        siteattache1 = sitehydro.Sitehydroattache(
-            sitehydro=sitehydro.Sitehydro(code='K5463981'))
-        siteattache2 = sitehydro.Sitehydroattache(
-            sitehydro=sitehydro.Sitehydro(code='L1239546'))
+        siteattache1 = sitehydro.Sitehydroattache(code='K5463981')
+        siteattache2 = sitehydro.Sitehydroattache(code='L1239546')
         for sites in [[siteattache1, siteattache2], [], None, siteattache1]:
             sitehydro.Sitehydro(code='L4545456',
                                 sitesattaches=sites)
@@ -568,11 +566,11 @@ class TestSitehydro(unittest.TestCase):
 
     def test_error_xx_lamesdeau(self):
         lamedeau1 = _sitemeteo.SitemeteoPondere(
-            _sitemeteo.Sitemeteo(code='01234567'),
+            code='01234567',
             ponderation=0.6
             )
         lamedeau2 = _sitemeteo.SitemeteoPondere(
-            _sitemeteo.Sitemeteo(code='12345678'),
+            code='12345678',
             ponderation=0.4
             )
         for lames in [None, [], lamedeau1, [lamedeau1, lamedeau2]]:
@@ -612,39 +610,38 @@ class TestSitehydro(unittest.TestCase):
 # -- class TestSitehydroattache -----------------------------------------------
 class TestSitehydroattache(unittest.TestCase):
     def test_01(self):
-        shy = sitehydro.Sitehydro(code='A1234567')
-        site = sitehydro.Sitehydroattache(sitehydro=shy)
-        self.assertEqual((site.sitehydro, site.ponderation, site.decalage,
+        code = 'A1234567'
+        site = sitehydro.Sitehydroattache(code=code)
+        self.assertEqual((site.code, site.ponderation, site.decalage,
                           site.dtdeb, site.dtfin, site.dtdebactivation,
                           site.dtfinactivation),
-                         (shy, None, None, None, None, None, None))
+                         (code, None, None, None, None, None, None))
 
     def test_02(self):
-        shy = sitehydro.Sitehydro(code='Z7654321')
+        code = 'Z7654321'
         ponderation = 0.7
         decalage = 30
         dtdeb = _datetime.datetime(2013, 4, 9, 10, 54, 31)
         dtfin = _datetime.datetime(2015, 8, 17, 21, 17, 5)
         dtdebactivation = _datetime.datetime(2014, 3, 25, 12, 20, 43)
         dtfinactivation = _datetime.datetime(2014, 3, 25, 12, 20, 43)
-        site = sitehydro.Sitehydroattache(sitehydro=shy,
+        site = sitehydro.Sitehydroattache(code=code,
                                           ponderation=ponderation,
                                           decalage=decalage, dtdeb=dtdeb,
                                           dtfin=dtfin,
                                           dtdebactivation=dtdebactivation,
                                           dtfinactivation=dtfinactivation)
-        self.assertEqual((site.sitehydro, site.ponderation, site.decalage,
+        self.assertEqual((code, site.ponderation, site.decalage,
                           site.dtdeb, site.dtfin, site.dtdebactivation,
                           site.dtfinactivation),
-                         (shy, ponderation, decalage, dtdeb, dtfin,
+                         (code, ponderation, decalage, dtdeb, dtfin,
                           dtdebactivation, dtfinactivation))
 
     def test_str(self):
         code = 'Z7654321'
-        shy = sitehydro.Sitehydro(code=code)
         ponderation = '0.7'
         decalage = '38'
-        site = sitehydro.Sitehydroattache(sitehydro=shy,
+        site = sitehydro.Sitehydroattache(code=code,
                                           ponderation=ponderation,
                                           decalage=decalage)
         self.assertTrue(site.__unicode__().find(code) > -1)
@@ -653,37 +650,34 @@ class TestSitehydroattache(unittest.TestCase):
 
     def test_error_code(self):
         code = 'A1234567'
-        shy = sitehydro.Sitehydro(code=code)
-        sitehydro.Sitehydroattache(sitehydro=shy)
-        shy = None
+        sitehydro.Sitehydroattache(code=code)
+        code = None
         with self.assertRaises(TypeError):
-            sitehydro.Sitehydroattache(sitehydro=shy)
+            sitehydro.Sitehydroattache(code=code)
 
-        shy = 'A123456789'
-        with self.assertRaises(TypeError):
-            sitehydro.Sitehydroattache(sitehydro=shy)
+        code = 'A123456789'
+        with self.assertRaises(ValueError):
+            sitehydro.Sitehydroattache(code=code)
 
     def test_error_ponderation(self):
         code = 'A1234567'
-        shy = sitehydro.Sitehydro(code=code)
         ponderation = 0.4
-        sitehydro.Sitehydroattache(sitehydro=shy, ponderation=ponderation)
+        sitehydro.Sitehydroattache(code=code, ponderation=ponderation)
 
         ponderation = 'toto'
         with self.assertRaises(Exception):
-            sitehydro.Sitehydroattache(sitehydro=shy, ponderation=ponderation)
+            sitehydro.Sitehydroattache(code=code, ponderation=ponderation)
 
     def test_error_decalage(self):
         code = 'A1234567'
-        shy = sitehydro.Sitehydro(code=code)
         ponderation = 0.4
         decalage = 30
-        sitehydro.Sitehydroattache(sitehydro=shy, ponderation=ponderation,
+        sitehydro.Sitehydroattache(code=code, ponderation=ponderation,
                                    decalage=decalage)
 
         decalage = 'toto'
         with self.assertRaises(Exception):
-            sitehydro.Sitehydroattache(sitehydro=shy, ponderation=ponderation,
+            sitehydro.Sitehydroattache(code=code, ponderation=ponderation,
                                        decalage=decalage)
 
 

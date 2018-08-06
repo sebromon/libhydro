@@ -559,7 +559,7 @@ def _siteattache_to_element(siteattache, version):
     if siteattache is None:
         return
     story = _collections.OrderedDict((
-        ('CdSiteHydro', {'value': siteattache.sitehydro.code}),
+        ('CdSiteHydro', {'value': siteattache.code}),
         ('PonderationSiteHydroAttache', {'value': siteattache.ponderation})))
 
     if version == '2':
@@ -1951,7 +1951,7 @@ def _serieobselabmeteo_v2(seriemeteo, bdhydro=False, strict=True):
             seriemeteo.site.code
     elif isinstance(seriemeteo.site, _sitemeteo.SitemeteoPondere):
         _etree.SubElement(element, 'CdSiteMeteo').text = \
-            _codesitemeteo_to_value(seriemeteo.site.sitemeteo, bdhydro, strict,
+            _codesitemeteo_to_value(seriemeteo.site, bdhydro, strict,
                                     version='2')
         _etree.SubElement(element, 'ValPondSiteMeteo').text = \
             str(seriemeteo.site.ponderation)

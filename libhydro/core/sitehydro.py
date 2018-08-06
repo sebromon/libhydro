@@ -198,114 +198,6 @@ class _Site_or_station(_Entitehydro):
                         raise TypeError('coord incorrect')
 
 
-# -- class Sitehydroattache
-class Sitehydroattache(object):
-    """Classe Sitehydroattache.
-
-    Classe pour manipuler des sites hydrometriques attachés.
-
-    Proprietes:
-        code (string(8)) = code hydro
-        ponderation = pondération du site
-        decalage = décalage en minutes de l'hydrogramme
-        dtdeb = date de début
-        dtfin = date de fin
-        dtdebactivation = date de début d'activation
-        dtfinactivation = date de fin d'activation
-    """
-
-    dtdeb = _composant.Datefromeverything(required=False)
-    dtfin = _composant.Datefromeverything(required=False)
-    dtdebactivation = _composant.Datefromeverything(required=False)
-    dtfinactivation = _composant.Datefromeverything(required=False)
-
-    def __init__(self, sitehydro=None, ponderation=None, decalage=None,
-                 dtdeb=None, dtfin=None, dtdebactivation=None,
-                 dtfinactivation=None):
-        """Constructor.
-
-        Arguments:
-            code (string(8)) = code hydro
-            ponderation = pondération du site
-            decalage = décalage en minutes de l'hydrogramme
-            dtdeb = date de début
-            dtfin = date de fin
-            dtdebactivation = date de début d'activation
-            dtfinactivation = date de fin d'activation
-        """
-        self.dtdeb = dtdeb
-        self.dtfin = dtfin
-        self.dtdebactivation = dtdebactivation
-        self.dtfinactivation = dtfinactivation
-
-        self._sitehydro = None
-        self.sitehydro = sitehydro
-        self._ponderation = None
-        self.ponderation = ponderation
-        self._decalage = None
-        self.decalage = decalage
-
-    # -- property sitehydro --
-    @property
-    def sitehydro(self):
-        """Return sitehydro."""
-        return self._sitehydro
-
-    @sitehydro.setter
-    def sitehydro(self, sitehydro):
-        """Set sitehydro."""
-        # None case
-        if not isinstance(sitehydro, Sitehydro):
-            raise TypeError('sitehydro must be a Sitehydro')
-        self._sitehydro = sitehydro
-
-    # -- property ponderation --
-    @property
-    def ponderation(self):
-        """Return ponderation."""
-        return self._ponderation
-
-    @ponderation.setter
-    def ponderation(self, ponderation):
-        """Set ponderation."""
-        # None case
-        if ponderation is None:
-            self._ponderation = None
-        else:
-            self._ponderation = float(ponderation)
-
-    # -- property decalage --
-    @property
-    def decalage(self):
-        """Return decalage."""
-        return self._decalage
-
-    @decalage.setter
-    def decalage(self, decalage):
-        """Set decalage."""
-        # None case
-        if decalage is None:
-            self._decalage = None
-        else:
-            self._decalage = int(decalage)
-
-    # -- special methods --
-    __all__attrs__ = (
-        'code', 'ponderation', 'decalage', 'dtdeb', 'dtfin',
-        'dtdebactivation', 'dtfinactivation')
-
-    def __unicode__(self):
-        """Return unicode representation."""
-        decalage = '{0} minutes'.format(self.decalage) \
-            if self.decalage is not None else '<sans décalage>'
-        return 'Site attaché {0} de pondération {1} décalé de {2}'.format(
-            self.sitehydro.code or '<sans code>',
-            self.ponderation or '<sans libelle>',
-            decalage)
-
-    __str__ = _composant.__str__
-
-
 # -- class Sitehydro ----------------------------------------------------------
 class Sitehydro(_Site_or_station):
 
@@ -975,6 +867,102 @@ class Sitehydro(_Site_or_station):
             self.libelle or '<sans libelle>',
             len(self.stations),
             '' if (len(self.stations) < 2) else 's')
+
+    __str__ = _composant.__str__
+
+
+# -- class Sitehydroattache
+class Sitehydroattache(Sitehydro):
+    """Classe Sitehydroattache.
+
+    Classe pour manipuler des sites hydrometriques attachés.
+
+    Proprietes:
+        proprietes de Sitehydro
+        ponderation = pondération du site
+        decalage = décalage en minutes de l'hydrogramme
+        dtdeb = date de début
+        dtfin = date de fin
+        dtdebactivation = date de début d'activation
+        dtfinactivation = date de fin d'activation
+    """
+
+    dtdeb = _composant.Datefromeverything(required=False)
+    dtfin = _composant.Datefromeverything(required=False)
+    dtdebactivation = _composant.Datefromeverything(required=False)
+    dtfinactivation = _composant.Datefromeverything(required=False)
+
+    def __init__(self, code=None, ponderation=None, decalage=None,
+                 dtdeb=None, dtfin=None, dtdebactivation=None,
+                 dtfinactivation=None):
+        """Constructor.
+
+        Arguments:
+            code (string(8)) = code hydro
+            ponderation = pondération du site
+            decalage = décalage en minutes de l'hydrogramme
+            dtdeb = date de début
+            dtfin = date de fin
+            dtdebactivation = date de début d'activation
+            dtfinactivation = date de fin d'activation
+        """
+
+        # -- super --
+        super(Sitehydroattache, self).__init__(code=code)
+
+        self.dtdeb = dtdeb
+        self.dtfin = dtfin
+        self.dtdebactivation = dtdebactivation
+        self.dtfinactivation = dtfinactivation
+
+        self._ponderation = None
+        self.ponderation = ponderation
+        self._decalage = None
+        self.decalage = decalage
+
+    # -- property ponderation --
+    @property
+    def ponderation(self):
+        """Return ponderation."""
+        return self._ponderation
+
+    @ponderation.setter
+    def ponderation(self, ponderation):
+        """Set ponderation."""
+        # None case
+        if ponderation is None:
+            self._ponderation = None
+        else:
+            self._ponderation = float(ponderation)
+
+    # -- property decalage --
+    @property
+    def decalage(self):
+        """Return decalage."""
+        return self._decalage
+
+    @decalage.setter
+    def decalage(self, decalage):
+        """Set decalage."""
+        # None case
+        if decalage is None:
+            self._decalage = None
+        else:
+            self._decalage = int(decalage)
+
+    # -- special methods --
+    __all__attrs__ = (
+        'code', 'ponderation', 'decalage', 'dtdeb', 'dtfin',
+        'dtdebactivation', 'dtfinactivation')
+
+    def __unicode__(self):
+        """Return unicode representation."""
+        decalage = '{0} minutes'.format(self.decalage) \
+            if self.decalage is not None else '<sans décalage>'
+        return 'Site attaché {0} de pondération {1} décalé de {2}'.format(
+            self.code or '<sans code>',
+            self.ponderation or '<sans libelle>',
+            decalage)
 
     __str__ = _composant.__str__
 

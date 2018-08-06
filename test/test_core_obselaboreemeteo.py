@@ -435,10 +435,10 @@ class TestSerieObsElabMeteo(unittest.TestCase):
 
     def test_02(self):
         """test full serie obs elab meteo"""
-        sitemeteo = _sitemeteo.Sitemeteo(code='123456789')
+        code = '123456789'
         ponderation = 0.58
-        sitepondere = _sitemeteo.SitemeteoPondere(sitemeteo=sitemeteo,
-                                                         ponderation=ponderation)
+        sitepondere = _sitemeteo.SitemeteoPondere(code=code,
+                                                  ponderation=ponderation)
         grandeur = 'RR'
         dtprod = _datetime.datetime(2016, 10, 8, 14, 23, 29)
         dtdeb = _datetime.datetime(2016, 3, 4, 11, 28, 50)
@@ -476,8 +476,8 @@ class TestSerieObsElabMeteo(unittest.TestCase):
         sitemeteo = _sitemeteo.Sitemeteo(code=code)
         ponderation = 0.58
         sites = [_sitehydro.Sitehydro(code='A1234567'),
-                 _sitemeteo.SitemeteoPondere(sitemeteo=sitemeteo,
-                                                    ponderation=ponderation)]
+                 _sitemeteo.SitemeteoPondere(code=code,
+                                             ponderation=ponderation)]
         grandeur = 'RR'
         typeserie = 1
         for site in sites:
@@ -513,10 +513,9 @@ class TestSerieObsElabMeteo(unittest.TestCase):
     def test_ipa(self):
         """Test property ipa"""
         code = '123456789'
-        sitemeteo = _sitemeteo.Sitemeteo(code=code)
         ponderation = 0.58
-        site = _sitemeteo.SitemeteoPondere(sitemeteo=sitemeteo,
-                                                  ponderation=ponderation)
+        site = _sitemeteo.SitemeteoPondere(code=code,
+                                           ponderation=ponderation)
         grandeur = 'RR'
         typeserie = 2
 

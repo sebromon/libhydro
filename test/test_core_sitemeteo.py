@@ -294,45 +294,42 @@ class TestSitemeteoPondere(unittest.TestCase):
 
     def test_01(self):
         """ Test simple SitemeteoPondere"""
-        site = sitemeteo.Sitemeteo(code='987654321')
+        code = '987654321'
         ponderation = 0.54
         sitepondere = sitemeteo.SitemeteoPondere(
-            sitemeteo=site, ponderation=ponderation)
-        self.assertEqual((sitepondere.sitemeteo, sitepondere.ponderation),
-                         (site, ponderation))
+            code=code, ponderation=ponderation)
+        self.assertEqual((sitepondere.code, sitepondere.ponderation),
+                         (code, ponderation))
 
     def test_sitemeteo(self):
         """Test property sitemeteo"""
         code = '987654321'
-        site = sitemeteo.Sitemeteo(code=code)
         ponderation = 0.54
-        sitemeteo.SitemeteoPondere(sitemeteo=site,
+        sitemeteo.SitemeteoPondere(code=code,
                                    ponderation=ponderation)
 
-        for site in [code, None]:
-            with self.assertRaises(TypeError):
+        for code in [None, '1245']:
+            with self.assertRaises(Exception):
                 sitemeteo.SitemeteoPondere(
-                    sitemeteo=site, ponderation=ponderation)
+                    code=code, ponderation=ponderation)
 
     def test_ponderation(self):
         """Test property ponderation"""
         code = '987654321'
-        site = sitemeteo.Sitemeteo(code=code)
         ponderation = 0.54
-        sitemeteo.SitemeteoPondere(sitemeteo=site,
+        sitemeteo.SitemeteoPondere(code=code,
                                    ponderation=ponderation)
 
         for ponderation in ['toto', None]:
             with self.assertRaises(TypeError):
                 sitemeteo.SitemeteoPondere(
-                    sitemeteo=sitemeteo, ponderation=ponderation)
+                    code=code, ponderation=ponderation)
 
     def test_str(self):
         """Test representation"""
         code = '987654321'
-        site = sitemeteo.Sitemeteo(code=code)
         ponderation = '0.54'
-        site_pond = sitemeteo.SitemeteoPondere(sitemeteo=site,
+        site_pond = sitemeteo.SitemeteoPondere(code=code,
                                                ponderation=ponderation)
         site_str = site_pond.__str__()
         self.assertTrue(site_str.find(code) != -1)
