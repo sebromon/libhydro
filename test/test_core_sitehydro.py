@@ -126,7 +126,7 @@ class TestSitehydro(unittest.TestCase):
         loisstat = [loi1, loi2]
 
         entitevigicrues1 = composant_site.EntiteVigiCrues(code='LA1',
-                                                          nom='entité')
+                                                          libelle='entité')
         entitevigicrues2 = composant_site.EntiteVigiCrues(code='Z98')
         entitesvigicrues = [entitevigicrues1, entitevigicrues2]
 
@@ -228,13 +228,13 @@ class TestSitehydro(unittest.TestCase):
                     composant_site.Commune(31100)]
         entitesvigicrues = (
             composant_site.EntiteVigiCrues(
-                code='AC1', nom='La Liane 1'
+                code='AC1', libelle='La Liane 1'
             ),
             composant_site.EntiteVigiCrues(
-                code='AC2', nom='La Liane 2'
+                code='AC2', libelle='La Liane 2'
             ),
             composant_site.EntiteVigiCrues(
-                code='AC3', nom='La Liane 3'
+                code='AC3', libelle='La Liane 3'
             )
         )
         s = sitehydro.Sitehydro(
@@ -307,7 +307,7 @@ class TestSitehydro(unittest.TestCase):
         self.assertEqual(s.entitesvigicrues, [])
         entite = composant_site.EntiteVigiCrues(
             code='XX33',
-            nom='Le Târtémpion'
+            libelle='Le Târtémpion'
         )
         s.entitesvigicrues = entite
         self.assertEqual(s.entitesvigicrues, [entite])
@@ -555,7 +555,7 @@ class TestSitehydro(unittest.TestCase):
 
     def test_error_xx_entitesvigicrues(self):
         entitevigicrues1 = composant_site.EntiteVigiCrues(code='LA1',
-                                                          nom='entité')
+                                                          libelle='entité')
         entitevigicrues2 = composant_site.EntiteVigiCrues(code='Z98')
         for entites in [None, [], entitevigicrues1,
                         [entitevigicrues1, entitevigicrues2]]:

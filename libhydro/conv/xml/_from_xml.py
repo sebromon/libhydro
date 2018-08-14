@@ -494,12 +494,31 @@ def _sitehydro_from_element(element, version, tags):
             for e in element.findall(
                 'LoisStatContexteSiteHydro/LoiStatContexteSiteHydro')]
 
+        if version == '2':
+            args['sitesamont'] = [
+            _siteamontaval_from_element(e)
+                for e in element.findall(
+                    'SitesHydroAmont/SiteHydroAmont')]
+            args['sitesaval'] = [
+                _siteamontaval_from_element(e)
+                for e in element.findall(
+                    'SitesHydroAval/SiteHydroAval')]
         # args['entitesvigicrues'] = _value(element, 'MnSiteHydro')
         # args['lamesdeau'] = _value(element, 'MnSiteHydro')
         # args['sitesamont'] = _value(element, 'MnSiteHydro')
         # args['sitesaval'] = _value(element, 'MnSiteHydro')
         # build a Sitehydro and return
         return _sitehydro.Sitehydro(**args)
+
+
+def _siteamontaval_from_element(element):
+    """Return a _sitehydro.Sitehydro
+       from a <SiteHydroAmont> or <SiteHydroAval> element.
+    """
+    args = {}
+    args['code'] = _value(element, 'CdSiteHydro')
+    args['libelle'] = _value(element, 'LbSiteHydro')
+    return _sitehydro.Sitehydro(**args)
 
 
 def _commune_from_element(element):
@@ -570,7 +589,7 @@ def _tronconvigilance_from_element(element, version, tags):
         # prepare args
         args = {}
         args['code'] = _value(element, tags.cdentvigicru)
-        args['nom'] = _value(element, tags.nomentvigicru)
+        args['libelle'] = _value(element, tags.nomentvigicru)
         # build a Tronconvigilance and return
         return _composant_site.EntiteVigiCrues(**args)
 

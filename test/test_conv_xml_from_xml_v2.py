@@ -991,7 +991,7 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(site.entitesvigicrues[0].code, 'AG3')
         self.assertEqual(site.entitesvigicrues[1].code, 'AG5')
         self.assertEqual(
-            site.entitesvigicrues[1].nom, 'Troncon Adour àvâl')
+            site.entitesvigicrues[1].libelle, 'Troncon Adour àvâl')
         self.assertEqual(site.entitehydro, 'Y1524018')
         self.assertEqual(site.tronconhydro, 'O0011532')
         self.assertEqual(site.zonehydro, 'H420')
@@ -1056,6 +1056,23 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         loi3 = site.loisstat[2]
         self.assertEqual(loi3.contexte, 3)
         self.assertEqual(loi3.loi, 3)
+
+        self.assertEqual(len(site.sitesamont), 2)
+        siteamont1 = site.sitesamont[0]
+        self.assertEqual(siteamont1.code, 'A1254895')
+        self.assertEqual(siteamont1.libelle, 'Libellé premier site amont')
+        siteamont2 = site.sitesamont[1]
+        self.assertEqual(siteamont2.code, 'B5423657')
+        self.assertIsNone(siteamont2.libelle)
+
+        self.assertEqual(len(site.sitesaval), 2)
+        siteaval1 = site.sitesaval[0]
+        self.assertEqual(siteaval1.code, 'C1594521')
+        self.assertEqual(siteaval1.libelle, 'Libellé premier site aval')
+        siteaval2 = site.sitesaval[1]
+        self.assertEqual(siteaval2.code, 'D1478541')
+        self.assertIsNone(siteaval2.libelle)
+
         
         # check station
         station = site.stations[0]

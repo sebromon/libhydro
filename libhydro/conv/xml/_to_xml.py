@@ -477,6 +477,12 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
         story['PrecisionCoursDEauSiteHydro'] = {
             'value': sitehydro.precisioncoursdeau}
 
+        if version == '2':
+            if len(sitehydro.sitesamont) > 0:
+                story['SitesHydroAmont'] = {'value': None, 'force': True}
+            if len(sitehydro.sitesaval) > 0:
+                story['SitesHydroAval'] = {'value': None, 'force': True}
+
         # update the coord if necessary
         if sitehydro.coord is not None:
             story['CoordSiteHydro'] = {
@@ -503,6 +509,20 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
             child = element.find('Communes')
             for commune in sitehydro.communes:
                 child.append(_commune_to_element(commune=commune))
+
+        # add sitesamont for version == 2 if necessary
+        if version == '2' and len(sitehydro.sitesamont) > 0:
+            child = element.find('SitesHydroAmont')
+            for siteamont in sitehydro.sitesamont:
+                child.append(_siteamontaval_to_element(site=siteamont,
+                                                       amont=True))
+
+        # add sitesaval for version == 2 if necessary
+        if version == '2' and len(sitehydro.sitesaval) > 0:
+            child = element.find('SitesHydroAval')
+            for siteaval in sitehydro.sitesaval:
+                child.append(_siteamontaval_to_element(site=siteaval,
+                                                       amont=False))
 
         # add sites attaches if necessary
         if len(sitehydro.sitesattaches) > 0:
@@ -552,6 +572,22 @@ def _commune_to_element(commune):
         ('LbCommune', {'value': commune.libelle})))
 
     return _factory(root=_etree.Element('Commune'), story=story)
+
+
+def _siteamontaval_to_element(site, amont):
+    """Return a <SiteHydroAmont> or <SiteHydroAval> element
+    from sitehydro.Sitehydro"""
+    if site is None:
+        return
+    story = _collections.OrderedDict((
+        ('CdSiteHydro', {'value': site.code}),
+        ('LbSiteHydro', {'value': site.libelle})))
+    if amont:
+        tag = 'SiteHydroAmont'
+    else:
+        tag = 'SiteHydroAval'
+
+    return _factory(root=_etree.Element(tag), story=story)
 
 
 def _siteattache_to_element(siteattache, version):
@@ -664,7 +700,7 @@ def _tronconvigilance_to_element(entitevigicrues, bdhydro=False, strict=True,
     # template for tronconvigilance simple elements
     story = _collections.OrderedDict((
         (tags.cdentvigicru, {'value': entitevigicrues.code}),
-        (tags.nomentvigicru, {'value': entitevigicrues.nom})))
+        (tags.nomentvigicru, {'value': entitevigicrues.libelle})))
 
     # action !
     return _factory(

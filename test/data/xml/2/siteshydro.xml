@@ -340,6 +340,24 @@
         <!-- </LamesDEau> -->
         <CdZoneHydro>H420</CdZoneHydro>
         <PrecisionCoursDEauSiteHydro>bras principal</PrecisionCoursDEauSiteHydro>
+        <SitesHydroAmont>
+            <SiteHydroAmont>
+                <CdSiteHydro>A1254895</CdSiteHydro>
+                <LbSiteHydro>Libellé premier site amont</LbSiteHydro>
+            </SiteHydroAmont>
+            <SiteHydroAmont>
+                <CdSiteHydro>B5423657</CdSiteHydro>
+            </SiteHydroAmont>
+        </SitesHydroAmont>
+        <SitesHydroAval>
+            <SiteHydroAval>
+                <CdSiteHydro>C1594521</CdSiteHydro>
+                <LbSiteHydro>Libellé premier site aval</LbSiteHydro>
+            </SiteHydroAval>
+            <SiteHydroAval>
+                <CdSiteHydro>D1478541</CdSiteHydro>
+            </SiteHydroAval>
+        </SitesHydroAval>
       </SiteHydro>
     </SitesHydro>
   </RefHyd>

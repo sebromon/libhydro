@@ -256,7 +256,7 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(site.entitesvigicrues[0].code, 'AG3')
         self.assertEqual(site.entitesvigicrues[1].code, 'AG5')
         self.assertEqual(
-            site.entitesvigicrues[1].nom, 'Troncon Adour àvâl')
+            site.entitesvigicrues[1].libelle, 'Troncon Adour àvâl')
         self.assertEqual(site.entitehydro, 'Y1524018')
         self.assertEqual(site.tronconhydro, 'O0011532')
         self.assertEqual(site.zonehydro, 'H420')

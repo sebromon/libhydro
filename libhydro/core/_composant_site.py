@@ -228,10 +228,10 @@ class EntiteVigiCrues(object):
 
     Proprietes:
         code (str) = code de l'entité
-        nom (str ou None) = Nom de l'entité
+        libelle (str ou None) = Libellé de l'entité
     """
 
-    def __init__(self, code=None, nom=None):
+    def __init__(self, code=None, libelle=None):
         """Initialisation.
 
         Arguments:
@@ -241,10 +241,10 @@ class EntiteVigiCrues(object):
         """
         # -- descriptors --
         self.code = str(code)
-        self.nom = str(nom) if nom is not None else None
+        self.libelle = str(libelle) if libelle is not None else None
 
     # -- other methods --
-    __all__attrs__ = ('code', 'nom')
+    __all__attrs__ = ('code', 'libelle')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
     __hash__ = _composant.__hash__
@@ -254,7 +254,7 @@ class EntiteVigiCrues(object):
 
         return 'Entité {0} ({1}) de vigilance crues'.format(
             self.code,
-            self.nom if self.nom is not None else '<Sans nom>'
+            self.libelle if self.libelle is not None else '<Sans libellé>'
         )
 
     __str__ = _composant.__str__

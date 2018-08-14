@@ -271,24 +271,24 @@ class TestEntiteVigiCrues(unittest.TestCase):
         """ simple test"""
         code = 'LA215'
         entite = composant_site.EntiteVigiCrues(code=code)
-        self.assertEqual((entite.code, entite.nom),
+        self.assertEqual((entite.code, entite.libelle),
                          (code, None))
 
     def test_02(self):
         """Full EntiteVigiCrues"""
         code = 'LA215'
-        nom = 'entité'
-        entite = composant_site.EntiteVigiCrues(code=code, nom=nom)
-        self.assertEqual((entite.code, entite.nom),
-                         (code, nom))
+        libelle = 'entité'
+        entite = composant_site.EntiteVigiCrues(code=code, libelle=libelle)
+        self.assertEqual((entite.code, entite.libelle),
+                         (code, libelle))
 
     def test_str(self):
         """Representation test"""
         code = 'LA215'
-        nom = 'entité'
-        entite = composant_site.EntiteVigiCrues(code=code, nom=nom)
+        libelle = 'entité'
+        entite = composant_site.EntiteVigiCrues(code=code, libelle=libelle)
         self.assertTrue(entite.__str__().find(code) > -1)
-        self.assertTrue(entite.__str__().find(nom) > -1)
+        self.assertTrue(entite.__str__().find(libelle) > -1)
 
 
 # -- class TestCommune -----------------------------------------------
