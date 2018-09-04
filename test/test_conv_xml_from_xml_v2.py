@@ -1057,6 +1057,24 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(loi3.contexte, 3)
         self.assertEqual(loi3.loi, 3)
 
+        self.assertEqual(len(site.roles), 2)
+        role1 = site.roles[0]
+        self.assertEqual(role1.contact.code, '2')
+        self.assertEqual(role1.role, 'ADM')
+        self.assertIsNone(role1.dtdeb)
+        self.assertIsNone(role1.dtfin)
+        self.assertIsNone(role1.dtmaj)
+
+        role2 = site.roles[1]
+        self.assertEqual(role2.contact.code, '1234')
+        self.assertEqual(role2.role, 'REF')
+        self.assertEqual(role2.dtdeb,
+                         datetime.datetime(2010, 5, 17, 11, 26, 39))
+        self.assertEqual(role2.dtfin,
+                         datetime.datetime(2038, 1, 19, 20, 55, 30))
+        self.assertEqual(role2.dtmaj,
+                         datetime.datetime(2017, 11, 4, 9, 23, 31))
+
         self.assertEqual(len(site.sitesamont), 2)
         siteamont1 = site.sitesamont[0]
         self.assertEqual(siteamont1.code, 'A1254895')

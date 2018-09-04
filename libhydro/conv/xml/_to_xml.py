@@ -453,6 +453,9 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
         if len(sitehydro.loisstat) > 0:
             story['LoisStatContexteSiteHydro'] = {'value': None, 'force': True}
 
+        if len(sitehydro.roles) > 0:
+            story[tags.rolscontactsitehydro] = {'value': None, 'force': True}
+
         story['CdTronconHydrographique'] = {'value': sitehydro.tronconhydro}
         if len(sitehydro.entitesvigicrues) > 0:
             story[tags.entsvigicru] = {'value': None, 'force': True}
@@ -537,6 +540,12 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
             for loistat in sitehydro.loisstat:
                 child.append(_loistat_to_element(loistat=loistat))
 
+        # add roles if necessary
+        if len(sitehydro.roles) > 0:
+            child = element.find(tags.rolscontactsitehydro)
+            for role in sitehydro.roles:
+                child.append(_role_to_element(role=role, tags=tags))
+
         # add the tronconsvigilance if necessary
         if len(sitehydro.entitesvigicrues) > 0:
             child = element.find(tags.entsvigicru)
@@ -561,6 +570,29 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
 
         # return
         return element
+
+
+def _role_to_element(role, tags):
+    """Return a <RoleContactSiteHydro>  or a <RolContactSiteHydro> element
+    from a _composant_site.commune"""
+    if role is None:
+        return
+
+    dtdeb = role.dtdeb.strftime('%Y-%m-%dT%H:%M:%S') \
+        if role.dtdeb is not None else None
+    dtfin = role.dtfin.strftime('%Y-%m-%dT%H:%M:%S') \
+        if role.dtfin is not None else None
+    dtmaj = role.dtmaj.strftime('%Y-%m-%dT%H:%M:%S') \
+        if role.dtmaj is not None else None
+
+    story = _collections.OrderedDict((
+        ('CdContact', {'value': role.contact.code}),
+        ('RoleContactSiteHydro', {'value': role.role}),
+        ('DtDebutContactSiteHydro', {'value': dtdeb}),
+        ('DtFinContactSiteHydro', {'value': dtfin}),
+        (tags.dtmajrolecontactsitehydro, {'value': dtmaj})))
+
+    return _factory(root=_etree.Element(tags.rolcontactsitehydro), story=story)
 
 
 def _commune_to_element(commune):

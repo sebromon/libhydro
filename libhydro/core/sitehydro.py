@@ -13,7 +13,8 @@ from __future__ import (
     unicode_literals as _unicode_literals, absolute_import as _absolute_import,
     division as _division, print_function as _print_function)
 
-from . import _composant, _composant_site, sitemeteo as _sitemeteo
+from . import (_composant, _composant_site, sitemeteo as _sitemeteo,
+               rolecontact as _rolecontact)
 from libhydro.core.nomenclature import NOMENCLATURE as _NOMENCLATURE
 
 
@@ -154,7 +155,7 @@ class _Site_or_station(_Entitehydro):
 
     """
 
-    def __init__(self, code, codeh2=None, libelle=None, coord=None,
+    def __init__(self, code, codeh2=None, libelle=None, coord=None, roles=None,
                  strict=True):
         """Constructor.
 
@@ -172,6 +173,8 @@ class _Site_or_station(_Entitehydro):
         # -- full properties --
         self._coord = None
         self.coord = coord
+        self._roles = []
+        self.roles = roles
 
     # -- property coord --
     @property
@@ -196,6 +199,29 @@ class _Site_or_station(_Entitehydro):
                         self._coord = _composant_site.Coord(**coord)
                     except (TypeError, ValueError, AttributeError):
                         raise TypeError('coord incorrect')
+
+    # -- property roles --
+    @property
+    def roles(self):
+        """Return roles."""
+        return self._roles
+
+    @roles.setter
+    def roles(self, roles):
+        """Set roles."""
+        self._roles = []
+        if roles is None:
+            return
+
+        if isinstance(roles, _rolecontact.RoleContact):
+            self._roles = [roles]
+            return
+
+        for role in roles:
+            if not isinstance(role, _rolecontact.RoleContact):
+                raise TypeError('roles must be a role.Role or'
+                                'an iterable of role.Role')
+        self._roles = roles
 
 
 # -- class Sitehydro ----------------------------------------------------------
@@ -244,6 +270,7 @@ class Sitehydro(_Site_or_station):
         sitesattaches (iterable of Sitehydroattache) = sites attachés
         massedeau (unidoe ou None) = masse d'eau
         loisstat (iterable of _composant_site.LoiStat = lois statistiques
+        roles (iterable of rolecontact.RoleContact) = roles des contacts
         entitesvigicrues (iterable of _composant_site.EntiteVigiCrues) =
             entités de vigilance crues
         lamesdeau (iterable of SitemeteoPondere) = lames d'eau associées
@@ -275,9 +302,9 @@ class Sitehydro(_Site_or_station):
                  moisanneehydro=None, dureecrues=None, publication=None,
                  essai=None, influence=None, influencecommentaire=None,
                  commentaire=None, siteassocie=None, sitesattaches=None,
-                 massedeau=None, loisstat=None, entitesvigicrues=None,
-                 lamesdeau=None, sitesamont=None, sitesaval=None,
-                 strict=True):
+                 massedeau=None, loisstat=None, roles=None,
+                 entitesvigicrues=None, lamesdeau=None, sitesamont=None,
+                 sitesaval=None, strict=True):
         """Initialisation.
 
         Arguments:
@@ -320,6 +347,7 @@ class Sitehydro(_Site_or_station):
             sitesattaches (iterable of Sitehydroattache) = sites attachés
             massedeau (unidoe ou None) = masse d'eau
             loisstat (iterable of _composant_site.LoiStat = lois statistiques
+            roles (iterable of rolecontact.RoleContact) = roles des contacts
             entitesvigicrues (iterable of _composant_site.EntiteVigiCrues) =
                 entités de vigilance crues
             lamesdeau (iterable of SitemeteoPondere) = lames d'eau associées
@@ -333,7 +361,7 @@ class Sitehydro(_Site_or_station):
         # -- super --
         super(Sitehydro, self).__init__(
             code=code, codeh2=codeh2, libelle=libelle,
-            coord=coord, strict=strict)
+            coord=coord, roles=roles, strict=strict)
 
         # -- adjust the descriptor --
         vars(Sitehydro)['typesite'].strict = self._strict
@@ -856,7 +884,7 @@ class Sitehydro(_Site_or_station):
         'moisanneehydro', 'dureecrues', 'publication',
         'essai', 'influence', 'influencecommentaire',
         'commentaire', 'siteassocie', 'sitesattaches',
-        'massedeau', 'loisstat', 'entitesvigicrues',
+        'massedeau', 'loisstat', 'roles', 'entitesvigicrues',
         'lamesdeau', 'sitesamont', 'sitesaval')
 
     def __unicode__(self):

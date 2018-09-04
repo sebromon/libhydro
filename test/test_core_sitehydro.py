@@ -23,7 +23,9 @@ import datetime as _datetime
 import unittest
 
 from libhydro.core import sitehydro, sitemeteo as _sitemeteo
-from libhydro.core import _composant_site as composant_site
+from libhydro.core import (_composant_site as composant_site,
+                           rolecontact as _rolecontact,
+                           intervenant as _intervenant)
 
 
 # -- strings ------------------------------------------------------------------
@@ -64,8 +66,8 @@ class TestSitehydro(unittest.TestCase):
                 s.bvhydro, s.altitude, s.fuseau, s.statut, s.dtpremieredonnee,
                 s.moisetiage, s.moisanneehydro, s.dureecrues, s.publication,
                 s.essai, s.influence, s.influencecommentaire, s.commentaire,
-                s.siteassocie, s.sitesattaches, s.loisstat, s.entitesvigicrues,
-                s.lamesdeau, s.sitesamont, s.sitesaval
+                s.siteassocie, s.sitesattaches, s.loisstat, s.roles,
+                s.entitesvigicrues, s.lamesdeau, s.sitesamont, s.sitesaval
             ),
             (code, None, 'REEL', None, None,
              [], [], None,
@@ -74,7 +76,7 @@ class TestSitehydro(unittest.TestCase):
              None, None, None, None, None,
              None, None, None, None,
              None, None, None, None,
-             None, [], [], [],
+             None, [], [], [], [],
              [], [], [])
         )
 
@@ -124,6 +126,16 @@ class TestSitehydro(unittest.TestCase):
         loi1 = composant_site.LoiStat(contexte=1, loi=2)
         loi2 = composant_site.LoiStat(contexte=2, loi=1)
         loisstat = [loi1, loi2]
+
+        role1 = _rolecontact.RoleContact(contact=_intervenant.Contact('1234'),
+                                         role='PRV')
+        role2 = _rolecontact.RoleContact(
+            contact=_intervenant.Contact('4321'),
+            role='EXP',
+            dtdeb=_datetime.datetime(2010, 4, 17, 11, 12, 13),
+            dtfin=_datetime.datetime(2038, 10, 4, 17, 18, 19),
+            dtmaj=_datetime.datetime(2018, 9, 3, 15, 54, 35))
+        roles = [role1, role2]
 
         entitevigicrues1 = composant_site.EntiteVigiCrues(code='LA1',
                                                           libelle='entité')
@@ -176,6 +188,7 @@ class TestSitehydro(unittest.TestCase):
             siteassocie=siteassocie,
             sitesattaches=sitesattaches,
             loisstat=loisstat,
+            roles=roles,
             entitesvigicrues=entitesvigicrues,
             lamesdeau=lamesdeau,
             sitesamont=sitesamont,
@@ -191,8 +204,8 @@ class TestSitehydro(unittest.TestCase):
                 s.bvhydro, s.altitude, s.fuseau, s.statut, s.dtpremieredonnee,
                 s.moisetiage, s.moisanneehydro, s.dureecrues, s.publication,
                 s.essai, s.influence, s.influencecommentaire, s.commentaire,
-                s.siteassocie, s.sitesattaches, s.loisstat, s.entitesvigicrues,
-                s.lamesdeau, s.sitesamont, s.sitesaval
+                s.siteassocie, s.sitesattaches, s.loisstat, s.roles,
+                s.entitesvigicrues, s.lamesdeau, s.sitesamont, s.sitesaval
             ),
             (
                 code, codeh2, typesite, libelle, libelleusuel,
@@ -202,8 +215,8 @@ class TestSitehydro(unittest.TestCase):
                 bvhydro, altitude, fuseau, statut, dtpremieredonnee,
                 moisetiage, moisanneehydro, dureecrues, publication,
                 essai, influence, influencecommentaire, commentaire,
-                siteassocie, sitesattaches, loisstat, entitesvigicrues,
-                lamesdeau, sitesamont, sitesaval
+                siteassocie, sitesattaches, loisstat, roles,
+                entitesvigicrues, lamesdeau, sitesamont, sitesaval
             )
         )
 
@@ -552,6 +565,22 @@ class TestSitehydro(unittest.TestCase):
         for lois in [1, 'toto', ['toto'], [loi1, 1]]:
             with self.assertRaises(Exception):
                 sitehydro.Sitehydro(code='L4545456', loisstat=lois)
+
+    def test_error_xx_roles(self):
+        role1 = _rolecontact.RoleContact(contact=_intervenant.Contact('1234'),
+                                         role='PRV')
+        role2 = _rolecontact.RoleContact(
+            contact=_intervenant.Contact('4321'),
+            role='EXP',
+            dtdeb=_datetime.datetime(2010, 4, 17, 11, 12, 13),
+            dtfin=_datetime.datetime(2038, 10, 4, 17, 18, 19),
+            dtmaj=_datetime.datetime(2018, 9, 3, 15, 54, 35))
+        for roles in [[role1, role2], [], None, role1]:
+            sitehydro.Sitehydro(code='L4545456',
+                                roles=roles)
+        for roles in [1, 'toto', ['toto'], [roles, '1']]:
+            with self.assertRaises(Exception):
+                sitehydro.Sitehydro(code='L4545456', roles=roles)
 
     def test_error_xx_entitesvigicrues(self):
         entitevigicrues1 = composant_site.EntiteVigiCrues(code='LA1',

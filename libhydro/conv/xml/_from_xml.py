@@ -31,7 +31,7 @@ from libhydro.core import (
     courbetarage as _courbetarage, courbecorrection as _courbecorrection,
     jaugeage as _jaugeage, obselaboreehydro as _obselaboreehydro,
     obselaboreemeteo as _obselaboreemeteo, nomenclature as _nomenclature,
-    _composant_site)
+    _composant_site, rolecontact as _rolecontact)
 
 from libhydro.conv.xml import sandre_tags as _sandre_tags
 
@@ -494,6 +494,10 @@ def _sitehydro_from_element(element, version, tags):
             for e in element.findall(
                 'LoisStatContexteSiteHydro/LoiStatContexteSiteHydro')]
 
+        args['roles'] = [
+            _role_from_element(e, version, tags) for e in element.findall(
+                tags.rolscontactsitehydro + '/' + tags.rolcontactsitehydro)]
+
         if version == '2':
             args['sitesamont'] = [
             _siteamontaval_from_element(e)
@@ -509,6 +513,20 @@ def _sitehydro_from_element(element, version, tags):
         # args['sitesaval'] = _value(element, 'MnSiteHydro')
         # build a Sitehydro and return
         return _sitehydro.Sitehydro(**args)
+
+
+def _role_from_element(element, version, tags):
+    """Return a _rolecontact.Role
+       from a <RolContactSiteHydro> or <RolContactSiteHydro> element.
+    """
+    args = {}
+    args['contact'] = _intervenant.Contact(code=_value(element, 'CdContact'))
+    args['role'] = _value(element, 'RoleContactSiteHydro')
+    args['dtdeb'] = _value(element, 'DtDebutContactSiteHydro')
+    args['dtfin'] = _value(element, 'DtFinContactSiteHydro')
+    # args['dtmaj'] = _value(element, 'DtMajRoleContactSiteHydro')
+    args['dtmaj'] = _value(element, tags.dtmajrolecontactsitehydro)
+    return _rolecontact.RoleContact(**args)
 
 
 def _siteamontaval_from_element(element):

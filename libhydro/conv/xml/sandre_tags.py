@@ -60,6 +60,11 @@ class SandreTagsV1(object):
     cdentvigicru = 'CdTronconVigilance'
     nomentvigicru = 'NomCTronconVigilance'
 
+    # Roles Site hydro
+    rolscontactsitehydro = 'RolesContactSiteHydro'
+    rolcontactsitehydro = 'RoleContactSiteHydro'
+    dtmajrolecontactsitehydro = 'DtMAJRoleContactSiteHydro'
+
 
 class SandreTagsV2(object):
     """Balises Sandre V2"""
@@ -105,3 +110,8 @@ class SandreTagsV2(object):
     entvigicru = 'EntVigiCru'
     cdentvigicru = 'CdEntVigiCru'
     nomentvigicru = 'NomEntVigiCru'
+
+    # Roles Site hydro
+    rolscontactsitehydro = 'RolsContactSiteHydro'
+    rolcontactsitehydro = 'RolContactSiteHydro'
+    dtmajrolecontactsitehydro = 'DtMajRoleContactSiteHydro'

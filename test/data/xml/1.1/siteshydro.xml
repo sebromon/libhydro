@@ -144,12 +144,19 @@
         <!--     <FormatIllSiteHydro>image/bmp</FormatIllSiteHydro> -->
         <!--   </ImageSiteHydro> -->
         <!-- </ImagesSiteHydro> -->
-        <!-- <RolesContactSiteHydro> -->
-        <!--   <RoleContactSiteHydro> -->
-        <!--     <CdContact schemeAgencyID="SANDRE">2</CdContact> -->
-        <!--     <RoleContactSiteHydro>ADM</RoleContactSiteHydro> -->
-        <!--   </RoleContactSiteHydro> -->
-        <!-- </RolesContactSiteHydro> -->
+        <RolesContactSiteHydro>
+           <RoleContactSiteHydro>
+            <CdContact schemeAgencyID="SANDRE">2</CdContact>
+            <RoleContactSiteHydro>ADM</RoleContactSiteHydro>
+          </RoleContactSiteHydro>
+          <RoleContactSiteHydro>
+            <CdContact schemeAgencyID="SANDRE">1234</CdContact>
+            <RoleContactSiteHydro>REF</RoleContactSiteHydro>
+            <DtDebutContactSiteHydro>2010-05-17T11:26:39</DtDebutContactSiteHydro>
+            <DtFinContactSiteHydro>2038-01-19T20:55:30</DtFinContactSiteHydro>
+            <DtMAJRoleContactSiteHydro>2017-11-04T09:23:31</DtMAJRoleContactSiteHydro>
+          </RoleContactSiteHydro>
+        </RolesContactSiteHydro>
         <CdTronconHydrographique>O0011532</CdTronconHydrographique>
         <TronconsVigilanceSiteHydro>
           <TronconVigilanceSiteHydro>

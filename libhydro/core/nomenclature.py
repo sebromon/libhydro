@@ -297,6 +297,21 @@ NOMENCLATURE = {
         6: "Enchainement de modeles",
         7: "Modele a propagation empirique"},
 
+    # Rôle du contact hydrométrique
+    527: {
+        'ADM': 'Administrateur',
+        'REF': 'Responsable référentiel',
+        'RC': 'Responsable règles de calcul',
+        'EXP':
+            'Gestion des paramètres liés aux échanges de données temps réel',
+        'DB': 'Responsable données brutes et concentrations',
+        'DC': 'Responsable données corrigées',
+        'DP': 'Responsable données pré validées',
+        'DV': 'Responsable données validées',
+        'MA': 'Responsable maintenance',
+        'CT': 'Droit de consultation',
+        'PRV': 'Prévisionniste'},
+
     # Type de seuil
     528: {1: 'Absolu', 2: 'Gradient'},
 
