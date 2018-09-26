@@ -282,20 +282,93 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(site.precisioncoursdeau, 'bras principal')
         # check station
         station = site.stations[0]
-        self.assertEqual(station.ddcs, ['10', '1000000001'])
-        self.assertEqual(station.commune, '11354')
-        self.assertEqual(station.codeh2, 'O1712510')
-        self.assertEqual(station.niveauaffichage, 1)
+        self.assertEqual(station.code, 'O171251001')
+        self.assertEqual(station.libelle,
+                         'L\'Ariège à Auterive - station de secours')
+        self.assertEqual(station.typestation, 'DEB')
         self.assertEqual(station.libellecomplement, 'Complément du libellé')
-        self.assertEqual(station.descriptif, 'Station située à Auterive')
+        self.assertEqual(station.commentaireprive, 'Station située à Auterive')
         self.assertEqual(station.dtmaj,
                          datetime.datetime(2017, 7, 17, 11, 23, 34))
+        self.assertEqual(station.coord.x, 15.0)
+        self.assertEqual(station.coord.y, 16.0)
+        self.assertEqual(station.coord.proj, 26)
         self.assertEqual(station.pointk, 153.71)
         self.assertEqual(station.dtmiseservice,
                          datetime.datetime(1991, 10, 7, 14, 15, 16))
         self.assertEqual(station.dtfermeture,
                          datetime.datetime(2012, 4, 21, 19, 58, 3))
         self.assertEqual(station.surveillance, True)
+        self.assertEqual(station.niveauaffichage, 991)
+        self.assertEqual(station.droitpublication, 20)
+        self.assertEqual(station.essai, False)
+        self.assertEqual(station.influence, 2)
+        self.assertEqual(station.influencecommentaire, 'Libellé influence')
+        self.assertEqual(station.commentaire,
+                         'commentaire1 création station hydro')
+        self.assertEqual(len(station.stationsanterieures), 1)
+        self.assertEqual(station.stationsanterieures[0].code, 'G876542134')
+        self.assertEqual(len(station.stationsposterieures), 0)
+
+        self.assertEqual(len(station.plagesstationsfille), 1)
+        self.assertEqual(station.plagesstationsfille[0].code,
+                         'L854795216')
+        self.assertEqual(len(station.plagesstationsmere), 0)
+
+        self.assertEqual(len(station.qualifsdonnees), 2)
+        qualif0 = station.qualifsdonnees[0]
+        self.assertEqual(qualif0.coderegime, 1)
+        self.assertEqual(qualif0.qualification, 12)
+        self.assertEqual(qualif0.commentaire, 'Commentaire qualif')
+        qualif1 = station.qualifsdonnees[1]
+        self.assertEqual(qualif1.coderegime, 2)
+        self.assertEqual(qualif1.qualification, 16)
+        self.assertIsNone(qualif1.commentaire)
+        self.assertEqual(station.finalites, [1, 2])
+        self.assertEqual(len(station.loisstat), 3)
+        loi0 = station.loisstat[0]
+        self.assertEqual((loi0.contexte, loi0.loi),
+                         (1, 1))
+        loi1 = station.loisstat[1]
+        self.assertEqual((loi1.contexte, loi1.loi),
+                         (3, 2))
+        loi2 = station.loisstat[2]
+        self.assertEqual((loi2.contexte, loi2.loi),
+                         (2, 3))
+        self.assertEqual(len(station.roles), 2)
+        role0 = station.roles[0]
+        self.assertEqual((role0.contact.code, role0.role, role0.dtdeb,
+                          role0.dtfin, role0.dtmaj),
+                         ('2', 'ADM',
+                          datetime.datetime(2005, 11, 18, 14, 56, 54),
+                          datetime.datetime(2007, 5, 4, 14, 12, 28),
+                          datetime.datetime(2012, 10, 4, 11, 35, 21)))
+        role1 = station.roles[1]
+        self.assertEqual((role1.contact.code, role1.role, role1.dtdeb,
+                          role1.dtfin, role1.dtmaj),
+                         ('999', 'REF', None, None, None))
+
+        self.assertEqual(len(station.plages), 2)
+        plage0 = station.plages[0]
+        self.assertEqual((plage0.dtdeb, plage0.dtfin, plage0.dtactivation,
+                          plage0.dtdesactivation, plage0.active),
+                         (datetime.datetime(2006, 4, 25, 16, 0, 0),
+                          datetime.datetime(2006, 4, 30, 17, 0, 0),
+                          datetime.datetime(2007, 1, 18, 15, 10, 5),
+                          datetime.datetime(2014, 10, 11, 9, 47, 44),
+                          True
+                          ))
+        plage1 = station.plages[1]
+        self.assertEqual((plage1.dtdeb, plage1.dtfin, plage1.dtactivation,
+                          plage1.dtdesactivation, plage1.active),
+                         (datetime.datetime(2006, 5, 25, 16, 0, 0),
+                          datetime.datetime(2006, 5, 30, 17, 0, 0),
+                          None, None, False))
+
+        self.assertEqual([reseau.code for reseau in station.reseaux],
+                         ['10', '1000000001'])
+
+
         # checkcapteurs
         capteurs = station.capteurs
         self.assertEqual(len(capteurs), 2)
@@ -310,6 +383,7 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         # check plages utilisatino capteurs
         self.assertEqual(len(capteurs[0].plages), 0)
         self.assertEqual(len(capteurs[1].plages), 2)
+
         plage = capteurs[1].plages[0]
         self.assertEqual(plage.dtdeb,
                          datetime.datetime(2009, 11, 3, 15, 19, 18))
@@ -328,6 +402,34 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertIsNone(plage.dtactivation)
         self.assertIsNone(plage.dtdesactivation)
         self.assertIsNone(plage.active)
+        # Fin capteurs
+
+        self.assertEqual(len(station.refsalti), 2)
+        refalti0 = station.refsalti[0]
+        self.assertEqual((refalti0.dtdeb, refalti0.dtfin,
+                          refalti0.dtactivation, refalti0.dtdesactivation,
+                          refalti0.altitude.altitude,
+                          refalti0.altitude.sysalti, refalti0.dtmaj),
+                         (datetime.datetime(2006, 1, 1, 8, 0, 0),
+                          datetime.datetime(2006, 1, 31, 10, 0, 0),
+                          datetime.datetime(2009, 12, 4, 11, 32, 4),
+                          datetime.datetime(2013, 7, 28, 8, 10, 57),
+                          999.0, 4,
+                          datetime.datetime(2014, 4, 24, 16, 54, 21)
+                          ))
+
+        refalti1 = station.refsalti[1]
+        self.assertEqual((refalti1.dtdeb, refalti1.dtfin,
+                          refalti1.dtactivation, refalti1.dtdesactivation,
+                          refalti1.altitude.altitude,
+                          refalti1.altitude.sysalti, refalti1.dtmaj),
+                         (datetime.datetime(2007, 2, 1, 8, 0, 0),
+                          datetime.datetime(2007, 2, 28, 10, 0, 0),
+                          None, None,
+                          777.0, 7, None
+                          ))
+        self.assertEqual(station.codeh2, 'O1712510')
+        self.assertEqual(station.commune, '11354')
 
     def test_error_1(self):
         """Xml file with namespace error test."""

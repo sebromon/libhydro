@@ -96,6 +96,68 @@ class Coord(object):
     __str__ = _composant.__str__
 
 
+# -- class ReseauMesure ------------------------------------------------------
+class ReseauMesure(object):
+    """Classe ReseauMesure
+
+    Classe permettant de manipuler des réseaux de mesure
+
+    Propriétés:
+        code (str) : code du réseau
+        libelle (str ou None): libellé du réseau
+    """
+
+    def __init__(self, code=None, libelle=None):
+        """Initialisation.
+
+        Arguments:
+            code (str) : code du réseau
+            libelle (str ou None): libellé du résea
+
+        """
+        self._code = None
+        self.code = code
+        self.libelle = str(libelle) if libelle is not None else None
+
+        # -- property code --
+    @property
+    def code(self):
+        """Return code."""
+        return self._code
+
+    @code.setter
+    def code(self, code):
+        """Set code."""
+        # None case
+        if code is None:
+            raise ValueError('code must be defined')
+        code = str(code)
+        if len(code) > 10:
+            raise ValueError('ddc code must be 10 chars long')
+        self._code = code
+
+    # -- other methods --
+    __all__attrs__ = ('code', 'libelle')
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
+
+    def __unicode__(self):
+        """Return unicode representation."""
+        # init
+        if self.libelle is not None:
+            libelle = ' ({})'.format(self.libelle)
+        else:
+            libelle = ''
+
+        # action !
+        return 'Réseau de mesure: {0}{1}'.format(
+            self.code, libelle
+        )
+
+    __str__ = _composant.__str__
+
+
 # -- class Altitude -----------------------------------------------------------
 class Altitude(object):
 
@@ -311,6 +373,129 @@ class Commune(object):
         return 'Commune {0} ({1})'.format(
             self.code,
             self.libelle if self.libelle is not None else '<Sans libelle>'
+        )
+
+    __str__ = _composant.__str__
+
+
+class QualifDonnees(object):
+    """Classe QualidDonnees
+
+    Classe pour manipuler des qualifications de données
+
+    Proprietes:
+        coderegime (int parmi NOMENCLATURE[526])  = code du régime
+        qualification (int parmi NOMENCLATURE[533]) = qualification des données
+        commentaire (str ou None) = Commentaire de la qualification
+        libelle (str ou None) = Nom de la commune
+    """
+
+    coderegime = _composant.Nomenclatureitem(nomenclature=526)
+    qualification = _composant.Nomenclatureitem(nomenclature=533)
+
+    def __init__(self, coderegime=None, qualification=None, commentaire=None):
+        """Initialisation.
+
+        Arguments:
+            coderegime (int parmi NOMENCLATURE[526])  = code du régime
+            qualification (int parmi NOMENCLATURE[533]) =
+                qualification des données
+            commentaire (str ou None) = Commentaire de la qualification
+            libelle (str ou None) = Nom de la commune
+
+        """
+        self.coderegime = coderegime
+        self.qualification = qualification
+        self.commentaire = str(commentaire) if commentaire is not None \
+            else None
+
+    # -- other methods --
+    __all__attrs__ = ('coderegime', 'qualification', 'commentaire')
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
+
+    def __unicode__(self):
+        """Return unicode representation."""
+
+        return 'Régime {0} qualification {1} ({2})'.format(
+            _NOMENCLATURE[526][self.coderegime].lower(),
+            _NOMENCLATURE[533][self.qualification].lower(),
+            self.commentaire if self.commentaire is not None
+            else '<Sans commentaire>'
+        )
+
+    __str__ = _composant.__str__
+
+
+class RefAlti(object):
+    """Classe RefAlti
+
+    Classe pour manipuler des référentiels altimétriques
+
+    Proprietes:
+        dtdeb (datetime.datetime)  = Date de début
+        dtfin (datetime.datetime ou None)  = Date de fin
+        dtactivation (datetime.datetime ou None)  = Date d'activation
+        dtdesactivation (datetime.datetime ou None)  = Date de désactivation
+        altitude (Altitude)  = altitude avec système altimétrique
+        dtmaj (datetime.datetime ou None)  = Date de mise à jour
+    """
+
+    dtdeb = _composant.Datefromeverything()
+    dtfin = _composant.Datefromeverything(required=False)
+    dtactivation = _composant.Datefromeverything(required=False)
+    dtdesactivation = _composant.Datefromeverything(required=False)
+    dtmaj = _composant.Datefromeverything(required=False)
+
+    def __init__(self, dtdeb=None, dtfin=None, dtactivation=None,
+                 dtdesactivation=None, altitude=None, dtmaj=None):
+        """Initialisation.
+
+        Arguments:
+            dtdeb (datetime.datetime)  = Date de début
+            dtfin (datetime.datetime ou None)  = Date de fin
+            dtactivation (datetime.datetime ou None)  = Date d'activation
+            dtdesactivation (datetime.datetime ou None)  =
+                Date de désactivation
+            altitude (Altitude)  = altitude avec système altimétrique
+            dtmaj (datetime.datetime ou None)  = Date de mise à jour
+
+        """
+        self.dtdeb = dtdeb
+        self.dtfin = dtfin
+        self.dtactivation = dtactivation
+        self.dtdesactivation = dtdesactivation
+        self._altitude = None
+        self.altitude = altitude
+        self.dtmaj = dtmaj
+
+    # -- property altitude --
+    @property
+    def altitude(self):
+        """Return altitude."""
+        return self._altitude
+
+    @altitude.setter
+    def altitude(self, altitude):
+        """Set altitude."""
+        if not isinstance(altitude, Altitude):
+            raise TypeError('altitude must be an instance of Altitude')
+        self._altitude = altitude
+
+    # -- other methods --
+    __all__attrs__ = ('dtdeb', 'dtfin', 'dtactivation', 'dtdesactivation',
+                      'altitude', 'dtmaj')
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
+
+    def __unicode__(self):
+        """Return unicode representation."""
+
+        dtfin = self.dtfin if self.dtfin is not None else '<Sans date de fin>'
+        return 'Référentiel altimétrique de {0} à {1} - {2} '.format(
+            self.dtdeb, dtfin, self.altitude
         )
 
     __str__ = _composant.__str__

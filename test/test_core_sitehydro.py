@@ -721,30 +721,96 @@ class TestStation(unittest.TestCase):
         s = sitehydro.Station(code=code)
         self.assertEqual(
             (
-                s.code, s.typestation, s.libelle, s.libellecomplement,
-                s.descriptif, s.dtmaj, s.pointk, s.dtmiseservice,
-                s.dtfermeture, s.surveillance, s.commune, s.ddcs,
-                s._plages
-            ),
-            (code, 'LIMNI', None, None, None, None, None, None, None, None,
-             None, [], [])
-        )
+                s.code, s.codeh2, s.typestation,
+                s.libelle, s.libellecomplement,
+                s.commentaireprive, s.dtmaj, s.pointk,
+                s.dtmiseservice, s.dtfermeture,
+                s.surveillance, s.niveauaffichage, s.coord,
+                s.droitpublication, s.delaidiscontinuite,
+                s.delaiabsence, s.essai, s.influence,
+                s.influencecommentaire, s.commentaire,
+                s.stationsanterieures, s.stationsposterieures,
+                s.qualifsdonnees, s.finalites, s.loisstat,
+                s.roles, s.capteurs, s.refsalti, s.commune,
+                s.reseaux, s.plages, s.stationsamont, s.stationsaval,
+                s.plagesstationsfille, s.plagesstationsmere),
+            (
+                code, None, 'LIMNI',
+                None, None,
+                None, None, None,
+                None, None,
+                None, 0, None,
+                10, None,
+                None, None, None,
+                None, None,
+                [], [],
+                [], [], [],
+                [], [], [], None,
+                [], [], [], [],
+                [], []))
 
     def test_base_02(self):
         """Base case test."""
         code = 'A033465001'
+        codeh2 = 'A1234567'
         typestation = 'LIMNI'
         libelle = 'La Seine a Paris - rive droite'
+        # libelleusuel = 'La Seine'
         libellecomplement = 'rive droite'
-        descriptif = 'descriptif'
+        coord = composant_site.Coord(x=15.6, y=19.4, proj=26)
+        commentaireprive = 'commentaire privé'
         dtmaj = _datetime.datetime(2017, 7, 17, 9, 31, 15)
         dtmiseservice = _datetime.datetime(1990, 4, 5, 11, 45, 21)
         dtfermeture = _datetime.datetime(2007, 10, 1, 9, 36, 58)
         pointk = 35.68
         surveillance = True
+        niveauaffichage = 991
+        droitpublication = 20
+        delaidiscontinuite = 38
+        delaiabsence = 27
+        essai = False
+        influence = 3
+        influencecommentaire = 'Influence com'
+        commentaire = 'Commentaire'
+        stationsanterieures = [sitehydro.Station(code='A123456789'),
+                               sitehydro.Station(code='Z987654321')]
+        stationsposterieures = [sitehydro.Station(code='B123456789'),
+                                sitehydro.Station(code='C987654321')]
+        qualifsdonnees = [composant_site.QualifDonnees(coderegime=1,
+                                                       qualification=12),
+                          composant_site.QualifDonnees(coderegime=2,
+                                                       qualification=16)]
+        finalites = [2, 5, 7]
+
+        loi1 = composant_site.LoiStat(contexte=1, loi=2)
+        loi2 = composant_site.LoiStat(contexte=2, loi=1)
+        loisstat = [loi1, loi2]
+
+        role1 = _rolecontact.RoleContact(contact=_intervenant.Contact('1234'),
+                                         role='PRV')
+        role2 = _rolecontact.RoleContact(
+            contact=_intervenant.Contact('4321'),
+            role='EXP',
+            dtdeb=_datetime.datetime(2010, 4, 17, 11, 12, 13),
+            dtfin=_datetime.datetime(2038, 10, 4, 17, 18, 19),
+            dtmaj=_datetime.datetime(2018, 9, 3, 15, 54, 35))
+        roles = [role1, role2]
+        dtdeb = _datetime.datetime(2015, 5, 18, 11, 54, 34)
+        alt = 154.2
+        altitude = composant_site.Altitude(altitude=alt)
+        refalti1 = composant_site.RefAlti(dtdeb=dtdeb, altitude=altitude)
+        dtdeb = _datetime.datetime(2017, 6, 15, 13, 38, 1)
+        alt = 189.1
+        altitude = composant_site.Altitude(altitude=alt)
+        refalti2 = composant_site.RefAlti(dtdeb=dtdeb, altitude=altitude)
+        refsalti = [refalti1, refalti2]
         capteurs = [sitehydro.Capteur(code='V83310100101')]
         commune = '03150'
-        ddcs = 33  # a numeric rezo
+        reseaux = composant_site.ReseauMesure(code='33')
+        stationsamont = [sitehydro.Station(code='K123495124'),
+                         sitehydro.Station(code='L123495124')]
+        stationsaval = [sitehydro.Station(code='M123495124'),
+                        sitehydro.Station(code='O123495124')]
         plages = [
             sitehydro.PlageUtil(
                 dtdeb=_datetime.datetime(2017, 9, 1, 12, 3, 19)),
@@ -754,28 +820,73 @@ class TestStation(unittest.TestCase):
                 dtactivation=_datetime.datetime(2017, 8, 23, 9, 43, 32),
                 dtdesactivation=_datetime.datetime(2017, 9, 4, 19, 41, 27),
                 active=True)]
+        ps1 = sitehydro.PlageStation(
+            code='A010129840',
+            dtdeb=_datetime.datetime(2010, 11, 4, 10, 52, 47),
+            dtfin=_datetime.datetime(2011, 3, 27, 15, 14, 3))
+        ps2 = sitehydro.PlageStation(
+            code='K710129844',
+            dtdeb=_datetime.datetime(2014, 10, 8, 11, 50, 32),
+            dtfin=_datetime.datetime(2015, 6, 11, 17, 23, 14))
+        plagesstationsfille = [ps1, ps2]
+        ps3 = sitehydro.PlageStation(
+            code='W354875674',
+            dtdeb=_datetime.datetime(2000, 2, 10, 7, 10, 23),
+            dtfin=_datetime.datetime(2005, 11, 3, 18, 15, 23))
+        ps4 = sitehydro.PlageStation(
+            code='K556854188',
+            dtdeb=_datetime.datetime(2007, 6, 4, 11, 50, 37),
+            dtfin=_datetime.datetime(2008, 9, 25, 13, 37, 43))
+        plagesstationsmere = [ps3, ps4]
         s = sitehydro.Station(
-            code=code, typestation=typestation,
+            code=code, codeh2=codeh2, typestation=typestation,
             libelle=libelle, libellecomplement=libellecomplement,
-            descriptif=descriptif, dtmaj=dtmaj, dtmiseservice=dtmiseservice,
-            dtfermeture=dtfermeture, pointk=pointk, surveillance=surveillance,
-            capteurs=capteurs, commune=commune, ddcs=ddcs,
-            plages=plages
+            # libelleusuel=libelleusuel,
+            commentaireprive=commentaireprive, dtmaj=dtmaj, pointk=pointk,
+            dtmiseservice=dtmiseservice, dtfermeture=dtfermeture,
+            surveillance=surveillance, niveauaffichage=niveauaffichage,
+            coord=coord, droitpublication=droitpublication,
+            delaidiscontinuite=delaidiscontinuite, delaiabsence=delaiabsence,
+            essai=essai, influence=influence,
+            influencecommentaire=influencecommentaire, commentaire=commentaire,
+            stationsanterieures=stationsanterieures,
+            stationsposterieures=stationsposterieures,
+            qualifsdonnees=qualifsdonnees, finalites=finalites,
+            loisstat=loisstat, roles=roles, capteurs=capteurs,
+            refsalti=refsalti, commune=commune, reseaux=reseaux, plages=plages,
+            stationsamont=stationsamont, stationsaval=stationsaval,
+            plagesstationsfille=plagesstationsfille,
+            plagesstationsmere=plagesstationsmere
         )
         self.assertEqual(
             (
-                s.code, s.typestation, s.libelle, s.libellecomplement,
-                s.descriptif, s.dtmaj, s.pointk, s.dtmiseservice,
-                s.dtfermeture, s.surveillance, s.capteurs, s.commune, s.ddcs,
-                s.plages
-            ),
+                s.code, s.codeh2, s.typestation,
+                s.libelle, s.libellecomplement,
+                s.commentaireprive, s.dtmaj, s.pointk,
+                s.dtmiseservice, s.dtfermeture,
+                s.surveillance, s.niveauaffichage, s.coord,
+                s.droitpublication, s.delaidiscontinuite,
+                s.delaiabsence, s.essai, s.influence,
+                s.influencecommentaire, s.commentaire,
+                s.stationsanterieures, s.stationsposterieures,
+                s.qualifsdonnees, s.finalites, s.loisstat,
+                s.roles, s.capteurs, s.refsalti, s.commune,
+                s.reseaux, s.plages, s.stationsamont, s.stationsaval,
+                s.plagesstationsfille, s.plagesstationsmere),
             (
-                code, typestation, libelle, libellecomplement,
-                descriptif, dtmaj, pointk, dtmiseservice, dtfermeture,
-                surveillance, capteurs, commune, [str(ddcs)],
-                plages
-            )
-        )
+                code, codeh2, typestation,
+                libelle, libellecomplement,
+                commentaireprive, dtmaj, pointk,
+                dtmiseservice, dtfermeture,
+                surveillance, niveauaffichage, coord,
+                droitpublication, delaidiscontinuite,
+                delaiabsence, essai, influence,
+                influencecommentaire, commentaire,
+                stationsanterieures, stationsposterieures,
+                qualifsdonnees, finalites, loisstat,
+                roles, capteurs, refsalti, commune,
+                [reseaux], plages, stationsamont, stationsaval,
+                plagesstationsfille, plagesstationsmere))
 
     def test_base_03(self):
         """Update capteurs attribute."""
@@ -784,14 +895,15 @@ class TestStation(unittest.TestCase):
         libelle = 'La Seine a Paris - rive droite'
         capteurs = [sitehydro.Capteur(code='V83310100101')]
         commune = '2B201'
-        ddcs = ['33', 'the rezo']
+        reseaux = [composant_site.ReseauMesure(code='33', libelle='Réseau'),
+                   composant_site.ReseauMesure(code='the rezo')]
         s = sitehydro.Station(
             code=code, typestation=typestation, libelle=libelle,
-            capteurs=capteurs, commune=commune, ddcs=ddcs
+            capteurs=capteurs, commune=commune, reseaux=reseaux
         )
         self.assertEqual(
-            (s.code, s.typestation, s.libelle, s.commune, s.ddcs),
-            (code, typestation, libelle, commune, ddcs)
+            (s.code, s.typestation, s.libelle, s.commune, s.reseaux),
+            (code, typestation, libelle, commune, reseaux)
         )
         s.capteurs = None
         self.assertEqual(s.capteurs, [])
@@ -878,10 +990,107 @@ class TestStation(unittest.TestCase):
     def test_error_05(self):
         """Disceau error."""
         code = 'B440112201'
-        ddcs = 'code rezo'
-        sitehydro.Station(code=code, ddcs=ddcs)
-        with self.assertRaises(ValueError):
-            sitehydro.Station(code=code, ddcs=ddcs * 2)
+        reseau0 = composant_site.ReseauMesure(10)
+        reseau1 = composant_site.ReseauMesure(code='10145', libelle='Réseau')
+        for reseaux in [None, [], reseau0, reseau1, [reseau0, reseau1]]:
+            sitehydro.Station(code=code, reseaux=reseaux)
+        for reseaux in [10, [reseau0, 10], [10]]:
+            with self.assertRaises(Exception):
+                sitehydro.Station(code=code, reseaux=reseaux)
+
+    def test_error_stations(self):
+        """stationsanterieures,stationsposterieures
+        stationsamont aval error."""
+        stations = [sitehydro.Station(code='A123456789'),
+                    sitehydro.Station(code='Z987654321')]
+        for arg in ['stationsanterieures', 'stationsposterieures',
+                    'stationsamont', 'stationsaval']:
+            args = {}
+            args['code'] = 'B440112201'
+            for value in [None, stations, stations[0]]:
+                args[arg] = value
+                sitehydro.Station(**args)
+            for value in ['toto', 'A123456789', ['A123456789'],
+                          [stations[0], 'A123456789']]:
+                args[arg] = value
+                with self.assertRaises(Exception):
+                    sitehydro.Station(**args)
+
+    def test_error_qualifsdonnees(self):
+        """Test qualifsdonnees error"""
+        code = 'B440112201'
+        qualifsdonnees = [composant_site.QualifDonnees(coderegime=1,
+                                                       qualification=12),
+                          composant_site.QualifDonnees(coderegime=2,
+                                                       qualification=16)]
+        for qualifs in [None, [], qualifsdonnees, qualifsdonnees[0]]:
+            sitehydro.Station(code=code, qualifsdonnees=qualifs)
+        for qualifs in ['toto', [qualifsdonnees[0], 'toto']]:
+            with self.assertRaises(Exception):
+                sitehydro.Station(code=code, qualifsdonnees=qualifs)
+
+    def test_error_finalites(self):
+        code = 'B440112201'
+        finalites = [1, 3, '7']
+        for fin in [None, [], finalites, finalites[0], finalites[2]]:
+            sitehydro.Station(code=code, finalites=fin)
+        for fin in [9, ['15'], [0, 'toto']]:
+            with self.assertRaises(Exception):
+                sitehydro.Station(code=code, finalites=fin)
+
+    def test_error_refsalti(self):
+        code = 'B440112201'
+        dtdeb = _datetime.datetime(2015, 5, 18, 11, 54, 34)
+        alt = 154.2
+        altitude = composant_site.Altitude(altitude=alt)
+        refalti1 = composant_site.RefAlti(dtdeb=dtdeb, altitude=altitude)
+        dtdeb = _datetime.datetime(2017, 6, 15, 13, 38, 1)
+        alt = 189.1
+        altitude = composant_site.Altitude(altitude=alt)
+        refalti2 = composant_site.RefAlti(dtdeb=dtdeb, altitude=altitude)
+        refsalti = [refalti1, refalti2]
+        for refs in [None, [], refsalti, refsalti[0]]:
+            sitehydro.Station(code=code, refsalti=refs)
+        for refs in [[refalti1, 'toto'], 'toto']:
+            with self.assertRaises(Exception):
+                sitehydro.Station(code=code, refsalti=refs)
+
+    def test_error_plages(self):
+        code = 'B440112201'
+        plage1 = sitehydro.PlageUtil(
+                    dtdeb=_datetime.datetime(2017, 9, 1, 12, 3, 19))
+        plage2 = sitehydro.PlageUtil(
+            dtdeb=_datetime.datetime(2017, 9, 1, 12, 3, 19),
+            dtfin=_datetime.datetime(2020, 2, 15, 10, 11, 56),
+            dtactivation=_datetime.datetime(2017, 8, 23, 9, 43, 32),
+            dtdesactivation=_datetime.datetime(2017, 9, 4, 19, 41, 27),
+            active=True)
+        for plages in [None, [], plage1, [plage1], [plage1, plage2]]:
+            sitehydro.Station(code=code, plages=plages)
+        for plages in [5, ['tata'], [plage1, 5]]:
+            with self.assertRaises(Exception):
+                sitehydro.Station(code=code, plages=plages)
+
+    def test_error_plagesstations(self):
+        code = 'B440112201'
+        ps1 = sitehydro.PlageStation(
+            code='A010129840',
+            dtdeb=_datetime.datetime(2010, 11, 4, 10, 52, 47),
+            dtfin=_datetime.datetime(2011, 3, 27, 15, 14, 3))
+        ps2 = sitehydro.PlageStation(
+            code='K710129844',
+            dtdeb=_datetime.datetime(2014, 10, 8, 11, 50, 32),
+            dtfin=_datetime.datetime(2015, 6, 11, 17, 23, 14))
+        for arg in ['plagesstationsfille', 'plagesstationsmere']:
+            args = {}
+            args['code'] = code
+            for value in [None, [], ps1, [ps1], [ps1, ps2]]:
+                args[arg] = value
+                sitehydro.Station(**args)
+            for value in ['toto', [5], [ps1, 5]]:
+                args[arg] = value
+                with self.assertRaises(Exception):
+                    sitehydro.Station(**args)
 
 
 # -- class TestCapteur --------------------------------------------------------
@@ -1117,3 +1326,56 @@ class TestPlageUtil(unittest.TestCase):
         self.assertTrue(plage.__str__().rfind('[2016-02-03 04:05:06') > -1)
         self.assertTrue(plage.__str__().rfind('2030-04-09 11:15:26]') > -1)
         self.assertTrue(plage.__str__().rfind('inactive') > -1)
+
+
+# -- class TestPlageStation -----------------------------------------------
+class TestPlageStation(unittest.TestCase):
+    """PlageStation class tests."""
+
+    def test_base_01(self):
+        """simple test"""
+        dtdeb = _datetime.datetime(2015, 4, 11, 13, 58, 23)
+        code = 'A123456789'
+        pst = sitehydro.PlageStation(code=code, dtdeb=dtdeb)
+        self.assertEqual((pst.code, pst.dtdeb, pst.dtfin),
+                         (code, dtdeb, None))
+
+    def test_base_full_plagestation(self):
+        """Test full PlageStation"""
+        dtdeb = _datetime.datetime(2015, 4, 11, 13, 58, 23)
+        dtfin = _datetime.datetime(2019, 10, 28, 10, 14, 3)
+        code = 'A123456789'
+        libelle = 'libellé'
+        pst = sitehydro.PlageStation(code=code, libelle=libelle,
+                                     dtdeb=dtdeb, dtfin=dtfin)
+        self.assertEqual((pst.code, pst.libelle, pst.dtdeb, pst.dtfin),
+                         (code, libelle, dtdeb, dtfin))
+
+    def test_str(self):
+        dtdeb = _datetime.datetime(2015, 4, 11, 13, 58, 23)
+        dtfin = _datetime.datetime(2019, 10, 28, 10, 14, 3)
+        code = 'A123456789'
+        pst = sitehydro.PlageStation(code=code, dtdeb=dtdeb, dtfin=dtfin)
+        pst_str = pst.__str__()
+        self.assertTrue(pst_str.find(dtdeb.__str__()) > -1)
+        self.assertTrue(pst_str.find(dtfin.__str__()) > -1)
+        self.assertTrue(pst_str.find(code) > -1)
+        pst.dtfin = None
+        pst_str = pst.__str__()
+        self.assertTrue(pst_str.find('sans date de fin') > -1)
+
+    def test_error_station(self):
+        dtdeb = _datetime.datetime(2015, 4, 11, 13, 58, 23)
+        code = 'A123456789'
+        sitehydro.PlageStation(code=code, dtdeb=dtdeb)
+        for code in [None, 5, 'A123456']:
+            with self.assertRaises(Exception):
+                sitehydro.PlageStation(code=code, dtdeb=dtdeb)
+
+    def test_error_dtdeb(self):
+        dtdeb = _datetime.datetime(2015, 4, 11, 13, 58, 23)
+        code = 'A123456789'
+        sitehydro.PlageStation(code=code, dtdeb=dtdeb)
+        for dtdeb in [None, 5]:
+            with self.assertRaises(Exception):
+                sitehydro.PlageStation(code=code, dtdeb=dtdeb)

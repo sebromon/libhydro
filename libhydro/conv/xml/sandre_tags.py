@@ -62,8 +62,17 @@ class SandreTagsV1(object):
 
     # Roles Site hydro
     rolscontactsitehydro = 'RolesContactSiteHydro'
-    rolcontactsitehydro = 'RoleContactSiteHydro'
-    dtmajrolecontactsitehydro = 'DtMAJRoleContactSiteHydro'
+    rolcontactsitehydro = 'RoleContactSiteHydro'  # à supprimer
+    rolcontact = 'RoleContact'
+    dtmajrolecontactsitehydro = 'DtMAJRoleContactSiteHydro'  # à supprimer
+    dtmajrolecontact = 'DtMAJRoleContact'  # station or site
+
+    # stations hydro
+    complementlibellestationhydro = 'ComplementLibelleStationHydro'
+    comprivestationhydro = 'DescriptifStationHydro'
+    dtmajstationhydro = 'DtMAJStationHydro'
+    rolscontactstationhydro = 'RolesContactStationHydro'
+    rolcontactstationhydro = 'RoleContactStationHydro'
 
 
 class SandreTagsV2(object):
@@ -113,5 +122,14 @@ class SandreTagsV2(object):
 
     # Roles Site hydro
     rolscontactsitehydro = 'RolsContactSiteHydro'
-    rolcontactsitehydro = 'RolContactSiteHydro'
-    dtmajrolecontactsitehydro = 'DtMajRoleContactSiteHydro'
+    rolcontactsitehydro = 'RolContactSiteHydro' # à supprimer
+    rolcontact = 'RolContact'
+    dtmajrolecontactsitehydro = 'DtMajRoleContactSiteHydro'  # à supprimer
+    dtmajrolecontact = 'DtMajRoleContact'  # station or site
+
+    # stations hydro
+    complementlibellestationhydro = 'ComplementLbStationHydro'
+    comprivestationhydro = 'ComPrivStationHydro'
+    dtmajstationhydro = 'DtMajStationHydro'
+    rolscontactstationhydro = 'RolsContactStationHydro'
+    rolcontactstationhydro = 'RolContactStationHydro'

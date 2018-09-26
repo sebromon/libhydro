@@ -20,6 +20,7 @@ from __future__ import (
 )
 
 import unittest
+import datetime as _datetime
 
 from libhydro.core import _composant_site as composant_site
 
@@ -324,3 +325,189 @@ class TestCommune(unittest.TestCase):
         for code in [None, 1234, '123456', 'A5432']:
             with self.assertRaises(Exception):
                 composant_site.Commune(code=code)
+
+
+# -- class TestQualifDonnees -----------------------------------------------
+class TestQualifDonnees(unittest.TestCase):
+    """QualifDonnees class tests."""
+
+    def test_01(self):
+        """ simple test"""
+        coderegime = 3
+        qualification = 12
+        qdo = composant_site.QualifDonnees(coderegime=coderegime,
+                                           qualification=qualification)
+        self.assertEqual((qdo.coderegime, qdo.qualification, qdo.commentaire),
+                         (coderegime, qualification, None))
+
+    def test_02(self):
+        """Full QualifDonnees"""
+        coderegime = 2
+        qualification = 20
+        commentaire = 'aéo'
+        qdo = composant_site.QualifDonnees(coderegime=coderegime,
+                                           qualification=qualification,
+                                           commentaire=commentaire)
+        self.assertEqual((qdo.coderegime, qdo.qualification, qdo.commentaire),
+                         (coderegime, qualification, commentaire))
+
+    def test_str(self):
+        """Representation test"""
+        coderegime = 2
+        qualification = 20
+        commentaire = 'aéo'
+        qdo = composant_site.QualifDonnees(coderegime=coderegime,
+                                           qualification=qualification,
+                                           commentaire=commentaire)
+        qdo_str = qdo.__str__()
+        self.assertTrue(qdo_str.find('bonne') > -1)
+        self.assertTrue(qdo_str.find('moyennes eaux') > -1)
+        self.assertTrue(qdo_str.find(commentaire) > -1)
+
+    def test_error_coderegime(self):
+        """Test error coderegime"""
+        qualification = 16
+        for coderegime in [1, 2, '3']:
+            composant_site.QualifDonnees(coderegime=coderegime,
+                                         qualification=qualification)
+        for coderegime in [None, 4, 'A5432', 0]:
+            with self.assertRaises(Exception):
+                composant_site.QualifDonnees(coderegime=coderegime,
+                                             qualification=qualification)
+
+    def test_error_qualification(self):
+        """Test error qualification"""
+        coderegime = '3'
+        for qualification in [12, 16, '20']:
+            composant_site.QualifDonnees(coderegime=coderegime,
+                                         qualification=qualification)
+        for qualification in [None, 10, 'A5432']:
+            with self.assertRaises(Exception):
+                composant_site.QualifDonnees(coderegime=coderegime,
+                                             qualification=qualification)
+
+
+# -- class TestQualifDonnees -----------------------------------------------
+class TestRefAlti(unittest.TestCase):
+    """RefAlti class tests."""
+
+    def test_01(self):
+        """ simple test"""
+        dtdeb = _datetime.datetime(2015, 5, 18, 11, 54, 34)
+        alt = 154.2
+        altitude = composant_site.Altitude(altitude=alt)
+        refalti = composant_site.RefAlti(dtdeb=dtdeb, altitude=altitude)
+        self.assertEqual((refalti.dtdeb, refalti.dtfin, refalti.dtactivation,
+                          refalti.dtdesactivation, refalti.altitude,
+                          refalti.dtmaj),
+                         (dtdeb, None, None, None, altitude, None))
+
+    def test_02(self):
+        """Full RefAlti"""
+        dtdeb = _datetime.datetime(2015, 5, 18, 11, 54, 34)
+        dtfin = _datetime.datetime(2020, 1, 3, 15, 17, 28)
+        dtactivation = _datetime.datetime(2016, 10, 11, 17, 18, 19)
+        dtdesactivation = _datetime.datetime(2017, 4, 25, 13, 28, 54)
+        dtmaj = _datetime.datetime(2018, 7, 25, 9, 35, 26)
+        alt = 138.4
+        altitude = composant_site.Altitude(altitude=alt)
+        refalti = composant_site.RefAlti(dtdeb=dtdeb, dtfin=dtfin,
+                                         dtactivation=dtactivation,
+                                         dtdesactivation=dtdesactivation,
+                                         altitude=altitude,
+                                         dtmaj=dtmaj
+                                         )
+        self.assertEqual((refalti.dtdeb, refalti.dtfin, refalti.dtactivation,
+                          refalti.dtdesactivation, refalti.altitude,
+                          refalti.dtmaj),
+                         (dtdeb, dtfin, dtactivation, dtdesactivation,
+                          altitude, dtmaj))
+
+    def test_str(self):
+        """Representation test"""
+        dtdeb = _datetime.datetime(2015, 5, 18, 11, 54, 34)
+        dtfin = _datetime.datetime(2020, 1, 3, 15, 17, 28)
+        alt = 138.4
+        altitude = composant_site.Altitude(altitude=alt)
+        refalti = composant_site.RefAlti(dtdeb=dtdeb, dtfin=dtfin,
+                                         altitude=altitude)
+        refalti_str = refalti.__str__()
+        self.assertTrue(refalti_str.find(dtdeb.__str__()) > -1)
+        self.assertTrue(refalti_str.find(dtfin.__str__()) > -1)
+        self.assertTrue(refalti_str.find(altitude.__str__()) > -1)
+
+    def test_error_dtdeb(self):
+        """Test error dtdeb"""
+        dtdeb = '2015-01-05T11:54:32'
+        alt = 154.2
+        altitude = composant_site.Altitude(altitude=alt)
+        composant_site.RefAlti(dtdeb=dtdeb, altitude=altitude)
+
+        for dtdeb in [None, 'toto']:
+            with self.assertRaises(Exception):
+                composant_site.RefAlti(dtdeb=dtdeb, altitude=altitude)
+
+    def test_error_dts(self):
+        """Test error dts"""
+        alt = 154.2
+        altitude = composant_site.Altitude(altitude=alt)
+        for arg in ['dtfin', 'dtactivation', 'dtdesactivation', 'dtmaj']:
+            args = {}
+            args['dtdeb'] = _datetime.datetime(2015, 5, 18, 11, 54, 34)
+            args['altitude'] = altitude
+            for dte in [None, _datetime.datetime(2016, 8, 11, 13, 17, 19)]:
+                args[arg] = dte
+                composant_site.RefAlti(**args)
+            for dte in ['toto', '2018-13-01T11:23:24']:
+                args[arg] = dte
+                with self.assertRaises(Exception):
+                    composant_site.RefAlti(**args)
+
+    def test_error_altitude(self):
+        """Test_error_altitude"""
+        dtdeb = '2015-01-05T11:54:32'
+        alt = 154.2
+        altitude = composant_site.Altitude(altitude=alt)
+        composant_site.RefAlti(dtdeb=dtdeb, altitude=altitude)
+
+        for altitude in [None, 154.56, 'toto']:
+            with self.assertRaises(Exception):
+                composant_site.RefAlti(dtdeb=dtdeb, altitude=altitude)
+
+
+# -- class TestReseauMesure -----------------------------------------------
+class TestReseauMesure(unittest.TestCase):
+    """ReseauMesure class tests."""
+
+    def test_01(self):
+        """Simple test"""
+        code = '1001001010'
+        rme = composant_site.ReseauMesure(code)
+        self.assertEqual((rme.code, rme.libelle),
+                         (code, None))
+
+    def test_02(self):
+        """Full ReseauMesure"""
+        code = '1001001010'
+        libelle = 'Réseau'
+        rme = composant_site.ReseauMesure(code=code, libelle=libelle)
+        self.assertEqual((rme.code, rme.libelle),
+                         (code, libelle))
+
+    def test_str(self):
+        code = '1001001010'
+        libelle = 'Réseau'
+        rme = composant_site.ReseauMesure(code=code, libelle=libelle)
+        rme_str = rme.__str__()
+        self.assertTrue(rme_str.find(code) > -1)
+        self.assertTrue(rme_str.find(libelle) > -1)
+        rme.libelle = None
+        rme_str = rme.__str__()
+
+    def test_error_code(self):
+        libelle = 'Réseau'
+        for code in [33, '1010', '1234567890']:
+            composant_site.ReseauMesure(code=code, libelle=libelle)
+        for code in [None, '12345678901']:
+            with self.assertRaises(Exception):
+                composant_site.ReseauMesure(code=code, libelle=libelle)

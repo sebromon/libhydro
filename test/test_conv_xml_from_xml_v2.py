@@ -1020,7 +1020,7 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(site.commentaire, 'Commentaire du site')
         self.assertIsNotNone(site.siteassocie)
         self.assertEqual(site.siteassocie.code, 'A8742651')
-        
+
         self.assertEqual(len(site.sitesattaches), 2)
         siteattache1 = site.sitesattaches[0]
         self.assertEqual(siteattache1.code, 'B1256982')
@@ -1091,23 +1091,197 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(siteaval2.code, 'D1478541')
         self.assertIsNone(siteaval2.libelle)
 
-        
         # check station
         station = site.stations[0]
-        self.assertEqual(station.ddcs, ['10', '1000000001'])
-        self.assertEqual(station.commune, '11354')
-        self.assertEqual(station.codeh2, 'O1712510')
-        self.assertEqual(station.niveauaffichage, 1)
+        self.assertEqual(station.code, 'O171251001')
+        self.assertEqual(station.libelle,
+                         'L\'Ariège à Auterive - station de secours')
+        self.assertEqual(station.typestation, 'DEB')
         self.assertEqual(station.libellecomplement, 'Complément du libellé')
-        self.assertEqual(station.descriptif, 'Station située à Auterive')
+        self.assertEqual(station.commentaireprive, 'Station située à Auterive')
         self.assertEqual(station.dtmaj,
                          datetime.datetime(2017, 7, 17, 11, 23, 34))
+        coord = station.coord
+        self.assertEqual((coord.x, coord.y, coord.proj),
+                         (15.0, 16.0, 26))
         self.assertEqual(station.pointk, 153.71)
         self.assertEqual(station.dtmiseservice,
                          datetime.datetime(1991, 10, 7, 14, 15, 16))
         self.assertEqual(station.dtfermeture,
                          datetime.datetime(2012, 4, 21, 19, 58, 3))
         self.assertEqual(station.surveillance, True)
+        self.assertEqual(station.niveauaffichage, 1)
+        self.assertEqual(station.droitpublication, 20)
+        self.assertEqual(station.delaidiscontinuite, 13)
+        self.assertEqual(station.delaiabsence, 27)
+        self.assertEqual(station.essai, False)
+        self.assertEqual(station.influence, 2)
+        self.assertEqual(station.influencecommentaire, 'Libellé influence')
+        self.assertEqual(station.commentaire,
+                         'commentaire1 création station hydro')
+        self.assertEqual(len(station.stationsanterieures), 2)
+        stationanterieure0 = station.stationsanterieures[0]
+        self.assertEqual(stationanterieure0.code, 'R875653542')
+        self.assertEqual(stationanterieure0.libelle,
+                         'première station antérieure')
+        stationanterieure1 = station.stationsanterieures[1]
+        self.assertEqual(stationanterieure1.code, 'P856475215')
+        self.assertIsNone(stationanterieure1.libelle)
+
+        self.assertEqual(len(station.stationsposterieures), 2)
+        stationposterieure0 = station.stationsposterieures[0]
+        self.assertEqual(stationposterieure0.code, 'Q854695321')
+        self.assertEqual(stationposterieure0.libelle,
+                         'station postérieure')
+        stationposterieure1 = station.stationsposterieures[1]
+        self.assertEqual(stationposterieure1.code, 'K777569884')
+        self.assertIsNone(stationposterieure1.libelle)
+
+        self.assertEqual(len(station.qualifsdonnees), 2)
+        qualif0 = station.qualifsdonnees[0]
+        self.assertEqual(qualif0.coderegime, 1)
+        self.assertEqual(qualif0.qualification, 12)
+        self.assertEqual(qualif0.commentaire, 'Commentaire de la qualif')
+
+        qualif1 = station.qualifsdonnees[1]
+        self.assertEqual(qualif1.coderegime, 2)
+        self.assertEqual(qualif1.qualification, 16)
+        self.assertIsNone(qualif1.commentaire)
+
+        self.assertEqual(station.finalites, [1, 2])
+        self.assertEqual(len(station.loisstat), 3)
+        loi0 = station.loisstat[0]
+        self.assertEqual(loi0.contexte, 1)
+        self.assertEqual(loi0.loi, 1)
+        loi1 = station.loisstat[1]
+        self.assertEqual(loi1.contexte, 3)
+        self.assertEqual(loi1.loi, 2)
+        loi2 = station.loisstat[2]
+        self.assertEqual(loi2.contexte, 2)
+        self.assertEqual(loi2.loi, 3)
+
+        self.assertEqual(len(station.roles), 2)
+        rol0 = station.roles[0]
+        self.assertEqual(rol0.contact.code, '2')
+        self.assertEqual(rol0.role, 'ADM')
+        self.assertEqual(rol0.dtdeb,
+                         datetime.datetime(2005, 7, 11, 15, 37, 43))
+        self.assertEqual(rol0.dtfin,
+                         datetime.datetime(2007, 3, 29, 13, 14, 54))
+        self.assertEqual(rol0.dtmaj,
+                         datetime.datetime(2009, 10, 3, 8, 27, 11))
+
+        rol1 = station.roles[1]
+        self.assertEqual(rol1.contact.code, '954')
+        self.assertEqual(rol1.role, 'REF')
+        self.assertIsNone(rol1.dtdeb)
+        self.assertIsNone(rol1.dtfin)
+        self.assertIsNone(rol1.dtmaj)
+
+        self.assertEqual(len(station.plages), 2)
+        plage0 = station.plages[0]
+        self.assertEqual(plage0.dtdeb,
+                         datetime.datetime(2006, 4, 25, 16, 0, 0))
+        self.assertEqual(plage0.dtfin,
+                         datetime.datetime(2006, 4, 30, 17, 0, 0))
+        self.assertEqual(plage0.dtactivation,
+                         datetime.datetime(2007, 11, 19, 17, 11, 6))
+        self.assertEqual(plage0.dtdesactivation,
+                         datetime.datetime(2012, 5, 4, 9, 15, 24))
+        self.assertTrue(plage0.active)
+
+        plage1 = station.plages[1]
+        self.assertEqual(plage1.dtdeb,
+                         datetime.datetime(2008, 4, 13, 19, 15, 13))
+        self.assertEqual(plage1.dtfin,
+                         datetime.datetime(2009, 5, 26, 9, 10, 54))
+        self.assertIsNone(plage1.dtactivation)
+        self.assertIsNone(plage1.dtdesactivation)
+        self.assertFalse(plage1.active)
+
+        # TODO add Reseau
+        self.assertEqual(len(station.reseaux), 2)
+        reseau0 = station.reseaux[0]
+        self.assertEqual((reseau0.code, reseau0.libelle),
+                         ('10', 'premier réseau'))
+        reseau1 = station.reseaux[1]
+        self.assertEqual((reseau1.code, reseau1.libelle),
+                         ('1000000001', None))
+
+        self.assertEqual(len(station.refsalti), 2)
+        ref0 = station.refsalti[0]
+        self.assertEqual(ref0.dtdeb, datetime.datetime(2006, 1, 1, 8, 0, 0))
+        self.assertEqual(ref0.dtfin, datetime.datetime(2006, 1, 31, 10, 0, 0))
+        self.assertEqual(ref0.dtactivation,
+                         datetime.datetime(2007, 12, 20, 6, 7, 44))
+        self.assertEqual(ref0.dtdesactivation,
+                         datetime.datetime(2009, 9, 14, 10, 50, 24))
+        self.assertEqual(ref0.altitude.altitude, 999.0)
+        self.assertEqual(ref0.altitude.sysalti, 4)
+        self.assertEqual(ref0.dtmaj,
+                         datetime.datetime(2015, 3, 24, 12, 14, 39))
+        ref1 = station.refsalti[1]
+        self.assertEqual(ref1.dtdeb, datetime.datetime(2006, 2, 1, 8, 0, 0))
+        self.assertEqual(ref1.dtfin, datetime.datetime(2006, 2, 28, 10, 0, 0))
+        self.assertIsNone(ref1.dtactivation)
+        self.assertIsNone(ref1.dtdesactivation)
+        self.assertEqual(ref1.altitude.altitude, 777.0)
+        self.assertEqual(ref1.altitude.sysalti, 7)
+        self.assertIsNone(ref1.dtmaj)
+
+        self.assertEqual(station.codeh2, 'O1712510')
+        self.assertEqual(station.commune, '11354')
+
+        self.assertEqual(len(station.stationsamont), 2)
+        stationamont0 = station.stationsamont[0]
+        self.assertEqual(stationamont0.code, 'A985475492')
+        self.assertEqual(stationamont0.libelle, 'Station amont')
+
+        stationamont1 = station.stationsamont[1]
+        self.assertEqual(stationamont1.code, 'C542549853')
+        self.assertIsNone(stationamont1.libelle)
+
+        self.assertEqual(len(station.stationsaval), 2)
+        stationaval0 = station.stationsaval[0]
+        self.assertEqual(stationaval0.code, 'L784747486')
+        self.assertEqual(stationaval0.libelle, 'Station Aval')
+
+        stationaval1 = station.stationsaval[1]
+        self.assertEqual(stationaval1.code, 'M125412010')
+        self.assertIsNone(stationaval1.libelle)
+
+        self.assertEqual(len(station.plagesstationsfille), 2)
+        plagestationfille0 = station.plagesstationsfille[0]
+        self.assertEqual(plagestationfille0.code, 'W845621543')
+        self.assertEqual(plagestationfille0.libelle, 'Station fille')
+        self.assertEqual(plagestationfille0.dtdeb,
+                         datetime.datetime(2016, 1, 17, 6, 14, 29))
+        self.assertEqual(plagestationfille0.dtfin,
+                         datetime.datetime(2017, 12, 20, 18, 25, 45))
+
+        plagestationfille1 = station.plagesstationsfille[1]
+        self.assertEqual(plagestationfille1.code, 'S123456781')
+        self.assertIsNone(plagestationfille1.libelle)
+        self.assertEqual(plagestationfille1.dtdeb,
+                         datetime.datetime(2016, 1, 17, 6, 14, 29))
+        self.assertIsNone(plagestationfille1.dtfin)
+
+        self.assertEqual(len(station.plagesstationsmere), 2)
+        plagestationmere0 = station.plagesstationsmere[0]
+        self.assertEqual(plagestationmere0.code, 'G123212312')
+        self.assertEqual(plagestationmere0.libelle, 'Station mère')
+        self.assertEqual(plagestationmere0.dtdeb,
+                         datetime.datetime(2003, 10, 4, 9, 53, 11))
+        self.assertEqual(plagestationmere0.dtfin,
+                         datetime.datetime(2006, 3, 18, 17, 19, 2))
+
+        plagestationmere1 = station.plagesstationsmere[1]
+        self.assertEqual(plagestationmere1.code, 'Z001254921')
+        self.assertIsNone(plagestationmere1.libelle)
+        self.assertEqual(plagestationmere1.dtdeb,
+                         datetime.datetime(2008, 4, 1, 13, 25, 18))
+        self.assertIsNone(plagestationmere1.dtfin)
+
         # checkcapteurs
         capteurs = station.capteurs
         self.assertEqual(len(capteurs), 2)

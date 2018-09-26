@@ -538,13 +538,15 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
         if len(sitehydro.loisstat) > 0:
             child = element.find('LoisStatContexteSiteHydro')
             for loistat in sitehydro.loisstat:
-                child.append(_loistat_to_element(loistat=loistat))
+                child.append(_loistat_to_element(loistat=loistat,
+                                                 entite='SiteHydro'))
 
         # add roles if necessary
         if len(sitehydro.roles) > 0:
             child = element.find(tags.rolscontactsitehydro)
             for role in sitehydro.roles:
-                child.append(_role_to_element(role=role, tags=tags))
+                child.append(_role_to_element(role=role, version=version,
+                                              tags=tags, entite='SiteHydro'))
 
         # add the tronconsvigilance if necessary
         if len(sitehydro.entitesvigicrues) > 0:
@@ -560,7 +562,8 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
             for station in sitehydro.stations:
                 child.append(
                     _station_to_element(
-                        station, bdhydro=bdhydro, strict=strict))
+                        station, bdhydro=bdhydro, strict=strict,
+                        version=version))
 
         # add the seuils if necessary
         if len(seuilshydro) > 0:
@@ -572,8 +575,9 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
         return element
 
 
-def _role_to_element(role, tags):
+def _role_to_element(role, version, tags, entite):
     """Return a <RoleContactSiteHydro>  or a <RolContactSiteHydro> element
+    or a <RoleContactStationHydro>  or a <RolContactStationHydro> element
     from a _composant_site.commune"""
     if role is None:
         return
@@ -585,14 +589,18 @@ def _role_to_element(role, tags):
     dtmaj = role.dtmaj.strftime('%Y-%m-%dT%H:%M:%S') \
         if role.dtmaj is not None else None
 
+    if version < '2' and entite == 'StationHydro':
+        rolecontactbalise = 'RoleContact'
+    else:
+        rolecontactbalise  = 'RoleContact' + entite
     story = _collections.OrderedDict((
         ('CdContact', {'value': role.contact.code}),
-        ('RoleContactSiteHydro', {'value': role.role}),
-        ('DtDebutContactSiteHydro', {'value': dtdeb}),
-        ('DtFinContactSiteHydro', {'value': dtfin}),
-        (tags.dtmajrolecontactsitehydro, {'value': dtmaj})))
+        (rolecontactbalise, {'value': role.role}),
+        ('DtDebutContact' + entite, {'value': dtdeb}),
+        ('DtFinContact' + entite, {'value': dtfin}),
+        (tags.dtmajrolecontact + entite, {'value': dtmaj})))
 
-    return _factory(root=_etree.Element(tags.rolcontactsitehydro), story=story)
+    return _factory(root=_etree.Element(tags.rolcontact + entite), story=story)
 
 
 def _commune_to_element(commune):
@@ -650,15 +658,15 @@ def _siteattache_to_element(siteattache, version):
     return _factory(root=_etree.Element('SiteHydroAttache'), story=story)
 
 
-def _loistat_to_element(loistat):
-    """Return a <LoiStatContexteSiteHydro> element
-    from a _composant_site.LoiStat"""
+def _loistat_to_element(loistat, entite):
+    """Return <LoiStatContexteSiteHydro> or <LoiStatContexteStationHydro>
+    element from a _composant_site.LoiStat"""
     if loistat is None:
         return
     story = _collections.OrderedDict((
         ('TypContexteLoiStat', {'value': loistat.contexte}),
-        ('TypLoiSiteHydro', {'value': loistat.loi})))
-    return _factory(root=_etree.Element('LoiStatContexteSiteHydro'),
+        ('TypLoi' + entite, {'value': loistat.loi})))
+    return _factory(root=_etree.Element('LoiStatContexte' + entite),
                     story=story)
 
 
@@ -860,6 +868,11 @@ def _valeurseuilstation_to_element(valeurseuil, bdhydro=False,
 def _station_to_element(station, bdhydro=False, strict=True, version='1.1'):
     """Return a <StationHydro> element from a sitehydro.Station."""
 
+    if version >= '2':
+        tags = _sandre_tags.SandreTagsV2
+    else:
+        tags = _sandre_tags.SandreTagsV1
+
     if station is not None:
 
         # prerequisites
@@ -874,15 +887,17 @@ def _station_to_element(station, bdhydro=False, strict=True, version='1.1'):
             if station.dtfermeture is not None else None
         surveillance = str(station.surveillance).lower() \
             if station.surveillance is not None else None
+        essai = str(station.essai).lower() \
+            if station.essai is not None else None
         # template for station simple element
         story = _collections.OrderedDict((
             ('CdStationHydro', {'value': station.code}),
             ('LbStationHydro', {'value': station.libelle}),
             ('TypStationHydro', {'value': station.typestation}),
-            ('ComplementLibelleStationHydro', {
+            (tags.complementlibellestationhydro, {
                 'value': station.libellecomplement}),
-            ('DescriptifStationHydro', {'value': station.descriptif}),
-            ('DtMAJStationHydro', {'value': dtmaj}),
+            (tags.comprivestationhydro, {'value': station.commentaireprive}),
+            (tags.dtmajstationhydro, {'value': dtmaj}),
             ('CoordStationHydro', {
                 'value': None,
                 'force': True if station.coord is not None else False}),
@@ -892,18 +907,74 @@ def _station_to_element(station, bdhydro=False, strict=True, version='1.1'):
             ('ASurveillerStationHydro', {'value': surveillance}),
             ('NiveauAffichageStationHydro', {
                 'value': station.niveauaffichage}),
+            ('DroitPublicationStationHydro', {'value': station.droitpublication}),
+            ('DelaiDiscontinuiteStationHydro', {'value': station.delaidiscontinuite}),
+            ('DelaiAbsenceStationHydro', {'value': station.delaiabsence}),
+            ('EssaiStationHydro', {'value': essai}),
+            ('InfluLocaleStationHydro', {'value': station.influence}),
+            ('ComInfluLocaleStationHydro', {'value': station.influencecommentaire}),
+            ('ComStationHydro', {'value': station.commentaire}),
+            
+            ('StationsHydroAnterieure', {
+                    'value': None,
+                    'force': True if (len(station.stationsanterieures) > 0
+                        and version >= '2') else None}),
+            # Sandre V1.1
+            ('StationHydroAnterieure', {
+                    'value': None,
+                    'force': True if (len(station.stationsanterieures) > 0
+                        and version < '2') else None}),
+            ('StationsHydroPosterieure', {
+                    'value': None,
+                    'force': True if (len(station.stationsposterieures) > 0
+                        and version >= '2') else None}),
+            ('StationHydroFille', {
+                    'value': None,
+                    'force': True if (len(station.plagesstationsfille) > 0
+                        and version < '2') else None}),
+            ('QualifsDonneesStationHydro', {
+                    'value': None,
+                    'force': True if len(station.qualifsdonnees) > 0
+                        else None}),
+            ('FinalitesStationHydro', {
+                    'value': None,
+                    'force': True if len(station.finalites) > 0
+                        else None}),
+            ('LoisStatContexteStationHydro', {
+                    'value': None,
+                    'force': True if len(station.loisstat) > 0
+                        else None}),
+            (tags.rolscontactstationhydro, {
+                    'value': None,
+                    'force': True if len(station.roles) > 0
+                        else None}),
             ('PlagesUtilStationHydro', {
                 'value': None,
                 'force': True if (len(station.plages) > 0)
                     else False}),
             ('ReseauxMesureStationHydro', {
                 'value': None,
-                'force': True if (len(station.ddcs) > 0) else False}),
+                'force': True if (len(station.reseaux) > 0) else False}),
             ('Capteurs', {
                 'value': None,
                 'force': True if (len(station.capteurs) > 0) else False}),
+            ('RefsAlti', {
+                'value': None,
+                'force': True if (len(station.refsalti) > 0) else False}),
             ('CdStationHydroAncienRef', {'value': station.codeh2}),
             ('CdCommune', {'value': station.commune})))
+        
+        if version >= '2':
+            if len(station.stationsamont) > 0:
+                story['StationsHydroAmont'] =  {'value': None, 'force': True}
+            if len(station.stationsaval) > 0:
+                story['StationsHydroAval'] =  {'value': None, 'force': True}
+            if len(station.plagesstationsfille) > 0:
+                story['PlagesAssoStationHydroFille'] = {'value': None,
+                                                        'force': True}
+            if len(station.plagesstationsmere) > 0:
+                story['PlagesAssoStationHydroMere'] = {'value': None,
+                                                       'force': True}
 
         # update the coord if necessary
         if station.coord is not None:
@@ -914,13 +985,67 @@ def _station_to_element(station, bdhydro=False, strict=True, version='1.1'):
                     ('ProjCoordStationHydro',
                         {'value': station.coord.proj})))}
 
-        # update ddcs if necessary
-        if len(station.ddcs) > 0:
+        # update StationHydroAnterieure if necessary
+        if len(station.stationsanterieures) > 0 and version < '2':
+            story['StationHydroAnterieure'] = {
+                'sub': {'CdStationHydro': {'value':
+                    station.stationsanterieures[0].code}}}
+
+        # update StationHydroAnterieure if necessary
+        if len(station.plagesstationsfille) > 0 and version < '2':
+            story['StationHydroFille'] = {
+                'sub': {'CdStationHydro': {'value':
+                    station.plagesstationsfille[0].code}}}
+
+        # update reseaux if necessary
+        if len(station.reseaux) > 0 and version < '2':
+            codesreseaux = [reseau.code for reseau in station.reseaux]
             story['ReseauxMesureStationHydro'] = {
-                'sub': {'CodeSandreRdd': {'value': station.ddcs}}}
+                'sub': {'CodeSandreRdd': {'value': codesreseaux}}}
+
+        # update finaites if necessary
+        if len(station.finalites) > 0 and version < '2':
+            story['FinalitesStationHydro'] = {
+                'sub': {'CdFinaliteStationHydro':
+                        {'value': station.finalites}}}
 
         # make element <StationHydro>
         element = _factory(root=_etree.Element('StationHydro'), story=story)
+
+        # add the stationsantieures if necessary
+        if len(station.stationsanterieures) > 0 and version >= '2':
+            child = element.find('StationsHydroAnterieure')
+            for stationant in station.stationsanterieures:
+                child.append(_substation_to_element(
+                        station=stationant, tag='StationHydroAnterieure'))
+
+        # add the stationsposterieures if necessary
+        if len(station.stationsposterieures) > 0 and version >= '2':
+            child = element.find('StationsHydroPosterieure')
+            for stationpost in station.stationsposterieures:
+                child.append(_substation_to_element(
+                        station=stationpost, tag='StationHydroPosterieure'))
+
+        # update finalites if necessary
+        if len(station.finalites) > 0 and version >= '2':
+            child = element.find('FinalitesStationHydro')
+            for finalite in station.finalites:
+                finalitetory = {'CdFinaliteStationHydro': {'value': finalite}}
+                child.append(
+                        _factory(root=_etree.Element('FinaliteStationHydro'),
+                                 story=finalitetory))
+
+        # update finalites if necessary
+        if len(station.reseaux) > 0 and version >= '2':
+            child = element.find('ReseauxMesureStationHydro')
+            for reseau in station.reseaux:
+                reseaustory = _collections.OrderedDict(
+                    (('CodeSandreRdd', {'value': reseau.code}),
+                     ('NomRdd', {'value': reseau.libelle})))
+
+                child.append(
+                        _factory(root=_etree.Element('RSX'),
+                                 story=reseaustory))
 
         # add the capteurs if necessary
         if len(station.capteurs) > 0:
@@ -930,14 +1055,101 @@ def _station_to_element(station, bdhydro=False, strict=True, version='1.1'):
                     _capteur_to_element(
                         capteur, bdhydro=bdhydro, strict=strict))
 
+        # add qualifsdonnees if necessary
+        if len(station.qualifsdonnees) > 0:
+            child = element.find('QualifsDonneesStationHydro')
+            for qualif in station.qualifsdonnees:
+                child.append(_qualifdonnees_to_element(qualif))
+
+        # add loisstat if necessary
+        if len(station.loisstat) > 0:
+            child = element.find('LoisStatContexteStationHydro')
+            for loistat in station.loisstat:
+                child.append(_loistat_to_element(loistat, 'StationHydro'))
+
+        # add roles if necessary
+        if len(station.roles) > 0:
+            child = element.find(tags.rolscontactstationhydro)
+            for role in station.roles:
+                child.append(_role_to_element(role=role,
+                                              version=version,
+                                              tags=tags,
+                                              entite='StationHydro'))
+
+        # add refsalti if necessary
+        if len(station.refsalti) > 0:
+            child = element.find('RefsAlti')
+            for refalti in station.refsalti:
+                child.append(_refalti_to_element(refalti))
+
         if len(station.plages) > 0:
             child = element.find('PlagesUtilStationHydro')
             for plage in station.plages:
                 child.append(_plage_to_element(
                     plage, 'StationHydro'))
 
+        if version >= '2':
+            if len(station.stationsamont) > 0:
+                child = element.find('StationsHydroAmont')
+                for stationamont in station.stationsamont:
+                    child.append(_substation_to_element(
+                            station=stationamont, tag='StationHydroAmont'))
+    
+            if len(station.stationsaval) > 0:
+                child = element.find('StationsHydroAval')
+                for stationaval in station.stationsaval:
+                    child.append(_substation_to_element(
+                            station=stationaval, tag='StationHydroAval'))
+            
+            if len(station.plagesstationsfille) > 0:
+                child = element.find('PlagesAssoStationHydroFille')
+                for plagestation in station.plagesstationsfille:
+                    child.append(_plagestation_to_element(
+                        plagestation=plagestation, entite='StationHydroFille'))
+    
+            if len(station.plagesstationsmere) > 0:
+                child = element.find('PlagesAssoStationHydroMere')
+                for plagestation in station.plagesstationsmere:
+                    child.append(_plagestation_to_element(
+                        plagestation=plagestation, entite='StationHydroMere'))
+
         # return
         return element
+
+
+def _substation_to_element(station, tag):
+    """Return a element with only code and libelle from station"""
+    if station is None:
+        return
+    story = _collections.OrderedDict()
+    story['CdStationHydro'] = {'value': station.code}
+    story['LbStationHydro'] = {'value': station.libelle}
+
+    # action !
+    return _factory(root=_etree.Element(tag),
+                    story=story)
+
+
+def _plagestation_to_element(plagestation, entite):
+    """Return a <PlagesAssoStationHydroFille> or a <PlageAssoStationHydroMere>
+    from a _copmosant_site.PlageStation"""
+    if plagestation is None:
+        return
+
+    element = _etree.Element('PlageAsso' + entite)
+    element.append(_substation_to_element(station=plagestation,
+                                          tag='StationHydro'))
+    # story['StationHydro'] = {'value': None, 'force': True}
+    if plagestation.dtdeb is not None:
+        element.append(_make_element(
+            tag_name='DtDebPlageAssoStationHydroMereFille',
+            text=plagestation.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')))
+    if plagestation.dtfin is not None:
+        element.append(_make_element(
+            tag_name='DtFinPlageAssoStationHydroMereFille',
+            text=plagestation.dtfin.strftime('%Y-%m-%dT%H:%M:%S')))
+
+    return element
 
 
 def _plage_to_element(plage, entite):
@@ -968,6 +1180,55 @@ def _plage_to_element(plage, entite):
     # action !
     return _factory(root=_etree.Element('PlageUtil{}'.format(entite)),
                     story=story)
+
+
+def _qualifdonnees_to_element(qualif):
+    """Return a QualifDonneesStationHydro"""
+    if qualif is None:
+        return None
+
+    story = _collections.OrderedDict()
+    story['CdRegime'] = {'value': qualif.coderegime}
+    story['QualifDonStationHydro'] = {
+            'value': qualif.qualification}
+    story['ComQualifDonStationHydro'] = {'value': qualif.commentaire}
+
+    # action !
+    return _factory(root=_etree.Element('QualifDonneesStationHydro'),
+                    story=story)
+
+
+def _refalti_to_element(refalti):
+    """Return a RefAlti element"""
+    if refalti is None:
+        return None
+
+    dtfin = refalti.dtfin.strftime('%Y-%m-%dT%H:%M:%S') \
+        if refalti.dtfin is not None else None
+    dtactivation = refalti.dtactivation.strftime('%Y-%m-%dT%H:%M:%S') \
+        if refalti.dtactivation is not None else None
+    dtdesactivation = refalti.dtdesactivation.strftime('%Y-%m-%dT%H:%M:%S') \
+        if refalti.dtdesactivation is not None else None
+    dtmaj = refalti.dtmaj.strftime('%Y-%m-%dT%H:%M:%S') \
+        if refalti.dtmaj is not None else None
+
+    story = _collections.OrderedDict()
+    story['DtDebutRefAlti'] = {'value': refalti.dtdeb.strftime(
+            '%Y-%m-%dT%H:%M:%S')}
+    story['DtFinRefAlti'] = {'value': dtfin}
+    story['DtActivationRefAlti'] = {'value': dtactivation}
+    story['DtDesactivationRefAlti'] = {'value': dtdesactivation}
+
+    if refalti.altitude is not None:
+        story['AltiRefAlti'] = {
+            'sub': _collections.OrderedDict((
+                ('AltitudeRefAlti', {'value': refalti.altitude.altitude}),
+                ('SysAltiRefAlti', {'value': refalti.altitude.sysalti})))}
+
+    story['DtMajRefAlti'] = {'value': dtmaj}
+    
+    # make element <StationHydro>
+    return _factory(root=_etree.Element('RefAlti'), story=story)
 
 
 def _capteur_to_element(capteur, bdhydro=False, strict=True, version='1.1'):

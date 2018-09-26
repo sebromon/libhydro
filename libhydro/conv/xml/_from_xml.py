@@ -432,7 +432,7 @@ def _sitehydro_from_element(element, version, tags):
         args['coord'] = _coord_from_element(
             element.find('CoordSiteHydro'), 'SiteHydro')
         args['stations'] = [
-            _station_from_element(e)
+            _station_from_element(e, version, tags)
             for e in element.findall('StationsHydro/StationHydro')]
         if version == '1.1':
             args['communes'] = [
@@ -490,13 +490,14 @@ def _sitehydro_from_element(element, version, tags):
         args['massedeau'] = _value(element, 'CdEuMasseDEau')
 
         args['loisstat'] = [
-            _loistat_from_element(e)
+            _loistat_from_element(e, 'SiteHydro')
             for e in element.findall(
                 'LoisStatContexteSiteHydro/LoiStatContexteSiteHydro')]
 
         args['roles'] = [
-            _role_from_element(e, version, tags) for e in element.findall(
-                tags.rolscontactsitehydro + '/' + tags.rolcontactsitehydro)]
+            _role_from_element(e, version, tags, 'SiteHydro')
+                for e in element.findall(
+                        tags.rolscontactsitehydro + '/' + tags.rolcontactsitehydro)]
 
         if version == '2':
             args['sitesamont'] = [
@@ -515,17 +516,21 @@ def _sitehydro_from_element(element, version, tags):
         return _sitehydro.Sitehydro(**args)
 
 
-def _role_from_element(element, version, tags):
+def _role_from_element(element, version, tags, entite):
     """Return a _rolecontact.Role
-       from a <RolContactSiteHydro> or <RolContactSiteHydro> element.
+       from a <RolContactSiteHydro> or <RolContactStationHydro> element.
     """
     args = {}
     args['contact'] = _intervenant.Contact(code=_value(element, 'CdContact'))
-    args['role'] = _value(element, 'RoleContactSiteHydro')
-    args['dtdeb'] = _value(element, 'DtDebutContactSiteHydro')
-    args['dtfin'] = _value(element, 'DtFinContactSiteHydro')
+    if version < '2' and entite == 'StationHydro':
+        rolebalise = 'RoleContact'
+    else:
+        rolebalise = 'RoleContact' + entite
+    args['role'] = _value(element, rolebalise)
+    args['dtdeb'] = _value(element, 'DtDebutContact' + entite)
+    args['dtfin'] = _value(element, 'DtFinContact' + entite)
     # args['dtmaj'] = _value(element, 'DtMajRoleContactSiteHydro')
-    args['dtmaj'] = _value(element, tags.dtmajrolecontactsitehydro)
+    args['dtmaj'] = _value(element, tags.dtmajrolecontact + entite)
     return _rolecontact.RoleContact(**args)
 
 
@@ -568,13 +573,14 @@ def _siteattache_from_element(element, version, tags):
     return _sitehydro.Sitehydroattache(**args)
 
 
-def _loistat_from_element(element):
+def _loistat_from_element(element, entite):
     """Return an composant_site.LoiStat
-       from a <LoiStatContexteSiteHydro> element.
+       from a <LoiStatContexteSiteHydro> or <LoiStatContexteStationHydro>
+       element.
     """
     args = {}
     args['contexte'] = _value(element, 'TypContexteLoiStat', int)
-    args['loi'] = _value(element, 'TypLoiSiteHydro', int)
+    args['loi'] = _value(element, 'TypLoi' + entite, int)
     return _composant_site.LoiStat(**args)
 
 
@@ -612,21 +618,22 @@ def _tronconvigilance_from_element(element, version, tags):
         return _composant_site.EntiteVigiCrues(**args)
 
 
-def _station_from_element(element):
+def _station_from_element(element, version, tags):
     """Return a sitehydro.Station from a <StationHydro> element."""
     if element is not None:
         # prepare args
         args = {}
         args['code'] = _value(element, 'CdStationHydro')
-        args['codeh2'] = _value(element, 'CdStationHydroAncienRef')
+        args['libelle'] = _value(element, 'LbStationHydro')
         typestation = _value(element, 'TypStationHydro')
         if typestation is not None:
             args['typestation'] = typestation
-        args['libelle'] = _value(element, 'LbStationHydro')
         args['libellecomplement'] = _value(
-            element, 'ComplementLibelleStationHydro')
-        args['descriptif'] = _value(element, 'DescriptifStationHydro')
-        args['dtmaj'] = _value(element, 'DtMAJStationHydro')
+            element, tags.complementlibellestationhydro)
+        args['commentaireprive'] = _value(element, tags.comprivestationhydro)
+        args['dtmaj'] = _value(element, tags.dtmajstationhydro)
+        args['coord'] = _coord_from_element(
+            element.find('CoordStationHydro'), 'StationHydro')
         args['pointk'] = _value(element, 'PkStationHydro', float)
         args['dtmiseservice'] = _value(
             element, 'DtMiseServiceStationHydro')
@@ -635,20 +642,149 @@ def _station_from_element(element):
         niveauaffichage = _value(element, 'NiveauAffichageStationHydro')
         if niveauaffichage is not None:
             args['niveauaffichage'] = niveauaffichage
-        args['coord'] = _coord_from_element(
-            element.find('CoordStationHydro'), 'StationHydro')
+
+        droitpublication = _value(element, 'DroitPublicationStationHydro', int)
+        if droitpublication is not None:
+            args['droitpublication'] = droitpublication
+
+        args['delaidiscontinuite'] = _value(element,
+            'DelaiDiscontinuiteStationHydro', int)
+        args['delaiabsence'] = _value(element, 'DelaiAbsenceStationHydro', int)
+        args['essai'] = _value(element, 'EssaiStationHydro', bool)
+        args['influence'] = _value(element, 'InfluLocaleStationHydro', int)
+        args['influencecommentaire'] = _value(element,
+            'ComInfluLocaleStationHydro')
+        args['commentaire'] = _value(element, 'ComStationHydro')
+
+        if version >= '2':
+            # Récupération stations antérieures et posterieures
+            args['stationsanterieures'] = [
+                _substation_from_element(stationant)
+                for stationant in element.findall(
+                    'StationsHydroAnterieure/StationHydroAnterieure')]
+
+            args['stationsposterieures'] = [
+                _substation_from_element(stationpost)
+                for stationpost in element.findall(
+                    'StationsHydroPosterieure/StationHydroPosterieure')]
+        else:
+            # une seule station antérieure
+            code_el = element.find('StationHydroAnterieure/CdStationHydro')
+            if code_el is not None:
+                args['stationsanterieures'] = [_sitehydro.Station(
+                    code=code_el.text)]
+
+        if version < '2':
+            code_el = element.find('StationHydroFille/CdStationHydro')
+            if code_el is not None:
+                plagestation = _sitehydro.PlageStation(
+                    code=code_el.text,
+                    dtdeb=_datetime.datetime.utcnow().strftime(
+                        '%Y-%m-%dT%H:%M:%S'))
+                args['plagesstationsfille'] = [plagestation]
+
+        args['qualifsdonnees'] = [
+            _qualifdonnees_from_element(e)
+                for e in element.findall(
+                        'QualifsDonneesStationHydro/QualifDonneesStationHydro')
+        ]
+
+        if version >= '2':
+            finalitestags = ('FinalitesStationHydro/FinaliteStationHydro/'
+                             'CdFinaliteStationHydro')
+        else:
+            finalitestags = 'FinalitesStationHydro/CdFinaliteStationHydro'
+        args['finalites'] = [
+                int(e.text) for e in element.findall(finalitestags)]
+
+        args['loisstat'] = [_loistat_from_element(e, 'StationHydro')
+            for e in element.findall(
+                'LoisStatContexteStationHydro/LoiStatContexteStationHydro')]
+        
+        rolestags = '{}/{}'.format(tags.rolscontactstationhydro,
+                                   tags.rolcontactstationhydro)
+        args['roles'] = [_role_from_element(
+                element=e, version=version, tags=tags, entite='StationHydro')
+                    for e in element.findall(rolestags)]
+
         args['plages'] = [
             _plage_from_element(e, 'StationHydro')
             for e in element.findall(
                 'PlagesUtilStationHydro/PlageUtilStationHydro')]
+
+        if version >= '2':
+            args['reseaux'] = [
+                _composant_site.ReseauMesure(code=_value(e, 'CodeSandreRdd'),
+                                             libelle=_value(e, 'NomRdd'))
+                for e in element.findall(
+                    'ReseauxMesureStationHydro/RSX')]
+        else:
+            args['reseaux'] = [
+                _composant_site.ReseauMesure(code=str(e.text))
+                for e in element.findall(
+                    'ReseauxMesureStationHydro/CodeSandreRdd')]
+
         args['capteurs'] = [
             _capteur_from_element(e)
             for e in element.findall('Capteurs/Capteur')]
+
+        args['refsalti'] = [
+            _refalti_from_element(e)
+            for e in element.findall('RefsAlti/RefAlti')]
+
+        args['codeh2'] = _value(element, 'CdStationHydroAncienRef')
         args['commune'] = _value(element, 'CdCommune')
-        args['ddcs'] = [str(e.text) for e in element.findall(
-            'ReseauxMesureStationHydro/CodeSandreRdd')]
+        if version >= '2':
+            # stations amont et aval
+            args['stationsamont'] = [
+                _substation_from_element(stationant)
+                for stationant in element.findall(
+                    'StationsHydroAmont/StationHydroAmont')]
+
+            args['stationsaval'] = [
+                _substation_from_element(stationpost)
+                for stationpost in element.findall(
+                    'StationsHydroAval/StationHydroAval')]
+
+            # plages stations fille et mère
+            args['plagesstationsfille'] = [
+                _plagestation_from_element(plagestation)
+                for plagestation in element.findall(
+                    'PlagesAssoStationHydroFille/PlageAssoStationHydroFille')
+            ]
+            args['plagesstationsmere'] = [
+                _plagestation_from_element(plagestation)
+                for plagestation in element.findall(
+                    'PlagesAssoStationHydroMere/PlageAssoStationHydroMere')
+            ]
+
         # build a Station and return
         return _sitehydro.Station(**args)
+
+
+def _substation_from_element(element):
+    """Return a sitehydro.Station with only code and libelle"""
+    if element is None:
+        return
+    args = {'code': _value(element, 'CdStationHydro'),
+            'libelle': _value(element, 'LbStationHydro')}
+    # TODO only return args
+    return _sitehydro.Station(**args)
+
+
+def _plagestation_from_element(element):
+    """Return a composant_site.PlageStation from a PlageAssoStationHydroFille
+    or a PlageAssoStationHydroMere element
+    """
+    if element is None:
+        return
+    station = _substation_from_element(element.find('StationHydro'))
+    args = {'code': station.code,
+            'libelle': station.libelle,
+            'dtdeb': _value(element, 'DtDebPlageAssoStationHydroMereFille'),
+            'dtfin': _value(element, 'DtFinPlageAssoStationHydroMereFille')}
+
+    return _sitehydro.PlageStation(**args)
 
 
 def _coord_from_element(element, entite):
@@ -686,6 +822,40 @@ def _plage_from_element(element, entite):
         'DtDesactivationPlageUtil{}'.format(entite))
     args['active'] = _value(element, 'ActivePlageUtil{}'.format(entite), bool)
     return _sitehydro.PlageUtil(**args)
+
+
+def _qualifdonnees_from_element(element):
+    """Return a _composant_site.QualifDonnees
+    from a <QualifDonneesStationHydro> element
+    """
+    if element is None:
+        return None
+    args = {}
+    args['coderegime'] = _value(element, 'CdRegime', int)
+    args['qualification'] = _value(element, 'QualifDonStationHydro', int)
+    args['commentaire'] = _value(element, 'ComQualifDonStationHydro')
+    return _composant_site.QualifDonnees(**args)
+
+
+def _refalti_from_element(element):
+    """Return a _composant_site.RefAlti
+    from a <RefAlti> element
+    """
+    if element is None:
+        return None
+    args = {}
+    args['dtdeb'] = _value(element, 'DtDebutRefAlti')
+    args['dtfin'] = _value(element, 'DtFinRefAlti')
+    args['dtactivation'] = _value(element, 'DtActivationRefAlti')
+    args['dtdesactivation'] = _value(element, 'DtDesactivationRefAlti')
+    alt_el = element.find('AltiRefAlti')
+    if alt_el is not None:
+        args['altitude'] = _composant_site.Altitude(
+                altitude=_value(alt_el, 'AltitudeRefAlti', float),
+                sysalti=_value(alt_el, 'SysAltiRefAlti', int))
+
+    args['dtmaj'] = _value(element, 'DtMajRefAlti')
+    return _composant_site.RefAlti(**args)
 
 
 def _capteur_from_element(element):

@@ -45,8 +45,9 @@
             <CdStationHydro>O198431001</CdStationHydro>
             <LbStationHydro>Le Touch à Toulouse [Saint-Martin-du-Touch] - station 1</LbStationHydro>
             <TypStationHydro>LIMNI</TypStationHydro>
-            <ComplementLibelleStationHydro>station 1</ComplementLibelleStationHydro>
+            <ComplementLbStationHydro>station 1</ComplementLbStationHydro>
             <NiveauAffichageStationHydro>911</NiveauAffichageStationHydro>
+            <DroitPublicationStationHydro>10</DroitPublicationStationHydro>
             <PlagesUtilStationHydro>
                 <PlageUtilStationHydro>
                     <DtDebPlageUtilStationHydro>2015-02-14T11:54:06</DtDebPlageUtilStationHydro>
@@ -65,8 +66,9 @@
             <CdStationHydro>O198431002</CdStationHydro>
             <LbStationHydro>Le Touch à Toulouse [Saint-Martin-du-Touch] - station 2</LbStationHydro>
             <TypStationHydro>LIMNI</TypStationHydro>
-            <ComplementLibelleStationHydro>station 2</ComplementLibelleStationHydro>
+            <ComplementLbStationHydro>station 2</ComplementLbStationHydro>
             <NiveauAffichageStationHydro>0</NiveauAffichageStationHydro>
+            <DroitPublicationStationHydro>10</DroitPublicationStationHydro>
           </StationHydro>
           <!--STATION 1.3 -->
           <StationHydro>
@@ -74,6 +76,7 @@
             <LbStationHydro>station 3</LbStationHydro>
             <TypStationHydro>LIMNI</TypStationHydro>
             <NiveauAffichageStationHydro>0</NiveauAffichageStationHydro>
+            <DroitPublicationStationHydro>10</DroitPublicationStationHydro>
           </StationHydro>
         </StationsHydro>
       </SiteHydro>
@@ -89,7 +92,7 @@
             <CdStationHydro>O200004001</CdStationHydro>
             <LbStationHydro>La Garonne à Toulouse - station 1</LbStationHydro>
             <TypStationHydro>LIMNI</TypStationHydro>
-            <ComplementLibelleStationHydro>échelle principale</ComplementLibelleStationHydro>
+            <ComplementLbStationHydro>échelle principale</ComplementLbStationHydro>
             <CoordStationHydro>
               <CoordXStationHydro>15.0</CoordXStationHydro>
               <CoordYStationHydro>16.0</CoordYStationHydro>
@@ -97,6 +100,7 @@
             </CoordStationHydro>
             <PkStationHydro>1.0</PkStationHydro>
             <NiveauAffichageStationHydro>0</NiveauAffichageStationHydro>
+            <DroitPublicationStationHydro>10</DroitPublicationStationHydro>
           </StationHydro>
         </StationsHydro>
       </SiteHydro>
@@ -209,10 +213,10 @@
           <StationHydro>
             <CdStationHydro>O171251001</CdStationHydro>
             <LbStationHydro>L'Ariège à Auterive - station de secours</LbStationHydro>
-            <TypStationHydro>LIMNI</TypStationHydro>
-            <ComplementLibelleStationHydro>Complément du libellé</ComplementLibelleStationHydro>
-            <DescriptifStationHydro>Station située à Auterive</DescriptifStationHydro>
-            <DtMAJStationHydro>2017-07-17T11:23:34</DtMAJStationHydro>
+            <TypStationHydro>DEB</TypStationHydro>
+            <ComplementLbStationHydro>Complément du libellé</ComplementLbStationHydro>
+            <ComPrivStationHydro>Station située à Auterive</ComPrivStationHydro>
+            <DtMajStationHydro>2017-07-17T11:23:34</DtMajStationHydro>
             <CoordStationHydro>
               <CoordXStationHydro>15.0</CoordXStationHydro>
               <CoordYStationHydro>16.0</CoordYStationHydro>
@@ -223,60 +227,99 @@
             <DtFermetureStationHydro>2012-04-21T19:58:03</DtFermetureStationHydro>
             <ASurveillerStationHydro>true</ASurveillerStationHydro>
             <NiveauAffichageStationHydro>1</NiveauAffichageStationHydro>
-            <!-- <DroitPublicationStationHydro>20</DroitPublicationStationHydro> -->
-            <!-- <EssaiStationHydro>false</EssaiStationHydro> -->
-            <!-- <InfluLocaleStationHydro>2</InfluLocaleStationHydro> -->
-            <!-- <ComInfluLocaleStationHydro>Libellé influence</ComInfluLocaleStationHydro> -->
-            <!-- <ComStationHydro>commentaire1 création station hydro</ComStationHydro> -->
-            <!-- <QualifsDonneesStationHydro> -->
-            <!--   <QualifDonneesStationHydro> -->
-            <!--     <CdRegime>1</CdRegime> -->
-            <!--     <QualifDonStationHydro>12</QualifDonStationHydro> -->
-            <!--   </QualifDonneesStationHydro> -->
-            <!--   <QualifDonneesStationHydro> -->
-            <!--     <CdRegime>2</CdRegime> -->
-            <!--     <QualifDonStationHydro>16</QualifDonStationHydro> -->
-            <!--   </QualifDonneesStationHydro> -->
-            <!-- </QualifsDonneesStationHydro> -->
-            <!-- <FinalitesStationHydro> -->
-            <!--   <CdFinaliteStationHydro>1</CdFinaliteStationHydro> -->
-            <!--   <CdFinaliteStationHydro>2</CdFinaliteStationHydro> -->
-            <!-- </FinalitesStationHydro> -->
-            <!-- <LoisStatContexteStationHydro> -->
-            <!--   <LoiStatContexteStationHydro> -->
-            <!--     <TypContexteLoiStat>1</TypContexteLoiStat> -->
-            <!--     <TypLoiStationHydro>1</TypLoiStationHydro> -->
-            <!--   </LoiStatContexteStationHydro> -->
-            <!--   <LoiStatContexteStationHydro> -->
-            <!--     <TypContexteLoiStat>3</TypContexteLoiStat> -->
-            <!--     <TypLoiStationHydro>2</TypLoiStationHydro> -->
-            <!--   </LoiStatContexteStationHydro> -->
-            <!--   <LoiStatContexteStationHydro> -->
-            <!--     <TypContexteLoiStat>2</TypContexteLoiStat> -->
-            <!--     <TypLoiStationHydro>3</TypLoiStationHydro> -->
-            <!--   </LoiStatContexteStationHydro> -->
-            <!-- </LoisStatContexteStationHydro> -->
-            <!-- <RolesContactStationHydro> -->
-            <!--   <RoleContactStationHydro> -->
-            <!--     <CdContact schemeAgencyID="SANDRE">2</CdContact> -->
-            <!--     <RoleContact>ADM</RoleContact> -->
-            <!--   </RoleContactStationHydro> -->
-            <!-- </RolesContactStationHydro> -->
-            <!-- <PlagesUtilStationHydro> -->
-            <!--   <PlageUtilStationHydro> -->
-            <!--     <DtDebPlageUtilStationHydro>2006-04-25T16:00:00</DtDebPlageUtilStationHydro> -->
-            <!--     <DtFinPlageUtilStationHydro>2006-04-30T17:00:00</DtFinPlageUtilStationHydro> -->
-            <!--     <ActivePlageUtilStationHydro>true</ActivePlageUtilStationHydro> -->
-            <!--   </PlageUtilStationHydro> -->
-            <!--   <PlageUtilStationHydro> -->
-            <!--     <DtDebPlageUtilStationHydro>2006-05-25T16:00:00</DtDebPlageUtilStationHydro> -->
-            <!--     <DtFinPlageUtilStationHydro>2006-05-30T17:00:00</DtFinPlageUtilStationHydro> -->
-            <!--     <ActivePlageUtilStationHydro>true</ActivePlageUtilStationHydro> -->
-            <!--   </PlageUtilStationHydro> -->
-            <!-- </PlagesUtilStationHydro> -->
+            <DroitPublicationStationHydro>20</DroitPublicationStationHydro>
+            <DelaiDiscontinuiteStationHydro>13</DelaiDiscontinuiteStationHydro>
+            <DelaiAbsenceStationHydro>27</DelaiAbsenceStationHydro>
+            <EssaiStationHydro>false</EssaiStationHydro>
+            <InfluLocaleStationHydro>2</InfluLocaleStationHydro>
+            <ComInfluLocaleStationHydro>Libellé influence</ComInfluLocaleStationHydro>
+            <ComStationHydro>commentaire1 création station hydro</ComStationHydro>
+            <StationsHydroAnterieure>
+                <StationHydroAnterieure>
+                    <CdStationHydro>R875653542</CdStationHydro>
+                    <LbStationHydro>première station antérieure</LbStationHydro>
+                </StationHydroAnterieure>
+                <StationHydroAnterieure>
+                    <CdStationHydro>P856475215</CdStationHydro>
+                </StationHydroAnterieure>
+            </StationsHydroAnterieure>
+            <StationsHydroPosterieure>
+                <StationHydroPosterieure>
+                    <CdStationHydro>Q854695321</CdStationHydro>
+                    <LbStationHydro>station postérieure</LbStationHydro>
+                </StationHydroPosterieure>
+                <StationHydroPosterieure>
+                    <CdStationHydro>K777569884</CdStationHydro>
+                </StationHydroPosterieure>
+            </StationsHydroPosterieure>
+            <QualifsDonneesStationHydro>
+              <QualifDonneesStationHydro>
+                <CdRegime>1</CdRegime>
+                <QualifDonStationHydro>12</QualifDonStationHydro>
+                <ComQualifDonStationHydro>Commentaire de la qualif</ComQualifDonStationHydro>
+              </QualifDonneesStationHydro>
+              <QualifDonneesStationHydro>
+                <CdRegime>2</CdRegime>
+                <QualifDonStationHydro>16</QualifDonStationHydro>
+              </QualifDonneesStationHydro>
+            </QualifsDonneesStationHydro>
+            <FinalitesStationHydro>
+                <FinaliteStationHydro>
+                    <CdFinaliteStationHydro>1</CdFinaliteStationHydro>
+                </FinaliteStationHydro>
+                <FinaliteStationHydro>
+                    <CdFinaliteStationHydro>2</CdFinaliteStationHydro>
+                </FinaliteStationHydro>
+            </FinalitesStationHydro>
+            <LoisStatContexteStationHydro>
+              <LoiStatContexteStationHydro>
+                <TypContexteLoiStat>1</TypContexteLoiStat>
+                <TypLoiStationHydro>1</TypLoiStationHydro>
+              </LoiStatContexteStationHydro>
+              <LoiStatContexteStationHydro>
+                <TypContexteLoiStat>3</TypContexteLoiStat>
+                <TypLoiStationHydro>2</TypLoiStationHydro>
+              </LoiStatContexteStationHydro>
+              <LoiStatContexteStationHydro>
+                <TypContexteLoiStat>2</TypContexteLoiStat>
+                <TypLoiStationHydro>3</TypLoiStationHydro>
+              </LoiStatContexteStationHydro>
+            </LoisStatContexteStationHydro>
+            <RolsContactStationHydro>
+              <RolContactStationHydro>
+                <CdContact>2</CdContact>
+                <RoleContactStationHydro>ADM</RoleContactStationHydro>
+                <DtDebutContactStationHydro>2005-07-11T15:37:43</DtDebutContactStationHydro>
+                <DtFinContactStationHydro>2007-03-29T13:14:54</DtFinContactStationHydro>
+                <DtMajRoleContactStationHydro>2009-10-03T08:27:11</DtMajRoleContactStationHydro>
+              </RolContactStationHydro>
+              <RolContactStationHydro>
+                <CdContact>954</CdContact>
+                <RoleContactStationHydro>REF</RoleContactStationHydro>
+              </RolContactStationHydro>
+            </RolsContactStationHydro>
+            <PlagesUtilStationHydro>
+              <PlageUtilStationHydro>
+                <DtDebPlageUtilStationHydro>2006-04-25T16:00:00</DtDebPlageUtilStationHydro>
+                <DtFinPlageUtilStationHydro>2006-04-30T17:00:00</DtFinPlageUtilStationHydro>
+                <DtActivationPlageUtilStationHydro>2007-11-19T17:11:06</DtActivationPlageUtilStationHydro>
+                <DtDesactivationPlageUtilStationHydro>2012-05-04T09:15:24</DtDesactivationPlageUtilStationHydro>
+                <ActivePlageUtilStationHydro>true</ActivePlageUtilStationHydro>
+              </PlageUtilStationHydro>
+              <PlageUtilStationHydro>
+                <DtDebPlageUtilStationHydro>2008-04-13T19:15:13</DtDebPlageUtilStationHydro>
+                <DtFinPlageUtilStationHydro>2009-05-26T09:10:54</DtFinPlageUtilStationHydro>
+                <ActivePlageUtilStationHydro>false</ActivePlageUtilStationHydro>
+              </PlageUtilStationHydro>
+            </PlagesUtilStationHydro>
             <ReseauxMesureStationHydro>
-              <CodeSandreRdd>10</CodeSandreRdd>
-              <CodeSandreRdd>1000000001</CodeSandreRdd>
+              <RSX>
+                  <CodeSandreRdd>10</CodeSandreRdd>
+                  <NomRdd>premier réseau</NomRdd>
+              </RSX>
+              <RSX>
+                  <CodeSandreRdd>1000000001</CodeSandreRdd>
+              </RSX>
             </ReseauxMesureStationHydro>
             <Capteurs>
               <!--CAPTEUR 3.1.1 -->
@@ -314,26 +357,79 @@
                 <CdCapteurAncienRef>O1712510</CdCapteurAncienRef>
               </Capteur>
             </Capteurs>
-            <!-- <RefsAlti> -->
-            <!--   <RefAlti> -->
-            <!--     <DtDebutRefAlti>2006-01-01T08:00:00</DtDebutRefAlti> -->
-            <!--     <DtFinRefAlti>2006-01-31T10:00:00</DtFinRefAlti> -->
-            <!--     <AltiRefAlti> -->
-            <!--       <AltitudeRefAlti>999</AltitudeRefAlti> -->
-            <!--       <SysAltiRefAlti>4</SysAltiRefAlti> -->
-            <!--     </AltiRefAlti> -->
-            <!--   </RefAlti> -->
-            <!--   <RefAlti> -->
-            <!--     <DtDebutRefAlti>2006-02-01T08:00:00</DtDebutRefAlti> -->
-            <!--     <DtFinRefAlti>2006-02-28T10:00:00</DtFinRefAlti> -->
-            <!--     <AltiRefAlti> -->
-            <!--       <AltitudeRefAlti>777</AltitudeRefAlti> -->
-            <!--       <SysAltiRefAlti>7</SysAltiRefAlti> -->
-            <!--     </AltiRefAlti> -->
-            <!--   </RefAlti> -->
-            <!-- </RefsAlti> -->
+            <RefsAlti>
+              <RefAlti>
+                <DtDebutRefAlti>2006-01-01T08:00:00</DtDebutRefAlti>
+                <DtFinRefAlti>2006-01-31T10:00:00</DtFinRefAlti>
+                <DtActivationRefAlti>2007-12-20T06:07:44</DtActivationRefAlti>
+                <DtDesactivationRefAlti>2009-09-14T10:50:24</DtDesactivationRefAlti>
+                <AltiRefAlti>
+                  <AltitudeRefAlti>999.0</AltitudeRefAlti>
+                  <SysAltiRefAlti>4</SysAltiRefAlti>
+                </AltiRefAlti>
+                <DtMajRefAlti>2015-03-24T12:14:39</DtMajRefAlti>
+              </RefAlti>
+              <RefAlti>
+                <DtDebutRefAlti>2006-02-01T08:00:00</DtDebutRefAlti>
+                <DtFinRefAlti>2006-02-28T10:00:00</DtFinRefAlti>
+                <AltiRefAlti>
+                  <AltitudeRefAlti>777.0</AltitudeRefAlti>
+                  <SysAltiRefAlti>7</SysAltiRefAlti>
+                </AltiRefAlti>
+              </RefAlti>
+            </RefsAlti>
             <CdStationHydroAncienRef>O1712510</CdStationHydroAncienRef>
             <CdCommune>11354</CdCommune>
+            <StationsHydroAmont>
+                <StationHydroAmont>
+                    <CdStationHydro>A985475492</CdStationHydro>
+                    <LbStationHydro>Station amont</LbStationHydro>
+                </StationHydroAmont>
+                <StationHydroAmont>
+                    <CdStationHydro>C542549853</CdStationHydro>
+                </StationHydroAmont>
+            </StationsHydroAmont>
+            <StationsHydroAval>
+                <StationHydroAval>
+                    <CdStationHydro>L784747486</CdStationHydro>
+                    <LbStationHydro>Station Aval</LbStationHydro>
+                </StationHydroAval>
+                <StationHydroAval>
+                    <CdStationHydro>M125412010</CdStationHydro>
+                </StationHydroAval>
+            </StationsHydroAval>
+            <PlagesAssoStationHydroFille>
+                <PlageAssoStationHydroFille>
+                    <StationHydro>
+                        <CdStationHydro>W845621543</CdStationHydro>
+                        <LbStationHydro>Station fille</LbStationHydro>
+                    </StationHydro>
+                    <DtDebPlageAssoStationHydroMereFille>2016-01-17T06:14:29</DtDebPlageAssoStationHydroMereFille>
+                    <DtFinPlageAssoStationHydroMereFille>2017-12-20T18:25:45</DtFinPlageAssoStationHydroMereFille>
+                </PlageAssoStationHydroFille>
+                <PlageAssoStationHydroFille>
+                    <StationHydro>
+                        <CdStationHydro>S123456781</CdStationHydro>
+                    </StationHydro>
+                    <DtDebPlageAssoStationHydroMereFille>2016-01-17T06:14:29</DtDebPlageAssoStationHydroMereFille>
+                </PlageAssoStationHydroFille>
+            </PlagesAssoStationHydroFille>
+            <PlagesAssoStationHydroMere>
+                <PlageAssoStationHydroMere>
+                    <StationHydro>
+                        <CdStationHydro>G123212312</CdStationHydro>
+                        <LbStationHydro>Station mère</LbStationHydro>
+                    </StationHydro>
+                    <DtDebPlageAssoStationHydroMereFille>2003-10-04T09:53:11</DtDebPlageAssoStationHydroMereFille>
+                    <DtFinPlageAssoStationHydroMereFille>2006-03-18T17:19:02</DtFinPlageAssoStationHydroMereFille>
+                </PlageAssoStationHydroMere>
+                <PlageAssoStationHydroMere>
+                    <StationHydro>
+                        <CdStationHydro>Z001254921</CdStationHydro>
+                    </StationHydro>
+                    <DtDebPlageAssoStationHydroMereFille>2008-04-01T13:25:18</DtDebPlageAssoStationHydroMereFille>
+                </PlageAssoStationHydroMere>
+            </PlagesAssoStationHydroMere>
           </StationHydro>
         </StationsHydro>
         <!-- <LamesDEau> -->

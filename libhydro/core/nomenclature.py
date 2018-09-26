@@ -270,6 +270,18 @@ NOMENCLATURE = {
         3: 'Etiage'
     },
 
+    # Code de la finalité de la stationhydro
+    522: {
+        0: 'Inconnue',
+        1: 'Suivi d\'étiage',
+        2: 'Prévision des crues',
+        3: 'Gestion des ouvrages',
+        4: 'Police des eaux',
+        5: 'Directive Cadre sur l\'Eau',
+        6: 'Suivi qualitatif',
+        7: 'Connaissance des flux',
+        8: 'Zones humides'},
+
     # Grandeur meteorologique
     523: {
         'RR': "Cumul de precipitations",
@@ -296,6 +308,12 @@ NOMENCLATURE = {
         5: "Modele statistique",
         6: "Enchainement de modeles",
         7: "Modele a propagation empirique"},
+
+    # Code du régime hydrométrique
+    526: {
+        1: 'Basses eaux',
+        2: 'Moyennes eaux',
+        3: 'Hautes eaux'},
 
     # Rôle du contact hydrométrique
     527: {
@@ -348,6 +366,21 @@ NOMENCLATURE = {
         'HC': 'Hauteur calculee',
         'LIMNIMERE': 'Limnimetre station mere',
         'LIMNIFILLE': 'Limnimetre station fille'},
+
+    # Droit de pubilcation de la station hydrometrique
+    532: {
+        10: 'Public',
+        11: 'Public sans courbe de tarage ni courbe de correction',
+        12: 'Hauteur publique',
+        14: 'Débit public',
+        20: 'Restreint',
+        30: 'Privé'},
+
+    # Qualification des données de la station hydrométrique
+    533: {
+        12: 'Incertaine',
+        16: 'Non qualifiée',
+        20: 'Bonne'},
 
     # Type de publication de l'evenement
     534: {
