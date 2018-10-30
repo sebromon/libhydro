@@ -73,6 +73,10 @@ class SandreTagsV1(object):
     dtmajstationhydro = 'DtMAJStationHydro'
     rolscontactstationhydro = 'RolesContactStationHydro'
     rolcontactstationhydro = 'RoleContactStationHydro'
+    
+    # Capteurs
+    dtmajcapteur = 'DtMAJCapteur'
+    pdtcapteur = 'PasDeTempsCapteur'
 
 
 class SandreTagsV2(object):
@@ -133,3 +137,7 @@ class SandreTagsV2(object):
     dtmajstationhydro = 'DtMajStationHydro'
     rolscontactstationhydro = 'RolsContactStationHydro'
     rolcontactstationhydro = 'RolContactStationHydro'
+
+    # Capteurs
+    dtmajcapteur = 'DtMajCapteur'
+    pdtcapteur = 'PDTCapteur'

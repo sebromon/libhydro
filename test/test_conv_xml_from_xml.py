@@ -368,7 +368,6 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual([reseau.code for reseau in station.reseaux],
                          ['10', '1000000001'])
 
-
         # checkcapteurs
         capteurs = station.capteurs
         self.assertEqual(len(capteurs), 2)
@@ -376,9 +375,18 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(capteurs[0].typemesure, 'H')
         self.assertEqual(capteurs[0].typecapteur, 0)  # default type
         self.assertEqual(capteurs[1].code, 'O17125100101')
+        self.assertEqual(capteurs[1].libelle, 'Ultrasons principal')
+        self.assertEqual(capteurs[1].mnemo, 'UP')
         self.assertEqual(capteurs[1].typemesure, 'H')
         self.assertEqual(capteurs[1].codeh2, 'O1712510')
         self.assertEqual(capteurs[1].typecapteur, 3)
+        self.assertEqual(capteurs[1].surveillance, False)
+        self.assertEqual(capteurs[1].dtmaj,
+                         datetime.datetime(2016, 5, 18, 14, 5, 35))
+        self.assertEqual(capteurs[1].pdt, 6)
+        self.assertEqual(capteurs[1].essai, True)
+        self.assertEqual(capteurs[1].commentaire, 'Capteur jaune')
+        self.assertEqual(capteurs[1].observateur.code, '3')
 
         # check plages utilisatino capteurs
         self.assertEqual(len(capteurs[0].plages), 0)

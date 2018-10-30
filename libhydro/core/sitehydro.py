@@ -18,6 +18,7 @@ import collections as _collections
 from . import (_composant, _composant_site, sitemeteo as _sitemeteo,
                rolecontact as _rolecontact)
 from libhydro.core.nomenclature import NOMENCLATURE as _NOMENCLATURE
+from libhydro.core import intervenant as _intervenant
 
 
 # -- strings ------------------------------------------------------------------
@@ -1626,7 +1627,14 @@ class Capteur(_Entitehydro):
         codeh2 (string(8)) = ancien code hydro2
         typemesure (caractere parmi NOMENCLATURE[520]) = H ou Q
         typecapteur (int parmi NOMENCLATURE[519])
-        libelle (string)
+        libelle (string) = libelle
+        mnemo (str) = mnemonique
+        surveillance (bool) = capteur à surveiller
+        dtmaj (datetime.datetime) = date de mise à jour
+        pdt (int) = pas de temps
+        essai (boolean) = capteur d'essai
+        commentaire (string) = commentaire
+        observateur (intervenant.Contact) = observateur du capteur
         plages (PlageUtil ou un iterable
             de PlageUtil ou None) = plages d'utilisation
 
@@ -1636,21 +1644,13 @@ class Capteur(_Entitehydro):
 
     # station
 
-    # mnemonique
-
-    # surveillance
-    # dtmaj
-    # pdt
-    # essai
-    # commentaire
-
-    # observateur
-
     typemesure = _composant.Nomenclatureitem(nomenclature=520)
     typecapteur = _composant.Nomenclatureitem(nomenclature=519)
+    dtmaj = _composant.Datefromeverything(required=False)
 
     def __init__(self, code, codeh2=None, typemesure='H', libelle=None,
-                 typecapteur=0,
+                 typecapteur=0, mnemo=None, surveillance=None, dtmaj=None,
+                 pdt=None, essai=None, commentaire=None, observateur=None,
                  plages=None, strict=True):
         """Initialisation.
 
@@ -1659,7 +1659,14 @@ class Capteur(_Entitehydro):
             codeh2 (string(8)) = ancien code hydro2
             typemesure (caractere parmi NOMENCLATURE[520], defaut H) = H ou Q
             typecapteur (int parmi NOMENCLATURE[519])
-            libelle (string)
+            libelle (string) = libelle
+            mnemo (str) = mnemonique
+            surveillance (bool) = capteur à surveiller
+            dtmaj (datetime.datetime) = date de mise à jour
+            pdt (int) = pas de temps
+            essai (boolean) = capteur d'essai
+            commentaire (string) = commentaire
+            observateur (intervenant.Contact) = observateur du capteur
             plages (PlageUtil ou un iterable
                 de PlageUtil ou None) = plages d'utilisation
             strict (bool, defaut True) = le mode permissif permet de lever les
@@ -1674,12 +1681,90 @@ class Capteur(_Entitehydro):
         # -- adjust the descriptor --
         vars(Capteur)['typemesure'].strict = self._strict
 
+        # -- simple properties --
+        self.mnemo = str(mnemo) if (mnemo is not None) else None
+        self.commentaire = str(commentaire) \
+            if (commentaire is not None) else None
+
+
         # -- descriptors --
         self.typemesure = typemesure
         self.typecapteur = typecapteur
+        self.dtmaj = dtmaj
 
         self._plages = []
         self.plages = plages
+        self._surveillance = None
+        self.surveillance = surveillance
+        self._essai = None
+        self.essai = essai
+        self._pdt = None
+        self.pdt= pdt
+        self._observateur = None
+        self.observateur= observateur
+        
+
+    # -- property surveillance --
+    @property
+    def surveillance(self):
+        """Return surveillance."""
+        return self._surveillance
+
+    @surveillance.setter
+    def surveillance(self, surveillance):
+        """Set surveillance."""
+        self._surveillance = None
+        if surveillance is None:
+            return
+        self._surveillance = bool(surveillance)
+
+    # -- property pdt --
+    @property
+    def pdt(self):
+        """Return pdt."""
+        return self._pdt
+
+    @pdt.setter
+    def pdt(self, pdt):
+        """Set pdt."""
+        if pdt is None:
+            self._pdt = pdt
+            return
+        pdt = int(pdt)
+        if pdt < 0:
+            raise ValueError('pdt must be positive')
+        self._pdt = pdt
+
+    # -- property essai --
+    @property
+    def essai(self):
+        """Return essai."""
+        return self._essai
+
+    @essai.setter
+    def essai(self, essai):
+        """Set essai."""
+        self._essai = None
+        if essai is None:
+            return
+        self._essai = bool(essai)
+
+    # -- property observateur --
+    @property
+    def observateur(self):
+        """Return observateur."""
+        return self._observateur
+
+    @observateur.setter
+    def observateur(self, observateur):
+        """Set observateur."""
+        self._observateur = None
+        if observateur is None:
+            return
+        if not isinstance(observateur, _intervenant.Contact):
+            raise TypeError('observateur must be an intervenant.Contact')
+        self._observateur = observateur
+
 
     # TODO plages utilisation communes aux stations et capteurs
     # -- property plages --
@@ -1707,9 +1792,9 @@ class Capteur(_Entitehydro):
             self._plages.append(plage)
 
     # -- special methods --
-    __all__attrs__ = ('code', 'codeh2', 'typemesure', 'libelle',
-                      'typecapteur',
-                      'plages')
+    __all__attrs__ = ('code', 'codeh2', 'typemesure', 'libelle', 'typecapteur',
+                      'mnemo', 'surveillance', 'dtmaj', 'pdt', 'essai',
+                      'commentaire', 'observateur', 'plages')
     # __eq__ = _composant.__eq__
     # __ne__ = _composant.__ne__
 

@@ -725,7 +725,7 @@ def _station_from_element(element, version, tags):
                     'ReseauxMesureStationHydro/CodeSandreRdd')]
 
         args['capteurs'] = [
-            _capteur_from_element(e)
+            _capteur_from_element(e, version, tags)
             for e in element.findall('Capteurs/Capteur')]
 
         args['refsalti'] = [
@@ -858,7 +858,7 @@ def _refalti_from_element(element):
     return _composant_site.RefAlti(**args)
 
 
-def _capteur_from_element(element):
+def _capteur_from_element(element, version, tags):
     """Return a sitehydro.Capteur from a <Capteur> element."""
     if element is not None:
         # prepare args
@@ -866,6 +866,12 @@ def _capteur_from_element(element):
         args['code'] = _value(element, 'CdCapteur')
         args['codeh2'] = _value(element, 'CdCapteurAncienRef')
         args['libelle'] = _value(element, 'LbCapteur')
+        args['mnemo'] = _value(element, 'MnCapteur')
+        args['surveillance'] = _value(element, 'ASurveillerCapteur', bool)
+        args['dtmaj'] = _value(element, tags.dtmajcapteur)
+        args['pdt'] = _value(element, tags.pdtcapteur, int)
+        args['essai'] = _value(element, 'EssaiCapteur', bool)
+        args['commentaire'] = _value(element, 'ComCapteur')
         typecapteur = _value(element, 'TypCapteur')
         if typecapteur is not None:
             args['typecapteur'] = typecapteur
@@ -876,6 +882,10 @@ def _capteur_from_element(element):
             _plage_from_element(e, 'Capteur')
             for e in element.findall(
                 'PlagesUtilCapteur/PlageUtilCapteur')]
+        codecontact = _value(element, 'Observateur/CdContact')
+        if codecontact is not None:
+            args['observateur'] = _intervenant.Contact(code=codecontact)
+
         # build a Capteur and return
         return _sitehydro.Capteur(**args)
 

@@ -221,8 +221,17 @@
               <Capteur>
                 <CdCapteur>O17125100101</CdCapteur>
                 <LbCapteur>Ultrasons principal</LbCapteur>
+                <MnCapteur>UP</MnCapteur>
                 <TypCapteur>3</TypCapteur>
                 <TypMesureCapteur>H</TypMesureCapteur>
+                <ASurveillerCapteur>false</ASurveillerCapteur>
+                <DtMAJCapteur>2016-05-18T14:05:35</DtMAJCapteur>
+                <PasDeTempsCapteur>6</PasDeTempsCapteur>
+                <EssaiCapteur>true</EssaiCapteur>
+                <ComCapteur>Capteur jaune</ComCapteur>
+                <Observateur>
+                  <CdContact>3</CdContact>
+                </Observateur>
                 <PlagesUtilCapteur>
                   <PlageUtilCapteur>
                     <DtDebPlageUtilCapteur>2009-11-03T15:19:18</DtDebPlageUtilCapteur>

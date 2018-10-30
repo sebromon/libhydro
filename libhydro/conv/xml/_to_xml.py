@@ -1053,7 +1053,8 @@ def _station_to_element(station, bdhydro=False, strict=True, version='1.1'):
             for capteur in station.capteurs:
                 child.append(
                     _capteur_to_element(
-                        capteur, bdhydro=bdhydro, strict=strict))
+                        capteur, bdhydro=bdhydro, strict=strict,
+                        version=version))
 
         # add qualifsdonnees if necessary
         if len(station.qualifsdonnees) > 0:
@@ -1235,6 +1236,10 @@ def _capteur_to_element(capteur, bdhydro=False, strict=True, version='1.1'):
     """Return a <Capteur> element from a sitehydro.Capteur."""
 
     if capteur is not None:
+        if version >= '2':
+            tags = _sandre_tags.SandreTagsV2
+        else:
+            tags = _sandre_tags.SandreTagsV1
 
         # prerequisites
         if strict:
@@ -1242,17 +1247,42 @@ def _capteur_to_element(capteur, bdhydro=False, strict=True, version='1.1'):
         if bdhydro:
             _required(capteur, ['libelle'])
 
+        if capteur.surveillance is not None:
+            surveillance = str(capteur.surveillance).lower()
+        else:
+            surveillance = None
+
+        if capteur.essai is not None:
+            essai = str(capteur.essai).lower()
+        else:
+            essai = None
+
+        dtmaj = None
+        if capteur.dtmaj is not None:
+            dtmaj = capteur.dtmaj.strftime('%Y-%m-%dT%H:%M:%S')
+
         # template for capteur simple element
         story = _collections.OrderedDict((
             ('CdCapteur', {'value': capteur.code}),
             ('LbCapteur', {'value': capteur.libelle}),
+            ('MnCapteur', {'value': capteur.mnemo}),
             ('TypCapteur', {'value': capteur.typecapteur}),
             ('TypMesureCapteur', {'value': capteur.typemesure}),
-            ('PlagesUtilCapteur', {
+            ('ASurveillerCapteur', {'value': surveillance}),
+            (tags.dtmajcapteur, {'value': dtmaj}),
+            (tags.pdtcapteur, {'value': capteur.pdt}),
+            ('EssaiCapteur', {'value': essai}),
+            ('ComCapteur', {'value': capteur.commentaire})))
+        
+        if capteur.observateur is not None:
+            story['Observateur'] = {'sub': {'CdContact': {
+                'value': capteur.observateur.code}}}
+
+        story['PlagesUtilCapteur'] = {
                 'value': None,
                 'force': True if len(capteur.plages) > 0 else False
-                }),
-            ('CdCapteurAncienRef', {'value': capteur.codeh2})))
+                }
+        story['CdCapteurAncienRef'] =  {'value': capteur.codeh2}
 
         # make element <Capteur>
         element = _factory(root=_etree.Element('Capteur'), story=story)

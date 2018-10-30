@@ -1103,9 +1103,11 @@ class TestCapteur(unittest.TestCase):
         code = 'V83310100101'
         c = sitehydro.Capteur(code=code)
         self.assertEqual(
-            (c.code, c.typemesure, c.libelle, c.typecapteur,
-             c.plages),
-            (code, 'H', None, 0, [])
+            (c.code, c.typemesure, c.libelle, c.typecapteur, c.codeh2,
+             c.mnemo,c.surveillance, c.dtmaj, c.pdt, c.essai, c.commentaire,
+             c.observateur, c.plages),
+            (code, 'H', None, 0, None, None, None, None, None, None, None,
+             None, [])
         )
 
     def test_base_02(self):
@@ -1114,6 +1116,15 @@ class TestCapteur(unittest.TestCase):
         code = 'A03346500101'
         libelle = 'Capteur de secours'
         typecapteur = 5
+        codeh2 = 'A0334650'
+        mnemo = 'Mnémo capteur'
+        surveillance = False
+        dtmaj = _datetime.datetime(2016, 8, 3, 11, 16, 54)
+        pdt = 17
+        essai = True
+        commentaire = 'Capteur secondaire'
+        observateur = _intervenant.Contact(code='1549')
+
         plages = [
             sitehydro.PlageUtil(
                 dtdeb=_datetime.datetime(2017, 9, 1, 12, 3, 19)),
@@ -1124,14 +1135,17 @@ class TestCapteur(unittest.TestCase):
                 dtdesactivation=_datetime.datetime(2017, 9, 4, 19, 41, 27),
                 active=True)]
         c = sitehydro.Capteur(
-            code=code, typemesure=typemesure, libelle=libelle,
-            typecapteur=typecapteur,
-            plages=plages
+            code=code, codeh2=codeh2, typemesure=typemesure, libelle=libelle,
+            typecapteur=typecapteur, mnemo=mnemo, surveillance=surveillance,
+            dtmaj=dtmaj, pdt=pdt, essai=essai, commentaire=commentaire,
+            observateur=observateur, plages=plages
         )
         self.assertEqual(
-            (c.code, c.typemesure, c.libelle, c.typecapteur,
-             c.plages),
-            (code, typemesure, libelle, typecapteur, plages)
+            (c.code, c.codeh2, c.typemesure, c.libelle, c.typecapteur,
+             c.mnemo, c.surveillance, c. dtmaj, c.pdt, c.essai, c.commentaire,
+             c.observateur, c.plages),
+            (code, codeh2, typemesure, libelle, typecapteur, mnemo,
+             surveillance, dtmaj, pdt, essai, commentaire, observateur, plages)
         )
 
     def test_equality(self):
@@ -1206,6 +1220,62 @@ class TestCapteur(unittest.TestCase):
             sitehydro.Capteur(code=code,
                               typecapteur=typecapteur)
 
+    def test_error_04(self):
+        """dtmaj error"""
+        dtmaj = _datetime.datetime(2014, 1, 9, 18, 14, 31)
+        code = 'Z00123456789'
+        sitehydro.Capteur(code=code,
+                          dtmaj=dtmaj)
+        for dtmaj in [5, 'toto']:
+            with self.assertRaises(ValueError):
+                sitehydro.Capteur(code=code,
+                                  dtmaj=dtmaj)
+
+    def test_surveillance(self):
+        """surveillance error"""
+        code = 'Z00123456789'
+        for surveillance in [True, 1]:
+            capteur = sitehydro.Capteur(code=code,
+                                        surveillance=surveillance)
+            self.assertTrue(capteur.surveillance)
+        for surveillance in [False, 0]:
+            capteur = sitehydro.Capteur(code=code,
+                                        surveillance=surveillance)
+            self.assertFalse(capteur.surveillance)
+
+    def test_essai(self):
+        """essai error"""
+        code = 'Z00123456789'
+        for essai in [True, 1]:
+            capteur = sitehydro.Capteur(code=code,
+                                        essai=essai)
+            self.assertTrue(capteur.essai)
+        for essai in [False, 0]:
+            capteur = sitehydro.Capteur(code=code,
+                                        essai=essai)
+            self.assertFalse(capteur.essai)
+
+    def test_error_pdt(self):
+        """pdt error"""
+        pdt = 5
+        code = 'Z00123456789'
+        sitehydro.Capteur(code=code,
+                          pdt=pdt)
+        for pdt in [-5, 'toto']:
+            with self.assertRaises(Exception):
+                sitehydro.Capteur(code=code,
+                                  pdt=pdt)
+
+    def test_error_observateur(self):
+        """observateur error"""
+        observateur = _intervenant.Contact(code='99')
+        code = 'Z00123456789'
+        sitehydro.Capteur(code=code,
+                          observateur=observateur)
+        for observateur in [18, '5', 'toto']:
+            with self.assertRaises(TypeError):
+                sitehydro.Capteur(code=code,
+                                  observateur=observateur)
 
 # -- class TestTronconvigilance -----------------------------------------------
 class TestTronconvigilance(unittest.TestCase):

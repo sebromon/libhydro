@@ -337,14 +337,17 @@
               <Capteur>
                 <CdCapteur>O17125100101</CdCapteur>
                 <LbCapteur>Ultrasons principal</LbCapteur>
-                <!-- <MnCapteur>UP</MnCapteur> -->
+                <MnCapteur>UP</MnCapteur>
                 <TypCapteur>3</TypCapteur>
                 <TypMesureCapteur>H</TypMesureCapteur>
-                <!-- <EssaiCapteur>false</EssaiCapteur> -->
-                <!-- <ComCapteur>Capteur jaune</ComCapteur> -->
-                <!-- <Observateur> -->
-                <!--   <CdContact schemeAgencyID="SANDRE">3</CdContact> -->
-                <!-- </Observateur> -->
+                <ASurveillerCapteur>false</ASurveillerCapteur>
+                <DtMajCapteur>2016-05-18T14:05:35</DtMajCapteur>
+                <PDTCapteur>6</PDTCapteur>
+                <EssaiCapteur>true</EssaiCapteur>
+                <ComCapteur>Capteur jaune</ComCapteur>
+                <Observateur>
+                  <CdContact>3</CdContact>
+                </Observateur>
                 <PlagesUtilCapteur>
                   <PlageUtilCapteur>
                     <DtDebPlageUtilCapteur>2009-11-03T15:19:18</DtDebPlageUtilCapteur>
