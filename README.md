@@ -22,10 +22,12 @@ Récupérer l'archive et la décompresser puis faire "python setup.py install".
 
 Sont nécessaires et installés automatiquement si besoin:
 
-  * numpy 1.12
-  * pandas 0.19.2
+  * numpy >= 1.12
+  * pandas >= 0.19.2
   * lxml.etree >= 3.2.3 pour le convertisseur xml
 
 Contact
 -------------------------------------------------------------------------------
+
 Philippe Gouin <philippe.gouin@developpement-durable.gouv.fr>
+Sébastien Romon <sebastien.romon@developpement-durable.gouv.fr>
