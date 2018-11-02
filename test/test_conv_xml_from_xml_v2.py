@@ -374,7 +374,14 @@ class TestFromXmlSeriesObsElabMeteo(unittest.TestCase):
         self.assertEqual(len(serie.observations), 2)
         self.assertEqual(serie.observations.iloc[0].tolist(),
                          [10.4, 12.0, 20.0, 88.4, 16.0])
-        obs = serie.observations.loc['2017-04-20 13:21:08'].iloc[0].tolist()
+
+        dte = '2017-04-20 13:21:08'
+        try:
+            # Pandas 0.23 loc returns Series
+            obs = serie.observations.loc[dte].tolist()
+        except Exception:
+            # previous version Pandas loc return a dataframe
+            obs = serie.observations.loc[dte].iloc[0].tolist()
         self.assertEqual(obs[0:3], [11.9, 0.0, 16.0])
         self.assertTrue(math.isnan(obs[3]))
         self.assertEqual(obs[4], 0.0)
@@ -395,7 +402,14 @@ class TestFromXmlSeriesObsElabMeteo(unittest.TestCase):
         self.assertEqual(len(serie.observations), 2)
         self.assertEqual(serie.observations.iloc[0].tolist(),
                          [28.8, 12.0, 0.0, 33.1, 12.0])
-        obs = serie.observations.loc['2011-12-15 08:09:10'].iloc[0].tolist()
+
+        dte = '2011-12-15 08:09:10'
+        try:
+            # Pandas 0.23 loc returns Series
+            obs = serie.observations.loc[dte].tolist()
+        except Exception:
+            # previous version Pandas loc return a dataframe
+            obs = serie.observations.loc[dte].iloc[0].tolist()
         self.assertEqual(obs[0:3], [38.1, 0.0, 16.0])
         self.assertTrue(math.isnan(obs[3]))
         self.assertEqual(obs[4], 0.0)
@@ -412,7 +426,13 @@ class TestFromXmlSeriesObsElabMeteo(unittest.TestCase):
         self.assertIsNone(serie.ipa)
 
         self.assertEqual(len(serie.observations), 1)
-        obs = serie.observations.loc['2013-05-04 13:11:26'].iloc[0].tolist()
+        dte = '2013-05-04 13:11:26'
+        try:
+            # Pandas 0.23 loc returns Series
+            obs = serie.observations.loc[dte].tolist()
+        except Exception:
+            # previous version Pandas loc return a dataframe
+            obs = serie.observations.loc[dte].iloc[0].tolist()
         self.assertEqual(obs[0:3], [55.8, 0.0, 16.0])
         self.assertTrue(math.isnan(obs[3]))
         self.assertEqual(obs[4], 0.0)

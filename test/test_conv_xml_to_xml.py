@@ -18,6 +18,7 @@ from __future__ import (
 
 import os
 import unittest
+import datetime as _datetime
 
 from lxml import etree
 
@@ -344,3 +345,34 @@ class TestFunctions(unittest.TestCase):
         assert to_xml._required(obj_str, ['lower', 'join', 'split'])
         with self.assertRaises(ValueError):
             to_xml._required(obj_str, ['xxx'])
+
+    def test_datetime2iso(self):
+        """datetime2iso test."""
+        date = _datetime.datetime(1810, 7, 5, 13, 19, 27)
+        self.assertEqual(to_xml.datetime2iso(date), '1810-07-05T13:19:27')
+        date = _datetime.datetime(54, 1, 2)
+        self.assertEqual(to_xml.datetime2iso(date), '0054-01-02T00:00:00')
+        date = _datetime.datetime(2018, 11, 23, 18, 24, 53)
+        self.assertEqual(to_xml.datetime2iso(date), '2018-11-23T18:24:53')
+        date = None
+        self.assertIsNone(to_xml.datetime2iso(date))
+
+    def test_date2iso(self):
+        """date2iso test."""
+        date = _datetime.datetime(1810, 7, 5, 13, 19, 27)
+        self.assertEqual(to_xml.date2iso(date), '1810-07-05')
+        date = _datetime.datetime(54, 1, 2)
+        self.assertEqual(to_xml.date2iso(date), '0054-01-02')
+        date = _datetime.date(1578, 3, 4)
+        self.assertEqual(to_xml.date2iso(date), '1578-03-04')
+        date = None
+        self.assertIsNone(to_xml.date2iso(date))
+
+    def test_bool2xml(self):
+        """bool2xml test."""
+        text = True
+        self.assertEqual(to_xml.bool2xml(text), 'true')
+        text = False
+        self.assertEqual(to_xml.bool2xml(text), 'false')
+        text = None
+        self.assertEqual(to_xml.bool2xml(text), None)

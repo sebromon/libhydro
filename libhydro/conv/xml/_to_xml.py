@@ -275,7 +275,7 @@ def _scenario_to_element(scenario, bdhydro=False, strict=True, version='1.1'):
             ('VersionScenario', {'value': version}),
             ('NomScenario', {'value': scenario.nom}),
             ('DateHeureCreationFichier',
-                {'value': scenario.dtprod.strftime('%Y-%m-%dT%H:%M:%S')})))
+                {'value': datetime2iso(scenario.dtprod)})))
         # template for scenario sub-elements <Emetteur> and <Destinataire>
         for tag in ('Emetteur', 'Destinataire'):
             item = getattr(scenario, tag.lower())
@@ -393,15 +393,13 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
         if strict:
             _required(sitehydro, ['code'])
 
-        dtmaj = sitehydro.dtmaj.strftime('%Y-%m-%dT%H:%M:%S') \
-            if sitehydro.dtmaj is not None else None
+        dtmaj = datetime2iso(sitehydro.dtmaj)
         dtpremdonnee = None
         if sitehydro.dtpremieredonnee is not None:
             if version == '1.1':
-                dtpremdonnee = sitehydro.dtpremieredonnee.strftime('%Y-%m-%d')
+                dtpremdonnee = date2iso(sitehydro.dtpremieredonnee)
             else:
-                dtpremdonnee = sitehydro.dtpremieredonnee.strftime(
-                        '%Y-%m-%dT%H:%M:%S')
+                dtpremdonnee = datetime2iso(sitehydro.dtpremieredonnee)
         essai = None
         if sitehydro.essai is not None:
             if sitehydro.essai:
@@ -582,12 +580,9 @@ def _role_to_element(role, version, tags, entite):
     if role is None:
         return
 
-    dtdeb = role.dtdeb.strftime('%Y-%m-%dT%H:%M:%S') \
-        if role.dtdeb is not None else None
-    dtfin = role.dtfin.strftime('%Y-%m-%dT%H:%M:%S') \
-        if role.dtfin is not None else None
-    dtmaj = role.dtmaj.strftime('%Y-%m-%dT%H:%M:%S') \
-        if role.dtmaj is not None else None
+    dtdeb = datetime2iso(role.dtdeb)
+    dtfin = datetime2iso(role.dtfin)
+    dtmaj = datetime2iso(role.dtmaj)
 
     if version < '2' and entite == 'StationHydro':
         rolecontactbalise = 'RoleContact'
@@ -639,16 +634,11 @@ def _siteattache_to_element(siteattache, version):
         ('PonderationSiteHydroAttache', {'value': siteattache.ponderation})))
 
     if version == '2':
-        dtdeb = siteattache.dtdeb.strftime('%Y-%m-%dT%H:%M:%S') \
-            if siteattache.dtdeb is not None else None
-        dtfin = siteattache.dtfin.strftime('%Y-%m-%dT%H:%M:%S') \
-            if siteattache.dtfin is not None else None
-        dtdebactivation = siteattache.dtdebactivation.strftime(
-            '%Y-%m-%dT%H:%M:%S') if siteattache.dtdebactivation is not None \
-            else None
-        dtfinactivation = siteattache.dtfinactivation.strftime(
-            '%Y-%m-%dT%H:%M:%S') if siteattache.dtfinactivation is not None \
-            else None
+        dtdeb = datetime2iso(siteattache.dtdeb)
+        dtfin = datetime2iso(siteattache.dtfin)
+        dtdebactivation = datetime2iso(siteattache.dtdebactivation)
+        dtfinactivation = datetime2iso(siteattache.dtfinactivation)
+
         story['DecalSiteHydroAttache'] = {'value': siteattache.decalage}
         story['DtDebSiteHydroAttache'] = {'value': dtdeb}
         story['DtFinSiteHydroAttache'] = {'value': dtfin}
@@ -790,13 +780,9 @@ def _seuilhydro_to_element(seuilhydro, bdhydro=False, strict=True, version='1.1'
             story['ValDebitSeuilSiteHydro'] = {
                 'value': sitevaleurseuil.valeur}
             story['DtActivationSeuilSiteHydro'] = {
-                'value': sitevaleurseuil.dtactivation.strftime(
-                    '%Y-%m-%dT%H:%M:%S')
-                if sitevaleurseuil.dtactivation is not None else None}
+                'value': datetime2iso(sitevaleurseuil.dtactivation)}
             story['DtDesactivationSeuilSiteHydro'] = {
-                'value': sitevaleurseuil.dtdesactivation.strftime(
-                    '%Y-%m-%dT%H:%M:%S')
-                if sitevaleurseuil.dtdesactivation is not None else None}
+                'value': datetime2iso(sitevaleurseuil.dtdesactivation)}
 
         # add the stations values
         if len(seuilhydro.valeurs) > 0:
@@ -807,8 +793,7 @@ def _seuilhydro_to_element(seuilhydro, bdhydro=False, strict=True, version='1.1'
             story['ToleranceSeuilSiteHydro'] = {
                 'value': sitevaleurseuil.tolerance}
         story['DtMajSeuilSiteHydro'] = {
-            'value': seuilhydro.dtmaj.strftime('%Y-%m-%dT%H:%M:%S')
-            if seuilhydro.dtmaj is not None else None}
+            'value': datetime2iso(seuilhydro.dtmaj)}
 
         # make element <ValeursSeuilsStationHydro>
         element = _factory(
@@ -852,12 +837,9 @@ def _valeurseuilstation_to_element(valeurseuil, bdhydro=False,
             ('ValHauteurSeuilStationHydro', {
                 'value': valeurseuil.valeur}),
             ('DtActivationSeuilStationHydro', {
-                'value': valeurseuil.dtactivation.strftime('%Y-%m-%dT%H:%M:%S')
-                if valeurseuil.dtactivation is not None else None}),
+                'value': datetime2iso(valeurseuil.dtactivation)}),
             ('DtDesactivationSeuilStationHydro', {
-                'value': valeurseuil.dtdesactivation.strftime(
-                    '%Y-%m-%dT%H:%M:%S')
-                if valeurseuil.dtdesactivation is not None else None}),
+                'value': datetime2iso(valeurseuil.dtdesactivation)}),
             ('ToleranceSeuilStationHydro', {'value': valeurseuil.tolerance})))
 
         # action !
@@ -879,12 +861,9 @@ def _station_to_element(station, bdhydro=False, strict=True, version='1.1'):
         if strict:
             _required(station, ['code'])
 
-        dtmaj = station.dtmaj.strftime('%Y-%m-%dT%H:%M:%S') \
-            if station.dtmaj is not None else None
-        dtmiseservice = station.dtmiseservice.strftime('%Y-%m-%dT%H:%M:%S') \
-            if station.dtmiseservice is not None else None
-        dtfermeture = station.dtfermeture.strftime('%Y-%m-%dT%H:%M:%S') \
-            if station.dtfermeture is not None else None
+        dtmaj = datetime2iso(station.dtmaj)
+        dtmiseservice = datetime2iso(station.dtmiseservice)
+        dtfermeture = datetime2iso(station.dtfermeture)
         surveillance = str(station.surveillance).lower() \
             if station.surveillance is not None else None
         essai = str(station.essai).lower() \
@@ -1144,11 +1123,11 @@ def _plagestation_to_element(plagestation, entite):
     if plagestation.dtdeb is not None:
         element.append(_make_element(
             tag_name='DtDebPlageAssoStationHydroMereFille',
-            text=plagestation.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')))
+            text=datetime2iso(plagestation.dtdeb)))
     if plagestation.dtfin is not None:
         element.append(_make_element(
             tag_name='DtFinPlageAssoStationHydroMereFille',
-            text=plagestation.dtfin.strftime('%Y-%m-%dT%H:%M:%S')))
+            text=datetime2iso(plagestation.dtfin)))
 
     return element
 
@@ -1164,16 +1143,16 @@ def _plage_to_element(plage, entite):
 
     story = _collections.OrderedDict()
     story['DtDebPlageUtil{}'.format(entite)] = {
-            'value': plage.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')}
+            'value': datetime2iso(plage.dtdeb)}
     if plage.dtfin is not None:
         story['DtFinPlageUtil{}'.format(entite)] = {
-            'value': plage.dtfin.strftime('%Y-%m-%dT%H:%M:%S')}
+            'value': datetime2iso(plage.dtfin)}
     if plage.dtactivation is not None:
         story['DtActivationPlageUtil{}'.format(entite)] = {
-            'value': plage.dtactivation.strftime('%Y-%m-%dT%H:%M:%S')}
+            'value': datetime2iso(plage.dtactivation)}
     if plage.dtdesactivation is not None:
         story['DtDesactivationPlageUtil{}'.format(entite)] = {
-            'value': plage.dtdesactivation.strftime('%Y-%m-%dT%H:%M:%S')}
+            'value': datetime2iso(plage.dtdesactivation)}
     if plage.active is not None:
         story['ActivePlageUtil{}'.format(entite)] = {
             'value': str(plage.active).lower()}
@@ -1204,18 +1183,13 @@ def _refalti_to_element(refalti):
     if refalti is None:
         return None
 
-    dtfin = refalti.dtfin.strftime('%Y-%m-%dT%H:%M:%S') \
-        if refalti.dtfin is not None else None
-    dtactivation = refalti.dtactivation.strftime('%Y-%m-%dT%H:%M:%S') \
-        if refalti.dtactivation is not None else None
-    dtdesactivation = refalti.dtdesactivation.strftime('%Y-%m-%dT%H:%M:%S') \
-        if refalti.dtdesactivation is not None else None
-    dtmaj = refalti.dtmaj.strftime('%Y-%m-%dT%H:%M:%S') \
-        if refalti.dtmaj is not None else None
+    dtfin = datetime2iso(refalti.dtfin)
+    dtactivation = datetime2iso(refalti.dtactivation)
+    dtdesactivation = datetime2iso(refalti.dtdesactivation)
+    dtmaj = datetime2iso(refalti.dtmaj)
 
     story = _collections.OrderedDict()
-    story['DtDebutRefAlti'] = {'value': refalti.dtdeb.strftime(
-            '%Y-%m-%dT%H:%M:%S')}
+    story['DtDebutRefAlti'] = {'value': datetime2iso(refalti.dtdeb)}
     story['DtFinRefAlti'] = {'value': dtfin}
     story['DtActivationRefAlti'] = {'value': dtactivation}
     story['DtDesactivationRefAlti'] = {'value': dtdesactivation}
@@ -1259,7 +1233,7 @@ def _capteur_to_element(capteur, bdhydro=False, strict=True, version='1.1'):
 
         dtmaj = None
         if capteur.dtmaj is not None:
-            dtmaj = capteur.dtmaj.strftime('%Y-%m-%dT%H:%M:%S')
+            dtmaj = datetime2iso(capteur.dtmaj)
 
         # template for capteur simple element
         story = _collections.OrderedDict((
@@ -1363,7 +1337,7 @@ def _evenement_to_element(evenement, bdhydro=False, strict=True, version='1.1'):
             'value': code}
         # suite
         story['DtEvenement'] = {
-            'value': evenement.dt.strftime('%Y-%m-%dT%H:%M:%S')}
+            'value': datetime2iso(evenement.dt)}
 
         if version == '2':
             story['TypEvenement'] = {'value': evenement.typeevt}
@@ -1395,7 +1369,7 @@ def _evenement_to_element(evenement, bdhydro=False, strict=True, version='1.1'):
 
         story['DtMajEvenement'] = {
             'value': None if evenement.dtmaj is None
-            else evenement.dtmaj.strftime('%Y-%m-%dT%H:%M:%S')}
+            else datetime2iso(evenement.dtmaj)}
 
         if version == '2':
             if len(evenement.ressources) > 0:
@@ -1403,7 +1377,7 @@ def _evenement_to_element(evenement, bdhydro=False, strict=True, version='1.1'):
                                           'force': True}
             if evenement.dtfin is not None:
                 story['DtFinEvenement'] = {
-                    'value': evenement.dtfin.strftime('%Y-%m-%dT%H:%M:%S')}
+                    'value': datetime2iso(evenement.dtfin)}
 
         # action !
         element = _factory(root=_etree.Element('Evenement'), story=story)
@@ -1442,7 +1416,7 @@ def _courbetarage_to_element(courbe, bdhydro=False, strict=True, version='1.1'):
         story['TypCourbeTarage'] = {'value': courbe.typect}
         if version == '2'and courbe.dtcreation is not None:
             story['DtCreatCourbeTarage'] = {
-                'value': courbe.dtcreation.strftime('%Y-%m-%dT%H:%M:%S')}
+                'value': datetime2iso(courbe.dtcreation)}
         story['LimiteInfCourbeTarage'] = {'value': courbe.limiteinf}
         story['LimiteSupCourbeTarage'] = {'value': courbe.limitesup}
         if version == '2':
@@ -1462,7 +1436,7 @@ def _courbetarage_to_element(courbe, bdhydro=False, strict=True, version='1.1'):
             'force': True if (len(courbe.periodes) > 0) else False}
         story['DtMajCourbeTarage'] = {
             'value': None if courbe.dtmaj is None
-            else courbe.dtmaj.strftime('%Y-%m-%dT%H:%M:%S')}
+            else datetime2iso(courbe.dtmaj)}
         if version == '2':
             story['ComPrivCourbeTarage'] = {'value': courbe.commentaireprive}
         # make element <CourbeTarage>
@@ -1516,10 +1490,10 @@ def _periodect_to_element(periode, strict=True, version='1.1',
     _required(periode, ['dtdeb', 'etat'])
     story = _collections.OrderedDict()
     story[tags.dtdebperiodeutilct] = {
-        'value': periode.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')}
+        'value': datetime2iso(periode.dtdeb)}
     if periode.dtfin is not None:
         story['DtFinPeriodeUtilisationCourbeTarage'] = {
-            'value': periode.dtfin.strftime('%Y-%m-%dT%H:%M:%S')}
+            'value': datetime2iso(periode.dtfin)}
     if periode.etat is not None:
         story['EtatPeriodeUtilisationCourbeTarage'] = {
             'value': periode.etat}
@@ -1543,10 +1517,10 @@ def _histoperiode_to_element(histo, strict=True, version='1.1',
     _required(histo, ['dtactivation'])
     story = _collections.OrderedDict()
     story[tags.dtactivationhistoperiode] = {
-        'value': histo.dtactivation.strftime('%Y-%m-%dT%H:%M:%S')}
+        'value': datetime2iso(histo.dtactivation)}
     if histo.dtdesactivation is not None:
         story[tags.dtdesactivationhistoperiode] = {
-            'value': histo.dtdesactivation.strftime('%Y-%m-%dT%H:%M:%S')}
+            'value': datetime2iso(histo.dtdesactivation)}
 
     return _factory(root=_etree.Element(tags.histoactivationperiode),
                     story=story)
@@ -1568,14 +1542,14 @@ def _jaugeage_to_element(jaugeage, bdhydro=False, strict=True, version='1.1'):
         story['CdJaugeage'] = {'value': jaugeage.code}
         if jaugeage.dte is not None:
             story['DtJaugeage'] = {
-                'value': jaugeage.dte.strftime('%Y-%m-%dT%H:%M:%S')}
+                'value': datetime2iso(jaugeage.dte)}
         story['DebitJaugeage'] = {'value': jaugeage.debit}
         if jaugeage.dtdeb is not None:
             story['DtDebJaugeage'] = {
-                'value': jaugeage.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')}
+                'value': datetime2iso(jaugeage.dtdeb)}
         if jaugeage.dtfin is not None:
             story['DtFinJaugeage'] = {
-                'value': jaugeage.dtfin.strftime('%Y-%m-%dT%H:%M:%S')}
+                'value': datetime2iso(jaugeage.dtfin)}
         story['SectionMouilJaugeage'] = {'value': jaugeage.section_mouillee}
         story['PerimMouilleJaugeage'] = {'value': jaugeage.perimetre_mouille}
         story['LargMiroirJaugeage'] = {'value': jaugeage.largeur_miroir}
@@ -1602,7 +1576,7 @@ def _jaugeage_to_element(jaugeage, bdhydro=False, strict=True, version='1.1'):
 
         if jaugeage.dtmaj is not None:
             story['DtMajJaugeage'] = {
-                'value': jaugeage.dtmaj.strftime('%Y-%m-%dT%H:%M:%S')}
+                'value': datetime2iso(jaugeage.dtmaj)}
 
         if version == '2':
             if jaugeage.numero is not None:
@@ -1660,7 +1634,7 @@ def _hjaug_to_element(hjaug, strict=True, version='1.1'):
 
     if hjaug.dtdeb_refalti is not None:
         story['DtDebutRefAlti'] = {
-            'value': hjaug.dtdeb_refalti.strftime('%Y-%m-%dT%H:%M:%S')}
+            'value': datetime2iso(hjaug.dtdeb_refalti)}
 
     # make element <StationFille>
     element = _factory(root=_etree.Element('HauteurJaugeage'), story=story)
@@ -1689,8 +1663,7 @@ def _courbecorrection_to_element(courbe, bdhydro=False, strict=True, version='1.
         story['PointsPivot'] = {'value': None,
             'force': True if (len(courbe.pivots) > 0) else False}
         if courbe.dtmaj is not None:
-            story['DtMajCourbeCorrH'] = {'value':
-                courbe.dtmaj.strftime('%Y-%m-%dT%H:%M:%S')}
+            story['DtMajCourbeCorrH'] = {'value': datetime2iso(courbe.dtmaj)}
 
         # make element <CourbeTarage>
         element = _factory(root=_etree.Element('CourbeCorrH'), story=story)
@@ -1717,14 +1690,14 @@ def _pivotcc_to_element(pivotcc, strict=True, version='1.1'):
 
     story = _collections.OrderedDict()
 
-    story['DtPointPivot'] = {'value': pivotcc.dte.strftime('%Y-%m-%dT%H:%M:%S')}
+    story['DtPointPivot'] = {'value': datetime2iso(pivotcc.dte)}
     story['DeltaHPointPivot'] = {'value': pivotcc.deltah}
     if pivotcc.dtactivation is not None:
         story['DtActivationPointPivot'] = {'value':
-            pivotcc.dtactivation.strftime('%Y-%m-%dT%H:%M:%S')}
+            datetime2iso(pivotcc.dtactivation)}
     if pivotcc.dtdesactivation is not None:
         story[tags.dtdesactivationpointpivot] = {'value':
-            pivotcc.dtdesactivation.strftime('%Y-%m-%dT%H:%M:%S')}
+            datetime2iso(pivotcc.dtdesactivation)}
 
     return _factory(root=_etree.Element('PointPivot'), story=story)
 
@@ -1753,10 +1726,10 @@ def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True,
         story[tags.grdseriehydro] = {'value': seriehydro.grandeur}
         if seriehydro.dtdeb is not None:
             story[tags.dtdebseriehydro] = {
-                'value': seriehydro.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')}
+                'value': datetime2iso(seriehydro.dtdeb)}
         if seriehydro.dtfin is not None:
             story[tags.dtfinseriehydro] = {
-                'value': seriehydro.dtfin.strftime('%Y-%m-%dT%H:%M:%S')}
+                'value': datetime2iso(seriehydro.dtfin)}
 
         if version == '1.1':
             if seriehydro.observations is None:
@@ -1767,7 +1740,7 @@ def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True,
 
         if seriehydro.dtprod is not None:
             story[tags.dtprodseriehydro] = {
-                'value': seriehydro.dtprod.strftime('%Y-%m-%dT%H:%M:%S')}
+                'value': datetime2iso(seriehydro.dtprod)}
 
         if seriehydro.sysalti is not None:
             story[tags.sysaltiseriehydro] = {'value': str(seriehydro.sysalti)}
@@ -1806,7 +1779,7 @@ def _observations_to_element(observations, bdhydro=False, strict=True,
             obs = _etree.SubElement(element, 'ObsHydro')
             # dte and res are mandatory...
             child = _etree.SubElement(obs, 'DtObsHydro')
-            child.text = observation.Index.strftime('%Y-%m-%dT%H:%M:%S')
+            child.text = datetime2iso(observation.Index)
             child = _etree.SubElement(obs, 'ResObsHydro')
             child.text = str(observation.res)
             # while mth, qal and cnt aren't
@@ -1881,8 +1854,8 @@ def _obsmeteo_to_element(seriemeteo, index, obs, bdhydro=False, strict=True, ver
         else:
             story['CdSiteHydro'] = {'value': seriemeteo.site.code}
         story['DtProdObsMeteo'] = {
-            'value': seriemeteo.dtprod.strftime('%Y-%m-%dT%H:%M:%S')}
-        story['DtObsMeteo'] = {'value': index.strftime('%Y-%m-%dT%H:%M:%S')}
+            'value': datetime2iso(seriemeteo.dtprod)}
+        story['DtObsMeteo'] = {'value': datetime2iso(index)}
         story['StatutObsMeteo'] = {'value': int(obs.statut)}
         story['ResObsMeteo'] = {'value': obs.res}
         if bdhydro:
@@ -1916,7 +1889,7 @@ def _obselab_to_element(serie, obs, bdhydro=False, strict=True, version='1.1'):
     """
     obsel = _etree.Element('ObsElabHydro')
     _etree.SubElement(obsel, 'DtProdObsElabHydro').text = \
-        serie.dtprod.strftime('%Y-%m-%dT%H:%M:%S')
+        datetime2iso(serie.dtprod)
 
     if isinstance(serie.entite, _sitehydro.Sitehydro):
         _etree.SubElement(obsel, 'CdSiteHydro').text = \
@@ -1926,7 +1899,7 @@ def _obselab_to_element(serie, obs, bdhydro=False, strict=True, version='1.1'):
             serie.entite.code
     # dte and res are mandatory...
     _etree.SubElement(obsel, 'DtObsElabHydro').text = \
-        obs.Index.strftime('%Y-%m-%dT%H:%M:%S')
+        datetime2iso(obs.Index)
     _etree.SubElement(obsel, 'ResObsElabHydro').text = \
         str(obs.res)
     if obs.statut is not None:
@@ -1946,7 +1919,7 @@ def _obselab_to_element(serie, obs, bdhydro=False, strict=True, version='1.1'):
             str(serie.contact.code)
     if serie.dtdebrefalti is not None:
         _etree.SubElement(obsel, 'DtDebutRefAlti').text = \
-            serie.dtrefalti.strftime('%Y-%m-%dT%H:%M:%S')
+            datetime2iso(serie.dtrefalti)
     # print(_etree.tostring(obsel, method='xml'))
     return obsel
 
@@ -1971,7 +1944,7 @@ def _simulation_to_element(simulation, bdhydro=False, strict=True, version='1.1'
         story = _collections.OrderedDict((
             ('GrdSimul', {'value': simulation.grandeur}),
             ('DtProdSimul', {
-                'value': simulation.dtprod.strftime('%Y-%m-%dT%H:%M:%S')}),
+                'value': datetime2iso(simulation.dtprod)}),
             ('IndiceQualiteSimul', {
                 'value': str(simulation.qualite)
                 if simulation.qualite is not None else None}),
@@ -2132,13 +2105,13 @@ def _seriemeteo_v2(serie, bdhydro=False, strict=True):
         str(int(serie.duree.total_seconds() / 60))
     if serie.dtprod is not None:
         _etree.SubElement(elt, 'DtProdSerieObsMeteo').text = \
-            serie.dtprod.strftime('%Y-%m-%dT%H:%M:%S')
+            datetime2iso(serie.dtprod)
     if serie.dtdeb is not None:
         _etree.SubElement(elt, 'DtDebSerieObsMeteo').text = \
-            serie.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')
+            datetime2iso(serie.dtdeb)
     if serie.dtfin is not None:
         _etree.SubElement(elt, 'DtFinSerieObsMeteo').text = \
-            serie.dtfin.strftime('%Y-%m-%dT%H:%M:%S')
+            datetime2iso(serie.dtfin)
     if serie.contact is not None:
         _etree.SubElement(elt, 'CdContact').text = serie.contact.code
     if serie.observations is not None:
@@ -2146,7 +2119,7 @@ def _seriemeteo_v2(serie, bdhydro=False, strict=True):
         for obs in serie.observations.itertuples():
             obs_el = _etree.SubElement(obss_el, 'ObsMeteo')
             _etree.SubElement(obs_el, 'DtObsMeteo').text = \
-                obs.Index.strftime('%Y-%m-%dT%H:%M:%S')
+                datetime2iso(obs.Index)
             _etree.SubElement(obs_el, 'ResObsMeteo').text = \
                 str(obs.res)
             if not _math.isnan(obs.qua):
@@ -2220,7 +2193,7 @@ def _serieobselab_v2(serieobselab, bdhydro=False, strict=True):
     element = _etree.Element('SerieObsElaborHydro')
 
     _etree.SubElement(element, 'DtProdSerieObsElaborHydro').text = \
-        serieobselab.dtprod.strftime('%Y-%m-%dT%H:%M:%S')
+        datetime2iso(serieobselab.dtprod)
     _etree.SubElement(element, 'TypDeGrdSerieObsElaborHydro').text = \
         serieobselab.typegrd
 
@@ -2230,19 +2203,19 @@ def _serieobselab_v2(serieobselab, bdhydro=False, strict=True):
 
     if serieobselab.dtdeb is not None:
         _etree.SubElement(element, 'DtDebPlagSerieObsElaborHydro').text = \
-            serieobselab.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')
+            datetime2iso(serieobselab.dtdeb)
 
     if serieobselab.dtfin is not None:
         _etree.SubElement(element, 'DtFinPlagSerieObsElaborHydro').text = \
-            serieobselab.dtfin.strftime('%Y-%m-%dT%H:%M:%S')
+            datetime2iso(serieobselab.dtfin)
 
     if serieobselab.dtdesactivation is not None:
         _etree.SubElement(element, 'DtDesactivationSerieObsElaborHydro').text = \
-            serieobselab.dtdesactivation.strftime('%Y-%m-%dT%H:%M:%S')
+            datetime2iso(serieobselab.dtdesactivation)
 
     if serieobselab.dtactivation is not None:
         _etree.SubElement(element, 'DtActivationSerieObsElaborHydro').text = \
-            serieobselab.dtactivation.strftime('%Y-%m-%dT%H:%M:%S')
+            datetime2iso(serieobselab.dtactivation)
 
     if serieobselab.sysalti is not None:
         _etree.SubElement(element, 'SysAltiSerieObsElaborHydro').text = \
@@ -2254,7 +2227,7 @@ def _serieobselab_v2(serieobselab, bdhydro=False, strict=True):
 
     if serieobselab.dtdebrefalti is not None:
         _etree.SubElement(element, 'DtDebutRefAlti').text = \
-            serieobselab.dtdebrefalti.strftime('%Y-%m-%dT%H:%M:%S')
+            datetime2iso(serieobselab.dtdebrefalti)
 
     if serieobselab.contact is not None:
         _etree.SubElement(element, 'CdContact').text = \
@@ -2272,7 +2245,7 @@ def _serieobselab_v2(serieobselab, bdhydro=False, strict=True):
         for obs in serieobselab.observations.itertuples():
             obs_el = _etree.SubElement(obss, 'ObsElaborHydro')
             _etree.SubElement(obs_el, 'DtObsElaborHydro').text = \
-                obs.Index.strftime('%Y-%m-%dT%H:%M:%S')
+                datetime2iso(obs.Index)
             _etree.SubElement(obs_el, 'ResObsElaborHydro').text = \
                 str(obs.res)
             _etree.SubElement(obs_el, 'QualifObsElaborHydro').text = \
@@ -2320,10 +2293,10 @@ def _serieobselabmeteo_v2(seriemeteo, bdhydro=False, strict=True):
         str(seriemeteo.typeserie)
     if seriemeteo.dtdeb is not None:
         _etree.SubElement(element, 'DtDebSerieObsElaborMeteo').text = \
-            seriemeteo.dtdeb.strftime('%Y-%m-%dT%H:%M:%S')
+            datetime2iso(seriemeteo.dtdeb)
     if seriemeteo.dtfin is not None:
         _etree.SubElement(element, 'DtFinSerieObsElaborMeteo').text = \
-            seriemeteo.dtfin.strftime('%Y-%m-%dT%H:%M:%S')
+            datetime2iso(seriemeteo.dtfin)
     if seriemeteo.duree is not None:
         _etree.SubElement(element, 'DureeSerieObsElaborMeteo').text = \
             str(int(seriemeteo.duree.total_seconds() / 60))
@@ -2339,7 +2312,7 @@ def _serieobselabmeteo_v2(seriemeteo, bdhydro=False, strict=True):
         for obs in seriemeteo.observations.itertuples():
             obs_el = _etree.SubElement(obss, 'ObsElaborMeteo')
             _etree.SubElement(obs_el, 'DtObsElaborMeteo').text = \
-                obs.Index.strftime('%Y-%m-%dT%H:%M:%S')
+                datetime2iso(obs.Index)
             _etree.SubElement(obs_el, 'ResObsElaborMeteo').text = \
                 str(obs.res)
             if not _numpy.isnan(obs.qua):
@@ -2417,9 +2390,7 @@ def _previsions_to_element(previsions, bdhydro=False, strict=True, version='1.1'
                     tag_name='DtPrev',
                     # dte is a numpy.datetime64 with perhaps nanoseconds
                     # it is better to cast it before getting the isoformat
-                    text=_numpy.datetime64(dte, 's').item().strftime(
-                        '%Y-%m-%dT%H:%M:%S'
-                    )
+                    text=datetime2iso(_numpy.datetime64(dte, 's').item())
                 )
             )
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2450,8 +2421,7 @@ def _previsions_to_element(previsions, bdhydro=False, strict=True, version='1.1'
                     tag_name='DtPrev',
                     # dte is a numpy.datetime64 with perhaps nanoseconds
                     # it is better to cast it before getting the isoformat
-                    text=_numpy.datetime64(dte, 's').item().strftime(
-                        '%Y-%m-%dT%H:%M:%S')))
+                    text=datetime2iso(_numpy.datetime64(dte, 's').item())))
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             # for one date we can have multiple values
             # we put all of them in a dict {prb: res, ...}
@@ -2550,6 +2520,33 @@ def _make_element(tag_name, text, tag_attrib=None):
     if text is not None:
         element.text = str(text)
     return element
+
+
+def datetime2iso(date):
+    """Formatage au format iso d'une date supportant les dates avant 1900
+    Arguments:
+        date (datetime) = date à convertir
+    """
+    if date is None:
+        return None
+    return ('{0.year:04d}-{0.month:02d}-{0.day:02d}'
+            'T{0.hour:02d}:{0.minute:02d}:{0.second:02d}').format(date)
+
+
+def date2iso(date):
+    """Formatage au format iso d'une date sans l'heure
+    supportant les dates avant 1900
+    Arguments:
+        date (datetime) = date à convertir
+    """
+    if date is None:
+        return None
+    return ('{0.year:04d}-{0.month:02d}-{0.day:02d}').format(date)
+
+
+def bool2xml(text):
+    """Conversion boolean en texte"""
+    return str(text).lower() if text is not None else None
 
 
 def _required(obj, attrs):
