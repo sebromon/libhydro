@@ -78,6 +78,14 @@ class SandreTagsV1(object):
     dtmajcapteur = 'DtMAJCapteur'
     pdtcapteur = 'PasDeTempsCapteur'
 
+    # sites météo
+    dtmajsitemeteo = 'DtMAJSiteMeteo'
+    rolscontactsitemeteo = 'RolesContactSiteMeteo'
+    rolcontactsitemeteo = 'RoleContactSiteMeteo'  # à supprimer
+    dtmajrolecontactcitemeteo = 'DtMAJRoleContactSiteMeteo'
+
+    # grandeur météo
+    pdtgrdmeteo = 'PasDeTempsNominalGrdMeteo'
 
 class SandreTagsV2(object):
     """Balises Sandre V2"""
@@ -141,3 +149,12 @@ class SandreTagsV2(object):
     # Capteurs
     dtmajcapteur = 'DtMajCapteur'
     pdtcapteur = 'PDTCapteur'
+
+    # sites météo
+    dtmajsitemeteo = 'DtMajSiteMeteo'
+    rolscontactsitemeteo = 'RolsContactSiteMeteo'
+    rolcontactsitemeteo = 'RolContactSiteMeteo'
+    dtmajrolecontactcitemeteo = 'DtMajRoleContactSiteMeteo'
+
+    # grandeur météo
+    pdtgrdmeteo = 'PDTGrdMeteo'

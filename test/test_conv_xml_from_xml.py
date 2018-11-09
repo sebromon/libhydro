@@ -682,18 +682,74 @@ class TestFromXmlSitesMeteo(unittest.TestCase):
         self.assertEqual(sm.code, '001072001')
         self.assertEqual(sm.libelle, 'CEYZERIAT_PTC')
         self.assertEqual(sm.libelleusuel, 'CEYZERIAT')
+        self.assertEqual(sm.mnemo, 'Mnémo')
+        self.assertEqual(sm.lieudit, 'Aérodrome de bourg Ceyzeriat')
         self.assertEqual(sm.coord.x, 827652)
         self.assertEqual(sm.coord.y, 2112880)
         self.assertEqual(sm.coord.proj, 26)
+        self.assertEqual(sm.altitude.altitude, 53.0)
+        self.assertEqual(sm.altitude.sysalti, 7)
+        self.assertEqual(sm.fuseau, 2)
+        self.assertEqual(sm.dtmaj, datetime.datetime(2015, 3, 17, 11, 54, 47))
+        self.assertEqual(sm.dtouverture,
+                         datetime.datetime(1950, 1, 1, 0, 0, 0))
+        self.assertEqual(sm.dtfermeture,
+                         datetime.datetime(2007, 10, 24, 9, 8, 1))
+        self.assertTrue(sm.droitpublication)
+        self.assertFalse(sm.essai)
+        self.assertEqual(sm.commentaire, 'Commentaire')
+        self.assertEqual(len(sm.reseaux), 2)
+        self.assertEqual(sm.reseaux[0].code, '10')
+        self.assertEqual(sm.reseaux[1].code, '100000003')
+        self.assertEqual(len(sm.roles), 1)
+        role = sm.roles[0]
+        self.assertEqual(role.contact.code, '2')
+        self.assertEqual(role.role, 'ADM')
+        self.assertEqual(role.dtdeb, datetime.datetime(2008, 4, 19, 11, 10, 9))
+        self.assertEqual(role.dtfin, datetime.datetime(2015, 10, 4, 7, 20, 30))
+        self.assertEqual(role.dtmaj,
+                         datetime.datetime(2016, 12, 9, 17, 58, 16))
         self.assertEqual(sm.commune, '35281')
         self.assertEqual(sm._strict, True)
         self.assertEqual(len(sm.grandeurs), 2)
         for grandeur in sm.grandeurs:
             self.assertEqual(grandeur.sitemeteo, sm)
-        self.assertEqual(sm.grandeurs[0].typemesure, 'RR')
-        self.assertEqual(sm.grandeurs[0].pdt, 4)
+
+        grd0 = sm.grandeurs[0]
+        self.assertEqual(grd0.typemesure, 'RR')
+        self.assertEqual(grd0.dtmiseservice,
+                         datetime.datetime(1994, 4, 5, 16, 0, 0))
+        self.assertEqual(grd0.dtfermeture,
+                         datetime.datetime(2011, 4, 5, 16, 0, 0))
+        self.assertEqual(grd0.essai, True)
+        self.assertEqual(grd0.pdt, 4)
+        self.assertEqual(len(grd0.classesqualite), 1)
+        cl0 = grd0.classesqualite[0]
+        self.assertEqual(cl0.classe, 3)
+        self.assertEqual(cl0.visite.dtvisite,
+                         datetime.datetime(1994, 4, 5, 8, 23, 0))
+        self.assertEqual(cl0.dtdeb, datetime.datetime(1994, 4, 5, 8, 21, 0))
+        self.assertEqual(cl0.dtfin, datetime.datetime(2010, 4, 5, 8, 28, 0))
+        self.assertEqual(grd0.dtmaj, datetime.datetime(2012, 9, 4, 12, 54, 17))
+
         self.assertEqual(sm.grandeurs[1].typemesure, 'VV')
         self.assertIsNone(sm.grandeurs[1].pdt)
+
+        self.assertEqual(len(sm.visites), 2)
+        visite = sm.visites[0]
+        self.assertEqual(visite.dtvisite,
+                         datetime.datetime(2003, 10, 15, 11, 28, 34))
+        self.assertIsNone(visite.contact)
+        self.assertIsNone(visite.methode)
+        self.assertIsNone(visite.modeop)
+
+        
+        visite = sm.visites[1]
+        self.assertEqual(visite.dtvisite,
+                         datetime.datetime(2004, 4, 5, 19, 36, 0))
+        self.assertEqual(visite.contact.code, '4')
+        self.assertEqual(visite.methode, 'Méthode à préciser')
+        self.assertEqual(visite.modeop, 'Libellé libre')
 
 
 # -- class TestFromXmlModelesPrevision ----------------------------------------

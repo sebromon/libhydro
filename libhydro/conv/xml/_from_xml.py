@@ -323,7 +323,9 @@ def _parse(src, ordered=True):
         'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro'),
                                                version=scenario.version,
                                                tags=tags),
-        'sitesmeteo': _sitesmeteo_from_element(tree.find('RefHyd/SitesMeteo')),
+        'sitesmeteo': _sitesmeteo_from_element(
+            tree.find('RefHyd/SitesMeteo'), version=scenario.version,
+            tags=tags),
         'seuilshydro': _seuilshydro_from_element(
             element=tree.find('RefHyd/SitesHydro'), version=scenario.version,
             tags=tags, ordered=ordered),
@@ -584,7 +586,7 @@ def _loistat_from_element(element, entite):
     return _composant_site.LoiStat(**args)
 
 
-def _sitemeteo_from_element(element):
+def _sitemeteo_from_element(element, version, tags):
     """Return a sitemeteo.Sitemeteo from a <SiteMeteo> element."""
     if element is not None:
         # prepare args
@@ -592,18 +594,79 @@ def _sitemeteo_from_element(element):
         args['code'] = _value(element, 'CdSiteMeteo')
         args['libelle'] = _value(element, 'LbSiteMeteo')
         args['libelleusuel'] = _value(element, 'LbUsuelSiteMeteo')
+        args['mnemo'] = _value(element, 'MnSiteMeteo')
+        args['lieudit'] = _value(element, 'LieuDitSiteMeteo')
+
         args['coord'] = _coord_from_element(
             element.find('CoordSiteMeteo'), 'SiteMeteo')
+
+        args['altitude'] = _altitude_from_element(
+            element=element.find('AltiSiteMeteo'),
+            site='SiteMeteo')
+        args['fuseau'] = _value(element, 'FuseauHoraireSiteMeteo')
+        args['dtmaj'] = _value(element, tags.dtmajsitemeteo)
+        args['dtouverture'] = _value(element, 'DtOuvertureSiteMeteo')
+        args['dtfermeture'] = _value(element, 'DtFermSiteMeteo')
+        args['droitpublication'] = _value(element, 'DroitPublicationSiteMeteo', bool)
+        args['essai'] = _value(element, 'EssaiSiteMeteo', bool)
+        args['commentaire'] = _value(element, 'ComSiteMeteo')
         args['commune'] = _value(element, 'CdCommune')
+
+        if version >= '2':
+            args['reseaux'] = [
+                _composant_site.ReseauMesure(code=_value(e, 'CodeSandreRdd'),
+                                             libelle=_value(e, 'NomRdd'))
+                for e in element.findall(
+                    'ReseauxMesureSiteMeteo/RSX')]
+        else:
+            args['reseaux'] = [
+                _composant_site.ReseauMesure(code=str(e.text))
+                for e in element.findall(
+                    'ReseauxMesureSiteMeteo/CodeSandreRdd')]
+        
+        args['roles'] = [_role_from_element(element=e, version=version,
+                                            tags=tags,
+                                            entite='SiteMeteo')
+                         for e in element.findall(
+                            tags.rolscontactsitemeteo + '/' + tags.rolcontactsitemeteo)]
+
+        if version >= '2':
+            args['zonehydro'] = _value(element, 'CdZoneHydro')
+
+        args['visites'] = [_visite_from_element(e)
+                           for e in element.findall(
+                            'VisitesSiteMeteo/VisiteSiteMeteo')]
+
         # build a Sitemeteo
         sitemeteo = _sitemeteo.Sitemeteo(**args)
         # add the Grandeurs
         sitemeteo.grandeurs.extend([
-            _grandeur_from_element(e, sitemeteo)
+            _grandeur_from_element(e, sitemeteo, version, tags)
             for e in element.findall('GrdsMeteo/GrdMeteo')])
         # return
         return sitemeteo
 
+
+def _altitude_from_element(element, site):
+    """return a _composant_site.Altitude from a <AltiSiteMeteo> element"""
+    if element is None:
+        return
+    args = {'altitude':  _value(element, 'Altitude' + site, float),
+            'sysalti': _value(element, 'SysAltimetrique' + site, int)}
+    return _composant_site.Altitude(**args)
+
+def _visite_from_element(element):
+    """return a sitemeteo.Visie from <VisiteSiteMeteo> element"""
+    if element is None:
+        return
+    args = {}
+    args['dtvisite'] = _value(element, 'DtVisiteSiteMeteo')
+    codecontact = _value(element, 'CdContact')
+    if codecontact is not None:
+        args['contact'] = _intervenant.Contact(code=codecontact)
+    args['methode'] = _value(element, 'MethClassVisiteSiteMeteo')
+    args['modeop'] = _value(element, 'ModeOperatoireUtiliseVisiteSiteMeteo')
+    return _sitemeteo.Visite(**args)
 
 def _tronconvigilance_from_element(element, version, tags):
     """Return a sitehydro.Tronconvigilance from a <TronconVigilanceSiteHydro>
@@ -890,17 +953,43 @@ def _capteur_from_element(element, version, tags):
         return _sitehydro.Capteur(**args)
 
 
-def _grandeur_from_element(element, sitemeteo=None):
+def _grandeur_from_element(element, sitemeteo=None, version=None, tags=None):
     """Return a sitemeteo.Grandeur from a <GrdMeteo> element."""
     if element is not None:
         # prepare args
         args = {}
         args['typemesure'] = _value(element, 'CdGrdMeteo')
+        args['dtmiseservice'] = _value(element, 'DtMiseServiceGrdMeteo')
+        args['dtfermeture'] = _value(element, 'DtFermetureServiceGrdMeteo')
+        args['essai'] = _value(element, 'EssaiGrdMeteo', bool)
         if sitemeteo is not None:
             args['sitemeteo'] = sitemeteo
-        args['pdt'] = _value(element, 'PasDeTempsNominalGrdMeteo', int)
+        if version >= '2':
+            args['surveillance'] = _value(element, 'ASurveillerGrdMeteo', bool)
+            args['delaiabsence'] = _value(element, 'DelaiAbsGrdMeteo', int)
+        args['pdt'] = _value(element, tags.pdtgrdmeteo, int)
+        args['classesqualite'] = [
+            _classequalite_from_element(e)
+            for e in element.findall(
+                'ClassesQualiteGrd/ClasseQualiteGrd')]
+        args['dtmaj'] = _value(element, 'DtMajGrdMeteo')
+        # TODO version 1 récupérer les seuils
         # build a Grandeur and return
         return _sitemeteo.Grandeur(**args)
+
+
+def _classequalite_from_element(element):
+    """Return a sitemeteo.ClasseQualite from a <ClasseQualiteGrd> element."""
+    if element is None:
+        return
+    args = {}
+    args['classe'] = _value(element, 'CdqClasseQualiteGrd', int)
+    dtvisite = _value(element, 'DtVisiteSiteMeteo')
+    if dtvisite is not None:
+        args['visite'] = _sitemeteo.Visite(dtvisite=dtvisite)
+    args['dtdeb'] = _value(element, 'DtDebutClasseQualiteGrd')
+    args['dtfin'] = _value(element, 'DtFinClasseQualiteGrd')
+    return _sitemeteo.ClasseQualite(**args)
 
 
 def _seuilhydro_from_element(element, sitehydro):
@@ -1720,8 +1809,8 @@ _intervenants_from_element = _global_function_builder(
 # _siteshydro_from_element = _global_function_builder(
 #     './SiteHydro', _sitehydro_from_element)
 # return a list of sitemeteo.Sitemeteo from a <SitesMeteo> element
-_sitesmeteo_from_element = _global_function_builder(
-    './SiteMeteo', _sitemeteo_from_element)
+# _sitesmeteo_from_element = _global_function_builder(
+#     './SiteMeteo', _sitemeteo_from_element)
 # return a list of Modeleprevision from a <ModelesPrevision> element
 _modelesprevision_from_element = _global_function_builder(
     './ModelePrevision', _modeleprevision_from_element)
@@ -1794,6 +1883,14 @@ def _siteshydro_from_element(elem, version, tags):
         for item in elem.findall('./SiteHydro'):
             siteshydro.append(_sitehydro_from_element(item, version, tags))
     return siteshydro
+
+
+def _sitesmeteo_from_element(elem, version, tags):
+    sitesmeteo = []
+    if elem is not None:
+        for item in elem.findall('./SiteMeteo'):
+            sitesmeteo.append(_sitemeteo_from_element(item, version, tags))
+    return sitesmeteo
 
 
 # these 2 functions doesn't fit with the _global_function_builder :-\

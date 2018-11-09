@@ -213,7 +213,8 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
         # sitesmeteo
         if args['sitesmeteo'] is not None:
             sub.append(_sitesmeteo_to_element(
-                args['sitesmeteo'], bdhydro=bdhydro, strict=strict))
+                args['sitesmeteo'], bdhydro=bdhydro, strict=strict,
+                version=version))
 
         # modelesprevision
         if args['modelesprevision'] is not None:
@@ -381,7 +382,7 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
 
     if sitehydro is not None:
 
-        if version == '2':
+        if version >= '2':
             tags = _sandre_tags.SandreTagsV2
         else:
             tags = _sandre_tags.SandreTagsV1
@@ -675,6 +676,11 @@ def _sitemeteo_to_element(sitemeteo, bdhydro=False, strict=True, version='1.1'):
 
     if sitemeteo is not None:
 
+        if version >= '2':
+            tags = _sandre_tags.SandreTagsV2
+        else:
+            tags = _sandre_tags.SandreTagsV1
+
         # prerequisites
         code = _codesitemeteo_to_value(sitemeteo, bdhydro, strict)
 
@@ -683,13 +689,38 @@ def _sitemeteo_to_element(sitemeteo, bdhydro=False, strict=True, version='1.1'):
             ('CdSiteMeteo', {'value': code}),
             ('LbSiteMeteo', {'value': sitemeteo.libelle}),
             ('LbUsuelSiteMeteo', {'value': sitemeteo.libelleusuel}),
+            ('MnSiteMeteo', {'value': sitemeteo.mnemo}),
+            ('LieuDitSiteMeteo', {'value': sitemeteo.lieudit}),
             ('CoordSiteMeteo', {
                 'value': None,
                 'force': True if sitemeteo.coord is not None else False}),
+            ('AltiSiteMeteo', {
+                'value': None,
+                'force': True if sitemeteo.altitude is not None else False}),
+            ('FuseauHoraireSiteMeteo', {'value': sitemeteo.fuseau}),
+            (tags.dtmajsitemeteo, {'value': datetime2iso(sitemeteo.dtmaj)}),
+            ('DtOuvertureSiteMeteo', {
+                'value': datetime2iso(sitemeteo.dtouverture)}),
+            ('DtFermSiteMeteo', {
+                'value': datetime2iso(sitemeteo.dtfermeture)}),
+            ('DroitPublicationSiteMeteo', {
+                'value': bool2xml(sitemeteo.droitpublication)}),
+            ('EssaiSiteMeteo', {'value': bool2xml(sitemeteo.essai)}),
+            ('ComSiteMeteo', {'value': sitemeteo.commentaire}),
+            ('ReseauxMesureSiteMeteo', {
+                'value': None,
+                'force': True if (len(sitemeteo.reseaux) > 0) else False}),
+            (tags.rolscontactsitemeteo, {
+                'value': None,
+                'force': True if (len(sitemeteo.roles) > 0) else False}),
+            ('CdZoneHydro', {'value': sitemeteo.zonehydro}),
             ('CdCommune', {'value': sitemeteo.commune}),
             ('GrdsMeteo', {
                 'value': None,
-                'force': True if (len(sitemeteo.grandeurs) > 0) else False})))
+                'force': True if (len(sitemeteo.grandeurs) > 0) else False}),
+            ('VisitesSiteMeteo', {
+                'value': None,
+                'force': True if (len(sitemeteo.visites) > 0) else False})))
 
         # update the coord if necessary
         if sitemeteo.coord is not None:
@@ -699,17 +730,77 @@ def _sitemeteo_to_element(sitemeteo, bdhydro=False, strict=True, version='1.1'):
                     ('CoordYSiteMeteo', {'value': sitemeteo.coord.y}),
                     ('ProjCoordSiteMeteo', {'value': sitemeteo.coord.proj})))}
 
+        # update the altitude if necessary
+        if sitemeteo.altitude is not None:
+            story['AltiSiteMeteo'] = {
+                'sub': _collections.OrderedDict((
+                    ('AltitudeSiteMeteo',{'value':
+                        sitemeteo.altitude.altitude}),
+                    ('SysAltimetriqueSiteMeteo', {'value':
+                        sitemeteo.altitude.sysalti})))}
+
+        # update reseaux if necessary
+        if len(sitemeteo.reseaux) > 0 and version < '2':
+            codesreseaux = [reseau.code for reseau in sitemeteo.reseaux]
+            story['ReseauxMesureSiteMeteo'] = {
+                'sub': {'CodeSandreRdd': {'value': codesreseaux}}}
+
         # make element <Sitemeteo>
         element = _factory(root=_etree.Element('SiteMeteo'), story=story)
+
+        # update reseaux if necessary
+        if len(sitemeteo.reseaux) > 0 and version >= '2':
+            child = element.find('ReseauxMesureSiteMeteo')
+            for reseau in sitemeteo.reseaux:
+                reseaustory = _collections.OrderedDict(
+                    (('CodeSandreRdd', {'value': reseau.code}),
+                     ('NomRdd', {'value': reseau.libelle})))
+
+                child.append(
+                        _factory(root=_etree.Element('RSX'),
+                                 story=reseaustory))
 
         # add the grandeurs if necessary
         if len(sitemeteo.grandeurs) > 0:
             child = element.find('GrdsMeteo')
             for grandeur in sitemeteo.grandeurs:
-                child.append(_grandeur_to_element(grandeur, strict=strict))
+                child.append(_grandeur_to_element(grandeur, strict=strict,
+                                                  version=version))
+
+        # add roles if necessary
+        if len(sitemeteo.roles) > 0:
+            child = element.find(tags.rolscontactsitemeteo)
+            for role in sitemeteo.roles:
+                child.append(_role_to_element(role=role,
+                                              version=version,
+                                              tags=tags,
+                                              entite='SiteMeteo'))
+
+        # add visites if necessary
+        if len(sitemeteo.visites) > 0:
+            child = element.find('VisitesSiteMeteo')
+            for visite in sitemeteo.visites:
+                child.append(_visite_to_element(visite))
 
         # return
         return element
+
+
+def _visite_to_element(visite):
+    """Return a <VisiteSiteMeteo> from a sitemeteo.Visite"""
+    if visite is None:
+        return
+    # template for tronconvigilance simple elements
+    story = _collections.OrderedDict((
+        ('DtVisiteSiteMeteo', {'value': datetime2iso(visite.dtvisite)}),
+        ('CdContact', {'value': visite.contact.code
+                       if visite.contact is not None else None}),
+        ('MethClassVisiteSiteMeteo', {'value': visite.methode}),
+        ('ModeOperatoireUtiliseVisiteSiteMeteo', {'value': visite.modeop})))
+
+    # action !
+    return _factory(
+        root=_etree.Element('VisiteSiteMeteo'), story=story)
 
 
 def _tronconvigilance_to_element(entitevigicrues, bdhydro=False, strict=True,
@@ -767,11 +858,11 @@ def _seuilhydro_to_element(seuilhydro, bdhydro=False, strict=True, version='1.1'
             ('LbUsuelSeuilSiteHydro', {'value': seuilhydro.libelle}),
             ('MnemoSeuilSiteHydro', {'value': seuilhydro.mnemo}),
             ('DroitPublicationSeuilSiteHydro', {
-                'value': str(seuilhydro.publication).lower() if
+                'value': bool2xml(seuilhydro.publication) if
                 seuilhydro.publication is not None else None}),
             ('IndiceGraviteSeuilSiteHydro', {'value': seuilhydro.gravite}),
             ('ValForceeSeuilSiteHydro', {
-                'value': str(seuilhydro.valeurforcee).lower()
+                'value': bool2xml(seuilhydro.valeurforcee)
                 if seuilhydro.valeurforcee is not None else None}),
             ('ComSeuilSiteHydro', {'value': seuilhydro.commentaire})))
 
@@ -864,10 +955,8 @@ def _station_to_element(station, bdhydro=False, strict=True, version='1.1'):
         dtmaj = datetime2iso(station.dtmaj)
         dtmiseservice = datetime2iso(station.dtmiseservice)
         dtfermeture = datetime2iso(station.dtfermeture)
-        surveillance = str(station.surveillance).lower() \
-            if station.surveillance is not None else None
-        essai = str(station.essai).lower() \
-            if station.essai is not None else None
+        surveillance = bool2xml(station.surveillance)
+        essai = bool2xml(station.essai)
         # template for station simple element
         story = _collections.OrderedDict((
             ('CdStationHydro', {'value': station.code}),
@@ -1155,7 +1244,7 @@ def _plage_to_element(plage, entite):
             'value': datetime2iso(plage.dtdesactivation)}
     if plage.active is not None:
         story['ActivePlageUtil{}'.format(entite)] = {
-            'value': str(plage.active).lower()}
+            'value': bool2xml(plage.active)}
 
     # action !
     return _factory(root=_etree.Element('PlageUtil{}'.format(entite)),
@@ -1222,12 +1311,12 @@ def _capteur_to_element(capteur, bdhydro=False, strict=True, version='1.1'):
             _required(capteur, ['libelle'])
 
         if capteur.surveillance is not None:
-            surveillance = str(capteur.surveillance).lower()
+            surveillance = bool2xml(capteur.surveillance)
         else:
             surveillance = None
 
         if capteur.essai is not None:
-            essai = str(capteur.essai).lower()
+            essai = bool2xml(capteur.essai)
         else:
             essai = None
 
@@ -1276,17 +1365,67 @@ def _grandeur_to_element(grandeur, bdhydro=False, strict=True, version='1.1'):
 
     if grandeur is not None:
 
+        if version >= '2':
+            tags = _sandre_tags.SandreTagsV2
+        else:
+            tags = _sandre_tags.SandreTagsV1
+
         # prerequisites
         if strict:
             _required(grandeur, ['typemesure'])
 
+        surveillance = None
+        delaiabsence = None
+        if version >= '2':
+            # surveillance and delai only Sandre V2
+            surveillance = bool2xml(grandeur.surveillance)
+            delaiabsence = grandeur.delaiabsence
+
         # template for grandeur simple element
         story = _collections.OrderedDict((
             ('CdGrdMeteo', {'value': grandeur.typemesure}),
-            ('PasDeTempsNominalGrdMeteo', {'value': grandeur.pdt})))
+            ('DtMiseServiceGrdMeteo', {'value':
+                datetime2iso(grandeur.dtmiseservice)}),
+            ('DtFermetureServiceGrdMeteo', {'value':
+                datetime2iso(grandeur.dtfermeture)}),
+            ('EssaiGrdMeteo', {'value': bool2xml(grandeur.essai)}),
+            ('ASurveillerGrdMeteo', {'value': surveillance}),
+            ('DelaiAbsGrdMeteo', {'value': delaiabsence}),
+            (tags.pdtgrdmeteo, {'value': grandeur.pdt}),
+            ('ClassesQualiteGrd', {
+                'value': None,
+                'force': True if len(grandeur.classesqualite) > 0 else False}),
+            ('DtMajGrdMeteo', {'value': datetime2iso(grandeur.dtmaj)})))
 
         # action !
-        return _factory(root=_etree.Element('GrdMeteo'), story=story)
+        element = _factory(root=_etree.Element('GrdMeteo'), story=story)
+
+        if len(grandeur.classesqualite) > 0:
+            child = element.find('ClassesQualiteGrd')
+            for classequalite in grandeur.classesqualite:
+                child.append(_classequalite_to_element(classequalite))
+
+        return element
+
+
+def _classequalite_to_element(classequalite):
+    """Return a <ClasseQualiteGrd> from a sitemeteo.ClasseQualite"""
+    if classequalite is None:
+        return
+    dtvisite = None
+    if classequalite.visite is not None:
+        dtvisite = datetime2iso(classequalite.visite.dtvisite)
+
+    # template for classequalite simple element
+    story = _collections.OrderedDict((
+        ('CdqClasseQualiteGrd', {'value': classequalite.classe}),
+        ('DtVisiteSiteMeteo', {'value': dtvisite}),
+        ('DtDebutClasseQualiteGrd', {'value':
+            datetime2iso(classequalite.dtdeb)}),
+        ('DtFinClasseQualiteGrd', {'value':
+            datetime2iso(classequalite.dtfin)})))
+
+    return _factory(root=_etree.Element('ClasseQualiteGrd'), story=story)
 
 
 def _modeleprevision_to_element(modeleprevision, bdhydro=False, strict=True, version='1.1'):
@@ -1308,7 +1447,6 @@ def _modeleprevision_to_element(modeleprevision, bdhydro=False, strict=True, ver
 
         # make element <modeleprevision> and return
         return _factory(root=_etree.Element('ModelePrevision'), story=story)
-
 
 def _evenement_to_element(evenement, bdhydro=False, strict=True, version='1.1'):
     """Return a <Evenement> element from a evenement.Evenement."""
@@ -1746,7 +1884,7 @@ def _seriehydro_to_element(seriehydro, bdhydro=False, strict=True,
             story[tags.sysaltiseriehydro] = {'value': str(seriehydro.sysalti)}
         if seriehydro.perime is not None:
             story[tags.serieperimhydro] = {
-                'value': str(seriehydro.perime).lower()}
+                'value': bool2xml(seriehydro.perime)}
 
         if seriehydro.pdt is not None:
             story[tags.pdtseriehydro] = {'value': str(seriehydro.pdt.to_int())}
@@ -1952,7 +2090,7 @@ def _simulation_to_element(simulation, bdhydro=False, strict=True, version='1.1'
                 'value': str(simulation.statut)
                 if simulation.statut is not None else None}),
             ('PubliSimul', {
-                'value': str(simulation.public).lower()
+                'value': bool2xml(simulation.public)
                 if simulation.public is not None else 'false'}),
             ('ComSimul', {'value': simulation.commentaire})))
         # entite can be a Sitehydro or a Station
@@ -2223,7 +2361,7 @@ def _serieobselab_v2(serieobselab, bdhydro=False, strict=True):
 
     if serieobselab.glissante is not None:
         _etree.SubElement(element, 'GlissanteSerieObsElaborHydro').text = \
-            str(serieobselab.glissante).lower()
+            bool2xml(serieobselab.glissante)
 
     if serieobselab.dtdebrefalti is not None:
         _etree.SubElement(element, 'DtDebutRefAlti').text = \
@@ -2544,9 +2682,9 @@ def date2iso(date):
     return ('{0.year:04d}-{0.month:02d}-{0.day:02d}').format(date)
 
 
-def bool2xml(text):
+def bool2xml(boolean):
     """Conversion boolean en texte"""
-    return str(text).lower() if text is not None else None
+    return str(boolean).lower() if boolean is not None else None
 
 
 def _required(obj, attrs):

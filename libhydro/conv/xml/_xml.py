@@ -266,7 +266,7 @@ class Message(object):
             siteshydro=_from_xml._siteshydro_from_element(
                 tree.find('RefHyd/SitesHydro'), scenario.version, tags),
             sitesmeteo=_from_xml._sitesmeteo_from_element(
-                tree.find('RefHyd/SitesMeteo')),
+                tree.find('RefHyd/SitesMeteo'), scenario.version, tags),
             seuilshydro=_from_xml._seuilshydro_from_element(
                 element=tree.find('RefHyd/SitesHydro'),
                 version=scenario.version, tags=tags,
