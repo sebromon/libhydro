@@ -54,11 +54,11 @@ class TestSitemeteo(unittest.TestCase):
                 m.code, m.libelle, m.libelleusuel,
                 m.mnemo, m.lieudit, m.coord, m.altitude, m.fuseau, m.dtmaj,
                 m.dtouverture, m.dtfermeture, m.droitpublication, m.essai,
-                m.commentaire, m.reseaux, m.roles, m.zonehydro, m.commune,
-                m.grandeurs, m.visites
+                m.commentaire, m.images, m.reseaux, m.roles, m.zonehydro,
+                m.commune, m.grandeurs, m.visites
             ),
             (code, None, None, None, None, None, None, None, None, None, None,
-             None, None, None, [], [], None, None, [], [])
+             None, None, None, [], [], [], None, None, [], [])
         )
         # same with 8 chars code
         shortcode = '21301001'
@@ -82,6 +82,11 @@ class TestSitemeteo(unittest.TestCase):
         droitpublication = False
         essai = True
         commentaire = 'Commentaire'
+
+        images = [composant_site.Image(adresse='http://www.toto.fr'),
+                  composant_site.Image(adresse='http://www.tata.fr',
+                                       typeill=2)]
+        
         reseaux = [composant_site.ReseauMesure(code='RESEAU',
                                                libelle='Libellé réseau')]
         roles = [_rolecontact.RoleContact(contact=_intervenant.Contact('134'),
@@ -103,7 +108,7 @@ class TestSitemeteo(unittest.TestCase):
             lieudit=lieudit, coord=coord, altitude=altitude, fuseau=fuseau,
             dtmaj=dtmaj, dtouverture=dtouverture, dtfermeture=dtfermeture,
             droitpublication=droitpublication, essai=essai,
-            commentaire=commentaire, reseaux=reseaux, roles=roles,
+            commentaire=commentaire, images=images, reseaux=reseaux, roles=roles,
             zonehydro=zonehydro, commune=commune, grandeurs=grandeur,
             visites=visites)
 
@@ -113,15 +118,15 @@ class TestSitemeteo(unittest.TestCase):
                 m.code, m.libelle, m.libelleusuel,
                 m.mnemo, m.lieudit, m.coord, m.altitude, m.fuseau, m.dtmaj,
                 m.dtouverture, m.dtfermeture, m.droitpublication, m.essai,
-                m.commentaire, m.reseaux, m.roles, m.zonehydro, m.commune,
+                m.commentaire, m.images, m.reseaux, m.roles, m.zonehydro, m.commune,
                 m.grandeurs, m.visites
             ),
             (
                 code, libelle, libelleusuel, mnemo, lieudit,
                 composant_site.Coord(*coord), altitude, fuseau, dtmaj,
                 dtouverture, dtfermeture, droitpublication, essai,
-                commentaire, reseaux, roles, zonehydro, str(commune),
-                [grandeur], visites
+                commentaire, images, reseaux, roles, zonehydro,
+                str(commune), [grandeur], visites
             )
         )
         grandeur.sitemeteo = m
@@ -323,6 +328,18 @@ class TestSitemeteo(unittest.TestCase):
         for zonehydro in [151.8, 'A1234567']:
             with self.assertRaises(Exception):
                 sitemeteo.Sitemeteo(code=code, zonehydro=zonehydro)
+
+    def test_images(self):
+        """images test"""
+        code = '023510101'
+        img1 = composant_site.Image(adresse='http://www.toto.fr')
+        img2 = composant_site.Image(adresse='http://www.tata.fr',
+                                    typeill=2)
+        for images in [None, [], img1, [img2], [img1, img2]]:
+            sitemeteo.Sitemeteo(code=code, images=images)
+        for images in ['www.toto.fr', ['www.toto.fr'], [img1, 'toto']]:
+            with self.assertRaises(Exception):
+                sitemeteo.Sitemeteo(code=code, images=images)
 
 
 # -- class TestGrandeur -------------------------------------------------------

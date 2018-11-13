@@ -499,3 +499,39 @@ class RefAlti(object):
         )
 
     __str__ = _composant.__str__
+
+
+class Image(object):
+    """Classe Image
+
+    Classe pour manipuler des images associées à des entités hydro
+    ou sites météo
+    """
+    typeill = _composant.Nomenclatureitem(nomenclature=524)
+
+    def __init__(self, adresse, typeill=None, image=None,
+                 formatimg=None, commentaire=None):
+        self.adresse = str(adresse) \
+            if adresse is not None else None
+
+        # -- adjust the descriptor --
+        vars(self.__class__)['typeill'].required = False
+
+        self.typeill = typeill
+
+        self.image = bytes(image) if image is not None else None
+
+        self.formatimg = str(formatimg) \
+            if formatimg is not None else None
+        self.commentaire = str(commentaire) \
+            if commentaire is not None else None
+
+    def __unicode__(self):
+        """Return unicode representation."""
+
+        typeill = _NOMENCLATURE[524][self.typeill].lower() \
+            if self.typeill is not None else '<Sans type>'
+        return 'Image de type {0} à l\'adresse: {1}'.format(
+            typeill, self.adresse)
+
+    __str__ = _composant.__str__

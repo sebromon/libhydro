@@ -1013,6 +1013,20 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(
             site.entitesvigicrues[1].libelle, 'Troncon Adour àvâl')
         self.assertEqual(site.entitehydro, 'Y1524018')
+
+        self.assertEqual(len(site.images), 2)
+        image0 = site.images[0]
+        self.assertEqual((image0.adresse, image0.typeill,
+                          image0.formatimg, image0.commentaire),
+                         ('http://image1.jpeg', 1,
+                          'image/jpeg', 'Commentaire'))
+        image1 = site.images[1]
+        self.assertEqual((image1.adresse, image1.typeill,
+                          image1.formatimg, image1.commentaire),
+                         ('http://image2.bmp', 2,
+                          'image/bmp', None))
+
+
         self.assertEqual(site.tronconhydro, 'O0011532')
         self.assertEqual(site.zonehydro, 'H420')
         self.assertEqual(site.precisioncoursdeau, 'bras principal')
@@ -1179,6 +1193,17 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         loi2 = station.loisstat[2]
         self.assertEqual(loi2.contexte, 2)
         self.assertEqual(loi2.loi, 3)
+
+        self.assertEqual(len(station.images), 2)
+        image0 = station.images[0]
+        self.assertEqual((image0.adresse, image0.typeill, image0.formatimg,
+                          image0.commentaire),
+                         ('http://toto.fr/station.png', 2, 'png',
+                          'Image de la station'))
+        image1 = station.images[1]
+        self.assertEqual((image1.adresse, image1.typeill, image1.formatimg,
+                          image1.commentaire),
+                         ('http://tata.fr/station2.bmp', None, None, None))
 
         self.assertEqual(len(station.roles), 2)
         rol0 = station.roles[0]
@@ -1420,6 +1445,18 @@ class TestFromXmlSitesMeteo(unittest.TestCase):
         self.assertTrue(sm.droitpublication)
         self.assertFalse(sm.essai)
         self.assertEqual(sm.commentaire, 'Commentaire')
+
+        self.assertEqual(len(sm.images), 2)
+        image0 = sm.images[0]
+        self.assertEqual((image0.adresse, image0.typeill, image0.formatimg,
+                          image0.commentaire),
+                         ('http://xxxxxxx', 3, 'image/jpeg ',
+                          'Photo d\'ensemble depuis le nord'))
+        image1 = sm.images[1]
+        self.assertEqual((image1.adresse, image1.typeill, image1.formatimg,
+                          image1.commentaire),
+                         ('http://toto.fr/img.png', None, None, None))
+
         self.assertEqual(len(sm.reseaux), 2)
         self.assertEqual(sm.reseaux[0].code, '10')
         self.assertEqual(sm.reseaux[1].code, '100000003')

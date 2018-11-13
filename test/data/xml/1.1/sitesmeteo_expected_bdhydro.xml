@@ -38,14 +38,17 @@
         <DroitPublicationSiteMeteo>true</DroitPublicationSiteMeteo>
         <EssaiSiteMeteo>false</EssaiSiteMeteo>
         <ComSiteMeteo>Commentaire</ComSiteMeteo>
-        <!-- <ImagesSiteMeteo> -->
-        <!--   <ImageSiteMeteo> -->
-        <!--     <AdressedelImageSiteMeteo>http://xxxxxxx</AdressedelImageSiteMeteo> -->
-        <!--     <TypIllSiteMeteo>3</TypIllSiteMeteo> -->
-        <!--     <FormatIllSiteMeteo>image/jpeg </FormatIllSiteMeteo> -->
-        <!--     <ComImgSiteMeteo>Photo d'ensemble depuis le nord</ComImgSiteMeteo> -->
-        <!--   </ImageSiteMeteo> -->
-        <!-- </ImagesSiteMeteo> -->
+        <ImagesSiteMeteo>
+          <ImageSiteMeteo>
+            <AdressedelImageSiteMeteo>http://xxxxxxx</AdressedelImageSiteMeteo>
+            <TypIllSiteMeteo>3</TypIllSiteMeteo>
+            <FormatIllSiteMeteo>image/jpeg </FormatIllSiteMeteo>
+            <ComImgSiteMeteo>Photo d'ensemble depuis le nord</ComImgSiteMeteo>
+          </ImageSiteMeteo>
+          <ImageSiteMeteo>
+			  <AdressedelImageSiteMeteo>http://toto.fr/img.png</AdressedelImageSiteMeteo>
+          </ImageSiteMeteo>
+        </ImagesSiteMeteo>
         <ReseauxMesureSiteMeteo>
           <CodeSandreRdd>10</CodeSandreRdd>
           <CodeSandreRdd>100000003</CodeSandreRdd>

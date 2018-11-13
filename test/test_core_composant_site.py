@@ -22,7 +22,8 @@ from __future__ import (
 import unittest
 import datetime as _datetime
 
-from libhydro.core import _composant_site as composant_site
+from libhydro.core import (_composant_site as composant_site,
+                           nomenclature as _nomenclature)
 
 
 # -- strings ------------------------------------------------------------------
@@ -511,3 +512,43 @@ class TestReseauMesure(unittest.TestCase):
         for code in [None, '12345678901']:
             with self.assertRaises(Exception):
                 composant_site.ReseauMesure(code=code, libelle=libelle)
+
+
+# -- class TestImage -----------------------------------------------
+class TestImage(unittest.TestCase):
+    """Image class tests."""
+
+    def test_01(self):
+        adresse = 'http://www.toto.fr'
+        img = composant_site.Image(adresse=adresse)
+        self.assertEqual((img.adresse, img.typeill, img.image, img.formatimg,
+                          img.commentaire),
+                         (adresse, None, None, None, None))
+
+    def test_02(self):
+        adresse = 'http://www.toto.fr'
+        typeill = 2
+        image = b'aei'
+        formatimg = 'png'
+        commentaire = 'Commentaire'
+        img = composant_site.Image(adresse=adresse, typeill=typeill,
+                                   image=image, formatimg=formatimg,
+                                   commentaire=commentaire)
+        self.assertEqual((img.adresse, img.typeill, img.image, img.formatimg,
+                          img.commentaire),
+                         (adresse, typeill, image, formatimg, commentaire))
+
+    def test_str_01(self):
+        adresse = 'http://www.toto.fr'
+        img = composant_site.Image(adresse=adresse)
+        strimg = img.__unicode__()
+        self.assertTrue(strimg.find(adresse) > -1)
+
+    def test_str_02(self):
+        adresse = 'http://www.toto.fr'
+        typeill = 3
+        img = composant_site.Image(adresse=adresse, typeill=typeill)
+        strimg = img.__unicode__()
+        self.assertTrue(strimg.find(adresse) > -1)
+        self.assertTrue(strimg.find(
+            _nomenclature.NOMENCLATURE[524][typeill].lower()) > -1)

@@ -452,6 +452,9 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
         if len(sitehydro.loisstat) > 0:
             story['LoisStatContexteSiteHydro'] = {'value': None, 'force': True}
 
+        if len(sitehydro.images) > 0:
+            story['ImagesSiteHydro'] = {'value': None, 'force': True}
+
         if len(sitehydro.roles) > 0:
             story[tags.rolscontactsitehydro] = {'value': None, 'force': True}
 
@@ -540,6 +543,13 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
                 child.append(_loistat_to_element(loistat=loistat,
                                                  entite='SiteHydro'))
 
+        # add images if necessary
+        if len(sitehydro.images) > 0:
+            child = element.find('ImagesSiteHydro')
+            for image in sitehydro.images:
+                child.append(_image_to_element(image=image,
+                                                 entite='SiteHydro'))
+
         # add roles if necessary
         if len(sitehydro.roles) > 0:
             child = element.find(tags.rolscontactsitehydro)
@@ -572,6 +582,21 @@ def _sitehydro_to_element(sitehydro, seuilshydro=None,
 
         # return
         return element
+
+
+def _image_to_element(image, entite):
+    """Return a <Image*>  from a _composant_site.Image"""
+    if image is None:
+        return
+
+    story = _collections.OrderedDict((
+        ('AdressedelImage' + entite, {'value': image.adresse}),
+        ('TypIll' + entite, {'value': image.typeill}),
+        ('FormatIll' + entite, {'value': image.formatimg}),
+        ('ComImg' + entite, {'value': image.commentaire})))
+
+    return _factory(root=_etree.Element('Image' + entite), story=story)
+
 
 
 def _role_to_element(role, version, tags, entite):
@@ -707,6 +732,9 @@ def _sitemeteo_to_element(sitemeteo, bdhydro=False, strict=True, version='1.1'):
                 'value': bool2xml(sitemeteo.droitpublication)}),
             ('EssaiSiteMeteo', {'value': bool2xml(sitemeteo.essai)}),
             ('ComSiteMeteo', {'value': sitemeteo.commentaire}),
+            ('ImagesSiteMeteo', {
+                'value': None,
+                'force': True if (len(sitemeteo.images) > 0) else False}),
             ('ReseauxMesureSiteMeteo', {
                 'value': None,
                 'force': True if (len(sitemeteo.reseaux) > 0) else False}),
@@ -747,6 +775,12 @@ def _sitemeteo_to_element(sitemeteo, bdhydro=False, strict=True, version='1.1'):
 
         # make element <Sitemeteo>
         element = _factory(root=_etree.Element('SiteMeteo'), story=story)
+
+        # update images if necessary
+        if len(sitemeteo.images) > 0:
+            child = element.find('ImagesSiteMeteo')
+            for image in sitemeteo.images:
+                child.append(_image_to_element(image, 'SiteMeteo'))
 
         # update reseaux if necessary
         if len(sitemeteo.reseaux) > 0 and version >= '2':
@@ -1012,6 +1046,10 @@ def _station_to_element(station, bdhydro=False, strict=True, version='1.1'):
                     'value': None,
                     'force': True if len(station.loisstat) > 0
                         else None}),
+            ('ImagesStationHydro', {
+                    'value': None,
+                    'force': True if len(station.images) > 0
+                        else None}),
             (tags.rolscontactstationhydro, {
                     'value': None,
                     'force': True if len(station.roles) > 0
@@ -1135,6 +1173,12 @@ def _station_to_element(station, bdhydro=False, strict=True, version='1.1'):
             child = element.find('LoisStatContexteStationHydro')
             for loistat in station.loisstat:
                 child.append(_loistat_to_element(loistat, 'StationHydro'))
+
+        # add images if necessary
+        if len(station.images) > 0:
+            child = element.find('ImagesStationHydro')
+            for image in station.images:
+                child.append(_image_to_element(image, 'StationHydro'))
 
         # add roles if necessary
         if len(station.roles) > 0:

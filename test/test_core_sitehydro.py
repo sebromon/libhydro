@@ -66,7 +66,7 @@ class TestSitehydro(unittest.TestCase):
                 s.bvhydro, s.altitude, s.fuseau, s.statut, s.dtpremieredonnee,
                 s.moisetiage, s.moisanneehydro, s.dureecrues, s.publication,
                 s.essai, s.influence, s.influencecommentaire, s.commentaire,
-                s.siteassocie, s.sitesattaches, s.loisstat, s.roles,
+                s.siteassocie, s.sitesattaches, s.loisstat, s.images, s.roles,
                 s.entitesvigicrues, s.lamesdeau, s.sitesamont, s.sitesaval
             ),
             (code, None, 'REEL', None, None,
@@ -76,7 +76,7 @@ class TestSitehydro(unittest.TestCase):
              None, None, None, None, None,
              None, None, None, None,
              None, None, None, None,
-             None, [], [], [], [],
+             None, [], [], [], [], [],
              [], [], [])
         )
 
@@ -126,6 +126,10 @@ class TestSitehydro(unittest.TestCase):
         loi1 = composant_site.LoiStat(contexte=1, loi=2)
         loi2 = composant_site.LoiStat(contexte=2, loi=1)
         loisstat = [loi1, loi2]
+
+        images = [composant_site.Image(adresse='http://www.toto.fr'),
+                  composant_site.Image(adresse='http://www.tata.fr',
+                                       typeill=2)]
 
         role1 = _rolecontact.RoleContact(contact=_intervenant.Contact('1234'),
                                          role='PRV')
@@ -187,7 +191,7 @@ class TestSitehydro(unittest.TestCase):
             commentaire=commentaire,
             siteassocie=siteassocie,
             sitesattaches=sitesattaches,
-            loisstat=loisstat,
+            loisstat=loisstat, images=images,
             roles=roles,
             entitesvigicrues=entitesvigicrues,
             lamesdeau=lamesdeau,
@@ -204,7 +208,7 @@ class TestSitehydro(unittest.TestCase):
                 s.bvhydro, s.altitude, s.fuseau, s.statut, s.dtpremieredonnee,
                 s.moisetiage, s.moisanneehydro, s.dureecrues, s.publication,
                 s.essai, s.influence, s.influencecommentaire, s.commentaire,
-                s.siteassocie, s.sitesattaches, s.loisstat, s.roles,
+                s.siteassocie, s.sitesattaches, s.loisstat, s.images, s.roles,
                 s.entitesvigicrues, s.lamesdeau, s.sitesamont, s.sitesaval
             ),
             (
@@ -215,7 +219,7 @@ class TestSitehydro(unittest.TestCase):
                 bvhydro, altitude, fuseau, statut, dtpremieredonnee,
                 moisetiage, moisanneehydro, dureecrues, publication,
                 essai, influence, influencecommentaire, commentaire,
-                siteassocie, sitesattaches, loisstat, roles,
+                siteassocie, sitesattaches, loisstat, images, roles,
                 entitesvigicrues, lamesdeau, sitesamont, sitesaval
             )
         )
@@ -566,6 +570,18 @@ class TestSitehydro(unittest.TestCase):
             with self.assertRaises(Exception):
                 sitehydro.Sitehydro(code='L4545456', loisstat=lois)
 
+    def test_images(self):
+        """images test"""
+        code = 'A1234567'
+        img1 = composant_site.Image(adresse='http://www.toto.fr')
+        img2 = composant_site.Image(adresse='http://www.tata.fr',
+                                    typeill=2)
+        for images in [None, [], img1, [img2], [img1, img2]]:
+            sitehydro.Sitehydro(code=code, images=images)
+        for images in ['www.toto.fr', ['www.toto.fr'], [img1, 'toto']]:
+            with self.assertRaises(Exception):
+                sitehydro.Sitehydro(code=code, images=images)
+
     def test_error_xx_roles(self):
         role1 = _rolecontact.RoleContact(contact=_intervenant.Contact('1234'),
                                          role='PRV')
@@ -730,7 +746,7 @@ class TestStation(unittest.TestCase):
                 s.delaiabsence, s.essai, s.influence,
                 s.influencecommentaire, s.commentaire,
                 s.stationsanterieures, s.stationsposterieures,
-                s.qualifsdonnees, s.finalites, s.loisstat,
+                s.qualifsdonnees, s.finalites, s.loisstat, s.images,
                 s.roles, s.capteurs, s.refsalti, s.commune,
                 s.reseaux, s.plages, s.stationsamont, s.stationsaval,
                 s.plagesstationsfille, s.plagesstationsmere),
@@ -744,7 +760,7 @@ class TestStation(unittest.TestCase):
                 None, None, None,
                 None, None,
                 [], [],
-                [], [], [],
+                [], [], [], [],
                 [], [], [], None,
                 [], [], [], [],
                 [], []))
@@ -785,6 +801,10 @@ class TestStation(unittest.TestCase):
         loi1 = composant_site.LoiStat(contexte=1, loi=2)
         loi2 = composant_site.LoiStat(contexte=2, loi=1)
         loisstat = [loi1, loi2]
+
+        images = [composant_site.Image(adresse='http://www.toto.fr'),
+                  composant_site.Image(adresse='http://www.tata.fr',
+                                       typeill=2)]
 
         role1 = _rolecontact.RoleContact(contact=_intervenant.Contact('1234'),
                                          role='PRV')
@@ -852,7 +872,7 @@ class TestStation(unittest.TestCase):
             stationsanterieures=stationsanterieures,
             stationsposterieures=stationsposterieures,
             qualifsdonnees=qualifsdonnees, finalites=finalites,
-            loisstat=loisstat, roles=roles, capteurs=capteurs,
+            loisstat=loisstat, images=images, roles=roles, capteurs=capteurs,
             refsalti=refsalti, commune=commune, reseaux=reseaux, plages=plages,
             stationsamont=stationsamont, stationsaval=stationsaval,
             plagesstationsfille=plagesstationsfille,
@@ -869,7 +889,7 @@ class TestStation(unittest.TestCase):
                 s.delaiabsence, s.essai, s.influence,
                 s.influencecommentaire, s.commentaire,
                 s.stationsanterieures, s.stationsposterieures,
-                s.qualifsdonnees, s.finalites, s.loisstat,
+                s.qualifsdonnees, s.finalites, s.loisstat, s.images,
                 s.roles, s.capteurs, s.refsalti, s.commune,
                 s.reseaux, s.plages, s.stationsamont, s.stationsaval,
                 s.plagesstationsfille, s.plagesstationsmere),
@@ -883,7 +903,7 @@ class TestStation(unittest.TestCase):
                 delaiabsence, essai, influence,
                 influencecommentaire, commentaire,
                 stationsanterieures, stationsposterieures,
-                qualifsdonnees, finalites, loisstat,
+                qualifsdonnees, finalites, loisstat, images,
                 roles, capteurs, refsalti, commune,
                 [reseaux], plages, stationsamont, stationsaval,
                 plagesstationsfille, plagesstationsmere))
@@ -1091,6 +1111,18 @@ class TestStation(unittest.TestCase):
                 args[arg] = value
                 with self.assertRaises(Exception):
                     sitehydro.Station(**args)
+
+    def test_images(self):
+        """images test"""
+        code = 'Z987654321'
+        img1 = composant_site.Image(adresse='http://www.toto.fr')
+        img2 = composant_site.Image(adresse='http://www.tata.fr',
+                                    typeill=2)
+        for images in [None, [], img1, [img2], [img1, img2]]:
+            sitehydro.Station(code=code, images=images)
+        for images in ['www.toto.fr', ['www.toto.fr'], [img1, 'toto']]:
+            with self.assertRaises(Exception):
+                sitehydro.Station(code=code, images=images)
 
 
 # -- class TestCapteur --------------------------------------------------------

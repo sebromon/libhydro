@@ -166,18 +166,20 @@
             <TypLoiSiteHydro>3</TypLoiSiteHydro>
           </LoiStatContexteSiteHydro>
         </LoisStatContexteSiteHydro>
-        <!-- <ImagesSiteHydro> -->
-        <!--   <ImageSiteHydro> -->
-        <!--     <AdressedelImageSiteHydro>http://image1.jpeg</AdressedelImageSiteHydro> -->
-        <!--     <TypIllSiteHydro>1</TypIllSiteHydro> -->
-        <!--     <FormatIllSiteHydro>image/jpeg</FormatIllSiteHydro> -->
-        <!--   </ImageSiteHydro> -->
-        <!--   <ImageSiteHydro> -->
-        <!--     <AdressedelImageSiteHydro>http://image2.bmp</AdressedelImageSiteHydro> -->
-        <!--     <TypIllSiteHydro>2</TypIllSiteHydro> -->
-        <!--     <FormatIllSiteHydro>image/bmp</FormatIllSiteHydro> -->
-        <!--   </ImageSiteHydro> -->
-        <!-- </ImagesSiteHydro> -->
+        <ImagesSiteHydro>
+          <ImageSiteHydro>
+            <AdressedelImageSiteHydro>http://image1.jpeg</AdressedelImageSiteHydro>
+            <TypIllSiteHydro>1</TypIllSiteHydro> 
+            <!-- <ImageIllSiteHydro>ufuighfgsyhgjhguyguyzegéhhhehfjfgbjàgjfdhb</ImageIllSiteHydro> -->
+            <FormatIllSiteHydro>image/jpeg</FormatIllSiteHydro>
+            <ComImgSiteHydro>Commentaire</ComImgSiteHydro>
+          </ImageSiteHydro>
+          <ImageSiteHydro>
+            <AdressedelImageSiteHydro>http://image2.bmp</AdressedelImageSiteHydro>
+            <TypIllSiteHydro>2</TypIllSiteHydro> 
+            <FormatIllSiteHydro>image/bmp</FormatIllSiteHydro>
+          </ImageSiteHydro>
+        </ImagesSiteHydro>
         <RolsContactSiteHydro>
             <RolContactSiteHydro>
                 <CdContact schemeAgencyID="SANDRE">2</CdContact>
@@ -280,6 +282,17 @@
                 <TypLoiStationHydro>3</TypLoiStationHydro>
               </LoiStatContexteStationHydro>
             </LoisStatContexteStationHydro>
+             <ImagesStationHydro>
+				<ImageStationHydro>
+					<AdressedelImageStationHydro>http://toto.fr/station.png</AdressedelImageStationHydro>
+					<TypIllStationHydro>2</TypIllStationHydro>
+					<FormatIllStationHydro>png</FormatIllStationHydro>
+					<ComImgStationHydro>Image de la station</ComImgStationHydro>
+				</ImageStationHydro>
+				<ImageStationHydro>
+					<AdressedelImageStationHydro>http://tata.fr/station2.bmp</AdressedelImageStationHydro>
+				</ImageStationHydro>
+            </ImagesStationHydro>
             <RolsContactStationHydro>
               <RolContactStationHydro>
                 <CdContact schemeAgencyID="SANDRE">2</CdContact>

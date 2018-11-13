@@ -496,6 +496,11 @@ def _sitehydro_from_element(element, version, tags):
             for e in element.findall(
                 'LoisStatContexteSiteHydro/LoiStatContexteSiteHydro')]
 
+        args['images'] = [
+            _image_from_element(e, 'SiteHydro')
+            for e in element.findall(
+                'ImagesSiteHydro/ImageSiteHydro')]
+
         args['roles'] = [
             _role_from_element(e, version, tags, 'SiteHydro')
                 for e in element.findall(
@@ -516,6 +521,17 @@ def _sitehydro_from_element(element, version, tags):
         # args['sitesaval'] = _value(element, 'MnSiteHydro')
         # build a Sitehydro and return
         return _sitehydro.Sitehydro(**args)
+
+# TODO read ImageIll element which contains an image
+def _image_from_element(element, entite):
+    """Return a _composant_site.Image from <Image*> element"""
+    args = {}
+    args['adresse'] = _value(element, 'AdressedelImage' + entite)
+    args['typeill'] = _value(element, 'TypIll' + entite, int)
+    # args['image'] = _value(element, 'ImageIll' + entite, str)
+    args['formatimg'] = _value(element, 'FormatIll' + entite)
+    args['commentaire'] = _value(element, 'ComImg' + entite)
+    return _composant_site.Image(**args)
 
 
 def _role_from_element(element, version, tags, entite):
@@ -610,6 +626,11 @@ def _sitemeteo_from_element(element, version, tags):
         args['droitpublication'] = _value(element, 'DroitPublicationSiteMeteo', bool)
         args['essai'] = _value(element, 'EssaiSiteMeteo', bool)
         args['commentaire'] = _value(element, 'ComSiteMeteo')
+
+        args['images'] = [_image_from_element(e, 'SiteMeteo')
+            for e in element.findall(
+                'ImagesSiteMeteo/ImageSiteMeteo')]
+
         args['commune'] = _value(element, 'CdCommune')
 
         if version >= '2':
@@ -763,7 +784,11 @@ def _station_from_element(element, version, tags):
         args['loisstat'] = [_loistat_from_element(e, 'StationHydro')
             for e in element.findall(
                 'LoisStatContexteStationHydro/LoiStatContexteStationHydro')]
-        
+
+        args['images'] = [_image_from_element(e, 'StationHydro')
+            for e in element.findall(
+                'ImagesStationHydro/ImageStationHydro')]
+
         rolestags = '{}/{}'.format(tags.rolscontactstationhydro,
                                    tags.rolcontactstationhydro)
         args['roles'] = [_role_from_element(

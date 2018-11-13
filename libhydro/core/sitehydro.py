@@ -162,7 +162,7 @@ class _Site_or_station(_Entitehydro):
 
     def __init__(self, code, codeh2=None, libelle=None, coord=None, roles=None,
                  influence=None, influencecommentaire=None, commentaire=None,
-                 loisstat=None, strict=True):
+                 loisstat=None, images=None, strict=True):
         """Constructor.
 
         Arguments:
@@ -189,6 +189,9 @@ class _Site_or_station(_Entitehydro):
         self.roles = roles
         self._loisstat = []
         self.loisstat = loisstat
+        self._images = []
+        self.images = images
+
 
     # -- property coord --
     @property
@@ -265,6 +268,33 @@ class _Site_or_station(_Entitehydro):
                                 'an iterable of role.Role')
         self._roles = roles
 
+    # -- property images --
+    @property
+    def images(self):
+        """Return images."""
+        return self._images
+
+    @images.setter
+    def images(self, images):
+        """Set images."""
+        self._images = []
+        # None case
+        if images is None:
+            return
+        # one grandeur, we make a list with it
+        if isinstance(images, _composant_site.Image):
+            images = [images]
+        # an iterable of images
+        for image in images:
+            # some checks
+            if self._strict:
+                if not isinstance(image, _composant_site.Image):
+                    raise TypeError(
+                        'images must be a Image or an iterable '
+                        'of Image'
+                    )
+            # add capteur
+            self._images.append(image)
 
 # -- class Sitehydro ----------------------------------------------------------
 class Sitehydro(_Site_or_station):
@@ -312,6 +342,8 @@ class Sitehydro(_Site_or_station):
         sitesattaches (iterable of Sitehydroattache) = sites attachés
         massedeau (unidoe ou None) = masse d'eau
         loisstat (iterable of _composant_site.LoiStat = lois statistiques
+        images (_composant_site.Image r iterbale of _composant_site.Image)
+            = images du site
         roles (iterable of rolecontact.RoleContact) = roles des contacts
         entitesvigicrues (iterable of _composant_site.EntiteVigiCrues) =
             entités de vigilance crues
@@ -343,7 +375,7 @@ class Sitehydro(_Site_or_station):
                  moisanneehydro=None, dureecrues=None, publication=None,
                  essai=None, influence=None, influencecommentaire=None,
                  commentaire=None, siteassocie=None, sitesattaches=None,
-                 massedeau=None, loisstat=None, roles=None,
+                 massedeau=None, loisstat=None, images=None, roles=None,
                  entitesvigicrues=None, lamesdeau=None, sitesamont=None,
                  sitesaval=None, strict=True):
         """Initialisation.
@@ -388,6 +420,8 @@ class Sitehydro(_Site_or_station):
             sitesattaches (iterable of Sitehydroattache) = sites attachés
             massedeau (unidoe ou None) = masse d'eau
             loisstat (iterable of _composant_site.LoiStat = lois statistiques
+            images (_composant_site.Image r iterbale of _composant_site.Image)
+                = images du site
             roles (iterable of rolecontact.RoleContact) = roles des contacts
             entitesvigicrues (iterable of _composant_site.EntiteVigiCrues) =
                 entités de vigilance crues
@@ -404,7 +438,7 @@ class Sitehydro(_Site_or_station):
             code=code, codeh2=codeh2, libelle=libelle,
             coord=coord, roles=roles, influence=influence,
             influencecommentaire=influencecommentaire, commentaire=commentaire,
-            loisstat=loisstat, strict=strict)
+            loisstat=loisstat, images=images, strict=strict)
 
         # -- adjust the descriptor --
         vars(Sitehydro)['typesite'].strict = self._strict
@@ -892,7 +926,7 @@ class Sitehydro(_Site_or_station):
         'moisanneehydro', 'dureecrues', 'publication',
         'essai', 'influence', 'influencecommentaire',
         'commentaire', 'siteassocie', 'sitesattaches',
-        'massedeau', 'loisstat', 'roles', 'entitesvigicrues',
+        'massedeau', 'loisstat', 'images', 'roles', 'entitesvigicrues',
         'lamesdeau', 'sitesamont', 'sitesaval')
 
     def __unicode__(self):
@@ -1045,6 +1079,8 @@ class Station(_Site_or_station):
         finalites (int ou iterable de int parmi NOMENCLATURE[522]) =
             finalités
         loisstat (LoiStat or iterable of LoiStat)= lois statistiques
+        images (_composant_site.Image r iterbale of _composant_site.Image)
+            = images de la station
         roles (RoleContact ou iterable de RoleContact) = roles des contacts,
         capteurs (un Capteur ou un iterable de Capteur)
         refsalti (RefAlti ou iterable de RefAlti) = références altimétriques
@@ -1080,8 +1116,8 @@ class Station(_Site_or_station):
                  influencecommentaire=None, commentaire=None,
                  stationsanterieures=None, stationsposterieures=None,
                  qualifsdonnees=None, finalites=None, loisstat=None,
-                 roles=None, capteurs=None, refsalti=None, commune=None,
-                 reseaux=None, plages=None, stationsamont=None,
+                 images=None, roles=None, capteurs=None, refsalti=None,
+                 commune=None, reseaux=None, plages=None, stationsamont=None,
                  stationsaval=None, plagesstationsfille=None,
                  plagesstationsmere=None,
                  strict=True):
@@ -1122,6 +1158,8 @@ class Station(_Site_or_station):
             finalites (int ou iterable de int parmi NOMENCLATURE[522]) =
                 finalités
             loisstat (LoiStat or iterable of LoiStat)= lois statistiques
+            images (_composant_site.Image r iterbale of _composant_site.Image)
+                = images de la station
             roles (RoleContact ou iterable de RoleContact) =
                 roles des contacts,
             capteurs (un Capteur ou un iterable de Capteur)
@@ -1147,8 +1185,8 @@ class Station(_Site_or_station):
         super(Station, self).__init__(
             code=code, codeh2=codeh2, libelle=libelle, coord=coord,
             influence=influence, influencecommentaire=influencecommentaire,
-            commentaire=commentaire, loisstat=loisstat, roles=roles,
-            strict=strict)
+            commentaire=commentaire, loisstat=loisstat, images=images,
+            roles=roles, strict=strict)
 
         # -- adjust the descriptor --
         vars(Station)['typestation'].strict = self._strict
@@ -1598,7 +1636,7 @@ class Station(_Site_or_station):
                       'delaiabsence', 'essai', 'influence',
                       'influencecommentaire', 'commentaire',
                       'stationsanterieures', 'stationsposterieures',
-                      'qualifsdonnees', 'finalites', 'loisstat',
+                      'qualifsdonnees', 'finalites', 'loisstat', 'images',
                       'roles', 'capteurs', 'refsalti', 'commune',
                       'reseaux', 'plages', 'stationsamont', 'stationsaval',
                       'plagesstationsfille', 'plagesstationsmere')

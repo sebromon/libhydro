@@ -40,15 +40,17 @@
         <DroitPublicationSiteMeteo>true</DroitPublicationSiteMeteo>
         <EssaiSiteMeteo>0</EssaiSiteMeteo>
         <ComSiteMeteo>Commentaire</ComSiteMeteo>
-        <!-- <ImagesSiteMeteo>
+        <ImagesSiteMeteo>
           <ImageSiteMeteo>
             <AdressedelImageSiteMeteo>http://xxxxxxx</AdressedelImageSiteMeteo>
             <TypIllSiteMeteo>3</TypIllSiteMeteo>
             <FormatIllSiteMeteo>image/jpeg </FormatIllSiteMeteo>
             <ComImgSiteMeteo>Photo d'ensemble depuis le nord</ComImgSiteMeteo>
           </ImageSiteMeteo>
-        </ImagesSiteMeteo> -->
-        
+          <ImageSiteMeteo>
+			  <AdressedelImageSiteMeteo>http://toto.fr/img.png</AdressedelImageSiteMeteo>
+          </ImageSiteMeteo>
+        </ImagesSiteMeteo>        
         <ReseauxMesureSiteMeteo>
           <CodeSandreRdd>10</CodeSandreRdd>
           <CodeSandreRdd>100000003</CodeSandreRdd>

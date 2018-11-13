@@ -64,6 +64,8 @@ class Sitemeteo(object):
         droitpublication (bool) = publication publiques
         essai (bool ou None) = site d'essai
         commentaire (str ou None) = commentaire
+        images (_composant_site.Image r iterbale of _composant_site.Image)
+            = images du site
         reseaux (_composant_site.ReseauMesure
             or iterable of _composant_site.ReseauMesure)
             = réseaux de mesure
@@ -89,7 +91,7 @@ class Sitemeteo(object):
         self, code, libelle=None, libelleusuel=None, mnemo=None, lieudit=None,
         coord=None, altitude=None, fuseau=None, dtmaj=None, dtouverture=None,
         dtfermeture=None, droitpublication=None, essai=None, commentaire=None,
-        reseaux=None, roles=None, zonehydro=None, commune=None,
+        images=None, reseaux=None, roles=None, zonehydro=None, commune=None,
         grandeurs=None, visites=None, strict=True
     ):
         """Initialisation.
@@ -112,6 +114,8 @@ class Sitemeteo(object):
             droitpublication (bool) = publication publiques
             essai (bool ou None) = site d'essai
             commentaire (str ou None) = commentaire
+            images (_composant_site.Image r iterbale of _composant_site.Image)
+                = images du site
             reseaux (_composant_site.ReseauMesure
                 or iterable of _composant_site.ReseauMesure)
                 = réseaux de mesure
@@ -155,6 +159,8 @@ class Sitemeteo(object):
         self.droitpublication = droitpublication
         self._essai = None
         self.essai = essai
+        self._images = []
+        self.images = images
         self._reseaux = []
         self.reseaux = reseaux
         self._roles = []
@@ -284,6 +290,37 @@ class Sitemeteo(object):
             self._essai = None
         else:
             self._essai = bool(essai)
+
+
+    # -- property images --
+    @property
+    def images(self):
+        """Return images."""
+        return self._images
+
+    @images.setter
+    def images(self, images):
+        """Set images."""
+        self._images = []
+        # None case
+        if images is None:
+            return
+        # one grandeur, we make a list with it
+        if isinstance(images, _composant_site.Image):
+            images = [images]
+        # an iterable of images
+        for image in images:
+            # some checks
+            if self._strict:
+                if not isinstance(image, _composant_site.Image):
+                    raise TypeError(
+                        'images must be a Image or an iterable '
+                        'of Image'
+                    )
+            # add capteur
+            self._images.append(image)
+
+
 
     # -- property reseaux --
     @property

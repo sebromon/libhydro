@@ -298,6 +298,13 @@ NOMENCLATURE = {
         'HR': "Humidite relative",
         'HA': "Humidite absolue"},
 
+    # Type d'illustration de l'image
+    524: {
+        1: 'Localisation générale',
+        2: 'Localisation précise',
+        3: 'Photo'
+    },
+
     # Type du modele de prevision
     525: {
         0: "Inconnu",
