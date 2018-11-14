@@ -102,7 +102,7 @@ class TestFromXmlIntervenants(unittest.TestCase):
         self.assertEqual(i.nom, 'Nom')
         self.assertEqual(i.mnemo, 'Mnemo')
         # contacts
-        self.assertEqual(len(i.contacts), 2)
+        self.assertEqual(len(i.contacts), 3)
         c = i.contacts[0]
         self.assertEqual(c.code, '1')
         self.assertEqual(c.nom, 'Nom')
@@ -117,6 +117,13 @@ class TestFromXmlIntervenants(unittest.TestCase):
         self.assertEqual(c.civilite, 2)
         self.assertEqual(c.intervenant, i)
         self.assertEqual(c.profilasstr, '010')
+        c = i.contacts[2]
+        self.assertEqual(c.code, '999')
+        self.assertIsNone(c.nom)
+        self.assertIsNone(c.prenom)
+        self.assertIsNone(c.civilite)
+        self.assertEqual(c.intervenant, i)
+        self.assertEqual(c.profilasstr, '000')
 
     def test_intervenant_1(self):
         """intervenant 1 test."""

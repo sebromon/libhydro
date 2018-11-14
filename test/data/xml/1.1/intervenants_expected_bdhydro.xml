@@ -123,6 +123,10 @@
             <!-- <DtActivationContact>2001-12-17T09:30:47</DtActivationContact> -->
             <!-- <DtDesactivationContact>2001-12-17T09:30:47</DtDesactivationContact> -->
           </Contact>
+          <Contact>
+			  <CdContact schemeAgencyID="SANDRE">999</CdContact>
+			  <ProfilContact>000</ProfilContact>
+          </Contact>
         </Contacts>
         <!-- <PaysComplementIntervenant>Str</PaysComplementIntervenant> -->
         <!-- <AdEtrangereComplementIntervenant>String</AdEtrangereComplementIntervenant> -->
