@@ -24,7 +24,8 @@ import numpy as _numpy
 from libhydro.core import (
     _composant, sitehydro as _sitehydro, sitemeteo as _sitemeteo,
     seuil as _seuil, courbetarage as _courbetarage,
-    obsmeteo as _obsmeteo, nomenclature as _nomenclature)
+    obsmeteo as _obsmeteo, nomenclature as _nomenclature,
+    intervenant as _intervenant)
 
 from libhydro.conv.xml import sandre_tags as _sandre_tags
 
@@ -346,6 +347,9 @@ def _contact_to_element(contact, bdhydro=False, strict=True, version='1.1'):
         if strict:
             _required(contact, ['code'])
 
+        adresse = contact.adresse if contact.adresse is not None \
+            else _intervenant.Adresse()
+
         # template for contact simple elements
         story = _collections.OrderedDict((
             # FIXME - this tag can be factorize
@@ -362,10 +366,58 @@ def _contact_to_element(contact, bdhydro=False, strict=True, version='1.1'):
             ('PrenomContact', {'value': contact.prenom}),
             ('CiviliteContact', {'value': contact.civilite}),
             ('ProfilContact', {'value': contact.profilasstr}),
-            ('MotPassContact', {'value': contact.motdepasse})))
+            ('AdContact', {'value': adresse.adresse1}),
+            ('AdEtrangereContact', {'value': adresse.adresse2}),
+            ('CpContact', {'value': adresse.codepostal}),
+            ('VilleContact', {'value': adresse.ville}),
+            ('FonctionContact', {'value': contact.fonction}),
+            ('TelephoneContact', {'value': contact.telephone}),
+            ('PortContact', {'value': contact.portable}),
+            ('FaxContact', {'value': contact.fax}),
+            ('MelContact', {'value': contact.mel}),
+            ('PaysContact', {'value': adresse.pays}),
+            ('DateMajContact', {'value': datetime2iso(contact.dtmaj)}),
+            ('ProfilsAdminLocal', {
+                'value': None,
+                'force': True if len(contact.profilsadmin) > 0 else False}),
+            ('AliasContact', {'value': contact.alias}),
+            ('MotPassContact', {'value': contact.motdepasse}),
+            ('DtActivationContact', {'value': datetime2iso(contact.dtactivation)}),
+            ('DtDesactivationContact', {
+                'value': datetime2iso(contact.dtdesactivation)})))
 
         # make element <Contact> and return
-        return _factory(root=_etree.Element('Contact'), story=story)
+        element = _factory(root=_etree.Element('Contact'), story=story)
+
+        # add profilsadmin if necessary
+        if len(contact.profilsadmin) > 0:
+            child = element.find('ProfilsAdminLocal')
+            for profiladmin in contact.profilsadmin:
+                child.append(_contactprofiladmin_to_element(profiladmin))
+
+        # return
+        return element
+
+
+def _contactprofiladmin_to_element(profil):
+    """Return a <ProfilAdminLocal> element
+    from _intervenant.ProfilAdminLocal
+    """
+    if profil is None:
+        return
+    story = _collections.OrderedDict((
+        ('CdProfilAdminLocal', {'value': profil.profil}),
+        ('ZonesHydro', {
+            'value': None,
+            'sub': _collections.OrderedDict((
+                    ('CdZoneHydro', {'value': profil.zoneshydro}), ))}),
+        ('DtActivationProfilAdminLocal', {
+            'value': datetime2iso(profil.dtactivation)}),
+        ('DtDesactivationProfilAdminLocal', {
+            'value': datetime2iso(profil.dtdesactivation)})
+        ))
+
+    return _factory(root=_etree.Element('ProfilAdminLocal'), story=story)
 
 
 def _sitehydro_to_element(sitehydro, seuilshydro=None,

@@ -222,6 +222,7 @@ class TestMessage(unittest.TestCase):
         self.file_serelab = os.path.join(FILES_PATH, 'obsselaboree.xml')
         self.file_serelabmeteo = os.path.join(FILES_PATH,
                                               'obsselaboreemeteo.xml')
+        self.file_inter = os.path.join(FILES_PATH, 'intervenants.xml')
 
         # XML version2
         self.file_serh_v2 = os.path.join(FILES_PATH_V2, 'serieshydro.xml')
@@ -235,6 +236,7 @@ class TestMessage(unittest.TestCase):
         self.file_eve_v2 = os.path.join(FILES_PATH_V2, 'evenements.xml')
         self.file_sith_v2 = os.path.join(FILES_PATH_V2, 'siteshydro.xml')
         self.file_sitm_v2 = os.path.join(FILES_PATH_V2, 'sitesmeteo.xml')
+        self.file_inter_v2 = os.path.join(FILES_PATH_V2, 'intervenants.xml')
 
         self.tmp_dir = tempfile.mkdtemp(prefix='test_xml_')
         self.tmp_file = tempfile.mktemp(dir=self.tmp_dir)
@@ -433,6 +435,18 @@ class TestMessage(unittest.TestCase):
         msg = Message.from_file(self.file_sitm_v2)
         msg.write(self.tmp_file, force=True, version='2')
         self.assertNotEqual(msg.sitesmeteo, [])
+
+    def test_base_28(self):
+        """Message from file intervenants Sandre V2"""
+        msg = Message.from_file(self.file_inter_v2)
+        msg.write(self.tmp_file, force=True, version='2')
+        self.assertNotEqual(msg.intervenants, [])
+
+    def test_base_29(self):
+        """Message from file intervenants Sandre V1.1"""
+        msg = Message.from_file(self.file_inter)
+        msg.write(self.tmp_file, force=True, version='1.1')
+        self.assertNotEqual(msg.intervenants, [])
 
     def test_str_01(self):
         """Test __str__ method with basic values."""

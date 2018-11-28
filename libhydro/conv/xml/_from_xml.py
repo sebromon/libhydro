@@ -416,9 +416,53 @@ def _contact_from_element(element, intervenant=None):
         profil = _value(element, 'ProfilContact')
         if profil is not None:
             args['profil'] = profil
+        args['adresse'] = _contact_adresse_from_element(element)
+        args['fonction'] = _value(element, 'FonctionContact')
+        args['telephone'] = _value(element, 'TelephoneContact')
+        args['portable'] = _value(element, 'PortContact')
+        args['fax'] = _value(element, 'FaxContact')
+        args['mel'] = _value(element, 'MelContact')
+        args['dtmaj'] = _value(element, 'DateMajContact')
+        args['profilsadmin'] = [
+            _contact_profiladmin_from_element(ele)
+            for ele in element.findall(
+                                    'ProfilsAdminLocal/ProfilAdminLocal')]
+        args['alias'] = _value(element, 'AliasContact')
         args['motdepasse'] = _value(element, 'MotPassContact')
+        args['dtactivation'] = _value(element, 'DtActivationContact')
+        args['dtdesactivation'] = _value(element, 'DtDesactivationContact')
+
         # build a Contact and return
         return _intervenant.Contact(**args)
+
+
+def _contact_adresse_from_element(element):
+    """Return a intervenant.Adresse from a <Contact> element."""
+    if element is None:
+        return
+    args = {}
+    args['adresse1'] = _value(element, 'AdContact')
+    args['adresse2'] = _value(element, 'AdEtrangereContact')
+    args['codepostal'] = _value(element, 'CpContact')
+    args['ville'] = _value(element, 'VilleContact')
+    args['pays'] = _value(element, 'PaysContact')
+    return _intervenant.Adresse(**args)
+
+
+def _contact_profiladmin_from_element(element):
+    """Return a intervenant.ProfilAdminLocal
+    from a <ProfilAdminLocal> element
+    """
+    if element is None:
+        return
+    args = {}
+    args['profil'] = _value(element, 'CdProfilAdminLocal')
+    args['zoneshydro'] = [
+        str(e.text) for e in element.findall('ZonesHydro/CdZoneHydro')]
+    args['dtactivation'] = _value(element, 'DtActivationProfilAdminLocal')
+    args['dtdesactivation'] = _value(
+        element, 'DtDesactivationProfilAdminLocal')
+    return _intervenant.ProfilAdminLocal(**args)
 
 
 def _sitehydro_from_element(element, version, tags):

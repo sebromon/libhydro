@@ -45,41 +45,39 @@
             <PrenomContact>Prenom</PrenomContact>
             <CiviliteContact>1</CiviliteContact>
             <ProfilContact>001</ProfilContact>
-            <!-- <AdContact>String</AdContact> -->
-            <!-- <AdEtrangereContact>String</AdEtrangereContact> -->
-            <!-- <CpContact>3.14159265358979</CpContact> -->
-            <!-- <VilleContact>String</VilleContact> -->
-            <!-- <FonctionContact>String</FonctionContact> -->
-            <!-- <TelephoneContact>String</TelephoneContact> -->
-            <!-- <PortContact>String</PortContact> -->
-            <!-- <FaxContact>String</FaxContact> -->
-            <!-- <MelContact>String</MelContact> -->
-            <!-- <PaysContact>Str</PaysContact> -->
-            <!-- <DateMajContact>2001-12-17T09:30:47</DateMajContact> -->
-            <!-- <ProfilsAdminLocal> -->
-            <!--   <ProfilAdminLocal> -->
-            <!--     <CdProfilAdminLocal>GEST</CdProfilAdminLocal> -->
-            <!--     <ZonesHydro> -->
-            <!--       <CdZoneHydro>toke</CdZoneHydro> -->
-            <!--       <CdZoneHydro>toke</CdZoneHydro> -->
-            <!--     </ZonesHydro> -->
-            <!--     <DtActivationProfilAdminLocal>2001-12-17T09:30:47</DtActivationProfilAdminLocal> -->
-            <!--     <DtDesactivationProfilAdminLocal>2001-12-17T09:30:49</DtDesactivationProfilAdminLocal> -->
-            <!--   </ProfilAdminLocal> -->
-            <!--   <ProfilAdminLocal> -->
-            <!--     <CdProfilAdminLocal>GEST</CdProfilAdminLocal> -->
-            <!--     <ZonesHydro> -->
-            <!--       <CdZoneHydro>toke</CdZoneHydro> -->
-            <!--       <CdZoneHydro>toke</CdZoneHydro> -->
-            <!--     </ZonesHydro> -->
-            <!--     <DtActivationProfilAdminLocal>2001-12-17T09:30:47</DtActivationProfilAdminLocal> -->
-            <!--     <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47</DtDesactivationProfilAdminLocal> -->
-            <!--   </ProfilAdminLocal> -->
-            <!-- </ProfilsAdminLocal> -->
-            <!-- <AliasContact>String</AliasContact> -->
+            <AdContact>Adresse</AdContact>
+            <AdEtrangereContact>Adresse étrangère</AdEtrangereContact>
+            <CpContact>31000</CpContact>
+            <VilleContact>Toulouse</VilleContact>
+            <FonctionContact>Hydromètre</FonctionContact>
+            <TelephoneContact>0000</TelephoneContact>
+            <PortContact>0600</PortContact>
+            <FaxContact>Fax</FaxContact>
+            <MelContact>Mail</MelContact>
+            <PaysContact>FR</PaysContact>
+            <DateMajContact>2015-02-03T12:10:38</DateMajContact>
+            <ProfilsAdminLocal>
+              <ProfilAdminLocal>
+                <CdProfilAdminLocal>GEST</CdProfilAdminLocal>
+                <ZonesHydro>
+                  <CdZoneHydro>A123</CdZoneHydro>
+                  <CdZoneHydro>Z987</CdZoneHydro>
+                </ZonesHydro>
+                <DtActivationProfilAdminLocal>2004-04-15T17:18:19</DtActivationProfilAdminLocal>
+                <DtDesactivationProfilAdminLocal>2005-08-10T13:36:43</DtDesactivationProfilAdminLocal>
+              </ProfilAdminLocal>
+              <ProfilAdminLocal>
+                <CdProfilAdminLocal>JAU</CdProfilAdminLocal>
+                <ZonesHydro>
+                  <CdZoneHydro>L000</CdZoneHydro>
+                  <CdZoneHydro>K444</CdZoneHydro>
+                </ZonesHydro>
+              </ProfilAdminLocal>
+            </ProfilsAdminLocal>
+            <AliasContact>ALIAS</AliasContact>
             <MotPassContact>mot de passe</MotPassContact>
-            <!-- <DtActivationContact>2001-12-17T09:30:47</DtActivationContact> -->
-            <!-- <DtDesactivationContact>2001-12-17T09:30:47</DtDesactivationContact> -->
+            <DtActivationContact>2001-12-17T09:30:47</DtActivationContact>
+            <DtDesactivationContact>2013-10-25T11:45:36</DtDesactivationContact>
           </Contact>
           <Contact>
             <CdContact>2</CdContact>

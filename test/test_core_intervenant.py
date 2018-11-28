@@ -17,6 +17,7 @@ from __future__ import (
     division as _division, print_function as _print_function)
 
 import unittest
+from datetime import datetime
 
 from libhydro.core import intervenant
 
@@ -164,8 +165,11 @@ class TestContact(unittest.TestCase):
         c = intervenant.Contact(code=code)
         self.assertEqual(
             (c.code, c.nom, c.prenom, c.civilite, c.intervenant,
-             c.profil, c.motdepasse),
-            (code, None, None, None, None, 0, None))
+             c.profil, c.adresse, c.fonction, c.telephone, c.portable, c.fax,
+             c.mel, c.dtmaj, c.profilsadmin, c.alias, c.motdepasse,
+             c.dtactivation, c.dtdesactivation),
+            (code, None, None, None, None, 0, None, None, None, None, None,
+             None, None, [], None, None, None, None))
 
     def test_base_02(self):
         """Base Contact."""
@@ -175,14 +179,38 @@ class TestContact(unittest.TestCase):
         civilite = 3
         profil = 7  # 0b111
         motdepasse = 'mdp'
+        adresse = intervenant.Adresse(ville='Paris',
+                                      adresse1='18 rue toto',
+                                      codepostal='31000',
+                                      pays='FR')
+        telephone = '00000'
+        portable = '060000'
+        fax = '99'
+        mel = 'toto@tata.fr'
+        alias = 'ALIAS'
+        dtactivation = datetime(2012, 7, 2, 10, 30, 50)
+        dtdesactivation = datetime(2015, 3, 22, 18, 15, 25)
         i = intervenant.Intervenant(code=5)
+        fonction = 'Hydromètre'
+        dtmaj = datetime(2017, 12, 15, 10, 54, 37)
+        profil1 = intervenant.ProfilAdminLocal(profil='GEST', zoneshydro='A123')
+        profil2 = intervenant.ProfilAdminLocal(profil='JAU', zoneshydro='R444')
+        profilsadmin = [profil1, profil2]
         c = intervenant.Contact(
             code=code, nom=nom, prenom=prenom, civilite=civilite,
-            intervenant=i, profil=profil, motdepasse=motdepasse)
+            intervenant=i, profil=profil, adresse=adresse, fonction=fonction,
+            telephone=telephone, portable=portable, fax=fax, mel=mel,
+            dtmaj=dtmaj, profilsadmin=profilsadmin, alias=alias,
+            motdepasse=motdepasse, dtactivation=dtactivation,
+            dtdesactivation=dtdesactivation)
         self.assertEqual(
             (c.code, c.nom, c.prenom, c.civilite, c.intervenant,
-             c.profil, c.motdepasse),
-            (code, nom, prenom, civilite, i, 7, motdepasse))
+             c.profil, c.adresse, c.fonction, c.telephone, c.portable, c.fax,
+             c.mel, c.dtmaj, c.profilsadmin, c.alias, c.motdepasse,
+             c.dtactivation, c.dtdesactivation),
+            (code, nom, prenom, civilite, i, profil, adresse, fonction,
+             telephone, portable, fax, mel, dtmaj, profilsadmin, alias,
+             motdepasse, dtactivation, dtdesactivation))
 
     def test_profil(self):
         """Test profil."""
@@ -315,3 +343,140 @@ class TestContact(unittest.TestCase):
             intervenant.Contact()
         with self.assertRaises(TypeError):
             intervenant.Contact(code=None)
+
+    def test_adresse(self):
+        adr = intervenant.Adresse('Toulouse')
+        for adresse in [None, adr]:
+            intervenant.Contact(code='9999', adresse=adresse)
+        for adresse in ['Toulouse', 5]:
+            with self.assertRaises(Exception):
+                intervenant.Contact(code='9999', adresse=adresse)
+
+    def test_profilsadmin(self):
+        profil1 = intervenant.ProfilAdminLocal(profil='GEST', zoneshydro='A123')
+        profil2 = intervenant.ProfilAdminLocal(profil='JAU', zoneshydro='R444')
+        for profilsadmin in [None, [], profil1, [profil1, profil2]]:
+            intervenant.Contact(code='9999', profilsadmin=profilsadmin)
+        for profilsadmin in ['JAU', [profil1, 'GEST']]:
+            with self.assertRaises(Exception):
+                intervenant.Contact(code='9999', profilsadmin=profilsadmin)
+
+# -- class TestContact --------------------------------------------------------
+class TestAdresse(unittest.TestCase):
+
+    """Contact class tests."""
+
+    def test_simple(self):
+        ville = 'Toulouse'
+        adr = intervenant.Adresse(ville=ville)
+        self.assertEqual(adr.ville, ville)
+
+    def test_full_adresse(self):
+        ville = 'Bordeaux'
+        adresse1 = '17 rue toto'
+        adresse2 = '134 avenue tata'
+        codepostal = '33000'
+        boitepostale = 'boîte postale'
+        pays = 'FR'
+        adr = intervenant.Adresse(ville=ville, adresse1=adresse1,
+                                  adresse2=adresse2, boitepostale=boitepostale,
+                                  codepostal=codepostal, pays=pays)
+        self.assertEqual((adr.ville, adr.adresse1, adr.adresse2,
+                          adr.boitepostale, adr.codepostal, adr.pays),
+                         (ville, adresse1, adresse2,
+                          boitepostale, codepostal, pays))
+
+    def test_str_01(self):
+        ville = 'Agen'
+        adresse1 = '5 rue toto'
+        codepostal = '12345'
+        pays = 'FR'
+        adr = intervenant.Adresse(ville=ville, adresse1=adresse1,
+                                  codepostal=codepostal, pays=pays)
+        adrstr = adr.__str__()
+        self.assertTrue(adrstr.find(ville) > -1)
+        self.assertTrue(adrstr.find(adresse1) > -1)
+        self.assertTrue(adrstr.find(codepostal) > -1)
+        self.assertTrue(adrstr.find(pays) > -1)
+
+    def test_str_02(self):
+        ville = None
+        adr = intervenant.Adresse(ville=ville)
+        adrstr = adr.__str__()
+        self.assertTrue(adrstr.find('sans ville') > -1)
+
+    def test_pays(self):
+        ville = 'Madrid'
+        pays = 'ES'
+        intervenant.Adresse(ville=ville, pays=pays)
+        for pays in ['Espagne', 'E', 5]:
+            with self.assertRaises(Exception):
+                intervenant.Adresse(ville=ville, pays=pays)
+
+
+# -- class TestProfilAdminLocal -----------------------------------------------
+class TestProfilAdminLocal(unittest.TestCase):
+
+    """Contact class tests."""
+    def test_simple(self):
+        profil = 'GEST'
+        zoneshydro = ['A123']
+        pal = intervenant.ProfilAdminLocal(profil=profil,
+                                           zoneshydro=zoneshydro)
+        self.assertEqual((pal.profil, pal.zoneshydro, pal.dtactivation,
+                          pal.dtdesactivation),
+                         (profil, zoneshydro, None, None))
+
+    def test_full(self):
+        profil = 'JAU'
+        zoneshydro = ['A123', 'Z987']
+        dtactivation = datetime(2015, 10, 14, 10, 20, 30)
+        dtdesactivation = datetime(2017, 1, 17, 18, 19, 15)
+        pal = intervenant.ProfilAdminLocal(profil=profil,
+                                           zoneshydro=zoneshydro,
+                                           dtactivation=dtactivation,
+                                           dtdesactivation=dtdesactivation)
+        self.assertEqual((pal.profil, pal.zoneshydro, pal.dtactivation,
+                          pal.dtdesactivation),
+                         (profil, zoneshydro, dtactivation, dtdesactivation))
+
+    def test_profil(self):
+        zoneshydro = 'B000'
+        for profil in ['JAU', 'GEST']:
+            intervenant.ProfilAdminLocal(profil=profil, zoneshydro=zoneshydro)
+        for profil in [None, 'Gestionnaire']:
+            with self.assertRaises(Exception):
+                intervenant.ProfilAdminLocal(profil=profil,
+                                             zoneshydro=zoneshydro)
+
+    def test_zonehydro(self):
+        profil = 'GEST'
+        for zoneshydro in ['A123', ['A123'], ['A123', 'B456']]:
+            intervenant.ProfilAdminLocal(profil=profil, zoneshydro=zoneshydro)
+        for zoneshydro in [None, [], ['A'], ['A12345'], ['A123', 'B12']]:
+            with self.assertRaises(Exception):
+                intervenant.ProfilAdminLocal(profil=profil,
+                                             zoneshydro=zoneshydro)
+
+    def test_str_01(self):
+        profil = 'GEST'
+        zoneshydro = 'A123'
+        pal = intervenant.ProfilAdminLocal(profil=profil, zoneshydro=zoneshydro)
+        palstr = pal.__str__()
+        self.assertTrue(palstr.find(zoneshydro) > -1)
+        self.assertTrue(palstr.find(profil) > -1)
+
+    def test_str_02(self):
+        profil = 'GEST'
+        zoneshydro = ['A123', 'Z999']
+        dtactivation = datetime(2015, 10, 14, 10, 20, 30)
+        dtdesactivation = datetime(2017, 1, 17, 18, 19, 15)
+        pal = intervenant.ProfilAdminLocal(profil=profil, zoneshydro=zoneshydro,
+                                           dtactivation=dtactivation,
+                                           dtdesactivation=dtdesactivation)
+        palstr = pal.__unicode__()
+        for zonehydro in zoneshydro:
+            self.assertTrue(palstr.find(zonehydro) > -1)
+        self.assertTrue(palstr.find(profil) > -1)
+        self.assertTrue(palstr.find(str(dtactivation)) > -1)
+        self.assertTrue(palstr.find(str(dtdesactivation)) > -1)

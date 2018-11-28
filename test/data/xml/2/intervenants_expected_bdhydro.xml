@@ -2,7 +2,7 @@
 <hydrometrie>
   <Scenario>
     <CodeScenario>hydrometrie</CodeScenario>
-    <VersionScenario>1.1</VersionScenario>
+    <VersionScenario>2</VersionScenario>
     <NomScenario>Echange de données hydrométriques</NomScenario>
     <DateHeureCreationFichier>2001-12-17T04:30:47</DateHeureCreationFichier>
     <!-- <RefFichier>modele.xml</RefFichier> -->

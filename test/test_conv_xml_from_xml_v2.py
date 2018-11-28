@@ -49,6 +49,131 @@ __date__ = '2017-09-05'
 # V0.1 - 2013-08-24
 #   first shot
 
+# -- class TestFromXmlIntervenants --------------------------------------------
+class TestFromXmlIntervenants(unittest.TestCase):
+
+    """FromXmlIntervenants class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '2', 'intervenants.xml'))
+
+    def test_base(self):
+        """Check Keys test."""
+        self.assertEqual(
+            set(self.data.keys()),
+            set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
+                 'seuilshydro', 'modelesprevision', 'evenements',
+                 'courbestarage', 'jaugeages', 'courbescorrection',
+                 'serieshydro', 'seriesmeteo', 'seriesobselab',
+                 'seriesobselabmeteo', 'simulations')))
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertNotEqual(self.data['intervenants'], [])
+        self.assertEqual(self.data['siteshydro'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['simulations'], [])
+
+    def test_scenario(self):
+        """Scenario test."""
+        scenario = self.data['scenario']
+        self.assertEqual(scenario.code, 'hydrometrie')
+        self.assertEqual(scenario.version, '2')
+        self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
+        self.assertEqual(
+            scenario.dtprod, datetime.datetime(2001, 12, 17, 4, 30, 47))
+        self.assertEqual(scenario.emetteur.intervenant.code, 1537)
+        self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
+        self.assertEqual(scenario.emetteur.contact.code, '525')
+        self.assertEqual(
+            scenario.destinataire.intervenant.code, 12345671234567)
+        self.assertEqual(scenario.destinataire.intervenant.origine, 'SIRET')
+        self.assertEqual(scenario.destinataire.contact.code, '2')
+
+    def test_intervenant_0(self):
+        """intervenant 0 test."""
+        # intervenant
+        i = self.data['intervenants'][0]
+        self.assertEqual(i.code, 11)
+        self.assertEqual(i.origine, 'SANDRE')
+        self.assertEqual(i.nom, 'Nom')
+        self.assertEqual(i.mnemo, 'Mnemo')
+        # contacts
+        self.assertEqual(len(i.contacts), 3)
+        c = i.contacts[0]
+        self.assertEqual(c.code, '1')
+        self.assertEqual(c.nom, 'Nom')
+        self.assertEqual(c.prenom, 'Prenom')
+        self.assertEqual(c.civilite, 1)
+        self.assertEqual(c.intervenant, i)
+        self.assertEqual(c.profilasstr, '001')
+        self.assertIsNotNone(c.adresse)
+        adr = c.adresse
+        self.assertEqual(adr.adresse1, 'Adresse')
+        self.assertEqual(adr.adresse2, 'Adresse étrangère')
+        self.assertEqual(adr.codepostal, '31000')
+        self.assertEqual(adr.ville, 'Toulouse')
+        self.assertEqual(adr.pays, 'FR')
+        self.assertEqual(c.fonction, 'Hydromètre')
+        self.assertEqual(c.telephone, '0000')
+        self.assertEqual(c.portable, '0600')
+        self.assertEqual(c.fax, 'Fax')
+        self.assertEqual(c.mel, 'Mail')
+        self.assertEqual(c.dtmaj, datetime.datetime(2015, 2, 3, 12, 10, 38))
+        self.assertEqual(len(c.profilsadmin), 2)
+        profil0 = c.profilsadmin[0]
+        self.assertEqual(profil0.profil, 'GEST')
+        self.assertEqual(profil0.zoneshydro, ['A123', 'Z987'])
+        self.assertEqual(profil0.dtactivation,
+                         datetime.datetime(2004, 4, 15, 17, 18, 19))
+        self.assertEqual(profil0.dtdesactivation,
+                         datetime.datetime(2005, 8, 10, 13, 36, 43))
+        profil1 = c.profilsadmin[1]
+        self.assertEqual(profil1.profil, 'JAU')
+        self.assertEqual(profil1.zoneshydro, ['L000', 'K444'])
+        self.assertIsNone(profil1.dtactivation)
+        self.assertIsNone(profil1.dtdesactivation)
+        self.assertEqual(c.alias, 'ALIAS')
+        self.assertEqual(c.motdepasse, 'mot de passe')
+        self.assertEqual(c.dtactivation,
+                         datetime.datetime(2001, 12, 17, 9, 30, 47))
+        self.assertEqual(c.dtdesactivation,
+                         datetime.datetime(2013, 10, 25, 11, 45, 36))
+        c = i.contacts[1]
+        self.assertEqual(c.code, '2')
+        self.assertEqual(c.nom, 'Nom2')
+        self.assertEqual(c.prenom, 'Prenom2')
+        self.assertEqual(c.civilite, 2)
+        self.assertEqual(c.intervenant, i)
+        self.assertEqual(c.profilasstr, '010')
+        c = i.contacts[2]
+        self.assertEqual(c.code, '999')
+        self.assertIsNone(c.nom)
+        self.assertIsNone(c.prenom)
+        self.assertIsNone(c.civilite)
+        self.assertEqual(c.intervenant, i)
+        self.assertEqual(c.profilasstr, '000')
+
+    def test_intervenant_1(self):
+        """intervenant 1 test."""
+        # intervenant
+        i = self.data['intervenants'][1]
+        self.assertEqual(i.code, 12345671234567)
+        self.assertEqual(i.origine, 'SIRET')
+        self.assertEqual(i.nom, 'Nom Sirét')
+        self.assertEqual(i.mnemo, 'Captâîn Mnémo')
+        # contacts
+        self.assertEqual(len(i.contacts), 1)
+        c = i.contacts[0]
+        self.assertEqual(c.code, '5')
+        self.assertEqual(c.nom, 'Nom Contaçt')
+        self.assertEqual(c.prenom, 'Prenom Contaçt')
+        self.assertEqual(c.civilite, 3)
+        self.assertEqual(c.intervenant, i)
+        self.assertEqual(c.profilasstr, '100')
+
 
 # -- class TestFromXmlSeriesHydro ---------------------------------------------
 class TestFromXmlSeriesHydro(unittest.TestCase):

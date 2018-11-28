@@ -230,31 +230,36 @@ class Contact(object):
         profilinst (bool)
         profilpublic (bool) = un contact a un profil public lorsque tous les
             elements du profil sont False (identique a profil = 0)
-        motdepasse (string)
+        adresse (intervenant.Adresse)
+        fonction (str)
+        telephone (str)
+        portable (str)
+        fax (str)
+        mel (str)= adresse email,
+        dtmaj (datetime.datetime) = date de mise à jour
+        profilsadmin (intervenant.ProfilAdminLocal
+            or an iterable of intervenant.ProfilAdminLocal)
+            = profils d'administrateur local
+        alias (str)
+        motdepasse (str) = mot de passe
+        dtactivation (datetime.datetime) = date d'activation
+        dtdesactivation (datetime.datetime) = date de désactivation
 
     Proprietes en lecture seule:
         profilasstr (string)
 
     """
 
-    # Contact other properties
-
-    # telephone
-    # portable
-    # fax
-    # mel
-    # pays
-    # alias
-    # dtactivation
-    # dtdesactivation
-    # dtmaj
-
-    # Adresse
-
     civilite = _composant.Nomenclatureitem(nomenclature=538, required=False)
+    dtmaj = _composant.Datefromeverything(required=False)
+    dtactivation = _composant.Datefromeverything(required=False)
+    dtdesactivation = _composant.Datefromeverything(required=False)
 
     def __init__(self, code=None, nom=None, prenom=None, civilite=None,
-                 intervenant=None, profil=0, motdepasse=None):
+                 intervenant=None, profil=0, adresse=None,
+                 fonction=None, telephone=None, portable=None, fax=None,
+                 mel=None, dtmaj=None, profilsadmin=None, alias=None, 
+                 motdepasse=None, dtactivation=None, dtdesactivation=None):
         """Initialisation.
 
         Arguments:
@@ -262,20 +267,51 @@ class Contact(object):
             nom (string)
             prenom (string)
             civilite (entier parmi NOMENCLATURE[538])
-            intervenant (Intervenant) = intervenant de rattachement
-            profil (binary string ou entier, defaut 0)
-            motdepasse (string)
+            intervenant (Intervenant)
+            profil (0 < int < 7) = masque de bits sur 1 octet
+                administrateur national / modelisateur / institutionnel
+            profiladminnat (bool)
+            profilmodel (bool)
+            profilinst (bool)
+            profilpublic (bool) = un contact a un profil public
+                lorsque tous les elements du profil sont False
+                (identique a profil = 0)
+            adresse (intervenant.Adresse)
+            fonction (str)
+            telephone (str)
+            portable (str)
+            fax (str)
+            mel (str)= adresse email,
+            dtmaj (datetime.datetime) = date de mise à jour
+            profilsadmin (intervenant.ProfilAdminLocal
+                or an iterable of intervenant.ProfilAdminLocal)
+                = profils d'administrateur local
+            alias (str)
+            motdepasse (str) = mot de passe
+            dtactivation (datetime.datetime) = date d'activation
+            dtdesactivation (datetime.datetime) = date de désactivation
 
         """
 
         # -- simple properties --
         self.nom = str(nom) if (nom is not None) else None
         self.prenom = str(prenom) if (prenom is not None) else None
+
+
+        self.fonction = str(fonction) if fonction is not None else None
+        self.telephone = str(telephone) if telephone is not None else None
+        self.portable = str(portable) if portable is not None else None
+        self.fax = str(fax) if fax is not None else None
+        self.mel = str(mel) if mel is not None else None
+        self.alias = str(alias) if alias is not None else None
         self.motdepasse = str(motdepasse) if (motdepasse is not None) \
             else None
 
         # -- descriptors --
         self.civilite = civilite
+        self.dtmaj = dtmaj
+        self.dtactivation = dtactivation
+        self.dtdesactivation = dtdesactivation
 
         # -- full properties --
         self._code = self._civilite = self._intervenant = None
@@ -284,6 +320,10 @@ class Contact(object):
         self.civilite = civilite
         self.intervenant = intervenant
         self.profil = profil
+        self._adresse = None
+        self.adresse = adresse
+        self._profilsadmin = []
+        self.profilsadmin = profilsadmin
 
     @property
     def code(self):
@@ -313,6 +353,7 @@ class Contact(object):
         except:
             raise
 
+
     @property
     def intervenant(self):
         """Return intervenant de rattachement du contact."""
@@ -325,6 +366,24 @@ class Contact(object):
             if not isinstance(intervenant, Intervenant):
                 raise TypeError('intervenant must be an Intervenant')
         self._intervenant = intervenant
+
+    @property
+    def adresse(self):
+        """Return adresse contact."""
+        return self._adresse
+
+    @adresse.setter
+    def adresse(self, adresse):
+        """Set adresse contact."""
+        if adresse is not None:
+            if not isinstance(adresse, Adresse):
+                raise TypeError(
+                        'adresse must be an instance of intervenant.Adresse')
+
+        # all is well
+        self._adresse = adresse
+
+
 
     @property
     def profil(self):
@@ -425,6 +484,26 @@ class Contact(object):
         """Return profil as a 3 chars string."""
         return '{:0=3b}'.format(self._profil)
 
+    @property
+    def profilsadmin(self):
+        """Return profilsadmin contact."""
+        return self._profilsadmin
+
+    @profilsadmin.setter
+    def profilsadmin(self, profilsadmin):
+        """Set profilsadmin contact."""
+        self._profilsadmin = []
+        if profilsadmin is None:
+            return
+        if isinstance(profilsadmin, ProfilAdminLocal):
+            profilsadmin = [profilsadmin]
+        for profil in profilsadmin:
+            if not isinstance(profil, ProfilAdminLocal):
+                raise TypeError(
+                    'profilsadmin must be an instance  of ProfilAdminLocal'
+                    ' or an iterable of ProfilAdminLocal')
+            self._profilsadmin.append(profil)
+
     # -- special methods --
     __all__attrs__ = ('code', 'nom', 'prenom', 'civilite', 'intervenant',
                       'profil', 'motdepasse')
@@ -456,17 +535,128 @@ class Contact(object):
 
 
 # -- Class Adresse ------------------------------------------------------------
-# class Adresse(object):
-#
-#     """Classe Adresse."""
-#
-#     def __init__(self):
-#         raise NotImplementedError
-#
-#     # adresse1
-#     # adresse2
-#     # lieudit
-#     # bp
-#     # cp
-#     # localite
-#     # pays
+class Adresse(object):
+
+    """Classe Adresse.
+
+    Proprietes:
+        ville (str) = ville
+        adresse1 (str) = adresse principale
+        adresse2 (str) = adresse secondaire
+        boitepostale (str) = boîte postale
+        codepostal (str) = code postal
+        pays (str(2) selon nomenclature 678) = code du pays sur deux caractères 
+
+    """
+
+    pays = _composant.Nomenclatureitem(nomenclature=678, required=False)
+
+    def __init__(self, ville=None, adresse1=None, adresse2=None,
+                 boitepostale=None, codepostal=None, pays=None):
+        """Constructeur
+
+        Arguments:
+            ville (str) = ville
+            adresse1 (str) = adresse principale
+            adresse2 (str) = adresse secondaire
+            boitepostale (str) = boîte postale
+            codepostal (str) = code postal
+            pays (str(2) selon nomenclature 678)
+                = code du pays sur deux caractères
+
+        """
+        self.pays = pays
+        self.adresse1 = str(adresse1) if adresse1 is not None else None
+        self.adresse2 = str(adresse2) if adresse2 is not None else None
+        self.boitepostale = str(boitepostale) if boitepostale is not None \
+            else None
+        self.codepostal = str(codepostal) if codepostal is not None else None
+        self.ville = str(ville) if ville is not None else None
+
+    def __unicode__(self):
+        """Return unicode representation."""
+        adresse = self.adresse1 if self.adresse1 is not None \
+            else '<sans adresse>'
+        codepostal = self.codepostal if self.codepostal is not None \
+            else '<sans code postal>'
+        ville = self.ville if self.ville is not None else '<sans ville>'
+        pays = self.pays if self.pays is not None else '<sans pays>'
+        return '{0}\n{1} {2} ({3})'.format(adresse, codepostal, ville, pays)
+
+    __str__ = _composant.__str__
+
+# -- Class ProfilAdminLocal
+class ProfilAdminLocal(object):
+    """Classe ProfilAdminLocale
+
+    Classe pour manipuler des profils administrateurs locaux.
+
+    Proprietes:
+        profil (str selon nomenclature 539) = GEST ou JAU
+        zoneshydro ( str(4) ou iterbale of str(4)) = liste de zones hydro
+        dtactivation (datetime.datetime)
+        dtdesactivation (datetime.datetime)
+    """
+
+    profil = _composant.Nomenclatureitem(nomenclature=539, required=True)
+    dtactivation = _composant.Datefromeverything(required=False)
+    dtdesactivation = _composant.Datefromeverything(required=False)
+
+    def __init__(self, profil=None, zoneshydro=None, dtactivation=None,
+                 dtdesactivation=None):
+        """Constructeur
+
+        Arguments:
+            profil (str selon nomenclature 539) = GEST ou JAU
+            zoneshydro ( str(4) ou iterbale of str(4)) = liste de zones hydro
+            dtactivation (datetime.datetime)
+            dtdesactivation (datetime.datetime)
+        """
+        self.profil = profil
+        self.dtactivation = dtactivation
+        self.dtdesactivation = dtdesactivation
+
+        self._zoneshydro = []
+        self.zoneshydro = zoneshydro
+
+    @property
+    def zoneshydro(self):
+        """Return zoneshydro."""
+        return self._zoneshydro
+
+    @zoneshydro.setter
+    def zoneshydro(self, zoneshydro):
+        """Set zoneshydro."""
+        self._zoneshydro = []
+        if zoneshydro is None:
+            raise TypeError('zoneshydro is required')
+        if isinstance(zoneshydro, str):
+            zoneshydro = [zoneshydro]
+        if len(zoneshydro) == 0:
+            raise ValueError('zoneshydro should not be empty')
+        for zonehydro in zoneshydro:
+            zonehydro = str(zonehydro)
+            if len(zonehydro) != 4:
+                raise ValueError(
+                    'length of zone hydro ({}) must be 4'.format(zonehydro))
+            self._zoneshydro.append(zonehydro)
+
+    def __unicode__(self):
+        """Return unicode representation."""
+
+        dtactivation = self.dtactivation if self.dtactivation is not None \
+            else '<sans date de début>'
+        if self.dtdesactivation is not None:
+            dtdesactivation = ' à {}'.format(self.dtdesactivation)
+        else:
+            dtdesactivation = ''
+        if len(self.zoneshydro) == 1:
+            zones = 'la zone hydro {}'.format(self.zoneshydro[0])
+        elif len(self.zoneshydro) > 1:
+            zones = 'des zones hydro: ({})'.format(', '.join(self.zoneshydro))
+        else:
+            zones = '<sans zone hydro>'
+        return 'Profil {0} sur {1} de {2}{3}'.format(
+            self.profil, zones, dtactivation, dtdesactivation)
+
+    __str__ = _composant.__str__

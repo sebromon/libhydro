@@ -110,6 +110,38 @@ class TestFromXmlIntervenants(unittest.TestCase):
         self.assertEqual(c.civilite, 1)
         self.assertEqual(c.intervenant, i)
         self.assertEqual(c.profilasstr, '001')
+        self.assertIsNotNone(c.adresse)
+        adr = c.adresse
+        self.assertEqual(adr.adresse1, 'Adresse')
+        self.assertEqual(adr.adresse2, 'Adresse étrangère')
+        self.assertEqual(adr.codepostal, '31000')
+        self.assertEqual(adr.ville, 'Toulouse')
+        self.assertEqual(adr.pays, 'FR')
+        self.assertEqual(c.fonction, 'Hydromètre')
+        self.assertEqual(c.telephone, '0000')
+        self.assertEqual(c.portable, '0600')
+        self.assertEqual(c.fax, 'Fax')
+        self.assertEqual(c.mel, 'Mail')
+        self.assertEqual(c.dtmaj, datetime.datetime(2015, 2, 3, 12, 10, 38))
+        self.assertEqual(len(c.profilsadmin), 2)
+        profil0 = c.profilsadmin[0]
+        self.assertEqual(profil0.profil, 'GEST')
+        self.assertEqual(profil0.zoneshydro, ['A123', 'Z987'])
+        self.assertEqual(profil0.dtactivation,
+                         datetime.datetime(2004, 4, 15, 17, 18, 19))
+        self.assertEqual(profil0.dtdesactivation,
+                         datetime.datetime(2005, 8, 10, 13, 36, 43))
+        profil1 = c.profilsadmin[1]
+        self.assertEqual(profil1.profil, 'JAU')
+        self.assertEqual(profil1.zoneshydro, ['L000', 'K444'])
+        self.assertIsNone(profil1.dtactivation)
+        self.assertIsNone(profil1.dtdesactivation)
+        self.assertEqual(c.alias, 'ALIAS')
+        self.assertEqual(c.motdepasse, 'mot de passe')
+        self.assertEqual(c.dtactivation,
+                         datetime.datetime(2001, 12, 17, 9, 30, 47))
+        self.assertEqual(c.dtdesactivation,
+                         datetime.datetime(2013, 10, 25, 11, 45, 36))
         c = i.contacts[1]
         self.assertEqual(c.code, '2')
         self.assertEqual(c.nom, 'Nom2')
