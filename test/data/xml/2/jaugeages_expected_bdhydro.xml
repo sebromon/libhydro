@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <hydrometrie xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1/sandre_sc_hydrometrie.xsd"> -->
+<hydrometrie>
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>2</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2010-02-26T23:55:30</DateHeureCreationFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact schemeAgencyID="SANDRE">1</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+    </Destinataire>
+  </Scenario>
+  <Donnees>
+      <Jaugeages>
+          <Jaugeage>
+              <CdJaugeage>1354</CdJaugeage>
+              <DebitJaugeage>2513.2</DebitJaugeage>
+              <DtDebJaugeage>2015-11-23T07:11:44</DtDebJaugeage>
+              <DtFinJaugeage>2015-11-23T08:24:37</DtFinJaugeage>
+              <SectionMouilJaugeage>5436.1</SectionMouilJaugeage>
+              <PerimMouilleJaugeage>1658.3</PerimMouilleJaugeage>
+              <LargMiroirJaugeage>42.3</LargMiroirJaugeage>
+              <ModeJaugeage>7</ModeJaugeage>
+              <ComJaugeage>Commentaire</ComJaugeage>
+              <VitesseMoyJaugeage>15.6</VitesseMoyJaugeage>
+              <VitesseMaxJaugeage>16.2</VitesseMaxJaugeage>
+              <VitesseMaxSurfaceJaugeage>18.4</VitesseMaxSurfaceJaugeage>
+              <CdSiteHydro>A7654321</CdSiteHydro>
+              <HauteursJaugeage>
+                  <HauteurJaugeage>
+                      <CdStationHydro>B765432101</CdStationHydro>
+                      <SysAltiStationJaugeage>3</SysAltiStationJaugeage>
+                      <CoteRetenueStationJaugeage>162.3</CoteRetenueStationJaugeage>
+                      <CoteDebutStationJaugeage>160.2</CoteDebutStationJaugeage>
+                      <CoteFinStationJaugeage>164.9</CoteFinStationJaugeage>
+                      <DnStationJaugeage>1.2</DnStationJaugeage>
+                      <DistanceStationJaugeage>34.6</DistanceStationJaugeage>
+                      <StationFille>
+                          <CdStationHydro>K123456789</CdStationHydro>
+                      </StationFille>
+                      <DtDebutRefAlti>2009-04-17T18:11:36</DtDebutRefAlti>
+                  </HauteurJaugeage>
+              </HauteursJaugeage>
+              <DtMajJaugeage>2016-03-14T13:26:57</DtMajJaugeage>
+              <NumJaugeage>N15</NumJaugeage>
+              <IncertCalJaugeage>15.4</IncertCalJaugeage>
+              <IncertRetenueJaugeage>15.2</IncertRetenueJaugeage>
+              <QualifJaugeage>2</QualifJaugeage>
+              <ComPrivJaugeage>Commentaire privé</ComPrivJaugeage>
+              <CourbesTarage>
+                  <CourbeTarage>
+                      <CdCourbeTarage>157</CdCourbeTarage>
+                      <LbCourbeTarage>Libellé CT</LbCourbeTarage>
+                  </CourbeTarage>
+                  <CourbeTarage>
+                      <CdCourbeTarage>9831</CdCourbeTarage>
+                  </CourbeTarage>
+              </CourbesTarage>
+          </Jaugeage>
+          <!-- minimal jaugeage -->
+          <Jaugeage>
+              <DtDebJaugeage>2016-03-14T18:54:13</DtDebJaugeage>
+              <ModeJaugeage>0</ModeJaugeage>
+              <CdSiteHydro>R1212654</CdSiteHydro>
+              <QualifJaugeage>0</QualifJaugeage>
+          </Jaugeage>
+      </Jaugeages>
+  </Donnees>
+</hydrometrie>

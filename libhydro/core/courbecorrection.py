@@ -178,8 +178,8 @@ class CourbeCorrection(object):
                 return
 
         # an iterable of pivots
-        if self._strict and len(pivots) == 1:
-            raise TypeError('pivots must be an iterable of minimum 2 PivotCC')
+        # if self._strict and len(pivots) == 1:
+        #     raise TypeError('pivots must be an iterable of minimum 2 PivotCC')
         dtes = set()
         for pivot in pivots:
             # some checks

@@ -29,7 +29,11 @@ from libhydro.core import (
     modeleprevision as _modeleprevision, obshydro as _obshydro,
     obsmeteo as _obsmeteo, simulation as _simulation, evenement as _evenement,
     courbetarage as _courbetarage, courbecorrection as _courbecorrection,
-    jaugeage as _jaugeage, obselaboreehydro as _obselaboreehydro)
+    jaugeage as _jaugeage, obselaboreehydro as _obselaboreehydro,
+    obselaboreemeteo as _obselaboreemeteo, nomenclature as _nomenclature,
+    _composant_site, rolecontact as _rolecontact)
+
+from libhydro.conv.xml import sandre_tags as _sandre_tags
 
 # -- strings ------------------------------------------------------------------
 # contributor Camillo Montes (SYNAPSE)
@@ -92,6 +96,8 @@ __date__ = '2017-09-22'
 PREV_PROBABILITY = {'ResMoyPrev': 50, 'ResMinPrev': 0, 'ResMaxPrev': 100}
 PREV_TENDANCE = {'ResMoyPrev': 'moy', 'ResMinPrev': 'min', 'ResMaxPrev': 'max'}
 
+SANDRE_VERSIONS = ('1.1', '2')
+
 # -- Emetteur and Destinataire named tuples -----------------------------------
 Emetteur = _collections.namedtuple('Emetteur', ['intervenant', 'contact'])
 Destinataire = _collections.namedtuple(
@@ -128,13 +134,12 @@ class Scenario(object):
 
     # class attributes
     code = 'hydrometrie'
-    version = '1.1'
     nom = 'Echange de données hydrométriques'
 
     # descriptors
     dtprod = _composant.Datefromeverything(required=True)
 
-    def __init__(self, emetteur, destinataire, dtprod=None):
+    def __init__(self, emetteur, destinataire, dtprod=None, version='1.1'):
         """Constructeur.
 
         Arguments:
@@ -144,6 +149,7 @@ class Scenario(object):
                 est utilise, sa propriete Intervenant doit etre renseignee
             dtprod (numpy.datetime64 string, datetime.datetime...,
                 defaut utcnow()) = date de production
+            version (str) = version du Sandre 1.1 ou 2
 
         """
         # -- descriptors --
@@ -154,6 +160,25 @@ class Scenario(object):
         self._destinataire = Destinataire(None, None)
         self.emetteur = emetteur
         self.destinataire = destinataire
+        self._version = None
+        self.version = version
+
+    # -- property version --
+    @property
+    def version(self):
+        """Return message Sandre version."""
+        return self._version
+
+    @version.setter
+    def version(self, version):
+        """Set Sandre version."""
+        if version is None:
+            raise TypeError('Sandre version is required')
+        version = str(version)
+        if version not in SANDRE_VERSIONS:
+            raise ValueError('Sandre version must be in (\'{}\')'.format(
+                '\', \''.join(SANDRE_VERSIONS)))
+        self._version = version
 
     # -- property emetteur --
     @property
@@ -213,13 +238,14 @@ class Scenario(object):
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
-        return 'Message du {dt}\n Emetteur: {ei} [{ec}]\n' \
+        return 'Message du {dt} de version {ver}\n Emetteur: {ei} [{ec}]\n' \
                'Destinataire: {di} [{dc}]'.format(
                    dt=self.dtprod,
                    ei=str(self.emetteur.intervenant),
                    ec=str(self.emetteur.contact) or '<sans contact>',
                    di=str(self.destinataire.intervenant),
-                   dc=str(self.destinataire.contact) or '<sans contact>')
+                   dc=str(self.destinataire.contact) or '<sans contact>',
+                   ver=self.version)
 
     __str__ = _composant.__str__
 
@@ -251,6 +277,7 @@ def _parse(src, ordered=True):
             # serieshydro: liste de obshydro.Serie
             # seriesmeteo: liste de obsmeteo.Serie
             # seriesobselab: liste de obselaboreehydro.SerieObsElab
+            # seriesobselabmeteo: liste de obselaboreemeteo.SerieObsElabMeteo
             # simulations: liste de simulation.Simulation
     """
 
@@ -271,29 +298,57 @@ def _parse(src, ordered=True):
     if tree.getroot().nsmap != {}:
         raise ValueError("can't parse xml file with namespaces")
 
+    scenario = _scenario_from_element(tree.find('Scenario'))
+
+    if scenario.version == '2':
+        tags = _sandre_tags.SandreTagsV2
+        seriesmeteo = _seriesmeteo_from_element_v2(
+            tree.find('Donnees/SeriesObsMeteo'))
+        seriesobselab = _seriesobselab_from_element_v2(
+            tree.find('Donnees/' + tags.seriesobselabhydro))
+        seriesobselabmeteo = _seriesobselabmeteo_from_element_v2(
+            tree.find('Donnees/SeriesObsElaborMeteo'))
+    else:
+        tags = _sandre_tags.SandreTagsV1
+        # on récupére des obs élaboré depuis des séries météo
+        seriesmeteo, seriesobselabmeteo = _seriesmeteo_from_element(
+            tree.find('Donnees/ObssMeteo'))
+        seriesobselab = _seriesobselab_from_element(
+            tree.find('Donnees/' + tags.seriesobselabhydro))
+
     return {
-        'scenario': _scenario_from_element(tree.find('Scenario')),
+        'scenario': scenario,
         'intervenants': _intervenants_from_element(
-            tree.find('RefHyd/Intervenants')),
-        'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro')),
-        'sitesmeteo': _sitesmeteo_from_element(tree.find('RefHyd/SitesMeteo')),
+            tree.find('RefHyd/Intervenants'), version=scenario.version,
+            tags=tags),
+        'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro'),
+                                               version=scenario.version,
+                                               tags=tags),
+        'sitesmeteo': _sitesmeteo_from_element(
+            tree.find('RefHyd/SitesMeteo'), version=scenario.version,
+            tags=tags),
         'seuilshydro': _seuilshydro_from_element(
-            element=tree.find('RefHyd/SitesHydro'), ordered=ordered),
+            element=tree.find('RefHyd/SitesHydro'), version=scenario.version,
+            tags=tags, ordered=ordered),
         'modelesprevision': _modelesprevision_from_element(
             tree.find('RefHyd/ModelesPrevision')),
         'evenements': _evenements_from_element(
-            tree.find('Donnees/Evenements')),
+            tree.find('Donnees/Evenements'), scenario.version, tags),
         'courbestarage': _courbestarage_from_element(
-            tree.find('Donnees/CourbesTarage')),
+            tree.find('Donnees/CourbesTarage'),
+            version=scenario.version, tags=tags),
         'jaugeages': _jaugeages_from_element(
-            tree.find('Donnees/Jaugeages')),
+            tree.find('Donnees/Jaugeages'),
+            version=scenario.version, tags=tags),
         'courbescorrection': _courbescorrection_from_element(
-            tree.find('Donnees/CourbesCorrH')),
-        'serieshydro': _serieshydro_from_element(tree.find('Donnees/Series')),
-        'seriesmeteo': _seriesmeteo_from_element(
-            tree.find('Donnees/ObssMeteo')),
-        'seriesobselab': _seriesobselab_from_element(
-            tree.find('Donnees/ObssElabHydro')),
+            tree.find('Donnees/CourbesCorrH'),
+            version=scenario.version, tags=tags),
+        'serieshydro': _serieshydro_from_element(
+            tree.find('Donnees/' + tags.serieshydro),
+            version=scenario.version, tags=tags),
+        'seriesmeteo': seriesmeteo,
+        'seriesobselab': seriesobselab,
+        'seriesobselabmeteo': seriesobselabmeteo,
         # 'gradshydro'
         # 'qualifsannee'
         # 'alarmes'
@@ -324,10 +379,11 @@ def _scenario_from_element(element):
                 code=_value(element.find('Destinataire'), 'CdIntervenant'),
                 nom=_value(element.find('Destinataire'), 'NomIntervenant'),
                 contacts=dest_contacts,),
-            dtprod=_value(element, 'DateHeureCreationFichier'))
+            dtprod=_value(element, 'DateHeureCreationFichier'),
+            version=_value(element, 'VersionScenario'))
 
 
-def _intervenant_from_element(element):
+def _intervenant_from_element(element, version, tags):
     """Return a intervenant.Intervenant from a <Intervenant> element."""
     if element is not None:
         # prepare args
@@ -336,7 +392,31 @@ def _intervenant_from_element(element):
         args['origine'] = element.find('CdIntervenant').attrib[
             'schemeAgencyID']
         args['nom'] = _value(element, 'NomIntervenant')
+        args['statut'] = _value(element, 'StIntervenant')
+        args['dtcreation'] = _value(element, 'DateCreationIntervenant')
+        args['dtmaj'] = _value(element, 'DateMajIntervenant')
+        args['auteur'] = _value(element, 'AuteurIntervenant')
+
         args['mnemo'] = _value(element, 'MnIntervenant')
+        args['adresse'] = _adresse_from_element(element, 'Intervenant')
+        args['commentaire'] = _value(element, 'CommentairesIntervenant')
+        args['activite'] = _value(element, 'ActivitesIntervenant')
+        args['nominternational'] = _value(
+            element, 'NomInternationalIntervenant')
+        args['siret'] = _value(element, 'CdSIRETRattacheIntervenant')
+        if version < '2':
+            cdcommune = _value(element, 'CdCommune')
+        else:
+            cdcommune = _value(element, 'Commune/CdCommune')
+        if cdcommune is not None:
+            args['commune'] = _composant_site.Commune(code=cdcommune)
+        args['telephone'] = _value(element, 'TelephoneComplementIntervenant')
+        args['fax'] = _value(element, 'FaxComplementIntervenant')
+        args['siteweb'] = _value(element, 'SiteWebComplementIntervenant')
+
+        cdpere = _value(element, 'IntervenantPere/CdIntervenant')
+        if cdpere is not None:
+            args['pere'] = _intervenant.Intervenant(code=cdpere)
         args['contacts'] = [_contact_from_element(e)
                             for e in element.findall('Contacts/Contact')]
         # build an Intervenant
@@ -346,6 +426,7 @@ def _intervenant_from_element(element):
             contact.intervenant = intervenant
         # return
         return intervenant
+
 
 
 def _contact_from_element(element, intervenant=None):
@@ -358,13 +439,74 @@ def _contact_from_element(element, intervenant=None):
         args['prenom'] = _value(element, 'PrenomContact')
         args['civilite'] = _value(element, 'CiviliteContact', int)
         args['intervenant'] = intervenant
-        args['profil'] = _value(element, 'ProfilContact')
+        profil = _value(element, 'ProfilContact')
+        if profil is not None:
+            args['profil'] = profil
+        args['adresse'] = _adresse_from_element(element, 'Contact')
+        args['fonction'] = _value(element, 'FonctionContact')
+        args['telephone'] = _value(element, 'TelephoneContact')
+        args['portable'] = _value(element, 'PortContact')
+        args['fax'] = _value(element, 'FaxContact')
+        args['mel'] = _value(element, 'MelContact')
+        args['dtmaj'] = _value(element, 'DateMajContact')
+        args['profilsadmin'] = [
+            _contact_profiladmin_from_element(ele)
+            for ele in element.findall(
+                                    'ProfilsAdminLocal/ProfilAdminLocal')]
+        args['alias'] = _value(element, 'AliasContact')
         args['motdepasse'] = _value(element, 'MotPassContact')
+        args['dtactivation'] = _value(element, 'DtActivationContact')
+        args['dtdesactivation'] = _value(element, 'DtDesactivationContact')
+
         # build a Contact and return
         return _intervenant.Contact(**args)
 
 
-def _sitehydro_from_element(element):
+def _adresse_from_element(element, entite):
+    """Return a intervenant.Adresse
+    from a <Contact> element or a <Intervenant> element
+    and entite (str) = Contact ou Intervenant
+    """
+    if element is None:
+        return
+    args = {}
+    if entite == 'Intervenant':
+        args['adresse1'] = _value(element, 'RueIntervenant')
+        args['adresse1_cplt'] = _value(element, 'ImmoIntervenant')
+        args['lieudit'] = _value(element, 'LieuIntervenant')
+        args['boitepostale'] = _value(element, 'BpIntervenant')
+        args['dep'] = _value(element, 'DepIntervenant')
+        args['codepostal'] = _value(element, 'CP' + entite)
+        args['pays'] = _value(element, 'PaysComplementIntervenant')
+        args['adresse2'] = _value(element, 'AdEtrangereComplementIntervenant')
+    else:
+        args['adresse1'] = _value(element, 'Ad' + entite)
+        args['codepostal'] = _value(element, 'Cp' + entite)
+        args['pays'] = _value(element, 'Pays' + entite)
+        args['adresse2'] = _value(element, 'AdEtrangere' + entite)
+    args['ville'] = _value(element, 'Ville' + entite)
+
+    return _intervenant.Adresse(**args)
+
+
+
+def _contact_profiladmin_from_element(element):
+    """Return a intervenant.ProfilAdminLocal
+    from a <ProfilAdminLocal> element
+    """
+    if element is None:
+        return
+    args = {}
+    args['profil'] = _value(element, 'CdProfilAdminLocal')
+    args['zoneshydro'] = [
+        str(e.text) for e in element.findall('ZonesHydro/CdZoneHydro')]
+    args['dtactivation'] = _value(element, 'DtActivationProfilAdminLocal')
+    args['dtdesactivation'] = _value(
+        element, 'DtDesactivationProfilAdminLocal')
+    return _intervenant.ProfilAdminLocal(**args)
+
+
+def _sitehydro_from_element(element, version, tags):
     """Return a sitehydro.Sitehydro from a <SiteHydro> element."""
     if element is not None:
         # prepare args
@@ -379,24 +521,175 @@ def _sitehydro_from_element(element):
         args['coord'] = _coord_from_element(
             element.find('CoordSiteHydro'), 'SiteHydro')
         args['stations'] = [
-            _station_from_element(e)
+            _station_from_element(e, version, tags)
             for e in element.findall('StationsHydro/StationHydro')]
-        args['communes'] = [
-            str(e.text) for e in element.findall('CdCommune')]
-        args['tronconsvigilance'] = [
-            _tronconvigilance_from_element(e)
-            for e in element.findall(
-                'TronconsVigilanceSiteHydro/TronconVigilanceSiteHydro')]
+        if version == '1.1':
+            args['communes'] = [
+                    _composant_site.Commune(code=str(e.text))
+                    for e in element.findall('CdCommune')]
+        else:
+            args['communes'] = [_commune_from_element(communeel)
+                                for communeel in element.findall(
+                                    'Communes/Commune')]
+        args['entitesvigicrues'] = [
+            _tronconvigilance_from_element(e, version, tags)
+            for e in element.findall(tags.entsvigicru + '/' + tags.entvigicru)]
         args['entitehydro'] = _value(element, 'CdEntiteHydrographique')
         args['tronconhydro'] = _value(element, 'CdTronconHydrographique')
         args['zonehydro'] = _value(element, 'CdZoneHydro')
         args['precisioncoursdeau'] = _value(element,
                                             'PrecisionCoursDEauSiteHydro')
+        args['mnemo'] = _value(element, 'MnSiteHydro')
+        args['complementlibelle'] = _value(element, tags.comtlbsitehydro)
+        args['pkamont'] = _value(element, 'PkAmontSiteHydro', float)
+        args['pkaval'] = _value(element, 'PkAvalSiteHydro', float)
+        altel = element.find('AltiSiteHydro')
+        if altel is not None:
+            altitude = _value(altel, 'AltitudeSiteHydro')
+            sysalti = _value(altel, 'SysAltimetriqueSiteHydro', int)
+            args['altitude'] = _composant_site.Altitude(altitude=altitude,
+                                                        sysalti=sysalti)
+
+        args['dtmaj'] = _value(element, tags.dtmajsitehydro)
+        args['bvtopo'] = _value(element, 'BassinVersantSiteHydro', float)
+        args['bvhydro'] = _value(element, 'BassinVersantHydroSiteHydro', float)
+        args['fuseau'] = _value(element, 'FuseauHoraireSiteHydro', int)
+
+        args['statut'] = _value(element, tags.stsitehydro, int)
+
+        args['dtpremieredonnee'] = _value(element, 'DtPremDonSiteHydro')
+        args['moisetiage'] = _value(element, 'PremMoisEtiageSiteHydro', int)
+        args['moisanneehydro'] = _value(element, 'PremMoisAnHydSiteHydro', int)
+        args['dureecrues'] = _value(element, 'DureeCarCruSiteHydro', int)
+        args['publication'] = _value(element, 'DroitPublicationSiteHydro', int)
+        args['essai'] = _value(element, 'EssaiSiteHydro', bool)
+        args['influence'] = _value(element, 'InfluGeneSiteHydro', int)
+        args['influencecommentaire'] = _value(element, 'ComInfluGeneSiteHydro')
+        args['commentaire'] = _value(element, 'ComSiteHydro')
+        if version == '2':
+            siteassociecode = element.find('SiteHydroAssocie/CdSiteHydro')
+            if siteassociecode is not None:
+                code = str(siteassociecode.text)
+                args['siteassocie'] = _sitehydro.Sitehydro(code=code)
+
+        args['sitesattaches'] = [
+            _siteattache_from_element(e, version, tags)
+            for e in element.findall('SitesHydroAttaches/SiteHydroAttache')]
+
+        args['massedeau'] = _value(element, 'CdEuMasseDEau')
+
+        args['loisstat'] = [
+            _loistat_from_element(e, 'SiteHydro')
+            for e in element.findall(
+                'LoisStatContexteSiteHydro/LoiStatContexteSiteHydro')]
+
+        args['images'] = [
+            _image_from_element(e, 'SiteHydro')
+            for e in element.findall(
+                'ImagesSiteHydro/ImageSiteHydro')]
+
+        args['roles'] = [
+            _role_from_element(e, version, tags, 'SiteHydro')
+                for e in element.findall(
+                        tags.rolscontactsitehydro + '/' + tags.rolcontactsitehydro)]
+
+        if version == '2':
+            args['sitesamont'] = [
+            _siteamontaval_from_element(e)
+                for e in element.findall(
+                    'SitesHydroAmont/SiteHydroAmont')]
+            args['sitesaval'] = [
+                _siteamontaval_from_element(e)
+                for e in element.findall(
+                    'SitesHydroAval/SiteHydroAval')]
+        # args['entitesvigicrues'] = _value(element, 'MnSiteHydro')
+        # args['lamesdeau'] = _value(element, 'MnSiteHydro')
+        # args['sitesamont'] = _value(element, 'MnSiteHydro')
+        # args['sitesaval'] = _value(element, 'MnSiteHydro')
         # build a Sitehydro and return
         return _sitehydro.Sitehydro(**args)
 
+# TODO read ImageIll element which contains an image
+def _image_from_element(element, entite):
+    """Return a _composant_site.Image from <Image*> element"""
+    args = {}
+    args['adresse'] = _value(element, 'AdressedelImage' + entite)
+    args['typeill'] = _value(element, 'TypIll' + entite, int)
+    # args['image'] = _value(element, 'ImageIll' + entite, str)
+    args['formatimg'] = _value(element, 'FormatIll' + entite)
+    args['commentaire'] = _value(element, 'ComImg' + entite)
+    return _composant_site.Image(**args)
 
-def _sitemeteo_from_element(element):
+
+def _role_from_element(element, version, tags, entite):
+    """Return a _rolecontact.Role
+       from a <RolContactSiteHydro> or <RolContactStationHydro> element.
+    """
+    args = {}
+    args['contact'] = _intervenant.Contact(code=_value(element, 'CdContact'))
+    if version < '2' and entite == 'StationHydro':
+        rolebalise = 'RoleContact'
+    else:
+        rolebalise = 'RoleContact' + entite
+    args['role'] = _value(element, rolebalise)
+    args['dtdeb'] = _value(element, 'DtDebutContact' + entite)
+    args['dtfin'] = _value(element, 'DtFinContact' + entite)
+    # args['dtmaj'] = _value(element, 'DtMajRoleContactSiteHydro')
+    args['dtmaj'] = _value(element, tags.dtmajrolecontact + entite)
+    return _rolecontact.RoleContact(**args)
+
+
+def _siteamontaval_from_element(element):
+    """Return a _sitehydro.Sitehydro
+       from a <SiteHydroAmont> or <SiteHydroAval> element.
+    """
+    args = {}
+    args['code'] = _value(element, 'CdSiteHydro')
+    args['libelle'] = _value(element, 'LbSiteHydro')
+    return _sitehydro.Sitehydro(**args)
+
+
+def _commune_from_element(element):
+    """Return a _composant_site.Commune
+       from a <Commune> element.
+    """
+    args = {}
+    args['code'] = _value(element, 'CdCommune')
+    args['libelle'] = _value(element, 'LbCommune')
+    return _composant_site.Commune(**args)
+
+
+def _siteattache_from_element(element, version, tags):
+    """Return asitehydro.Sitehydroattache
+       from a <SiteHydroAttache> element.
+    """
+    code = _value(element, 'CdSiteHydro')
+    args = {}
+    args['code'] = code
+    args['ponderation'] = _value(element, 'PonderationSiteHydroAttache', float)
+    if version == '2':
+        args['decalage'] = _value(element, 'DecalSiteHydroAttache', int)
+        args['dtdeb'] = _value(element, 'DtDebSiteHydroAttache')
+        args['dtfin'] = _value(element, 'DtFinSiteHydroAttache')
+        args['dtdebactivation'] = \
+            _value(element, 'DtDebActivationSiteHydroAttache')
+        args['dtfinactivation'] = \
+            _value(element, 'DtFinActivationSiteHydroAttache')
+    return _sitehydro.Sitehydroattache(**args)
+
+
+def _loistat_from_element(element, entite):
+    """Return an composant_site.LoiStat
+       from a <LoiStatContexteSiteHydro> or <LoiStatContexteStationHydro>
+       element.
+    """
+    args = {}
+    args['contexte'] = _value(element, 'TypContexteLoiStat', int)
+    args['loi'] = _value(element, 'TypLoi' + entite, int)
+    return _composant_site.LoiStat(**args)
+
+
+def _sitemeteo_from_element(element, version, tags):
     """Return a sitemeteo.Sitemeteo from a <SiteMeteo> element."""
     if element is not None:
         # prepare args
@@ -404,46 +697,114 @@ def _sitemeteo_from_element(element):
         args['code'] = _value(element, 'CdSiteMeteo')
         args['libelle'] = _value(element, 'LbSiteMeteo')
         args['libelleusuel'] = _value(element, 'LbUsuelSiteMeteo')
+        args['mnemo'] = _value(element, 'MnSiteMeteo')
+        args['lieudit'] = _value(element, 'LieuDitSiteMeteo')
+
         args['coord'] = _coord_from_element(
             element.find('CoordSiteMeteo'), 'SiteMeteo')
+
+        args['altitude'] = _altitude_from_element(
+            element=element.find('AltiSiteMeteo'),
+            site='SiteMeteo')
+        args['fuseau'] = _value(element, 'FuseauHoraireSiteMeteo')
+        args['dtmaj'] = _value(element, tags.dtmajsitemeteo)
+        args['dtouverture'] = _value(element, 'DtOuvertureSiteMeteo')
+        args['dtfermeture'] = _value(element, 'DtFermSiteMeteo')
+        args['droitpublication'] = _value(element, 'DroitPublicationSiteMeteo', bool)
+        args['essai'] = _value(element, 'EssaiSiteMeteo', bool)
+        args['commentaire'] = _value(element, 'ComSiteMeteo')
+
+        args['images'] = [_image_from_element(e, 'SiteMeteo')
+            for e in element.findall(
+                'ImagesSiteMeteo/ImageSiteMeteo')]
+
         args['commune'] = _value(element, 'CdCommune')
+
+        if version >= '2':
+            args['reseaux'] = [
+                _composant_site.ReseauMesure(code=_value(e, 'CodeSandreRdd'),
+                                             libelle=_value(e, 'NomRdd'))
+                for e in element.findall(
+                    'ReseauxMesureSiteMeteo/RSX')]
+        else:
+            args['reseaux'] = [
+                _composant_site.ReseauMesure(code=str(e.text))
+                for e in element.findall(
+                    'ReseauxMesureSiteMeteo/CodeSandreRdd')]
+        
+        args['roles'] = [_role_from_element(element=e, version=version,
+                                            tags=tags,
+                                            entite='SiteMeteo')
+                         for e in element.findall(
+                            tags.rolscontactsitemeteo + '/' + tags.rolcontactsitemeteo)]
+
+        if version >= '2':
+            args['zonehydro'] = _value(element, 'CdZoneHydro')
+
+        args['visites'] = [_visite_from_element(e)
+                           for e in element.findall(
+                            'VisitesSiteMeteo/VisiteSiteMeteo')]
+
         # build a Sitemeteo
         sitemeteo = _sitemeteo.Sitemeteo(**args)
         # add the Grandeurs
         sitemeteo.grandeurs.extend([
-            _grandeur_from_element(e, sitemeteo)
+            _grandeur_from_element(e, sitemeteo, version, tags)
             for e in element.findall('GrdsMeteo/GrdMeteo')])
         # return
         return sitemeteo
 
 
-def _tronconvigilance_from_element(element):
+def _altitude_from_element(element, site):
+    """return a _composant_site.Altitude from a <AltiSiteMeteo> element"""
+    if element is None:
+        return
+    args = {'altitude':  _value(element, 'Altitude' + site, float),
+            'sysalti': _value(element, 'SysAltimetrique' + site, int)}
+    return _composant_site.Altitude(**args)
+
+def _visite_from_element(element):
+    """return a sitemeteo.Visie from <VisiteSiteMeteo> element"""
+    if element is None:
+        return
+    args = {}
+    args['dtvisite'] = _value(element, 'DtVisiteSiteMeteo')
+    codecontact = _value(element, 'CdContact')
+    if codecontact is not None:
+        args['contact'] = _intervenant.Contact(code=codecontact)
+    args['methode'] = _value(element, 'MethClassVisiteSiteMeteo')
+    args['modeop'] = _value(element, 'ModeOperatoireUtiliseVisiteSiteMeteo')
+    return _sitemeteo.Visite(**args)
+
+def _tronconvigilance_from_element(element, version, tags):
     """Return a sitehydro.Tronconvigilance from a <TronconVigilanceSiteHydro>
+    or <EntVigiCru>
     element."""
     if element is not None:
         # prepare args
         args = {}
-        args['code'] = _value(element, 'CdTronconVigilance')
-        args['libelle'] = _value(element, 'NomCTronconVigilance')
+        args['code'] = _value(element, tags.cdentvigicru)
+        args['libelle'] = _value(element, tags.nomentvigicru)
         # build a Tronconvigilance and return
-        return _sitehydro.Tronconvigilance(**args)
+        return _composant_site.EntiteVigiCrues(**args)
 
 
-def _station_from_element(element):
+def _station_from_element(element, version, tags):
     """Return a sitehydro.Station from a <StationHydro> element."""
     if element is not None:
         # prepare args
         args = {}
         args['code'] = _value(element, 'CdStationHydro')
-        args['codeh2'] = _value(element, 'CdStationHydroAncienRef')
+        args['libelle'] = _value(element, 'LbStationHydro')
         typestation = _value(element, 'TypStationHydro')
         if typestation is not None:
             args['typestation'] = typestation
-        args['libelle'] = _value(element, 'LbStationHydro')
         args['libellecomplement'] = _value(
-            element, 'ComplementLibelleStationHydro')
-        args['descriptif'] = _value(element, 'DescriptifStationHydro')
-        args['dtmaj'] = _value(element, 'DtMAJStationHydro')
+            element, tags.complementlibellestationhydro)
+        args['commentaireprive'] = _value(element, tags.comprivestationhydro)
+        args['dtmaj'] = _value(element, tags.dtmajstationhydro)
+        args['coord'] = _coord_from_element(
+            element.find('CoordStationHydro'), 'StationHydro')
         args['pointk'] = _value(element, 'PkStationHydro', float)
         args['dtmiseservice'] = _value(
             element, 'DtMiseServiceStationHydro')
@@ -452,20 +813,153 @@ def _station_from_element(element):
         niveauaffichage = _value(element, 'NiveauAffichageStationHydro')
         if niveauaffichage is not None:
             args['niveauaffichage'] = niveauaffichage
-        args['coord'] = _coord_from_element(
-            element.find('CoordStationHydro'), 'StationHydro')
+
+        droitpublication = _value(element, 'DroitPublicationStationHydro', int)
+        if droitpublication is not None:
+            args['droitpublication'] = droitpublication
+
+        args['delaidiscontinuite'] = _value(element,
+            'DelaiDiscontinuiteStationHydro', int)
+        args['delaiabsence'] = _value(element, 'DelaiAbsenceStationHydro', int)
+        args['essai'] = _value(element, 'EssaiStationHydro', bool)
+        args['influence'] = _value(element, 'InfluLocaleStationHydro', int)
+        args['influencecommentaire'] = _value(element,
+            'ComInfluLocaleStationHydro')
+        args['commentaire'] = _value(element, 'ComStationHydro')
+
+        if version >= '2':
+            # Récupération stations antérieures et posterieures
+            args['stationsanterieures'] = [
+                _substation_from_element(stationant)
+                for stationant in element.findall(
+                    'StationsHydroAnterieure/StationHydroAnterieure')]
+
+            args['stationsposterieures'] = [
+                _substation_from_element(stationpost)
+                for stationpost in element.findall(
+                    'StationsHydroPosterieure/StationHydroPosterieure')]
+        else:
+            # une seule station antérieure
+            code_el = element.find('StationHydroAnterieure/CdStationHydro')
+            if code_el is not None:
+                args['stationsanterieures'] = [_sitehydro.Station(
+                    code=code_el.text)]
+
+        if version < '2':
+            code_el = element.find('StationHydroFille/CdStationHydro')
+            if code_el is not None:
+                plagestation = _sitehydro.PlageStation(
+                    code=code_el.text,
+                    dtdeb=_datetime.datetime.utcnow().strftime(
+                        '%Y-%m-%dT%H:%M:%S'))
+                args['plagesstationsfille'] = [plagestation]
+
+        args['qualifsdonnees'] = [
+            _qualifdonnees_from_element(e)
+                for e in element.findall(
+                        'QualifsDonneesStationHydro/QualifDonneesStationHydro')
+        ]
+
+        if version >= '2':
+            finalitestags = ('FinalitesStationHydro/FinaliteStationHydro/'
+                             'CdFinaliteStationHydro')
+        else:
+            finalitestags = 'FinalitesStationHydro/CdFinaliteStationHydro'
+        args['finalites'] = [
+                int(e.text) for e in element.findall(finalitestags)]
+
+        args['loisstat'] = [_loistat_from_element(e, 'StationHydro')
+            for e in element.findall(
+                'LoisStatContexteStationHydro/LoiStatContexteStationHydro')]
+
+        args['images'] = [_image_from_element(e, 'StationHydro')
+            for e in element.findall(
+                'ImagesStationHydro/ImageStationHydro')]
+
+        rolestags = '{}/{}'.format(tags.rolscontactstationhydro,
+                                   tags.rolcontactstationhydro)
+        args['roles'] = [_role_from_element(
+                element=e, version=version, tags=tags, entite='StationHydro')
+                    for e in element.findall(rolestags)]
+
         args['plages'] = [
             _plage_from_element(e, 'StationHydro')
             for e in element.findall(
                 'PlagesUtilStationHydro/PlageUtilStationHydro')]
+
+        if version >= '2':
+            args['reseaux'] = [
+                _composant_site.ReseauMesure(code=_value(e, 'CodeSandreRdd'),
+                                             libelle=_value(e, 'NomRdd'))
+                for e in element.findall(
+                    'ReseauxMesureStationHydro/RSX')]
+        else:
+            args['reseaux'] = [
+                _composant_site.ReseauMesure(code=str(e.text))
+                for e in element.findall(
+                    'ReseauxMesureStationHydro/CodeSandreRdd')]
+
         args['capteurs'] = [
-            _capteur_from_element(e)
+            _capteur_from_element(e, version, tags)
             for e in element.findall('Capteurs/Capteur')]
+
+        args['refsalti'] = [
+            _refalti_from_element(e)
+            for e in element.findall('RefsAlti/RefAlti')]
+
+        args['codeh2'] = _value(element, 'CdStationHydroAncienRef')
         args['commune'] = _value(element, 'CdCommune')
-        args['ddcs'] = [str(e.text) for e in element.findall(
-            'ReseauxMesureStationHydro/CodeSandreRdd')]
+        if version >= '2':
+            # stations amont et aval
+            args['stationsamont'] = [
+                _substation_from_element(stationant)
+                for stationant in element.findall(
+                    'StationsHydroAmont/StationHydroAmont')]
+
+            args['stationsaval'] = [
+                _substation_from_element(stationpost)
+                for stationpost in element.findall(
+                    'StationsHydroAval/StationHydroAval')]
+
+            # plages stations fille et mère
+            args['plagesstationsfille'] = [
+                _plagestation_from_element(plagestation)
+                for plagestation in element.findall(
+                    'PlagesAssoStationHydroFille/PlageAssoStationHydroFille')
+            ]
+            args['plagesstationsmere'] = [
+                _plagestation_from_element(plagestation)
+                for plagestation in element.findall(
+                    'PlagesAssoStationHydroMere/PlageAssoStationHydroMere')
+            ]
+
         # build a Station and return
         return _sitehydro.Station(**args)
+
+
+def _substation_from_element(element):
+    """Return a sitehydro.Station with only code and libelle"""
+    if element is None:
+        return
+    args = {'code': _value(element, 'CdStationHydro'),
+            'libelle': _value(element, 'LbStationHydro')}
+    # TODO only return args
+    return _sitehydro.Station(**args)
+
+
+def _plagestation_from_element(element):
+    """Return a composant_site.PlageStation from a PlageAssoStationHydroFille
+    or a PlageAssoStationHydroMere element
+    """
+    if element is None:
+        return
+    station = _substation_from_element(element.find('StationHydro'))
+    args = {'code': station.code,
+            'libelle': station.libelle,
+            'dtdeb': _value(element, 'DtDebPlageAssoStationHydroMereFille'),
+            'dtfin': _value(element, 'DtFinPlageAssoStationHydroMereFille')}
+
+    return _sitehydro.PlageStation(**args)
 
 
 def _coord_from_element(element, entite):
@@ -505,7 +999,41 @@ def _plage_from_element(element, entite):
     return _sitehydro.PlageUtil(**args)
 
 
-def _capteur_from_element(element):
+def _qualifdonnees_from_element(element):
+    """Return a _composant_site.QualifDonnees
+    from a <QualifDonneesStationHydro> element
+    """
+    if element is None:
+        return None
+    args = {}
+    args['coderegime'] = _value(element, 'CdRegime', int)
+    args['qualification'] = _value(element, 'QualifDonStationHydro', int)
+    args['commentaire'] = _value(element, 'ComQualifDonStationHydro')
+    return _composant_site.QualifDonnees(**args)
+
+
+def _refalti_from_element(element):
+    """Return a _composant_site.RefAlti
+    from a <RefAlti> element
+    """
+    if element is None:
+        return None
+    args = {}
+    args['dtdeb'] = _value(element, 'DtDebutRefAlti')
+    args['dtfin'] = _value(element, 'DtFinRefAlti')
+    args['dtactivation'] = _value(element, 'DtActivationRefAlti')
+    args['dtdesactivation'] = _value(element, 'DtDesactivationRefAlti')
+    alt_el = element.find('AltiRefAlti')
+    if alt_el is not None:
+        args['altitude'] = _composant_site.Altitude(
+                altitude=_value(alt_el, 'AltitudeRefAlti', float),
+                sysalti=_value(alt_el, 'SysAltiRefAlti', int))
+
+    args['dtmaj'] = _value(element, 'DtMajRefAlti')
+    return _composant_site.RefAlti(**args)
+
+
+def _capteur_from_element(element, version, tags):
     """Return a sitehydro.Capteur from a <Capteur> element."""
     if element is not None:
         # prepare args
@@ -513,6 +1041,12 @@ def _capteur_from_element(element):
         args['code'] = _value(element, 'CdCapteur')
         args['codeh2'] = _value(element, 'CdCapteurAncienRef')
         args['libelle'] = _value(element, 'LbCapteur')
+        args['mnemo'] = _value(element, 'MnCapteur')
+        args['surveillance'] = _value(element, 'ASurveillerCapteur', bool)
+        args['dtmaj'] = _value(element, tags.dtmajcapteur)
+        args['pdt'] = _value(element, tags.pdtcapteur, int)
+        args['essai'] = _value(element, 'EssaiCapteur', bool)
+        args['commentaire'] = _value(element, 'ComCapteur')
         typecapteur = _value(element, 'TypCapteur')
         if typecapteur is not None:
             args['typecapteur'] = typecapteur
@@ -523,21 +1057,51 @@ def _capteur_from_element(element):
             _plage_from_element(e, 'Capteur')
             for e in element.findall(
                 'PlagesUtilCapteur/PlageUtilCapteur')]
+        codecontact = _value(element, 'Observateur/CdContact')
+        if codecontact is not None:
+            args['observateur'] = _intervenant.Contact(code=codecontact)
+
         # build a Capteur and return
         return _sitehydro.Capteur(**args)
 
 
-def _grandeur_from_element(element, sitemeteo=None):
+def _grandeur_from_element(element, sitemeteo=None, version=None, tags=None):
     """Return a sitemeteo.Grandeur from a <GrdMeteo> element."""
     if element is not None:
         # prepare args
         args = {}
         args['typemesure'] = _value(element, 'CdGrdMeteo')
+        args['dtmiseservice'] = _value(element, 'DtMiseServiceGrdMeteo')
+        args['dtfermeture'] = _value(element, 'DtFermetureServiceGrdMeteo')
+        args['essai'] = _value(element, 'EssaiGrdMeteo', bool)
         if sitemeteo is not None:
             args['sitemeteo'] = sitemeteo
-        args['pdt'] = _value(element, 'PasDeTempsNominalGrdMeteo', int)
+        if version >= '2':
+            args['surveillance'] = _value(element, 'ASurveillerGrdMeteo', bool)
+            args['delaiabsence'] = _value(element, 'DelaiAbsGrdMeteo', int)
+        args['pdt'] = _value(element, tags.pdtgrdmeteo, int)
+        args['classesqualite'] = [
+            _classequalite_from_element(e)
+            for e in element.findall(
+                'ClassesQualiteGrd/ClasseQualiteGrd')]
+        args['dtmaj'] = _value(element, 'DtMajGrdMeteo')
+        # TODO version 1 récupérer les seuils
         # build a Grandeur and return
         return _sitemeteo.Grandeur(**args)
+
+
+def _classequalite_from_element(element):
+    """Return a sitemeteo.ClasseQualite from a <ClasseQualiteGrd> element."""
+    if element is None:
+        return
+    args = {}
+    args['classe'] = _value(element, 'CdqClasseQualiteGrd', int)
+    dtvisite = _value(element, 'DtVisiteSiteMeteo')
+    if dtvisite is not None:
+        args['visite'] = _sitemeteo.Visite(dtvisite=dtvisite)
+    args['dtdeb'] = _value(element, 'DtDebutClasseQualiteGrd')
+    args['dtfin'] = _value(element, 'DtFinClasseQualiteGrd')
+    return _sitemeteo.ClasseQualite(**args)
 
 
 def _seuilhydro_from_element(element, sitehydro):
@@ -632,11 +1196,12 @@ def _modeleprevision_from_element(element):
         return _modeleprevision.Modeleprevision(**args)
 
 
-def _evenement_from_element(element):
+def _evenement_from_element(element, version, tags):
     """Return a evenement.Evenement from a <Evenement> element."""
     if element is not None:
         # prepare args
         # entite can be a Sitehydro, a Station or a Sitemeteo
+        args = {}
         entite = None
         if element.find('CdSiteHydro') is not None:
             entite = _sitehydro.Sitehydro(
@@ -647,17 +1212,59 @@ def _evenement_from_element(element):
         elif element.find('CdSiteMeteo') is not None:
             entite = _sitemeteo.Sitemeteo(
                 code=_value(element, 'CdSiteMeteo'))
-        # build an Evenement and return
-        return _evenement.Evenement(
-            entite=entite,
-            descriptif=_value(element, 'DescEvenement'),
-            contact=_intervenant.Contact(
-                code=_value(element, 'CdContact')),
-            dt=_value(element, 'DtEvenement'),
-            publication=_value(element, 'TypPublicationEvenement'),
-            dtmaj=_value(element, 'DtMajEvenement'))
+        args['entite'] = entite
+        args['dtmaj'] = _value(element, 'DtMajEvenement')
+        # Conversion nomenclature 534 en 874
+        publication = _value(element, tags.publicationevenement, int)
+        if publication is not None:
+            if version == '1.1':
+                # Conversion nomenclature 534
+                if publication == 10:  # vigicrues et tableaux
+                    publication = 12  # public tous régimes
+                    args['typeevt'] = 7  # publication vigicrues
+                elif publication == 20:  # uniquement vigicrues
+                    publication = 12  # public tous régimes
+                    args['typeevt'] = 7  # publication vigicrues
+                elif publication in (1, 30):  # fiches ou dernières valeurs
+                    publication = 12
+                elif publication == 100:  # privé
+                    publication = 22
+                elif publication == 25:  # evt archivé
+                    publication = 0
+                    if args['dtmaj'] is not None:
+                        args['dtfin'] = args['dtmaj']
+                    else:
+                        args['dtfin'] = \
+                            _datetime.datetime.utcnow().replace(microsecond=0)
+                else:
+                    raise ValueError('publication not in nomenclature 534')
+            args['publication'] = publication
 
-def _courbetarage_from_element(element):
+        args['descriptif'] = _value(element, 'DescEvenement')
+        args['contact'] = _intervenant.Contact(
+            code=_value(element, 'CdContact'))
+        args['dt'] = _value(element, 'DtEvenement')
+
+        if version == '2':
+            typeevt = _value(element, 'TypEvenement')
+            if typeevt is not None:
+                args['typeevt'] = typeevt
+            ressources = []
+            for ressource in element.findall('RessEvenement/ResEvenement'):
+                url = str(_value(ressource, 'UrlResEvenement'))
+                libelle = _value(ressource, 'LbResEvenement')
+                if libelle is not None:
+                    libelle = str(libelle)
+                ressources.append(_evenement.Ressource(url=url,
+                                                       libelle=libelle))
+            args['ressources'] = ressources
+            args['dtfin'] = _value(element, 'DtFinEvenement')
+
+        # build an Eveement and return
+        return _evenement.Evenement(**args)
+
+
+def _courbetarage_from_element(element, version, tags):
     """Return a courbetarage.CourbeTarage from a <CourbeTarage> element."""
     if element is None:
         raise TypeError("CourbesTarage must not be empty")
@@ -681,11 +1288,19 @@ def _courbetarage_from_element(element):
         'contact': contact,
         'pivots': [_pivotct_from_element(e, typect)
             for e in element.findall('PivotsCourbeTarage/PivotCourbeTarage')],
-        'periodes': [_periodect_from_element(e)
+        'periodes': [_periodect_from_element(e, version, tags)
             for e in element.findall(('PeriodesUtilisationCourbeTarage/'
                                       'PeriodeUtilisationCourbeTarage'))],
         'dtmaj': _value(element, 'DtMajCourbeTarage')
         }
+
+    if version == '2':
+        args['limiteinfpub'] = _value(element, 'LimiteInfPubCourbeTarage',
+                                      float)
+        args['limitesuppub'] = _value(element, 'LimiteSupPubCourbeTarage',
+                                      float)
+        args['dtcreation'] = _value(element, 'DtCreatCourbeTarage')
+        args['commentaireprive'] = _value(element, 'ComPrivCourbeTarage')
 
     return _courbetarage.CourbeTarage(**args)
 
@@ -713,25 +1328,26 @@ def _pivotct_from_element(element, typect):
         raise ValueError('TypCourbeTarage must be 0 or 4')
 
 
-def _periodect_from_element(element):
+def _periodect_from_element(element, version, tags):
     """Return a PeriodeCT from  <PeriodeUtilisationCourbeTarage> element."""
     return _courbetarage.PeriodeCT(
-        dtdeb=_value(element, 'DtDebutPeriodeUtilisationCourbeTarage'),
+        dtdeb=_value(element, tags.dtdebperiodeutilct),
         dtfin=_value(element, 'DtFinPeriodeUtilisationCourbeTarage'),
         etat=_value(element, 'EtatPeriodeUtilisationCourbeTarage', int),
-        histos=[_histoactiveperiode_from_element(e)
-            for e in element.findall('HistosActivPeriod/HistoActivPeriod')]
+        histos=[_histoactiveperiode_from_element(e, tags)
+            for e in element.findall(tags.histosactivationperiode + '/' + 
+                                     tags.histoactivationperiode)]
         )
 
-def _histoactiveperiode_from_element(element):
+def _histoactiveperiode_from_element(element, tags):
     """Return HistoActivePeriode from <HistoActivPeriod>"""
     return _courbetarage.HistoActivePeriode(
-        dtactivation=_value(element, 'DtActivHistoActivPeriod'),
-        dtdesactivation=_value(element, 'DtDesactivHistoActivPeriod')
+        dtactivation=_value(element, tags.dtactivationhistoperiode),
+        dtdesactivation=_value(element, tags.dtdesactivationhistoperiode)
         )
 
 
-def _jaugeage_from_element(element):
+def _jaugeage_from_element(element, version, tags):
     """Return a jaugeage.Jaugeage from a <Jaugeage> element."""
     if element is None:
         raise TypeError("Jaugeages must not be empty")
@@ -739,7 +1355,22 @@ def _jaugeage_from_element(element):
     codesite = _value(element, 'CdSiteHydro')
     site = _sitehydro.Sitehydro(code=codesite)
     # mode not mandatory -> constructor default value
-    mode = _value(element, 'ModeJaugeage', int)
+
+    mode = _value(element, 'ModeJaugeage')
+    if mode is not None:
+        if version == '1.1':
+            if len(mode) != 2:
+                raise ValueError('Length of mode jaugeage must be 2')
+            found = False
+            for key, mnemo in _nomenclature.MODEJAUGEAGEMNEMO.items():
+                if mnemo == mode:
+                    mode = key
+                    found = True
+                    break
+            if not found:
+                raise ValueError('mode jaugeage not in nomenclature 873')
+        else:
+            mode = int(mode)
     args = {
         'code': _value(element, 'CdJaugeage'),
         'dte': _value(element, 'DtJaugeage'),
@@ -752,7 +1383,7 @@ def _jaugeage_from_element(element):
         'commentaire': _value(element, 'ComJaugeage'),
         'vitessemoy': _value(element, 'VitesseMoyJaugeage', float),
         'vitessemax': _value(element, 'VitesseMaxJaugeage', float),
-        'vitessemoy_surface': _value(element, 'VitesseMoySurfaceJaugeage',
+        'vitessemax_surface': _value(element, tags.vitessemaxsurface,
                                      float),
         'site': site,
         'hauteurs': [_hjaug_from_element(e)
@@ -762,7 +1393,28 @@ def _jaugeage_from_element(element):
     if mode is not None:
         args['mode'] = mode
 
+    if version == '2':
+        args['numero'] = _value(element, 'NumJaugeage')
+        args['incertitude_calculee'] = _value(element, 'IncertCalJaugeage',
+                                              float)
+        args['incertitude_retenue'] = _value(element, 'IncertRetenueJaugeage',
+                                             float)
+        qualification = _value(element, 'QualifJaugeage')
+        if qualification is not None:
+            args['qualification'] = qualification
+        args['commentaire_prive'] = _value(element, 'ComPrivJaugeage')
+        args['courbestarage'] = [_ctjaugeage_from_element(e)
+                                 for e in element.findall(
+                                     'CourbesTarage/CourbeTarage')]
+
     return _jaugeage.Jaugeage(**args)
+
+
+def _ctjaugeage_from_element(element):
+    """Return a jaugeage.CourbeTarageJaugeage from a <CourbeTarage> element"""
+    return _jaugeage.CourbeTarageJaugeage(
+        code=_value(element, 'CdCourbeTarage', int),
+        libelle=_value(element, 'LbCourbeTarage'))
 
 
 def _hjaug_from_element(element):
@@ -788,7 +1440,7 @@ def _hjaug_from_element(element):
     return _jaugeage.HauteurJaugeage(**args)
 
 
-def _courbecorrection_from_element(element):
+def _courbecorrection_from_element(element, version, tags):
     """Return a courbecorrection.CourbeCorrection from a <CourbeCorrH> element."""
     if element is None:
         raise TypeError("CourbesCorrH must not be empty")
@@ -796,23 +1448,25 @@ def _courbecorrection_from_element(element):
         'station': _sitehydro.Station(code=_value(element, 'CdStationHydro')),
         'libelle': _value(element, 'LbCourbeCorrH'),
         'commentaire': _value(element, 'ComCourbeCorrH'),
-        'pivots': [_pivotcc_from_element(e)
-            for e in element.findall('PointsPivot/PointPivot')],
+        'pivots': [_pivotcc_from_element(e, version, tags)
+                   for e in element.findall('PointsPivot/PointPivot')],
         'dtmaj': _value(element, 'DtMajCourbeCorrH')
         }
 
     return _courbecorrection.CourbeCorrection(**args)
 
-def _pivotcc_from_element(element):
+
+def _pivotcc_from_element(element, version, tags):
     """Return courbecorrection.PivotCC from a <PointPivot> element."""
     return _courbecorrection.PivotCC(
         dte=_value(element, 'DtPointPivot'),
         deltah=_value(element, 'DeltaHPointPivot', float),
         dtactivation=_value(element, 'DtActivationPointPivot'),
-        dtdesactivation=_value(element, 'DtDesactivPointPivot')
+        dtdesactivation=_value(element, tags.dtdesactivationpointpivot)
         )
 
-def _seriehydro_from_element(element):
+
+def _seriehydro_from_element(element, version, tags):
     """Return a obshydro.Serie from a <Serie> element."""
     if element is not None:
         # prepare args
@@ -831,23 +1485,33 @@ def _seriehydro_from_element(element):
         if element.find('CdContact') is not None:
             contact = _intervenant.Contact(code=_value(element, 'CdContact'))
 
-        statut = _value(element, 'StatutSerie')
+        statut = None
+        if version == '1.1':
+            statut = _value(element, 'StatutSerie')
         # utilisation d'un dictionnaire afin que sysalti ne soit pas transmis
         # au constructeur si la balide n'existe pas
         args = {
             'entite': entite,
-            'grandeur': _value(element, 'GrdSerie'),
-            'dtdeb': _value(element, 'DtDebSerie'),
-            'dtfin': _value(element, 'DtFinSerie'),
-            'dtprod': _value(element, 'DtProdSerie'),
-            'perime': _value(element, 'SeriePerim', bool),
+            'grandeur': _value(element, tags.grdseriehydro),
+            'dtdeb': _value(element, tags.dtdebseriehydro),
+            'dtfin': _value(element, tags.dtfinseriehydro),
+            'dtprod': _value(element, tags.dtprodseriehydro),
+            'perime': _value(element, tags.serieperimhydro, bool),
             'contact': contact,
             'observations': _obsshydro_from_element(element.find('ObssHydro'),
-                                                    statut)}
+                                                    statut, version, tags)}
         # balise sysalti
-        sysalti = _value(element, 'SysAltiSerie', int)
+        sysalti = _value(element, tags.sysaltiseriehydro, int)
         if sysalti is not None:
             args['sysalti'] = sysalti
+
+        # balise pdt
+        if version == '2':
+            pdt_duree = _value(element, tags.pdtseriehydro, int)
+            if pdt_duree is not None:
+                args['pdt'] = _composant.PasDeTemps(
+                    duree=pdt_duree, unite=_composant.PasDeTemps.MINUTES)
+
         # build a Serie and return
         return _obshydro.Serie(**args)
 #        return _obshydro.Serie(
@@ -870,20 +1534,59 @@ def _seriemeteo_from_element(element):
 
     """
     if element is not None:
-        # build a Grandeur
-        grandeur = _sitemeteo.Grandeur(
-            typemesure=_value(element, 'CdGrdMeteo'),
-            sitemeteo=_sitemeteo.Sitemeteo(_value(element, 'CdSiteMeteo')))
-        # prepare the duree in minutes
+                # prepare the duree in minutes
         duree = _value(element, 'DureeObsMeteo', int) or 0
         # build a Contact
         contact = _intervenant.Contact(code=_value(element, 'CdContact'))
-        # build a Serie without the observations and return
-        return _obsmeteo.Serie(
-            grandeur=grandeur,
-            duree=duree * 60,
-            dtprod=_value(element, 'DtProdObsMeteo'),
-            contact=contact)
+
+        cdsitemeteo = _value(element, 'CdSiteMeteo')
+        if cdsitemeteo is not None:
+            # build a Grandeur
+            grandeur = _sitemeteo.Grandeur(
+                typemesure=_value(element, 'CdGrdMeteo'),
+                sitemeteo=_sitemeteo.Sitemeteo(cdsitemeteo))
+            # build a Serie without the observations and return
+            return _obsmeteo.Serie(
+                grandeur=grandeur,
+                duree=duree * 60,
+                dtprod=_value(element, 'DtProdObsMeteo'),
+                contact=contact)
+        else:
+            sitehydro = _sitehydro.Sitehydro(_value(element, 'CdSiteHydro'))
+            return _obselaboreemeteo.SerieObsElabMeteo(site=sitehydro,
+                                                       grandeur='RR',
+                                                       typeserie=1,
+                                                       dtprod=_value(element, 'DtProdObsMeteo'),
+                                                       duree=duree * 60)
+
+def _seriemeteo_from_element_v2(element):
+    """Return a obsmeteo.Serie from a <SerieObsMeteo> element."""
+    if element is None:
+        return
+    # build a Grandeur
+    grandeur = _sitemeteo.Grandeur(
+        typemesure=_value(element, 'CdGrdMeteo'),
+        sitemeteo=_sitemeteo.Sitemeteo(_value(element, 'CdSiteMeteo')))
+    # prepare the duree in minutes
+    duree = _value(element, 'DureeSerieObsMeteo', int) or 0
+    # build a Contact
+    cdcontact = _value(element, 'CdContact')
+    if cdcontact is not None:
+        contact = _intervenant.Contact(code=cdcontact)
+    else:
+        contact = None
+
+    # build a Serie without the observations and return
+    return _obsmeteo.Serie(
+        grandeur=grandeur,
+        duree=duree * 60,
+        dtprod=_value(element, 'DtProdSerieObsMeteo'),
+        dtdeb=_value(element, 'DtDebSerieObsMeteo'),
+        dtfin=_value(element, 'DtFinSerieObsMeteo'),
+        contact=contact,
+        observations=_obssmeteo_from_element(element.find('ObssMeteo'),
+                                             version='2')
+    )
 
 
 def _serieobselab_from_element(element):
@@ -917,7 +1620,7 @@ def _serieobselab_from_element(element):
         args = {}
         args['dte'] = _value(obs, 'DtObsElabHydro')  # mandatory
         args['res'] = _value(obs, 'ResObsElabHydro', float)  # mandatory
-        statut = _value(element, 'StatutObsElabHydro')
+        statut = _value(obs, 'StatutObsElabHydro', int)
         if statut is not None:
             args['statut'] = statut
         qal = _value(obs, 'QualifObsElabHydro', int)
@@ -953,7 +1656,90 @@ def _serieobselab_from_element(element):
             *observations[key]).sort_index()
     return list(series.values())
 
-def _obsshydro_from_element(element, statut):
+
+def _serieobselab_from_element_v2(element):
+    """Return a obselaboreehydro.SerieObsElab
+       from a SerieObsElaborHydro element.
+    """
+    args_serie = {}
+    if element.find('CdSiteHydro') is not None:
+        code = _value(element, 'CdSiteHydro')
+        args_serie['entite'] = _sitehydro.Sitehydro(
+            code=code)
+    elif element.find('CdStationHydro') is not None:
+        code = _value(element, 'CdStationHydro')
+        args_serie['entite'] = _sitehydro.Station(
+            code=code)
+
+    args_serie['dtprod'] = _value(element, 'DtProdSerieObsElaborHydro')
+
+    args_serie['typegrd'] = _value(element, 'TypDeGrdSerieObsElaborHydro')  # mandatory
+
+    unite = None
+    if args_serie['typegrd'][-1] == 'J':
+        unite = _composant.PasDeTemps.JOURS
+    elif args_serie['typegrd'][-1] == 'H':
+        unite = _composant.PasDeTemps.HEURES
+
+    pdt = None
+    duree = _value(element, 'PDTSerieObsElaborHydro', int)
+    if duree is not None:
+        args_serie['pdt'] = _composant.PasDeTemps(duree=duree,
+                                                  unite=unite)
+
+    args_serie['dtdeb'] = _value(element, 'DtDebPlagSerieObsElaborHydro')
+    args_serie['dtfin'] = _value(element, 'DtFinPlagSerieObsElaborHydro')
+    args_serie['dtdesactivation'] = _value(
+        element, 'DtDesactivationSerieObsElaborHydro')
+    args_serie['dtactivation'] = _value(element,
+                                        'DtActivationSerieObsElaborHydro')
+
+    sysalti = _value(element, 'SysAltiSerieObsElaborHydro', int)
+    if sysalti is not None:
+        args_serie['sysalti'] = sysalti
+
+    glissante = _value(element, 'GlissanteSerieObsElaborHydro', bool)
+    if glissante is not None:
+        args_serie['glissante'] = glissante
+
+    args_serie['dtdebrefalti'] = _value(element, 'DtDebutRefAlti')
+
+    cdcontact = _value(element, 'CdContact')
+    if cdcontact is not None:
+        args_serie['contact'] = _intervenant.Contact(code=cdcontact)
+
+    serie = _obselaboreehydro.SerieObsElab(**args_serie)
+
+    observations = []
+    for obs in element.findall('./ObssElaborHydro/ObsElaborHydro'):
+        args = {}
+        args['dte'] = _value(obs, 'DtObsElaborHydro')  # mandatory
+        args['res'] = _value(obs, 'ResObsElaborHydro', float)  # mandatory
+
+        cnt = _value(obs, 'ContObsElaborHydro', int)
+        if cnt is not None:
+            args['cnt'] = cnt
+
+        statut = _value(obs, 'StObsElaborHydro', int)
+        if statut is not None:
+            args['statut'] = statut
+
+        qal = _value(obs, 'QualifObsElaborHydro', int)
+        if qal is not None:
+            args['qal'] = qal
+        mth = _value(obs, 'MethObsElaborHydro', int)
+        if mth is not None:
+            args['mth'] = mth
+        observations.append(_obselaboreehydro.ObservationElaboree(**args))
+
+    # add observations to serie
+    if len(observations) > 0:
+        serie.observations = _obselaboreehydro.ObservationsElaborees(
+            *observations).sort_index()
+    return serie
+
+
+def _obsshydro_from_element(element, statut, version, tags):
     """Return a sorted obshydro.Observations from a <ObssHydro> element."""
     if element is not None:
         # prepare a list of Observation
@@ -973,17 +1759,37 @@ def _obsshydro_from_element(element, statut):
             qal = _value(o, 'QualifObsHydro', int)
             if qal is not None:
                 args['qal'] = qal
-            continuite = _value(o, 'ContObsHydro', bool)
+            if version == '2':
+                continuite = _value(o, 'ContObsHydro', int)
+                statut = _value(o, tags.statutobshydro)
+                if statut is not None:
+                    args['statut'] = statut
+            else:
+                continuite = _value(o, 'ContObsHydro', bool)
+                if statut is not None:
+                    args['statut'] = statut  # statut de la série
             if continuite is not None:
                 args['cnt'] = continuite
-            args['statut'] = statut
+
             observations.append(_obshydro.Observation(**args))
         # build the Observations and return
         return _obshydro.Observations(*observations).sort_index()
 
 
-def _obsmeteo_from_element(element):
-    """Return a obsmeteo.Observation from a <ObssHydro> element."""
+def _obssmeteo_from_element(element, version):
+    """Return a sorted obsmeteo.Observations from a <ObssMeteo> element."""
+    if element is None:
+        return
+    observations = []
+    for obs in element:
+        observations.append(_obsmeteo_from_element(element=obs,
+                                                   version=version))
+    # build the Observations and return
+    return _obsmeteo.Observations(*observations).sort_index()
+
+
+def _obsmeteo_from_element(element, version='1.1'):
+    """Return a obsmeteo.Observation from a <ObsMeteo> element."""
     if element is not None:
         # prepare args
         args = {}
@@ -1000,7 +1806,18 @@ def _obsmeteo_from_element(element):
         qua = _value(element, 'IndiceQualObsMeteo', int)
         if qua is not None:
             args['qua'] = qua
-        args['statut'] = _value(element, 'StatutObsMeteo', int)
+
+        if version == '2':
+            statut = _value(element, 'StObsMeteo', int)
+            if statut is not None:
+                args['statut'] = statut
+        else:
+            args['statut'] = _value(element, 'StatutObsMeteo', int)
+
+        if version == '2':
+            ctxt = _value(element, 'ContxtObsMeteo', int)
+            if ctxt is not None:
+                args['ctxt'] = ctxt
         # build the Observation and return
         return _obsmeteo.Observation(**args)
 
@@ -1098,39 +1915,106 @@ def _global_function_builder(xpath, func):
     return closure
 
 # return a list of intervenant.Intervenant from a <Intervenants> element
-_intervenants_from_element = _global_function_builder(
-    './Intervenant', _intervenant_from_element)
+# _intervenants_from_element = _global_function_builder(
+#     './Intervenant', _intervenant_from_element)
 # return a list of sitehydro.Sitehydro from a <SitesHydro> element
-_siteshydro_from_element = _global_function_builder(
-    './SiteHydro', _sitehydro_from_element)
+# _siteshydro_from_element = _global_function_builder(
+#     './SiteHydro', _sitehydro_from_element)
 # return a list of sitemeteo.Sitemeteo from a <SitesMeteo> element
-_sitesmeteo_from_element = _global_function_builder(
-    './SiteMeteo', _sitemeteo_from_element)
+# _sitesmeteo_from_element = _global_function_builder(
+#     './SiteMeteo', _sitemeteo_from_element)
 # return a list of Modeleprevision from a <ModelesPrevision> element
 _modelesprevision_from_element = _global_function_builder(
     './ModelePrevision', _modeleprevision_from_element)
 # return a list of evenement.Evenement from a <Evenements> element
-_evenements_from_element = _global_function_builder(
-    './Evenement', _evenement_from_element)
+# _evenements_from_element = _global_function_builder(
+#     './Evenement', _evenement_from_element)
 # return a list of courbetarage.CourbeTarage from a <CourbesTarage> element
-_courbestarage_from_element = _global_function_builder(
-    './CourbeTarage', _courbetarage_from_element)
+# _courbestarage_from_element = _global_function_builder(
+#     './CourbeTarage', _courbetarage_from_element)
 # return a list of jaugeage.Jaugeage from a <Jaugeage> element
-_jaugeages_from_element = _global_function_builder(
-    './Jaugeage', _jaugeage_from_element)
+# _jaugeages_from_element = _global_function_builder(
+#     './Jaugeage', _jaugeage_from_element)
 # return a list of courbecorrection.CourbeCorrection from a <CourbesCorrH> element
-_courbescorrection_from_element = _global_function_builder(
-    './CourbeCorrH', _courbecorrection_from_element)
+# _courbescorrection_from_element = _global_function_builder(
+#     './CourbeCorrH', _courbecorrection_from_element)
 # return a list of obshydro.Serie from a <Series> element
-_serieshydro_from_element = _global_function_builder(
-    './Serie', _seriehydro_from_element)
+# _serieshydro_from_element = _global_function_builder(
+#     './Serie', _seriehydro_from_element)
+# return a list of obsmeteo.Serie from a <SeriesObsMeteo> element
+_seriesmeteo_from_element_v2 = _global_function_builder(
+    './SerieObsMeteo', _seriemeteo_from_element_v2)
 # return a list of simulation.Simulation from a <Simuls> element
 _simulations_from_element = _global_function_builder(
     './Simul', _simulation_from_element)
 
 
+def _intervenants_from_element(elem, version, tags):
+    intervenants = []
+    if elem is not None:
+        for item in elem.findall('./Intervenant'):
+            intervenants.append(_intervenant_from_element(item, version, tags))
+    return intervenants
+
+
+def _evenements_from_element(elem, version, tags):
+    evts = []
+    if elem is not None:
+        for item in elem.findall('./Evenement'):
+            evts.append(_evenement_from_element(item, version, tags))
+    return evts
+
+
+def _jaugeages_from_element(elem, version, tags):
+    jaugeages = []
+    if elem is not None:
+        for item in elem.findall('./Jaugeage'):
+            jaugeages.append(_jaugeage_from_element(item, version, tags))
+    return jaugeages
+
+def _courbescorrection_from_element(elem, version, tags):
+    courbes = []
+    if elem is not None:
+        for item in elem.findall('./CourbeCorrH'):
+            courbes.append(_courbecorrection_from_element(item, version, tags))
+    return courbes
+
+
+def _courbestarage_from_element(elem, version, tags):
+    courbestarage = []
+    if elem is not None:
+        for item in elem.findall('./CourbeTarage'):
+            courbestarage.append(_courbetarage_from_element(item, version,
+                                                            tags))
+    return courbestarage
+
+
+def _serieshydro_from_element(elem, version, tags):
+    serieshydro = []
+    if elem is not None:
+        for item in elem.findall('./' + tags.seriehydro):
+            serieshydro.append(_seriehydro_from_element(item, version, tags))
+    return serieshydro
+
+
+def _siteshydro_from_element(elem, version, tags):
+    siteshydro = []
+    if elem is not None:
+        for item in elem.findall('./SiteHydro'):
+            siteshydro.append(_sitehydro_from_element(item, version, tags))
+    return siteshydro
+
+
+def _sitesmeteo_from_element(elem, version, tags):
+    sitesmeteo = []
+    if elem is not None:
+        for item in elem.findall('./SiteMeteo'):
+            sitesmeteo.append(_sitemeteo_from_element(item, version, tags))
+    return sitesmeteo
+
+
 # these 2 functions doesn't fit with the _global_function_builder :-\
-def _seuilshydro_from_element(element, ordered=False):
+def _seuilshydro_from_element(element, version, tags, ordered=False):
     """Return a list of seuil.Seuilhydro from a <SitesHydro> element.
 
     When ordered is True, we use an OrderedDict to keep the XML initial order.
@@ -1153,7 +2037,7 @@ def _seuilshydro_from_element(element, ordered=False):
     seuilshydro = _collections.OrderedDict() if ordered else {}
     for elementsitehydro in element.findall('./SiteHydro'):
         # FIXME - we should/could use the already build sitehydro
-        sitehydro = _sitehydro_from_element(elementsitehydro)
+        sitehydro = _sitehydro_from_element(elementsitehydro, version, tags)
         for elementseuilhydro in elementsitehydro.findall(
                 './ValeursSeuilsSiteHydro/ValeursSeuilSiteHydro'):
             seuilhydro = _seuilhydro_from_element(elementseuilhydro, sitehydro)
@@ -1194,19 +2078,24 @@ def _seriesmeteo_from_element(element):
 
     """
     seriesmeteo = []  # set()
+    serieselabmeteo = []
     # TempSerie : a serie with a list of observations
     # use a temporary serie to make only once a dataframe
     TmpSerie = _collections.namedtuple('TmpSerie', ['serie', 'obss'])
-    tmpseries = []
+    tmpseriesmeteo = []
+    tmpserieselab = []
     if element is not None:
 
         for obsmeteo in element.findall('./ObsMeteo'):
 
             ser = _seriemeteo_from_element(obsmeteo)
-            obs = _obsmeteo_from_element(obsmeteo)
+            obs = _obsmeteo_from_element(obsmeteo, version='1.1')
             if obs is None:
                 continue
-
+            if isinstance(ser, _obsmeteo.Serie):
+                tmpseries = tmpseriesmeteo
+            else:
+                tmpseries = tmpserieselab
             for tmpserie in tmpseries:
                 # if serie == ser:
                 if tmpserie.serie.__eq__(ser, ignore=['observations',
@@ -1220,14 +2109,22 @@ def _seriesmeteo_from_element(element):
                 # new serie
                 tmpseries.append(TmpSerie(serie=ser, obss=[obs]))
         # Add observations to serie
-        for tmpserie in tmpseries:
+        for tmpserie in tmpseriesmeteo:
             serie = tmpserie.serie
             serie.observations = _obsmeteo.Observations(*tmpserie.obss)
             serie.dtdeb = min(serie.observations.index)
             serie.dtfin = max(serie.observations.index)
             seriesmeteo.append(serie)
 
-    return seriesmeteo
+        # Add observations to serie
+        for tmpserie in tmpserieselab:
+            serie = tmpserie.serie
+            serie.observations = _obsmeteo.Observations(*tmpserie.obss)
+            serie.dtdeb = min(serie.observations.index)
+            serie.dtfin = max(serie.observations.index)
+            serieselabmeteo.append(serie)
+
+    return seriesmeteo, serieselabmeteo
 
 
 def _seriesobselab_from_element(element):
@@ -1240,6 +2137,93 @@ def _seriesobselab_from_element(element):
     for typegrd in element.findall('./TypsDeGrdObsElabHydro'):
         series.extend(_serieobselab_from_element(typegrd))
     return series
+
+
+def _seriesobselab_from_element_v2(element):
+    """return a list of obselaboreehydro.SerieObsElab
+    from a <SeriesObsElaborHydro> element
+    """
+    series = []
+    if element is None:
+        return series
+    for serie in element.findall('./SerieObsElaborHydro'):
+        series.append(_serieobselab_from_element_v2(serie))
+    return series
+
+
+def _seriesobselabmeteo_from_element_v2(element):
+    """return a list of obselaboreemeteo.SerieObsElabMeteo
+        from a <SeriesObsElaborMeteo> element"""
+    series = []
+    if element is None:
+        return series
+    for serie in element.findall('./SerieObsElaborMeteo'):
+        series.append(_serieobselabmeteo_from_element_v2(serie))
+    return series
+
+
+def _serieobselabmeteo_from_element_v2(element):
+    """Return a obselaboreemeteo.SerieObsElabMeteo
+       from a SeriesObsElaborMeteo element.
+    """
+    args_serie = {}
+    if element.find('CdSiteHydro') is not None:
+        code = _value(element, 'CdSiteHydro')
+        args_serie['site'] = _sitehydro.Sitehydro(
+            code=code)
+    elif element.find('CdSiteMeteo') is not None:
+        code = _value(element, 'CdSiteMeteo')
+        ponderation = _value(element, 'ValPondSiteMeteo', float)
+        args_serie['site'] = _sitemeteo.SitemeteoPondere(
+            code=code,
+            ponderation=ponderation)
+    args_serie['grandeur'] = _value(element, 'CdGrdSerieObsElaborMeteo')
+    args_serie['typeserie'] = _value(element, 'TypSerieObsElaborMeteo')
+    dtdeb = _value(element, 'DtDebSerieObsElaborMeteo')
+    if dtdeb is not None:
+        args_serie['dtdeb'] = dtdeb
+    dtfin = _value(element, 'DtFinSerieObsElaborMeteo')
+    if dtfin is not None:
+        args_serie['dtfin'] = dtfin
+    duree = _value(element, 'DureeSerieObsElaborMeteo', int)
+    if duree is not None:
+        args_serie['duree'] = 60 * duree
+    ipa = element.find('SerieObsElaborMeteoIpa')
+    if ipa is not None:
+        args_ipa = {}
+        args_ipa['coefk'] = _value(ipa, 'KSerieObsElaborMeteoIpa', float)
+        npdt = _value(ipa, 'PDTSerieObsElaborMeteoIpa', int)
+        if npdt is not None:
+            args_ipa['npdt'] = npdt
+        args_serie['ipa'] = _obselaboreemeteo.Ipa(**args_ipa)
+
+    serie = _obselaboreemeteo.SerieObsElabMeteo(**args_serie)
+
+    observations = []
+    for obs in element.findall('./ObssElaborMeteo/ObsElaborMeteo'):
+        args = {}
+        args['dte'] = _value(obs, 'DtObsElaborMeteo')  # mandatory
+        args['res'] = _value(obs, 'ResObsElaborMeteo', float)  # mandatory
+        qua = _value(obs, 'IndiceQualObsElaborMeteo', float)
+        if qua is not None:
+            args['qua'] = qua
+        qal = _value(obs, 'QualifObsElaborMeteo', int)
+        if qal is not None:
+            args['qal'] = qal
+        mth = _value(obs, 'MethObsElaborMeteo', int)
+        if mth is not None:
+            args['mth'] = mth
+        statut = _value(obs, 'StObsElaborMeteo', int)
+        if statut is not None:
+            args['statut'] = statut
+
+        observations.append(_obselaboreemeteo.ObsElabMeteo(**args))
+
+    # add observations to serie
+    if len(observations) > 0:
+        serie.observations = _obselaboreemeteo.ObssElabMeteo(
+            *observations).sort_index()
+    return serie
 
 
 # -- utility functions --------------------------------------------------------

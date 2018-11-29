@@ -226,7 +226,8 @@ class TestCorrectionHauteurs(unittest.TestCase):
 
         ccor = CourbeCorrection(station=station, pivots=pivots, dtmaj=dtmaj)
 
-        serie_hcor = _htoq.correction_hauteurs(seriehydro=serie, ccor=ccor)
+        serie_hcor = _htoq.correction_hauteurs(seriehydro=serie,
+                                               courbecorrection=ccor)
 
         self.assertEqual(len(serie_hcor.observations), len(serie.observations))
         self.assertEqual(serie_hcor.dtdeb, serie.dtdeb)
@@ -281,7 +282,8 @@ class TestCorrectionHauteurs(unittest.TestCase):
 
         ccor = CourbeCorrection(station=station, pivots=pivots, dtmaj=dtmaj)
 
-        serie_hcor = _htoq.correction_hauteurs(seriehydro=serie, ccor=ccor)
+        serie_hcor = _htoq.correction_hauteurs(seriehydro=serie,
+                                               courbecorrection=ccor)
 
         self.assertEqual(len(serie_hcor.observations), len(serie.observations))
         self.assertEqual(serie_hcor.dtdeb, serie.dtdeb)
@@ -330,7 +332,8 @@ class TestCorrectionHauteurs(unittest.TestCase):
         dtmaj = _datetime.datetime(2017, 6, 21, 8, 37, 15)
 
         ccor = CourbeCorrection(station=station, pivots=pivots, dtmaj=dtmaj)
-        serie_hcor = _htoq.correction_hauteurs(seriehydro=serie, ccor=ccor)
+        serie_hcor = _htoq.correction_hauteurs(seriehydro=serie,
+                                               courbecorrection=ccor)
         self.assertNotEqual(serie_hcor, serie)
 
     def test_error_01(self):
@@ -368,10 +371,11 @@ class TestCorrectionHauteurs(unittest.TestCase):
         dtmaj = _datetime.datetime(2017, 6, 21, 8, 37, 15)
 
         ccor = CourbeCorrection(station=station, pivots=pivots, dtmaj=dtmaj)
-        _htoq.correction_hauteurs(seriehydro=serie, ccor=ccor)
+        _htoq.correction_hauteurs(seriehydro=serie,
+                                  courbecorrection=ccor)
         serie.grandeur = 'Q'
         with self.assertRaises(ValueError):
-            _htoq.correction_hauteurs(seriehydro=serie, ccor=ccor)
+            _htoq.correction_hauteurs(seriehydro=serie, courbecorrection=ccor)
 
 
 class TestCourbeTarageActive(unittest.TestCase):
@@ -535,20 +539,24 @@ class TestObshToObsq(unittest.TestCase):
         code = 'tre'
         libelle = 'libellé'
         station = _sitehydro.Station(code='O123456789')
+        limiteinf = 11.3
+        limitesup = 28.7
 
         ctar = CourbeTarage(code=code, libelle=libelle, station=station,
+                            limiteinf=limiteinf, limitesup=limitesup,
                             pivots=pivots, periodes=periodes)
 
         dte = _datetime.datetime(2016, 8, 1)
-        hauteurs = [10, 20, 30]
-        expected = [20, 40, 60]
+        hauteurs = [10, 11.3, 15, 20, 28.6, 28.7, 28.9, 30]
+        expected = [20, 22.6, 30, 40, 57.2, 57.4, 57.8, 60]
+        expected_qal = [12, 12, 16, 16, 16, 12, 12, 12]
         for index, hauteur in enumerate(hauteurs):
             obsh = _obshydro.Observation(dte=dte, res=hauteur,
                                          qal=16, mth=0, cnt=0, statut=4)
             obsq = _htoq.obsh_to_obsq(obsh=obsh,
                                       courbestarage=[ctar])
             self.assertEqual(obsq['res'].item(), expected[index])
-
+            self.assertEqual(obsq['qal'].item(), expected_qal[index])
         hauteurs = [5, 40]
         for index, hauteur in enumerate(hauteurs):
             obsh = _obshydro.Observation(dte=dte, res=hauteur,
@@ -557,7 +565,6 @@ class TestObshToObsq(unittest.TestCase):
                                       courbestarage=[ctar])
             self.assertTrue(_numpy.isnan(obsq['res'].item()))
 
-        # self.assertEqual(debits, [None, 20, 40, 60, None])
 
     def test_ct_puissance(self):
         """Test courbe de tarage puissance"""

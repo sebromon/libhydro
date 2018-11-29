@@ -13,8 +13,12 @@ from __future__ import (
     unicode_literals as _unicode_literals, absolute_import as _absolute_import,
     division as _division, print_function as _print_function)
 
-from . import _composant, _composant_site
+import collections as _collections
+
+from . import (_composant, _composant_site, sitemeteo as _sitemeteo,
+               rolecontact as _rolecontact)
 from libhydro.core.nomenclature import NOMENCLATURE as _NOMENCLATURE
+from libhydro.core import intervenant as _intervenant
 
 
 # -- strings ------------------------------------------------------------------
@@ -114,7 +118,7 @@ class _Entitehydro(object):
             # all is well
             self._code = code
 
-        except:
+        except Exception:
             raise
 
     # -- property codeh2 --
@@ -134,7 +138,7 @@ class _Entitehydro(object):
             # all is well
             self._codeh2 = code
 
-        except:
+        except Exception:
             raise
 
     # -- special methods --
@@ -154,8 +158,11 @@ class _Site_or_station(_Entitehydro):
 
     """
 
-    def __init__(self, code, codeh2=None, libelle=None, coord=None,
-                 strict=True):
+    influence = _composant.Nomenclatureitem(nomenclature=104, required=False)
+
+    def __init__(self, code, codeh2=None, libelle=None, coord=None, roles=None,
+                 influence=None, influencecommentaire=None, commentaire=None,
+                 loisstat=None, images=None, strict=True):
         """Constructor.
 
         Arguments:
@@ -169,9 +176,22 @@ class _Site_or_station(_Entitehydro):
         super(_Site_or_station, self).__init__(
             code=code, codeh2=codeh2, libelle=libelle, strict=strict)
 
+        self.influence = influence
+        self.influencecommentaire = str(influencecommentaire) \
+            if (influencecommentaire is not None) else None
+        self.commentaire = str(commentaire) \
+            if (commentaire is not None) else None
+
         # -- full properties --
         self._coord = None
         self.coord = coord
+        self._roles = []
+        self.roles = roles
+        self._loisstat = []
+        self.loisstat = loisstat
+        self._images = []
+        self.images = images
+
 
     # -- property coord --
     @property
@@ -197,6 +217,84 @@ class _Site_or_station(_Entitehydro):
                     except (TypeError, ValueError, AttributeError):
                         raise TypeError('coord incorrect')
 
+    # -- property loisstat --
+    @property
+    def loisstat(self):
+        """Return loisstat."""
+        return self._loisstat
+
+    @loisstat.setter
+    def loisstat(self, loisstat):
+        """Set loisstat."""
+        self._loisstat = []
+        # None case
+        if loisstat is None:
+            return
+        # one station, we make a list with it
+        if isinstance(loisstat, _composant_site.LoiStat):
+            loisstat = [loisstat]
+        # an iterable of loisstat
+        for loi in loisstat:
+            # some checks
+            if self._strict:
+                if not isinstance(loi, _composant_site.LoiStat):
+                    raise TypeError(
+                        'loisstat must be a LoiStat'
+                        ' or an iterable of LoiStat'
+                    )
+            # add site1
+            self._loisstat.append(loi)
+
+    # -- property roles --
+    @property
+    def roles(self):
+        """Return roles."""
+        return self._roles
+
+    @roles.setter
+    def roles(self, roles):
+        """Set roles."""
+        self._roles = []
+        if roles is None:
+            return
+
+        if isinstance(roles, _rolecontact.RoleContact):
+            self._roles = [roles]
+            return
+
+        for role in roles:
+            if not isinstance(role, _rolecontact.RoleContact):
+                raise TypeError('roles must be a role.Role or'
+                                'an iterable of role.Role')
+        self._roles = roles
+
+    # -- property images --
+    @property
+    def images(self):
+        """Return images."""
+        return self._images
+
+    @images.setter
+    def images(self, images):
+        """Set images."""
+        self._images = []
+        # None case
+        if images is None:
+            return
+        # one grandeur, we make a list with it
+        if isinstance(images, _composant_site.Image):
+            images = [images]
+        # an iterable of images
+        for image in images:
+            # some checks
+            if self._strict:
+                if not isinstance(image, _composant_site.Image):
+                    raise TypeError(
+                        'images must be a Image or an iterable '
+                        'of Image'
+                    )
+            # add capteur
+            self._images.append(image)
 
 # -- class Sitehydro ----------------------------------------------------------
 class Sitehydro(_Site_or_station):
@@ -215,49 +313,71 @@ class Sitehydro(_Site_or_station):
             x, y (float)
             proj (int parmi NOMENCLATURE[22]) = systeme de projection
         stations (une liste de Station)
-        communes (une liste de codes communes, string(5)) = code INSEE commune
-        tronconsvigilance (une liste de Tronconvigilance)
+        communes (une liste de _composant_site.Commune) = liste de communes
         entitehydro (string(8) = entité hydrographique
         zonehydro (string(4)) = zone hydrographique
         tronconhydro (string(8)) = troncon hydrographique
         precisioncoursdeau (string) = precision du cours d'eau
+        mnemo (string ou None) = mnémo du site
+        complementlibelle (string ou None) = complément du libellé
+        pkamont (float ou None) = pk amont
+        pkaval (float ou None) = pk aval
+        altitude (_composant_site.Altitude ou None) = Altitude du site
+        dtmaj (datetime.datetime ou None) = Date de mise à jour
+        bvtopo (float ou None = bassin versant topologique
+        bvhydro (float ou None) = bassin versant hydrologique
+        fuseau (int parmi NOMENCLATURE[530]) = fuseau horaire
+        statut (int parmi NOMENCLATURE[460]) = statut du site
+        dtpremieredonnee (datetime.datetime ou None) =
+            date de la première donnée
+        moisetiage (int ou None) = mois étiage
+        moisanneehydro (int ou None) = mois année hydro
+        dureecrues (int ou None) = durée caractéristique des crues
+        publication (int parmi NOMENCLATURE[871]) = droit de publication
+        essai (bool ou None) = site d'essai
+        influence (int parmi NOMENCLATURE[104]) = influende du site
+        influencecommentaire (unicode ou None) = commentaire de l'influence
+        commentaire (unicode ou None) = commentaire
+        siteassocie (Sitehydro ou None) = site associé
+        sitesattaches (iterable of Sitehydroattache) = sites attachés
+        massedeau (unidoe ou None) = masse d'eau
+        loisstat (iterable of _composant_site.LoiStat = lois statistiques
+        images (_composant_site.Image r iterbale of _composant_site.Image)
+            = images du site
+        roles (iterable of rolecontact.RoleContact) = roles des contacts
+        entitesvigicrues (iterable of _composant_site.EntiteVigiCrues) =
+            entités de vigilance crues
+        lamesdeau (iterable of SitemeteoPondere) = lames d'eau associées
+        sitesamont (iterable of Sitehydro) = sites hydro amont
+        sitesaval (iterbale of Sitehydro) = sites hydro aval
     """
 
     # Sitehydro other properties
 
-    # libellecomplement
-    # mnemonique
-    # precisionce
-    # pkamont
-    # pkaval
-    # altitude, sysalti
-    # dtmaj
-    # bv
-    # fuseau
-    # statut
     # ponctuel
-    # dtpremieredonnee
-    # moisetiage
-    # moisanneehydro
-    # publication
-    # essai
-    # influence
-    # influencecommentaire
-    # commentaire
-
-    # siteattache
-    # siteassocie
-    # masses d'eau
-    # loistats
     # images
     # rolecontact
 
     typesite = _composant.Nomenclatureitem(nomenclature=530)
+    statut = _composant.Nomenclatureitem(nomenclature=460, required=False)
+    publication = _composant.Nomenclatureitem(nomenclature=871, required=False)
+    dtmaj = _composant.Datefromeverything(required=False)
+    dtpremieredonnee = _composant.Datefromeverything(required=False)
 
     def __init__(self, code, codeh2=None, typesite='REEL', libelle=None,
                  libelleusuel=None, coord=None, stations=None, communes=None,
-                 tronconsvigilance=None, entitehydro=None, zonehydro=None,
-                 tronconhydro=None, precisioncoursdeau=None, strict=True):
+                 entitehydro=None, zonehydro=None,
+                 tronconhydro=None, precisioncoursdeau=None, mnemo=None,
+                 complementlibelle=None, pkamont=None, pkaval=None,
+                 altitude=None, dtmaj=None, bvtopo=None,
+                 bvhydro=None, fuseau=None, statut=None,
+                 dtpremieredonnee=None, moisetiage=None,
+                 moisanneehydro=None, dureecrues=None, publication=None,
+                 essai=None, influence=None, influencecommentaire=None,
+                 commentaire=None, siteassocie=None, sitesattaches=None,
+                 massedeau=None, loisstat=None, images=None, roles=None,
+                 entitesvigicrues=None, lamesdeau=None, sitesamont=None,
+                 sitesaval=None, strict=True):
         """Initialisation.
 
         Arguments:
@@ -270,12 +390,44 @@ class Sitehydro(_Site_or_station):
                 (x, y, proj) ou {'x': x, 'y': y, 'proj': proj}
                 avec proj (int parmi NOMENCLATURE[22]) = systeme de projection
             stations (une Station ou un iterable de Station)
-            communes (un code commmune ou un iterable de codes)
-            tronconsvigilance (un Tronconvigilance ou un iterable)
+            communes (a _composant_site.Commune
+                or an iterable of _composant_site.Commune))
             entitehydro (string(8) = entité hydrographique
             zonehydro (string(4)) = zone hydrographique
             tronconhydro (string(8)) = troncon hydrographique
             precisioncoursdeau (string) = precision du cours d'eau
+            mnemo (string ou None) = mnémo du site
+            complementlibelle (string ou None) = complément du libellé
+            pkamont (float ou None) = pk amont
+            pkaval (float ou None) = pk aval
+            altitude (_composant_site.Altitude ou None) = Altitude du site
+            dtmaj (datetime.datetime ou None) = Date de mise à jour
+            bvtopo (float ou None = bassin versant topologique
+            bvhydro (float ou None) = bassin versant hydrologique
+            fuseau (int parmi NOMENCLATURE[530]) = fuseau horaire
+            statut (int parmi NOMENCLATURE[460]) = statut du site
+            dtpremieredonnee (datetime.datetime ou None) =
+                date de la première donnée
+            moisetiage (int ou None) = mois étiage
+            moisanneehydro (int ou None) = mois année hydro
+            dureecrues (int ou None) = durée caractéristique des crues
+            publication (int parmi NOMENCLATURE[871]) = droit de publication
+            essai (bool ou None) = site d'essai
+            influence (int parmi NOMENCLATURE[104]) = influende du site
+            influencecommentaire (unicode ou None) = commentaire de l'influence
+            commentaire (unicode ou None) = commentaire
+            siteassocie (Sitehydro ou None) = site associé
+            sitesattaches (iterable of Sitehydroattache) = sites attachés
+            massedeau (unidoe ou None) = masse d'eau
+            loisstat (iterable of _composant_site.LoiStat = lois statistiques
+            images (_composant_site.Image r iterbale of _composant_site.Image)
+                = images du site
+            roles (iterable of rolecontact.RoleContact) = roles des contacts
+            entitesvigicrues (iterable of _composant_site.EntiteVigiCrues) =
+                entités de vigilance crues
+            lamesdeau (iterable of SitemeteoPondere) = lames d'eau associées
+            sitesamont (iterable of Sitehydro) = sites hydro amont
+            sitesaval (iterbale of Sitehydro) = sites hydro aval
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite du type, du code et des stations
 
@@ -284,7 +436,9 @@ class Sitehydro(_Site_or_station):
         # -- super --
         super(Sitehydro, self).__init__(
             code=code, codeh2=codeh2, libelle=libelle,
-            coord=coord, strict=strict)
+            coord=coord, roles=roles, influence=influence,
+            influencecommentaire=influencecommentaire, commentaire=commentaire,
+            loisstat=loisstat, images=images, strict=strict)
 
         # -- adjust the descriptor --
         vars(Sitehydro)['typesite'].strict = self._strict
@@ -294,21 +448,61 @@ class Sitehydro(_Site_or_station):
             if (libelleusuel is not None) else None
         self.precisioncoursdeau = str(precisioncoursdeau) \
             if (precisioncoursdeau is not None) else None
+        self.mnemo = str(mnemo) if mnemo is not None else None
+        self.complementlibelle = str(complementlibelle) \
+            if (complementlibelle is not None) else None
+        self.massedeau = str(massedeau) \
+            if (massedeau is not None) else None
 
         # -- descriptors --
         self.typesite = typesite
+        self.dtmaj = dtmaj
+        self.statut = statut
+        self.publication = publication
+        self.dtpremieredonnee = dtpremieredonnee
 
         # -- full properties --
-        self._stations = self._communes = self._tronconsvigilance = []
+        self._stations = self._communes = []
         self.stations = stations
         self.communes = communes
-        self.tronconsvigilance = tronconsvigilance
         self._entitehydro = None
         self.entitehydro = entitehydro
         self._tronconhydro = None
         self.tronconhydro = tronconhydro
         self._zonehydro = None
         self.zonehydro = zonehydro
+        self._pkaval = None
+        self.pkaval = pkaval
+        self._pkamont = None
+        self.pkamont = pkamont
+        self._altitude = None
+        self.altitude = altitude
+        self._bvtopo = None
+        self.bvtopo = bvtopo
+        self._bvhydro = None
+        self.bvhydro = bvhydro
+        self._fuseau = None
+        self.fuseau = fuseau
+        self._moisetiage = None
+        self.moisetiage = moisetiage
+        self._moisanneehydro = None
+        self.moisanneehydro = moisanneehydro
+        self._dureecrues = None
+        self.dureecrues = dureecrues
+        self._essai = None
+        self.essai = essai
+        self._siteassocie = None
+        self.siteassocie = siteassocie
+        self._sitesattaches = []
+        self.sitesattaches = sitesattaches
+        self._entitesvigicrues = []
+        self.entitesvigicrues = entitesvigicrues
+        self._lamesdeau = []
+        self.lamesdeau = lamesdeau
+        self._sitesamont = []
+        self.sitesamont = sitesamont
+        self._sitesaval = []
+        self.sitesaval = sitesaval
 
     # -- property stations --
     @property
@@ -355,40 +549,14 @@ class Sitehydro(_Site_or_station):
         # None case
         if communes is None:
             return
-        # one commune, we make a list with it
-        if _composant.is_code_insee(communes, length=5, errors='ignore'):
+        if isinstance(communes, _composant_site.Commune):
             communes = [communes]
         # an iterable of communes
         for commune in communes:
-            if _composant.is_code_insee(commune, length=5, errors='strict'):
-                self._communes.append(str(commune))
-
-    # -- property tronconsvigilance --
-    @property
-    def tronconsvigilance(self):
-        """Return tronconsvigilance."""
-        return self._tronconsvigilance
-
-    @tronconsvigilance.setter
-    def tronconsvigilance(self, tronconsvigilance):
-        """Set tronconsvigilance."""
-        self._tronconsvigilance = []
-        # None case
-        if tronconsvigilance is None:
-            return
-        # one troncon, we make a list with it
-        if isinstance(tronconsvigilance, Tronconvigilance):
-            tronconsvigilance = [tronconsvigilance]
-        # an iterable of tronconsvigilance
-        for tronconvigilance in tronconsvigilance:
-            # some checks
-            if self._strict:
-                if not isinstance(tronconvigilance, Tronconvigilance):
-                    raise TypeError(
-                        'tronconsvigilance must be a Tronconvigilance '
-                        'or an iterable of Tronconvigilance')
-            # add station
-            self._tronconsvigilance.append(tronconvigilance)
+            if not isinstance(commune, _composant_site.Commune):
+                raise TypeError('communes must be a _composant_site.Commune'
+                                ' or an iterable of _composant_site.Commune')
+            self._communes.append(commune)
 
     # -- property zonehydro --
     @property
@@ -447,11 +615,319 @@ class Sitehydro(_Site_or_station):
                 'length of entite hydro ({}) must be 8'.format(entitehydro))
         self._entitehydro = entitehydro
 
+    # -- property pkamont --
+    @property
+    def pkamont(self):
+        """Return pkamont."""
+        return self._pkamont
+
+    @pkamont.setter
+    def pkamont(self, pkamont):
+        """Set pkamont."""
+        # None case
+        if pkamont is None:
+            self._pkamont = None
+        else:
+            self._pkamont = float(pkamont)
+
+    # -- property pkaval --
+    @property
+    def pkaval(self):
+        """Return pkaval."""
+        return self._pkaval
+
+    @pkaval.setter
+    def pkaval(self, pkaval):
+        """Set pkaval."""
+        # None case
+        if pkaval is None:
+            self._pkaval = None
+        else:
+            self._pkaval = float(pkaval)
+
+    # -- property altitude --
+    @property
+    def altitude(self):
+        """Return altitude."""
+        return self._altitude
+
+    @altitude.setter
+    def altitude(self, altitude):
+        """Set altitude."""
+        # None case
+        if altitude is None:
+            self._altitude = None
+        else:
+            if not isinstance(altitude, _composant_site.Altitude) \
+                    and self._strict:
+                raise TypeError('altitude must be a _composant_site.Altitude')
+            self._altitude = altitude
+
+    # -- property bvtopo --
+    @property
+    def bvtopo(self):
+        """Return bvtopo."""
+        return self._bvtopo
+
+    @bvtopo.setter
+    def bvtopo(self, bvtopo):
+        """Set bvtopo."""
+        # None case
+        if bvtopo is None:
+            self._bvtopo = None
+        else:
+            self._bvtopo = float(bvtopo)
+
+    # -- property bvhydro --
+    @property
+    def bvhydro(self):
+        """Return bvhydro."""
+        return self._bvhydro
+
+    @bvhydro.setter
+    def bvhydro(self, bvhydro):
+        """Set bvhydro."""
+        # None case
+        if bvhydro is None:
+            self._bvhydro = None
+        else:
+            self._bvhydro = float(bvhydro)
+
+    # -- property fuseau --
+    @property
+    def fuseau(self):
+        """Return fuseau."""
+        return self._fuseau
+
+    @fuseau.setter
+    def fuseau(self, fuseau):
+        """Set fuseau."""
+        # None case
+        # TODO check fuseau
+        if fuseau is None:
+            self._fuseau = None
+        else:
+            self._fuseau = int(fuseau)
+
+    # -- property moisetiage --
+    @property
+    def moisetiage(self):
+        """Return moisetiage."""
+        return self._moisetiage
+
+    @moisetiage.setter
+    def moisetiage(self, moisetiage):
+        """Set moisetiage."""
+        # None case
+        if moisetiage is None:
+            self._moisetiage = None
+        else:
+            self._moisetiage = int(moisetiage)
+
+    # -- property moisanneehydro --
+    @property
+    def moisanneehydro(self):
+        """Return moisanneehydro."""
+        return self._moisanneehydro
+
+    @moisanneehydro.setter
+    def moisanneehydro(self, moisanneehydro):
+        """Set moisanneehydro."""
+        # None case
+        if moisanneehydro is None:
+            self._moisanneehydro = None
+        else:
+            self._moisanneehydro = int(moisanneehydro)
+
+    # -- property dureecrues --
+    @property
+    def dureecrues(self):
+        """Return dureecrues."""
+        return self._dureecrues
+
+    @dureecrues.setter
+    def dureecrues(self, dureecrues):
+        """Set dureecrues."""
+        # None case
+        if dureecrues is None:
+            self._dureecrues = None
+        else:
+            self._dureecrues = int(dureecrues)
+
+    # -- property essai --
+    @property
+    def essai(self):
+        """Return essai."""
+        return self._essai
+
+    @essai.setter
+    def essai(self, essai):
+        """Set essai."""
+        # None case
+        if essai is None:
+            self._essai = None
+        else:
+            self._essai = bool(essai)
+
+    # -- property siteassocie --
+    @property
+    def siteassocie(self):
+        """Return siteassocie."""
+        return self._siteassocie
+
+    @siteassocie.setter
+    def siteassocie(self, siteassocie):
+        """Set siteassocie."""
+        # None case
+        if siteassocie is None:
+            self._siteassocie = None
+        else:
+            if not isinstance(siteassocie, Sitehydro):
+                raise TypeError('siteasocie must be a Sitehydro')
+            self._siteassocie = siteassocie
+
+    # -- property sitesattaches --
+    @property
+    def sitesattaches(self):
+        """Return sitesattaches."""
+        return self._sitesattaches
+
+    @sitesattaches.setter
+    def sitesattaches(self, sitesattaches):
+        """Set sitesattaches."""
+        self._sitesattaches = []
+        # None case
+        if sitesattaches is None:
+            return
+        # one station, we make a list with it
+        if isinstance(sitesattaches, Sitehydroattache):
+            sitesattaches = [sitesattaches]
+        # an iterable of sitesattaches
+        for site in sitesattaches:
+            # some checks
+            if self._strict:
+                if not isinstance(site, Sitehydroattache):
+                    raise TypeError(
+                        'sitesattaches must be a Sitehydroattache'
+                        ' or an iterable of Sitehydroattache'
+                    )
+            # add site1
+            self._sitesattaches.append(site)
+
+    # -- property entitesvigicrues --
+    @property
+    def entitesvigicrues(self):
+        """Return entitesvigicrues."""
+        return self._entitesvigicrues
+
+    @entitesvigicrues.setter
+    def entitesvigicrues(self, entitesvigicrues):
+        """Set entitesvigicrues."""
+        self._entitesvigicrues = []
+        # None case
+        if entitesvigicrues is None:
+            return
+        # one station, we make a list with it
+        if isinstance(entitesvigicrues, _composant_site.EntiteVigiCrues):
+            entitesvigicrues = [entitesvigicrues]
+        # an iterable of entitesvigicrues
+        for entite in entitesvigicrues:
+            # some checks
+            if self._strict:
+                if not isinstance(entite, _composant_site.EntiteVigiCrues):
+                    raise TypeError(
+                        'entitesvigicrues must be a EntiteVigiCrues'
+                        ' or an iterable of EntiteVigiCrues'
+                    )
+            # add site1
+            self._entitesvigicrues.append(entite)
+
+    # -- property lamesdeau --
+    @property
+    def lamesdeau(self):
+        """Return lamesdeau."""
+        return self._lamesdeau
+
+    @lamesdeau.setter
+    def lamesdeau(self, lamesdeau):
+        """Set lamesdeau."""
+        self._lamesdeau = []
+        # None case
+        if lamesdeau is None:
+            return
+        # one station, we make a list with it
+        if isinstance(lamesdeau, _sitemeteo.SitemeteoPondere):
+            lamesdeau = [lamesdeau]
+        # an iterable of lamesdeau
+        for lame in lamesdeau:
+            # some checks
+            if self._strict:
+                if not isinstance(lame, _sitemeteo.SitemeteoPondere):
+                    raise TypeError(
+                        'lamesdeau must be a SitemeteoPondere'
+                        ' or an iterable of SitemeteoPondere'
+                    )
+            # add site1
+            self._lamesdeau.append(lame)
+
+    # -- property sitesamont --
+    @property
+    def sitesamont(self):
+        """Return sitesamont."""
+        return self._sitesamont
+
+    @sitesamont.setter
+    def sitesamont(self, sitesamont):
+        """Set sitesamont."""
+        # None case
+        if sitesamont is None:
+            self._sitesamont = []
+        else:
+            if isinstance(sitesamont, Sitehydro):
+                self._sitesamont = [sitesamont]
+            else:
+                for site in sitesamont:
+                    if not isinstance(site, Sitehydro):
+                        raise TypeError('sitesamont must be a Sitehydro'
+                                        'or an iterbale of Sitehydro')
+                self._sitesamont = sitesamont
+
+    # -- property sitesaval --
+    @property
+    def sitesaval(self):
+        """Return sitesaval."""
+        return self._sitesaval
+
+    @sitesaval.setter
+    def sitesaval(self, sitesaval):
+        """Set sitesaval."""
+        # None case
+        if sitesaval is None:
+            self._sitesaval = []
+        else:
+            if isinstance(sitesaval, Sitehydro):
+                self._sitesaval = [sitesaval]
+            else:
+                for site in sitesaval:
+                    if not isinstance(site, Sitehydro):
+                        raise TypeError('sitesaval must be a Sitehydro'
+                                        'or an iterbale of Sitehydro')
+                self._sitesaval = sitesaval
+
     # -- special methods --
     __all__attrs__ = (
         'code', 'codeh2', 'typesite', 'libelle', 'libelleusuel', 'coord',
-        'stations', 'communes', 'tronconsvigilance',  'entitehydro',
-        'zonehydro', 'tronconhydro', 'precisioncoursdeau')
+        'stations', 'communes', 'entitehydro',
+        'zonehydro', 'tronconhydro', 'precisioncoursdeau', 'mnemo',
+        'complementlibelle', 'pkamont', 'pkaval',
+        'altitude', 'dtmaj', 'bvtopo',
+        'bvhydro', 'fuseau', 'statut',
+        'dtpremieredonnee', 'moisetiage',
+        'moisanneehydro', 'dureecrues', 'publication',
+        'essai', 'influence', 'influencecommentaire',
+        'commentaire', 'siteassocie', 'sitesattaches',
+        'massedeau', 'loisstat', 'images', 'roles', 'entitesvigicrues',
+        'lamesdeau', 'sitesamont', 'sitesaval')
 
     def __unicode__(self):
         """Return unicode representation."""
@@ -461,6 +937,102 @@ class Sitehydro(_Site_or_station):
             self.libelle or '<sans libelle>',
             len(self.stations),
             '' if (len(self.stations) < 2) else 's')
+
+    __str__ = _composant.__str__
+
+
+# -- class Sitehydroattache
+class Sitehydroattache(Sitehydro):
+    """Classe Sitehydroattache.
+
+    Classe pour manipuler des sites hydrometriques attachés.
+
+    Proprietes:
+        proprietes de Sitehydro
+        ponderation = pondération du site
+        decalage = décalage en minutes de l'hydrogramme
+        dtdeb = date de début
+        dtfin = date de fin
+        dtdebactivation = date de début d'activation
+        dtfinactivation = date de fin d'activation
+    """
+
+    dtdeb = _composant.Datefromeverything(required=False)
+    dtfin = _composant.Datefromeverything(required=False)
+    dtdebactivation = _composant.Datefromeverything(required=False)
+    dtfinactivation = _composant.Datefromeverything(required=False)
+
+    def __init__(self, code=None, ponderation=None, decalage=None,
+                 dtdeb=None, dtfin=None, dtdebactivation=None,
+                 dtfinactivation=None):
+        """Constructor.
+
+        Arguments:
+            code (string(8)) = code hydro
+            ponderation = pondération du site
+            decalage = décalage en minutes de l'hydrogramme
+            dtdeb = date de début
+            dtfin = date de fin
+            dtdebactivation = date de début d'activation
+            dtfinactivation = date de fin d'activation
+        """
+
+        # -- super --
+        super(Sitehydroattache, self).__init__(code=code)
+
+        self.dtdeb = dtdeb
+        self.dtfin = dtfin
+        self.dtdebactivation = dtdebactivation
+        self.dtfinactivation = dtfinactivation
+
+        self._ponderation = None
+        self.ponderation = ponderation
+        self._decalage = None
+        self.decalage = decalage
+
+    # -- property ponderation --
+    @property
+    def ponderation(self):
+        """Return ponderation."""
+        return self._ponderation
+
+    @ponderation.setter
+    def ponderation(self, ponderation):
+        """Set ponderation."""
+        # None case
+        if ponderation is None:
+            self._ponderation = None
+        else:
+            self._ponderation = float(ponderation)
+
+    # -- property decalage --
+    @property
+    def decalage(self):
+        """Return decalage."""
+        return self._decalage
+
+    @decalage.setter
+    def decalage(self, decalage):
+        """Set decalage."""
+        # None case
+        if decalage is None:
+            self._decalage = None
+        else:
+            self._decalage = int(decalage)
+
+    # -- special methods --
+    __all__attrs__ = (
+        'code', 'ponderation', 'decalage', 'dtdeb', 'dtfin',
+        'dtdebactivation', 'dtfinactivation')
+
+    def __unicode__(self):
+        """Return unicode representation."""
+        decalage = '{0} minutes'.format(self.decalage) \
+            if self.decalage is not None else '<sans décalage>'
+        return 'Site attaché {0} de pondération {1} décalé de {2}'.format(
+            self.code or '<sans code>',
+            self.ponderation or '<sans libelle>',
+            decalage)
 
     __str__ = _composant.__str__
 
@@ -475,86 +1047,135 @@ class Station(_Site_or_station):
     Proprietes:
         code (string(10)) = code hydro
         codeh2 (string(8)) = ancien code hydro2
-        typestation (string parmi NOMENCLATURE[531])
-        libelle (string)
-        libellecomplement (string)
-        descriptif (string)
-        niveauaffichage (int) = niveau d'affichage
-        coord (Coord) =
-            x, y (float)
-            proj (int parmi NOMENCLATURE[22]) = systeme de projection
+        typestation (string parmi NOMENCLATURE[531], defaut LIMNI)
+        libelle (string) = libellé
+        libellecomplement (string) = complément du libellé
+        commentaireprive (string) = commentaire privé ou descriptif
+        dtmaj (datetime.datetime ou None) = date de mise à jour
         pointk (float) = point kilomètrique
         dtmiseservice (datetime.datetime) = Date de mise en service
         dtfermeture (datetime.datetime) = Date de fermeture
-        surveillance (boolean) = statin à surveiller
-        capteurs (une liste de Capteur)
+        surveillance (boolean ou None) = station à surveiller
+        niveauaffichage (int) = niveau d'affichage
+        coord (list ou dict) =
+            (x, y, proj) ou {'x': x, 'y': y, 'proj': proj}
+            avec proj (int parmi NOMENCLATURE[22]) =
+                systeme de projection,
+        droitpublication (int parmi NOMENCLATURE[532]) =
+            droit de pubilcation
+        delaidiscontinuite (int ou None) =
+            délai de discontinuité en minutes
+        delaiabsence (int ou None) = délai d'absence en minutes
+        essai (bool ou None) = station d'essai
+        influence (int parmi NOMENCLATURE[104] = influence
+        influencecommentaire (str) = commentaire de l'influence
+        commentaire (str) = commentaire
+        stationsanterieures (Station ou iterbable de Station) =
+            stations antérieures
+        stationsposterieures (Station ou iterbable de Station) =
+            stations postérieures
+        qualifsdonnees(QualifDonnees ou iterbale de QualifDonnees) =
+            qualifications des données
+        finalites (int ou iterable de int parmi NOMENCLATURE[522]) =
+            finalités
+        loisstat (LoiStat or iterable of LoiStat)= lois statistiques
+        images (_composant_site.Image r iterbale of _composant_site.Image)
+            = images de la station
+        roles (RoleContact ou iterable de RoleContact) = roles des contacts,
+        capteurs (un Capteur ou un iterable de Capteur)
+        refsalti (RefAlti ou iterable de RefAlti) = références altimétriques
         commune (string(5)) = code INSEE commune
-        ddcs (liste de string(10)) = liste de reseaux de mesure SANDRE
-            (dispositifs de collecte)
+        reseaux (ReseauMesure ou un iterable de ReseauMesure)
+            = reseaux de mesure SANDRE
         plages (PlageUtil ou un iterable
             de PlageUtil) = plages d'utilisation
+        stationsamont (Station ou iterbable de Station) = stations en amont
+        stationsaval (Station ou iterbable de Station) = stations en aval
+        plagesstationsfille (PlageStation ou iterable de PlageStation) =
+            plages associées aux stations fille
+        plagesstationsmere (PlageStation ou iterable de PlageStation)  =
+            plages associées aux stations mère
 
     """
 
     # Station other properties
-
-    # sitehydro
-
-    # dtes
-    # dths
-    # surveillance
-    # publication
-    # delaidiscontinuite
-    # delaiabsence
-    # essai
-    # influence
-    # influencecommentaire
-    # commentaire
-
-    # remplace
-    # stationfille
-    # qualifications
-    # finalites
-    # loisstat
     # images
-    # rolecontact
-    # stationattachee
 
     typestation = _composant.Nomenclatureitem(nomenclature=531)
+    droitpublication = _composant.Nomenclatureitem(nomenclature=532)
     dtmaj = _composant.Datefromeverything(required=False)
     dtmiseservice = _composant.Datefromeverything(required=False)
     dtfermeture = _composant.Datefromeverything(required=False)
 
     def __init__(self, code, codeh2=None, typestation='LIMNI', libelle=None,
-                 libellecomplement=None, descriptif=None, dtmaj=None,
+                 libellecomplement=None, commentaireprive=None, dtmaj=None,
                  pointk=None, dtmiseservice=None, dtfermeture=None,
-                 surveillance=None, niveauaffichage=0,
-                 coord=None, capteurs=None, commune=None, ddcs=None,
-                 plages=None, strict=True):
+                 surveillance=None, niveauaffichage=0, coord=None,
+                 droitpublication=10, delaidiscontinuite=None,
+                 delaiabsence=None, essai=None, influence=None,
+                 influencecommentaire=None, commentaire=None,
+                 stationsanterieures=None, stationsposterieures=None,
+                 qualifsdonnees=None, finalites=None, loisstat=None,
+                 images=None, roles=None, capteurs=None, refsalti=None,
+                 commune=None, reseaux=None, plages=None, stationsamont=None,
+                 stationsaval=None, plagesstationsfille=None,
+                 plagesstationsmere=None,
+                 strict=True):
         """Initialisation.
 
         Arguments:
             code (string(10)) = code hydro
             codeh2 (string(8)) = ancien code hydro2
             typestation (string parmi NOMENCLATURE[531], defaut LIMNI)
-            libelle (string)
-            libellecomplement (string)
-            descriptif (string)
-            dtmaj (datetime.datetime)
-            niveauaffichage (int) = niveau d'affichage
-            coord (list ou dict) =
-                (x, y, proj) ou {'x': x, 'y': y, 'proj': proj}
-                avec proj (int parmi NOMENCLATURE[22]) = systeme de projection
+            libelle (string) = libellé
+            libellecomplement (string) = complément du libellé
+            commentaireprive (string) = commentaire privé ou descriptif
+            dtmaj (datetime.datetime ou None) = date de mise à jour
             pointk (float) = point kilomètrique
             dtmiseservice (datetime.datetime) = Date de mise en service
             dtfermeture (datetime.datetime) = Date de fermeture
-            surveillance (boolean) = statin à surveiller
+            surveillance (boolean ou None) = station à surveiller
+            niveauaffichage (int) = niveau d'affichage
+            coord (list ou dict) =
+                (x, y, proj) ou {'x': x, 'y': y, 'proj': proj}
+                avec proj (int parmi NOMENCLATURE[22]) =
+                    systeme de projection,
+            droitpublication (int parmi NOMENCLATURE[532]) =
+                droit de pubilcation
+            delaidiscontinuite (int ou None) =
+                délai de discontinuité en minutes
+            delaiabsence (int ou None) = délai d'absence en minutes
+            essai (bool ou None) = station d'essai
+            influence (int parmi NOMENCLATURE[104] = influence
+            influencecommentaire (str) = commentaire de l'influence
+            commentaire (str) = commentaire
+            stationsanterieures (Station ou iterbable de Station) =
+                stations antérieures
+            stationsposterieures (Station ou iterbable de Station) =
+                stations postérieures
+            qualifsdonnees(QualifDonnees ou iterbale de QualifDonnees) =
+                qualifications des données
+            finalites (int ou iterable de int parmi NOMENCLATURE[522]) =
+                finalités
+            loisstat (LoiStat or iterable of LoiStat)= lois statistiques
+            images (_composant_site.Image r iterbale of _composant_site.Image)
+                = images de la station
+            roles (RoleContact ou iterable de RoleContact) =
+                roles des contacts,
             capteurs (un Capteur ou un iterable de Capteur)
+            refsalti (RefAlti ou iterable de RefAlti) =
+                références altimétriques
             commune (string(5)) = code INSEE commune
-            ddcs (un code string(10) ou un iterable de string(10)) = reseaux de
-                mesure SANDRE
+            reseaux (ReseauMesure ou un iterable de ReseauMesure)
+                = reseaux de mesure SANDRE
             plages (PlageUtil ou un iterable
                 de PlageUtil) = plages d'utilisation
+            stationsamont (Station ou iterbable de Station) = stations en amont
+            stationsaval (Station ou iterbable de Station) = stations en aval
+            plagesstationsfille (PlageStation ou iterable de PlageStation) =
+                plages associées aux stations fille
+            plagesstationsmere (PlageStation ou iterable de PlageStation)  =
+                plages associées aux stations mère
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite du type et du code
 
@@ -562,8 +1183,10 @@ class Station(_Site_or_station):
 
         # -- super --
         super(Station, self).__init__(
-            code=code, codeh2=codeh2, libelle=libelle,
-            coord=coord, strict=strict)
+            code=code, codeh2=codeh2, libelle=libelle, coord=coord,
+            influence=influence, influencecommentaire=influencecommentaire,
+            commentaire=commentaire, loisstat=loisstat, images=images,
+            roles=roles, strict=strict)
 
         # -- adjust the descriptor --
         vars(Station)['typestation'].strict = self._strict
@@ -572,10 +1195,11 @@ class Station(_Site_or_station):
         self.libellecomplement = str(libellecomplement) \
             if (libellecomplement is not None) else None
 
-        self.descriptif = str(descriptif) \
-            if descriptif is not None else None
+        self.commentaireprive = str(commentaireprive) \
+            if commentaireprive is not None else None
         # -- descriptors --
         self.typestation = typestation
+        self.droitpublication = droitpublication
         self.dtmaj = dtmaj
         self.dtmiseservice = dtmiseservice
         self.dtfermeture = dtfermeture
@@ -586,14 +1210,38 @@ class Station(_Site_or_station):
         self.pointk = pointk
         self._surveillance = None
         self.surveillance = surveillance
+        self._delaiabsence = None
+        self.delaiabsence = delaiabsence
+        self._delaidiscontinuite = None
+        self.delaidiscontinuite = delaidiscontinuite
+        self._essai = None
+        self.essai = essai
+        self._stationsanterieures = []
+        self.stationsanterieures = stationsanterieures
+        self._stationsposterieures = []
+        self.stationsposterieures = stationsposterieures
+        self._qualifsdonnees = []
+        self.qualifsdonnees = qualifsdonnees
+        self._finalites = []
+        self.finalites = finalites
         self._capteurs = []
         self.capteurs = capteurs
+        self._refsalti = []
+        self.refsalti = refsalti
         self._commune = None
         self.commune = commune
-        self._ddcs = []
-        self.ddcs = ddcs
+        self._reseaux = []
+        self.reseaux = reseaux
         self._plages = []
         self.plages = plages
+        self._stationsamont = []
+        self.stationsamont = stationsamont
+        self._stationsaval = []
+        self.stationsaval = stationsaval
+        self._plagesstationsfille = []
+        self.plagesstationsfille = plagesstationsfille
+        self._plagesstationsmere = []
+        self.plagesstationsmere = plagesstationsmere
 
     # -- property niveauaffichage --
     @property
@@ -630,11 +1278,141 @@ class Station(_Site_or_station):
 
     @surveillance.setter
     def surveillance(self, surveillance):
-        """Set pointk."""
+        """Set surveillance."""
         self._surveillance = None
         if surveillance is None:
             return
         self._surveillance = bool(surveillance)
+
+    # -- property delaidiscontinuite --
+    @property
+    def delaidiscontinuite(self):
+        """Return delaidiscontinuite."""
+        return self._delaidiscontinuite
+
+    @delaidiscontinuite.setter
+    def delaidiscontinuite(self, delaidiscontinuite):
+        """Set delaidiscontinuite."""
+        self._delaidiscontinuite = None
+        if delaidiscontinuite is None:
+            return
+        self._delaidiscontinuite = int(delaidiscontinuite)
+
+    # -- property delaiabsence --
+    @property
+    def delaiabsence(self):
+        """Return delaiabsence."""
+        return self._delaiabsence
+
+    @delaiabsence.setter
+    def delaiabsence(self, delaiabsence):
+        """Set delaiabsence."""
+        self._delaiabsence = None
+        if delaiabsence is None:
+            return
+        self._delaiabsence = int(delaiabsence)
+
+    # -- property essai --
+    @property
+    def essai(self):
+        """Return essai."""
+        return self._essai
+
+    @essai.setter
+    def essai(self, essai):
+        """Set essai."""
+        self._essai = None
+        if essai is None:
+            return
+        self._essai = bool(essai)
+
+    # -- property stationsanterieures --
+    @property
+    def stationsanterieures(self):
+        """Return stationsanterieures."""
+        return self._stationsanterieures
+
+    @stationsanterieures.setter
+    def stationsanterieures(self, stationsanterieures):
+        """Set stationsanterieures."""
+        self._stationsanterieures = []
+        if stationsanterieures is None:
+            return
+        if isinstance(stationsanterieures, Station):
+            self._stationsanterieures = [stationsanterieures]
+            return
+        for station in stationsanterieures:
+            if not isinstance(station, Station):
+                raise TypeError('stationsanterieures must be a Station'
+                                ' or an iterable of Station')
+            self._stationsanterieures.append(station)
+
+    # -- property stationsposterieures --
+    @property
+    def stationsposterieures(self):
+        """Return stationsposterieures."""
+        return self._stationsposterieures
+
+    @stationsposterieures.setter
+    def stationsposterieures(self, stationsposterieures):
+        """Set stationsposterieures."""
+        self._stationsposterieures = []
+        if stationsposterieures is None:
+            return
+        if isinstance(stationsposterieures, Station):
+            self._stationsposterieures = [stationsposterieures]
+            return
+        for station in stationsposterieures:
+            if not isinstance(station, Station):
+                raise TypeError('stationsposterieures must be a Station'
+                                ' or an iterable of Station')
+            self._stationsposterieures.append(station)
+
+    # -- property qualifsdonnees --
+    @property
+    def qualifsdonnees(self):
+        """Return qualifsdonnees."""
+        return self._qualifsdonnees
+
+    @qualifsdonnees.setter
+    def qualifsdonnees(self, qualifsdonnees):
+        """Set qualifsdonnees."""
+        self._qualifsdonnees = []
+        if qualifsdonnees is None:
+            return
+        if isinstance(qualifsdonnees, _composant_site.QualifDonnees):
+            self._qualifsdonnees = [qualifsdonnees]
+            return
+        for qualif in qualifsdonnees:
+            if not isinstance(qualif, _composant_site.QualifDonnees):
+                raise TypeError(
+                    'qualifsdonnees must be a _composant_site.QualifDonnees'
+                    ' or an iterable of _composant_site.QualifDonnees')
+            self._qualifsdonnees.append(qualif)
+
+    # -- property finalites --
+    @property
+    def finalites(self):
+        """Return finalites."""
+        return self._finalites
+
+    @finalites.setter
+    def finalites(self, finalites):
+        """Set finalites."""
+        self._finalites = []
+        if finalites is None:
+            return
+        if hasattr(finalites, '__iter__'):
+            for finalite in finalites:
+                finalite = int(finalite)
+                if finalite not in _NOMENCLATURE[522]:
+                    raise ValueError('finalite not in nomenclature 522')
+                self._finalites.append(finalite)
+        else:
+            finalite = int(finalites)
+            if finalite not in _NOMENCLATURE[522]:
+                raise ValueError('finalite not in nomenclature 522')
+            self._finalites.append(finalite)
 
     # -- property capteurs --
     @property
@@ -667,6 +1445,30 @@ class Station(_Site_or_station):
             # add capteur
             self._capteurs.append(capteur)
 
+    # -- property refsalti --
+    @property
+    def refsalti(self):
+        """Return refsalti."""
+        return self._refsalti
+
+    @refsalti.setter
+    def refsalti(self, refsalti):
+        """Set refsalti."""
+        self._refsalti = []
+        # None case
+        if refsalti is None:
+            return
+        # one refalti, we make a list with it
+        if isinstance(refsalti, _composant_site.RefAlti):
+            self._refsalti.append(refsalti)
+            return
+        # an iterable of RefAlti
+        for refalti in refsalti:
+            if not isinstance(refalti, _composant_site.RefAlti):
+                raise ValueError('refsalti must be a _composant_site.RefAlti'
+                                 ' or an iterbale of _composant_site.RefAlti')
+            self._refsalti.append(refalti)
+
     # -- property commune --
     @property
     def commune(self):
@@ -681,32 +1483,29 @@ class Station(_Site_or_station):
             _composant.is_code_insee(commune, length=5, errors='strict')
         self._commune = commune
 
-    # -- property ddcs --
+    # -- property reseaux --
     @property
-    def ddcs(self):
-        """Return ddcs."""
-        return self._ddcs
+    def reseaux(self):
+        """Return reseaux."""
+        return self._reseaux
 
-    @ddcs.setter
-    def ddcs(self, ddcs):
-        """Set ddcs."""
-        self._ddcs = []
+    @reseaux.setter
+    def reseaux(self, reseaux):
+        """Set reseaux."""
+        self._reseaux = []
         # None case
-        if ddcs is None:
+        if reseaux is None:
             return
-        # one ddc, we make a list with it
-        if not hasattr(ddcs, '__iter__'):
-            ddcs = [ddcs]
-        # python3 strings are iterable
-        if isinstance(ddcs, (str, bytes)):
-            ddcs = [ddcs]
-        # an iterable of ddcs
-        for ddc in ddcs:
-            ddc = str(ddc)
-            # if len(ddc) != 10:
-            if len(ddc) > 10:
-                raise ValueError('ddc code must be 10 chars long')
-            self._ddcs.append(ddc)
+        # one network, we make a list with it
+        if isinstance(reseaux, _composant_site.ReseauMesure):
+            reseaux = [reseaux]
+        # an iterable of reseaux
+        for reseau in reseaux:
+            if not isinstance(reseau, _composant_site.ReseauMesure):
+                raise TypeError('reseaux must an instance of ReseauMesure'
+                                ' or an iterable of ReseauMesure')
+
+            self._reseaux.append(reseau)
 
     # -- property plages --
     @property
@@ -732,12 +1531,115 @@ class Station(_Site_or_station):
                                 ' or an iterable of PlageUtil ')
             self._plages.append(plage)
 
+    # -- property stationsamont --
+    @property
+    def stationsamont(self):
+        """Return stationsamont."""
+        return self._stationsamont
+
+    @stationsamont.setter
+    def stationsamont(self, stationsamont):
+        """Set stationsamont."""
+        self._stationsamont = []
+        # None case
+        if stationsamont is None:
+            return
+        # one station, we make a list with it
+        if isinstance(stationsamont, Station):
+            self._stationsamont.append(stationsamont)
+            return
+        # an iterable of Station
+        for station in stationsamont:
+            if not isinstance(station, Station):
+                raise ValueError('stationsamont must be a Station'
+                                 ' or an iterbale of Station')
+            self._stationsamont.append(station)
+
+    # -- property stationsaval --
+    @property
+    def stationsaval(self):
+        """Return stationsaval."""
+        return self._stationsaval
+
+    @stationsaval.setter
+    def stationsaval(self, stationsaval):
+        """Set stationsaval."""
+        self._stationsaval = []
+        # None case
+        if stationsaval is None:
+            return
+        # one station, we make a list with it
+        if isinstance(stationsaval, Station):
+            self._stationsaval.append(stationsaval)
+            return
+        # an iterable of Station
+        for station in stationsaval:
+            if not isinstance(station, Station):
+                raise ValueError('stationsaval must be a Station'
+                                 ' or an iterbale of Station')
+            self._stationsaval.append(station)
+
+    # -- property plagesstationsfille --
+    @property
+    def plagesstationsfille(self):
+        """Return plagesstationsfille."""
+        return self._plagesstationsfille
+
+    @plagesstationsfille.setter
+    def plagesstationsfille(self, plagesstationsfille):
+        """Set plagesstationsfille."""
+        self._plagesstationsfille = []
+        # None case
+        if plagesstationsfille is None:
+            return
+        # one plage, we make a list with it
+        if isinstance(plagesstationsfille, PlageStation):
+            self._plagesstationsfille.append(plagesstationsfille)
+            return
+        # an iterable of _composant_site.PlageStation
+        for plage in plagesstationsfille:
+            if not isinstance(plage, PlageStation):
+                raise ValueError('plagesstationsfille must be a Station'
+                                 ' or an iterbale of Station')
+            self._plagesstationsfille.append(plage)
+
+    # -- property plagesstationsmere --
+    @property
+    def plagesstationsmere(self):
+        """Return plagesstationsmere."""
+        return self._plagesstationsmere
+
+    @plagesstationsmere.setter
+    def plagesstationsmere(self, plagesstationsmere):
+        """Set plagesstationsmere."""
+        self._plagesstationsmere = []
+        # None case
+        if plagesstationsmere is None:
+            return
+        # one plage, we make a list with it
+        if isinstance(plagesstationsmere, PlageStation):
+            self._plagesstationsmere.append(plagesstationsmere)
+            return
+        # an iterable of PlageStation
+        for plage in plagesstationsmere:
+            if not isinstance(plage, PlageStation):
+                raise ValueError('plagesstationsmere must be a Station'
+                                 ' or an iterbale of Station')
+            self._plagesstationsmere.append(plage)
+
     # -- special methods --
-    __all__attrs__ = (
-        'code', 'codeh2', 'typestation', 'libelle', 'libellecomplement',
-        'descriptif',
-        'niveauaffichage', 'coord', 'capteurs', 'commune', 'ddcs',
-        'plages')
+    __all__attrs__ = ('code', 'codeh2', 'typestation', 'libelle',
+                      'libellecomplement', 'commentaireprive', 'dtmaj',
+                      'pointk', 'dtmiseservice', 'dtfermeture',
+                      'surveillance', 'niveauaffichage', 'coord',
+                      'droitpublication', 'delaidiscontinuite',
+                      'delaiabsence', 'essai', 'influence',
+                      'influencecommentaire', 'commentaire',
+                      'stationsanterieures', 'stationsposterieures',
+                      'qualifsdonnees', 'finalites', 'loisstat', 'images',
+                      'roles', 'capteurs', 'refsalti', 'commune',
+                      'reseaux', 'plages', 'stationsamont', 'stationsaval',
+                      'plagesstationsfille', 'plagesstationsmere')
 
     def __unicode__(self):
         """Return unicode representation."""
@@ -763,7 +1665,14 @@ class Capteur(_Entitehydro):
         codeh2 (string(8)) = ancien code hydro2
         typemesure (caractere parmi NOMENCLATURE[520]) = H ou Q
         typecapteur (int parmi NOMENCLATURE[519])
-        libelle (string)
+        libelle (string) = libelle
+        mnemo (str) = mnemonique
+        surveillance (bool) = capteur à surveiller
+        dtmaj (datetime.datetime) = date de mise à jour
+        pdt (int) = pas de temps
+        essai (boolean) = capteur d'essai
+        commentaire (string) = commentaire
+        observateur (intervenant.Contact) = observateur du capteur
         plages (PlageUtil ou un iterable
             de PlageUtil ou None) = plages d'utilisation
 
@@ -773,21 +1682,13 @@ class Capteur(_Entitehydro):
 
     # station
 
-    # mnemonique
-
-    # surveillance
-    # dtmaj
-    # pdt
-    # essai
-    # commentaire
-
-    # observateur
-
     typemesure = _composant.Nomenclatureitem(nomenclature=520)
     typecapteur = _composant.Nomenclatureitem(nomenclature=519)
+    dtmaj = _composant.Datefromeverything(required=False)
 
     def __init__(self, code, codeh2=None, typemesure='H', libelle=None,
-                 typecapteur=0,
+                 typecapteur=0, mnemo=None, surveillance=None, dtmaj=None,
+                 pdt=None, essai=None, commentaire=None, observateur=None,
                  plages=None, strict=True):
         """Initialisation.
 
@@ -796,7 +1697,14 @@ class Capteur(_Entitehydro):
             codeh2 (string(8)) = ancien code hydro2
             typemesure (caractere parmi NOMENCLATURE[520], defaut H) = H ou Q
             typecapteur (int parmi NOMENCLATURE[519])
-            libelle (string)
+            libelle (string) = libelle
+            mnemo (str) = mnemonique
+            surveillance (bool) = capteur à surveiller
+            dtmaj (datetime.datetime) = date de mise à jour
+            pdt (int) = pas de temps
+            essai (boolean) = capteur d'essai
+            commentaire (string) = commentaire
+            observateur (intervenant.Contact) = observateur du capteur
             plages (PlageUtil ou un iterable
                 de PlageUtil ou None) = plages d'utilisation
             strict (bool, defaut True) = le mode permissif permet de lever les
@@ -811,12 +1719,90 @@ class Capteur(_Entitehydro):
         # -- adjust the descriptor --
         vars(Capteur)['typemesure'].strict = self._strict
 
+        # -- simple properties --
+        self.mnemo = str(mnemo) if (mnemo is not None) else None
+        self.commentaire = str(commentaire) \
+            if (commentaire is not None) else None
+
+
         # -- descriptors --
         self.typemesure = typemesure
         self.typecapteur = typecapteur
+        self.dtmaj = dtmaj
 
         self._plages = []
         self.plages = plages
+        self._surveillance = None
+        self.surveillance = surveillance
+        self._essai = None
+        self.essai = essai
+        self._pdt = None
+        self.pdt= pdt
+        self._observateur = None
+        self.observateur= observateur
+        
+
+    # -- property surveillance --
+    @property
+    def surveillance(self):
+        """Return surveillance."""
+        return self._surveillance
+
+    @surveillance.setter
+    def surveillance(self, surveillance):
+        """Set surveillance."""
+        self._surveillance = None
+        if surveillance is None:
+            return
+        self._surveillance = bool(surveillance)
+
+    # -- property pdt --
+    @property
+    def pdt(self):
+        """Return pdt."""
+        return self._pdt
+
+    @pdt.setter
+    def pdt(self, pdt):
+        """Set pdt."""
+        if pdt is None:
+            self._pdt = pdt
+            return
+        pdt = int(pdt)
+        if pdt < 0:
+            raise ValueError('pdt must be positive')
+        self._pdt = pdt
+
+    # -- property essai --
+    @property
+    def essai(self):
+        """Return essai."""
+        return self._essai
+
+    @essai.setter
+    def essai(self, essai):
+        """Set essai."""
+        self._essai = None
+        if essai is None:
+            return
+        self._essai = bool(essai)
+
+    # -- property observateur --
+    @property
+    def observateur(self):
+        """Return observateur."""
+        return self._observateur
+
+    @observateur.setter
+    def observateur(self, observateur):
+        """Set observateur."""
+        self._observateur = None
+        if observateur is None:
+            return
+        if not isinstance(observateur, _intervenant.Contact):
+            raise TypeError('observateur must be an intervenant.Contact')
+        self._observateur = observateur
+
 
     # TODO plages utilisation communes aux stations et capteurs
     # -- property plages --
@@ -844,9 +1830,9 @@ class Capteur(_Entitehydro):
             self._plages.append(plage)
 
     # -- special methods --
-    __all__attrs__ = ('code', 'codeh2', 'typemesure', 'libelle',
-                      'typecapteur',
-                      'plages')
+    __all__attrs__ = ('code', 'codeh2', 'typemesure', 'libelle', 'typecapteur',
+                      'mnemo', 'surveillance', 'dtmaj', 'pdt', 'essai',
+                      'commentaire', 'observateur', 'plages')
     # __eq__ = _composant.__eq__
     # __ne__ = _composant.__ne__
 
@@ -965,6 +1951,51 @@ class PlageUtil(object):
     __str__ = _composant.__str__
 
 
+class PlageStation(Station):
+    """Classe PlageStation
+
+    Classe pour manipuler des plages d'association à une station
+
+    Proprietes:
+        code (string(10)) = code de la station hydro
+        dtdeb (datetime.datetime)  = Date de début de la plage
+        dtfin (datetime.datetime ou None)  = Date de fin de la plage
+    """
+
+    dtdeb = _composant.Datefromeverything(required=True)
+    dtfin = _composant.Datefromeverything(required=False)
+
+    def __init__(self, code=None, libelle=None, dtdeb=None, dtfin=None):
+        """Initialisation.
+
+        Arguments:
+            code (string(10)) = code de la station hydro
+            dtdeb (datetime.datetime)  = Date de début de la plage
+            dtfin (datetime.datetime ou None)  = Date de fin de la plage
+
+        """
+        # -- super --
+        super(PlageStation, self).__init__(code=code, libelle=libelle)
+
+        self.dtdeb = dtdeb
+        self.dtfin = dtfin
+
+    # -- other methods --
+    __all__attrs__ = ('code', 'libelle', 'dtdeb', 'dtfin')
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
+
+    def __unicode__(self):
+        """Return unicode representation."""
+
+        dtfin = self.dtfin if self.dtfin is not None else '<sans date de fin>'
+        return 'Plage de {0} à {1} associée à la station {2}'.format(
+            self.dtdeb, dtfin, self.code
+        )
+
+    __str__ = _composant.__str__
+
 # -- config -------------------------------------------------------------------
 # -- HYDRO ENTITY _ARTICLE --
 _ARTICLE = {
@@ -977,7 +2008,9 @@ _ARTICLE = {
 _CODE_HYDRO_LENGTH = {
     # class name: hydro code length
     Sitehydro: 8,
+    Sitehydroattache: 8,
     Station: 10,
+    PlageStation: 10,
     Capteur: 12}
 
 # -- HYDRO ENTITY DEPEDENCY RULES --

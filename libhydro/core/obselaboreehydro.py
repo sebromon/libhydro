@@ -129,7 +129,7 @@ class ObservationElaboree(_numpy.ndarray):
         (str('cnt'), _numpy.int8),
         (str('statut'), _numpy.int8)])
 
-    def __new__(cls, dte=None, res=0.0, mth=0, qal=16, cnt=0, statut=4):
+    def __new__(cls, dte=None, res=0.0, mth=0, qal=16, cnt=0, statut=0):
         if not isinstance(dte, _numpy.datetime64):
             dte = _numpy.datetime64(dte, 's')
         if qal not in _NOMENCLATURE[515]:
@@ -288,7 +288,7 @@ class SerieObsElab(object):
         dtactivation (datetime.datetime): date d'activation
         dtdesactivation (datetime.datetime): date de désactivation
         sysalti (int): système altimétrique suiavnt nomenclature 76
-        glissant (bool ou None): série glissante
+        glissante (bool ou None): série glissante
         dtdebrefalti (datetime.datetime ou None): Date de début de validité
             de la référence altimétrique
         contact (intervenant.Contact ou None)
@@ -307,7 +307,7 @@ class SerieObsElab(object):
 
     def __init__(self, entite=None, dtprod=None, typegrd=None, pdt=None,
                  dtdeb=None, dtfin=None, dtdesactivation=None,
-                 dtactivation=None, sysalti=31, glissant=None,
+                 dtactivation=None, sysalti=31, glissante=None,
                  dtdebrefalti=None, contact=None, observations=None,
                  strict=True):
 
@@ -342,8 +342,8 @@ class SerieObsElab(object):
         self.entite = entite
         self._pdt = None
         self.pdt = pdt
-        self._glissant = None
-        self.glissant = glissant
+        self._glissante = None
+        self.glissante = glissante
         self._contact = None
         self.contact = contact
 
@@ -400,23 +400,23 @@ class SerieObsElab(object):
                 duree=pdt,
                 unite=unite)
 
-    # -- property glissant --
+    # -- property glissante --
     @property
-    def glissant(self):
-        """Return pdt."""
-        return self._glissant
+    def glissante(self):
+        """Return glissante."""
+        return self._glissante
 
-    @glissant.setter
-    def glissant(self, glissant):
-        """Set glissant."""
+    @glissante.setter
+    def glissante(self, glissante):
+        """Set glissante."""
         try:
             if self._strict:
-                if glissant not in [None, 0, 1, True, False]:
-                    raise TypeError('glissant incorrect')
-            if glissant is not None:
-                self._glissant = bool(glissant)
+                if glissante not in [None, 0, 1, True, False]:
+                    raise TypeError('glissante incorrect')
+            if glissante is not None:
+                self._glissante = bool(glissante)
             else:
-                self._glissant = glissant
+                self._glissante = glissante
         except Exception:
             raise
 
@@ -471,15 +471,17 @@ class SerieObsElab(object):
             )
         except Exception:
             obs = '<sans observations>'
-
+        pdt = ''
+        if self.pdt is not None:
+            pdt = ' de pas de temps {}'.format(self.pdt)
         # action !
-        return 'Série de type {0} ({1})\n'\
+        return 'Série de type {0} ({1}){4}\n'\
                '{2}\n'\
                'Observations:\n{3}'.format(
                    self.typegrd or '<type grandeur inconnu>',
                    lbgrandeur,
                    '-' * 72,
-                   obs
+                   obs, pdt
                )
 
     __str__ = _composant.__str__

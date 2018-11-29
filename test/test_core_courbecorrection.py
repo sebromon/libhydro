@@ -321,11 +321,11 @@ class TestCourbeCorrection(unittest.TestCase):
         pivots = [pivot1, pivot2]
         CourbeCorrection(station=station, pivots=pivots)
 
-        pivots = [pivot1]
-        with self.assertRaises(TypeError) as context:
-            CourbeCorrection(station=station, pivots=pivots)
-        self.assertEqual(str(context.exception),
-                         'pivots must be an iterable of minimum 2 PivotCC')
+#         pivots = [pivot1]
+#         with self.assertRaises(TypeError) as context:
+#             CourbeCorrection(station=station, pivots=pivots)
+#         self.assertEqual(str(context.exception),
+#                          'pivots must be an iterable of minimum 2 PivotCC')
 
         pivots = [pivot1, 'pivot2']
         with self.assertRaises(TypeError) as context:

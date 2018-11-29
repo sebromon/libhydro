@@ -21,22 +21,22 @@
       <Intervenant>
         <CdIntervenant schemeAgencyID="SANDRE">11</CdIntervenant>
         <NomIntervenant>Nom</NomIntervenant>
-        <StIntervenant>String</StIntervenant>
+        <StIntervenant>Gelé</StIntervenant>
         <DateCreationIntervenant>1967-08-13</DateCreationIntervenant>
         <DateMajIntervenant>2001-12-17T04:30:47</DateMajIntervenant>
         <AuteurIntervenant>Auteur</AuteurIntervenant>
         <MnIntervenant>Mnemo</MnIntervenant>
-        <BpIntervenant>String</BpIntervenant>
-        <ImmoIntervenant>String</ImmoIntervenant>
-        <RueIntervenant>String</RueIntervenant>
-        <LieuIntervenant>String</LieuIntervenant>
-        <VilleIntervenant>String</VilleIntervenant>
-        <DepIntervenant>String</DepIntervenant>
-        <CommentairesIntervenant>String</CommentairesIntervenant>
-        <ActivitesIntervenant>String</ActivitesIntervenant>
-        <CPIntervenant>Strin</CPIntervenant>
-        <NomInternationalIntervenant>String</NomInternationalIntervenant>
-        <CdSIRETRattacheIntervenant>token</CdSIRETRattacheIntervenant>
+        <BpIntervenant>Boite postale</BpIntervenant>
+        <ImmoIntervenant>complément</ImmoIntervenant>
+        <RueIntervenant>1 rue toto</RueIntervenant>
+        <LieuIntervenant>Lieu-dit</LieuIntervenant>
+        <VilleIntervenant>Ville</VilleIntervenant>
+        <DepIntervenant>31</DepIntervenant>
+        <CommentairesIntervenant>Commentaire</CommentairesIntervenant>
+        <ActivitesIntervenant>Activités</ActivitesIntervenant>
+        <CPIntervenant>Code postal</CPIntervenant>
+        <NomInternationalIntervenant>International</NomInternationalIntervenant>
+        <CdSIRETRattacheIntervenant>12345678901234</CdSIRETRattacheIntervenant>
         <CdCommune>32001</CdCommune>
         <Contacts>
           <Contact>
@@ -45,41 +45,39 @@
             <PrenomContact>Prenom</PrenomContact>
             <CiviliteContact>1</CiviliteContact>
             <ProfilContact>001</ProfilContact>
-            <AdContact>String</AdContact>
-            <AdEtrangereContact>String</AdEtrangereContact>
-            <CpContact>3.14159265358979</CpContact>
-            <VilleContact>String</VilleContact>
-            <FonctionContact>String</FonctionContact>
-            <TelephoneContact>String</TelephoneContact>
-            <PortContact>String</PortContact>
-            <FaxContact>String</FaxContact>
-            <MelContact>String</MelContact>
+            <AdContact>Adresse</AdContact>
+            <AdEtrangereContact>Adresse étrangère</AdEtrangereContact>
+            <CpContact>31000</CpContact>
+            <VilleContact>Toulouse</VilleContact>
+            <FonctionContact>Hydromètre</FonctionContact>
+            <TelephoneContact>0000</TelephoneContact>
+            <PortContact>0600</PortContact>
+            <FaxContact>Fax</FaxContact>
+            <MelContact>Mail</MelContact>
             <PaysContact>FR</PaysContact>
-            <DateMajContact>2001-12-17T09:30:47</DateMajContact>
+            <DateMajContact>2015-02-03T12:10:38</DateMajContact>
             <ProfilsAdminLocal>
               <ProfilAdminLocal>
                 <CdProfilAdminLocal>GEST</CdProfilAdminLocal>
                 <ZonesHydro>
-                  <CdZoneHydro>toke</CdZoneHydro>
-                  <CdZoneHydro>toke</CdZoneHydro>
+                  <CdZoneHydro>A123</CdZoneHydro>
+                  <CdZoneHydro>Z987</CdZoneHydro>
                 </ZonesHydro>
-                <DtActivationProfilAdminLocal>2001-12-17T09:30:47</DtActivationProfilAdminLocal>
-                <DtDesactivationProfilAdminLocal>2001-12-17T09:30:49</DtDesactivationProfilAdminLocal>
+                <DtActivationProfilAdminLocal>2004-04-15T17:18:19</DtActivationProfilAdminLocal>
+                <DtDesactivationProfilAdminLocal>2005-08-10T13:36:43</DtDesactivationProfilAdminLocal>
               </ProfilAdminLocal>
               <ProfilAdminLocal>
-                <CdProfilAdminLocal>GEST</CdProfilAdminLocal>
+                <CdProfilAdminLocal>JAU</CdProfilAdminLocal>
                 <ZonesHydro>
-                  <CdZoneHydro>toke</CdZoneHydro>
-                  <CdZoneHydro>toke</CdZoneHydro>
+                  <CdZoneHydro>L000</CdZoneHydro>
+                  <CdZoneHydro>K444</CdZoneHydro>
                 </ZonesHydro>
-                <DtActivationProfilAdminLocal>2001-12-17T09:30:47</DtActivationProfilAdminLocal>
-                <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47</DtDesactivationProfilAdminLocal>
               </ProfilAdminLocal>
             </ProfilsAdminLocal>
-            <AliasContact>String</AliasContact>
+            <AliasContact>ALIAS</AliasContact>
             <MotPassContact>mot de passe</MotPassContact>
             <DtActivationContact>2001-12-17T09:30:47</DtActivationContact>
-            <DtDesactivationContact>2001-12-17T09:30:47</DtDesactivationContact>
+            <DtDesactivationContact>2013-10-25T11:45:36</DtDesactivationContact>
           </Contact>
           <Contact>
             <CdContact>2</CdContact>
@@ -87,7 +85,7 @@
             <PrenomContact>Prenom2</PrenomContact>
             <CiviliteContact>2</CiviliteContact>
             <ProfilContact>010</ProfilContact>
-            <AdContact>String</AdContact>
+            <!-- <AdContact>String</AdContact>
             <AdEtrangereContact>String</AdEtrangereContact>
             <CpContact>3.14159265358979</CpContact>
             <VilleContact>String</VilleContact>
@@ -119,16 +117,20 @@
               </ProfilAdminLocal>
             </ProfilsAdminLocal>
             <AliasContact>String</AliasContact>
-            <!-- <MotPassContact>String</MotPassContact> -->
+            <MotPassContact>String</MotPassContact>
             <DtActivationContact>2001-12-17T09:30:47</DtActivationContact>
-            <DtDesactivationContact>2001-12-17T09:30:47</DtDesactivationContact>
+            <DtDesactivationContact>2001-12-17T09:30:47</DtDesactivationContact> -->
+          </Contact>
+          <!--- simple contact -->
+          <Contact>
+			  <CdContact>999</CdContact>
           </Contact>
         </Contacts>
         <PaysComplementIntervenant>FR</PaysComplementIntervenant>
-        <AdEtrangereComplementIntervenant>String</AdEtrangereComplementIntervenant>
-        <TelephoneComplementIntervenant>String</TelephoneComplementIntervenant>
-        <FaxComplementIntervenant>String</FaxComplementIntervenant>
-        <SiteWebComplementIntervenant>String</SiteWebComplementIntervenant>
+        <AdEtrangereComplementIntervenant>Adresse étrangère</AdEtrangereComplementIntervenant>
+        <TelephoneComplementIntervenant>0600</TelephoneComplementIntervenant>
+        <FaxComplementIntervenant>0000</FaxComplementIntervenant>
+        <SiteWebComplementIntervenant>http://toto.fr</SiteWebComplementIntervenant>
         <IntervenantPere>
           <CdIntervenant schemeAgencyID="SANDRE">33</CdIntervenant>
         </IntervenantPere>
@@ -137,23 +139,7 @@
       <Intervenant>
         <CdIntervenant schemeAgencyID="SIRET">12345671234567</CdIntervenant>
         <NomIntervenant>Nom Sirét</NomIntervenant>
-        <StIntervenant>String</StIntervenant>
-        <DateCreationIntervenant>1967-08-13</DateCreationIntervenant>
-        <DateMajIntervenant>2001-12-17T09:30:47</DateMajIntervenant>
-        <AuteurIntervenant>String</AuteurIntervenant>
         <MnIntervenant>Captâîn Mnémo</MnIntervenant>
-        <BpIntervenant>String</BpIntervenant>
-        <ImmoIntervenant>String</ImmoIntervenant>
-        <RueIntervenant>String</RueIntervenant>
-        <LieuIntervenant>String</LieuIntervenant>
-        <VilleIntervenant>String</VilleIntervenant>
-        <DepIntervenant>String</DepIntervenant>
-        <CommentairesIntervenant>String</CommentairesIntervenant>
-        <ActivitesIntervenant>String</ActivitesIntervenant>
-        <CPIntervenant>Strin</CPIntervenant>
-        <NomInternationalIntervenant>String</NomInternationalIntervenant>
-        <CdSIRETRattacheIntervenant>token</CdSIRETRattacheIntervenant>
-        <CdCommune>2B002</CdCommune>
         <Contacts>
           <Contact>
             <CdContact>5</CdContact>
@@ -161,7 +147,7 @@
             <PrenomContact>Prenom Contaçt</PrenomContact>
             <CiviliteContact>3</CiviliteContact>
             <ProfilContact>100</ProfilContact>
-            <AdContact>String</AdContact>
+            <!--<AdContact>String</AdContact>
             <AdEtrangereContact>String</AdEtrangereContact>
             <CpContact>3.14159265358979</CpContact>
             <VilleContact>String</VilleContact>
@@ -192,20 +178,12 @@
                 <DtDesactivationProfilAdminLocal>2001-12-17T09:30:47</DtDesactivationProfilAdminLocal>
               </ProfilAdminLocal>
             </ProfilsAdminLocal>
-            <AliasContact>String</AliasContact>
+            <AliasContact>String</AliasContact> -->
             <MotPassContact>azerty</MotPassContact>
-            <DtActivationContact>2001-12-17T09:30:47</DtActivationContact>
-            <DtDesactivationContact>2001-12-17T09:30:47</DtDesactivationContact>
+            <!-- <DtActivationContact>2001-12-17T09:30:47</DtActivationContact>
+            <DtDesactivationContact>2001-12-17T09:30:47</DtDesactivationContact> -->
           </Contact>
         </Contacts>
-        <PaysComplementIntervenant>AD</PaysComplementIntervenant>
-        <AdEtrangereComplementIntervenant>String</AdEtrangereComplementIntervenant>
-        <TelephoneComplementIntervenant>String</TelephoneComplementIntervenant>
-        <FaxComplementIntervenant>String</FaxComplementIntervenant>
-        <SiteWebComplementIntervenant>String</SiteWebComplementIntervenant>
-        <IntervenantPere>
-          <CdIntervenant schemeAgencyID="SIRET">82400001234567</CdIntervenant>
-        </IntervenantPere>
       </Intervenant>
     </Intervenants>
   </RefHyd>

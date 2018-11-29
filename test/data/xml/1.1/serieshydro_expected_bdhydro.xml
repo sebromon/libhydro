@@ -101,6 +101,15 @@
           </ObsHydro>
         </ObssHydro>
       </Serie>
+      <Serie>
+        <CdStationHydro>C987654321</CdStationHydro>
+        <GrdSerie>H</GrdSerie>
+        <DtDebSerie>2015-09-08T08:11:54</DtDebSerie>
+        <DtFinSerie>2015-09-11T15:34:26</DtFinSerie>
+        <StatutSerie>0</StatutSerie>
+        <DtProdSerie>2016-03-18T11:12:13</DtProdSerie>
+        <SysAltiSerie>31</SysAltiSerie>
+      </Serie>
     </Series>
   </Donnees>
 </hydrometrie>

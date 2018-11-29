@@ -22,7 +22,7 @@
         <CdSiteMeteo>01072001</CdSiteMeteo>
         <LbSiteMeteo>CEYZERIAT_PTC</LbSiteMeteo>
         <LbUsuelSiteMeteo>CEYZERIAT</LbUsuelSiteMeteo>
-        <MnSiteMeteo/>
+        <MnSiteMeteo>Mnémo</MnSiteMeteo>
         <LieuDitSiteMeteo>Aérodrome de bourg Ceyzeriat</LieuDitSiteMeteo>
         <CoordSiteMeteo>
           <CoordXSiteMeteo>827652</CoordXSiteMeteo>
@@ -34,11 +34,12 @@
           <SysAltimetriqueSiteMeteo>7</SysAltimetriqueSiteMeteo>
         </AltiSiteMeteo>
         <FuseauHoraireSiteMeteo>2</FuseauHoraireSiteMeteo>
+        <DtMAJSiteMeteo>2015-03-17T11:54:47</DtMAJSiteMeteo>
         <DtOuvertureSiteMeteo>1950-01-01T00:00:00</DtOuvertureSiteMeteo>
-        <DtFermSiteMeteo/>
+        <DtFermSiteMeteo>2007-10-24T09:08:01</DtFermSiteMeteo>
         <DroitPublicationSiteMeteo>true</DroitPublicationSiteMeteo>
         <EssaiSiteMeteo>0</EssaiSiteMeteo>
-        <ComSiteMeteo/>
+        <ComSiteMeteo>Commentaire</ComSiteMeteo>
         <ImagesSiteMeteo>
           <ImageSiteMeteo>
             <AdressedelImageSiteMeteo>http://xxxxxxx</AdressedelImageSiteMeteo>
@@ -46,7 +47,10 @@
             <FormatIllSiteMeteo>image/jpeg </FormatIllSiteMeteo>
             <ComImgSiteMeteo>Photo d'ensemble depuis le nord</ComImgSiteMeteo>
           </ImageSiteMeteo>
-        </ImagesSiteMeteo>
+          <ImageSiteMeteo>
+			  <AdressedelImageSiteMeteo>http://toto.fr/img.png</AdressedelImageSiteMeteo>
+          </ImageSiteMeteo>
+        </ImagesSiteMeteo>        
         <ReseauxMesureSiteMeteo>
           <CodeSandreRdd>10</CodeSandreRdd>
           <CodeSandreRdd>100000003</CodeSandreRdd>
@@ -55,9 +59,12 @@
           <RoleContactSiteMeteo>
             <CdContact schemeAgencyID="SANDRE">2</CdContact>
             <RoleContactSiteMeteo>ADM</RoleContactSiteMeteo>
+            <DtDebutContactSiteMeteo>2008-04-19T11:10:09</DtDebutContactSiteMeteo>
+            <DtFinContactSiteMeteo>2015-10-04T07:20:30</DtFinContactSiteMeteo>
+            <DtMAJRoleContactSiteMeteo>2016-12-09T17:58:16</DtMAJRoleContactSiteMeteo>
           </RoleContactSiteMeteo>
         </RolesContactSiteMeteo>
-        <CdSousSecteurHydro>J21</CdSousSecteurHydro>
+        <!-- <CdSousSecteurHydro>J21</CdSousSecteurHydro> -->
         <CdCommune>35281</CdCommune>
         <GrdsMeteo>
           <GrdMeteo>
@@ -74,6 +81,7 @@
                 <DtFinClasseQualiteGrd>2010-04-05T08:28:00</DtFinClasseQualiteGrd>
               </ClasseQualiteGrd>
             </ClassesQualiteGrd>
+            <DtMajGrdMeteo>2012-09-04T12:54:17</DtMajGrdMeteo>
           </GrdMeteo>
           <GrdMeteo>
             <CdGrdMeteo>VV</CdGrdMeteo>
@@ -105,6 +113,9 @@
           </GrdMeteo>
         </GrdsMeteo>
         <VisitesSiteMeteo>
+          <VisiteSiteMeteo>
+            <DtVisiteSiteMeteo>2003-10-15T11:28:34</DtVisiteSiteMeteo>
+          </VisiteSiteMeteo>
           <VisiteSiteMeteo>
             <DtVisiteSiteMeteo>2004-04-05T19:36:00</DtVisiteSiteMeteo>
             <CdContact schemeAgencyID="SANDRE">4</CdContact>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hydrometrie xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2/sandre_sc_hydrometrie.xsd">
+<!-- <hydrometrie> -->
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>2</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2010-02-26T23:55:30</DateHeureCreationFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact>1</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+    </Destinataire>
+  </Scenario>
+  <Donnees>
+    <SeriesObsHydro>
+    <SerieObsHydro>
+        <CdSiteHydro>A1234567</CdSiteHydro>
+        <GrdSerieObsHydro>Q</GrdSerieObsHydro>
+        <DtDebSerieObsHydro>2014-11-04T10:56:41</DtDebSerieObsHydro>
+        <DtFinSerieObsHydro>2014-12-02T08:15:27</DtFinSerieObsHydro>
+        <DtProdSerieObsHydro>2015-09-17T09:11:47</DtProdSerieObsHydro>
+        <SysAltiSerieObsHydro>1</SysAltiSerieObsHydro>
+        <SeriePerimSerieObsHydro>true</SeriePerimSerieObsHydro>
+        <PDTSerieObsHydro>5</PDTSerieObsHydro>
+        <CdContact>247</CdContact>
+        <ObssHydro>
+          <ObsHydro>
+            <DtObsHydro>2014-11-04T11:05:00</DtObsHydro>
+            <ResObsHydro>1547.1</ResObsHydro>
+            <QualifObsHydro>20</QualifObsHydro>
+            <MethObsHydro>14</MethObsHydro>
+            <ContObsHydro>1</ContObsHydro>
+            <StObsHydro>8</StObsHydro>
+          </ObsHydro>
+        </ObssHydro>
+      </SerieObsHydro>
+      <SerieObsHydro>
+        <CdStationHydro>B234567890</CdStationHydro>
+        <GrdSerieObsHydro>H</GrdSerieObsHydro>
+        <SysAltiSerieObsHydro>31</SysAltiSerieObsHydro>
+        <ObssHydro>
+          <ObsHydro>
+            <DtObsHydro>2014-11-04T11:05:00</DtObsHydro>
+            <ResObsHydro>1547.1</ResObsHydro>
+            <QualifObsHydro>16</QualifObsHydro>
+            <MethObsHydro>0</MethObsHydro>
+            <ContObsHydro>0</ContObsHydro>
+            <StObsHydro>0</StObsHydro>
+          </ObsHydro>
+        </ObssHydro>
+      </SerieObsHydro>
+      <SerieObsHydro>
+        <CdCapteur>C98765432101</CdCapteur>
+        <GrdSerieObsHydro>H</GrdSerieObsHydro>
+        <DtDebSerieObsHydro>2017-09-08T06:49:26</DtDebSerieObsHydro>
+        <DtFinSerieObsHydro>2017-09-13T17:18:37</DtFinSerieObsHydro>
+        <DtProdSerieObsHydro>2018-02-05T11:48:59</DtProdSerieObsHydro>
+        <SysAltiSerieObsHydro>31</SysAltiSerieObsHydro>
+        <SeriePerimSerieObsHydro>true</SeriePerimSerieObsHydro>
+      </SerieObsHydro>
+    </SeriesObsHydro>
+  </Donnees>
+</hydrometrie>

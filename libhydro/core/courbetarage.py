@@ -338,16 +338,23 @@ class CourbeTarage(object):
         periodes (PeriodeCT or an iterable of PeriodeCT)
             or PivotCTPoly (typect = 4)
         dtmaj (datetime.datetime) = date de mise à jour
+        dtcreation (datetime.datetime or None) = date de création
+        limiteinfpub (float or None) = Limite inférieure de publication
+        limitesuppub (float or None) = Limite supérieure de publication
+        commentaireprive (str or None) = commentaire privé
         tri_pivots (bool) = tri de spoints pivots par hauteur si True
     """
 
     typect = _composant.Nomenclatureitem(nomenclature=503)
     _dtmaj = _composant.Datefromeverything(required=False)
+    dtcreation = _composant.Datefromeverything(required=False)
 
     def __init__(self, code=None, libelle=None, station=None,
                  typect=0, limiteinf=None, limitesup=None, dn=None, alpha=None,
                  beta=None, commentaire=None, contact=None, pivots=None,
-                 periodes=None, dtmaj=None, tri_pivots=True, strict=True):
+                 periodes=None, dtmaj=None, dtcreation=None, limiteinfpub=None,
+                 limitesuppub=None, commentaireprive=None,
+                 tri_pivots=True, strict=True):
         """
             tri_pivots (bool) tri des points en fonction de la hauteur
         """
@@ -360,6 +367,7 @@ class CourbeTarage(object):
 
         # -- descriptors --
         self.typect = typect
+        self.dtcreation = dtcreation
 
         # descripor inside full properties
         self._dtmaj = None
@@ -368,6 +376,8 @@ class CourbeTarage(object):
         # -- simple properties --
         self.commentaire = str(commentaire) \
             if (commentaire is not None) else None
+        self.commentaireprive = str(commentaireprive) \
+            if (commentaireprive is not None) else None
 
         # -- full properties --
         self._code = None
@@ -402,6 +412,11 @@ class CourbeTarage(object):
 
         self._station = None
         self.station = station
+
+        self._limiteinfpub = None
+        self.limiteinfpub = limiteinfpub
+        self._limitesuppub = None
+        self.limitesuppub = limitesuppub
 
     # -- property code --
     @property
@@ -478,6 +493,22 @@ class CourbeTarage(object):
         self._limiteinf = limiteinf
 
     @property
+    def limiteinfpub(self):
+        """Return limiteinfpub."""
+        return self._limiteinfpub
+
+    @limiteinfpub.setter
+    def limiteinfpub(self, limiteinfpub):
+        """Set debit."""
+        if limiteinfpub is not None:
+            # other cases
+            limiteinfpub = float(limiteinfpub)
+#             if self.limitesup is not None and self.limitesup < limiteinf:
+#                 raise ValueError("limiteinf must be smaller than limitesup")
+        # all is well
+        self._limiteinfpub = limiteinfpub
+
+    @property
     def limitesup(self):
         """Return limitesup."""
         return self._limitesup
@@ -492,6 +523,22 @@ class CourbeTarage(object):
                 raise ValueError("limiteinf must be smaller than limitesup")
         # all is well
         self._limitesup = limitesup
+
+    @property
+    def limitesuppub(self):
+        """Return limitesuppub."""
+        return self._limitesuppub
+
+    @limitesuppub.setter
+    def limitesuppub(self, limitesuppub):
+        """Set debit."""
+        if limitesuppub is not None:
+            # other cases
+            limitesuppub = float(limitesuppub)
+#             if self.limiteinf is not None and limitesup < self.limiteinf:
+#                 raise ValueError("limiteinf must be smaller than limitesup")
+        # all is well
+        self._limitesuppub = limitesuppub
 
     @property
     def dn(self):
@@ -596,8 +643,8 @@ class CourbeTarage(object):
                 self._pivots = [pivots]
                 return
 
-        if self._strict and len(pivots) == 1:
-            raise TypeError('pivots must not contain only one pivot')
+#         if self._strict and len(pivots) == 1:
+#             raise TypeError('pivots must not contain only one pivot')
         # an iterable of pivots
         hauteurs = set()
         for pivot in pivots:

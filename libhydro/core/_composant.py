@@ -391,7 +391,7 @@ def is_code_hydro(code, length=8, errors='ignore'):
         # (length) chars length
         if len(code) != length:
             raise ValueError(
-                'code hydro must be {0:d} chars long'.format(length))
+                'code hydro {0} must be {1} chars long'.format(code, length))
 
         # first char must be in [A-Z] or in [0-9]
         if not (code[0].isupper() or code[0].isdigit()):

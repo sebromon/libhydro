@@ -149,6 +149,28 @@ NOMENCLATURE = {
         31: 'TN'
     },
 
+    # Influence générale hydro
+    104: {
+        0: 'Inconnue',
+        1: 'Nulle',
+        2: 'Etiage seulement',
+        3: 'Forte',
+        4: 'Hautes eaux seulement'
+    },
+
+    # Loi pour le module
+    114: {
+        0: 'Inconnue',
+        1: 'Galton',
+        2: 'Gauss',
+        3: 'Gumbel'
+    },
+
+    # Statut hydrlogique du site hydro
+    460: {1: 'Avec signification hydrologique',
+          2: 'Sans signification hydrologique',
+          3: 'Source captée'},
+
     # Type de courbe de tarage
     503: {0: 'Polyligne', 4: 'Fonction puissance'},
 
@@ -182,6 +204,7 @@ NOMENCLATURE = {
     # Methode d'obtention du resultat de l'observation meteoroloqiue
     512: {
         0: 'Mesure', 4: 'Reconstitution', 8: 'Calcul',
+        10: 'Expertisée', 14: 'Estimé',
         12: 'Interpolation', 16: 'Forcage'},
 
     # Type de grandeur de l'observation élaborée hydro
@@ -240,6 +263,25 @@ NOMENCLATURE = {
     # Type de mesure du capteur hydrometrique
     520: {'H': 'Hauteur', 'Q': 'Debit'},
 
+    # Type de contexte loi statistique
+    521: {
+        1: 'Module',
+        2: 'Crue',
+        3: 'Etiage'
+    },
+
+    # Code de la finalité de la stationhydro
+    522: {
+        0: 'Inconnue',
+        1: 'Suivi d\'étiage',
+        2: 'Prévision des crues',
+        3: 'Gestion des ouvrages',
+        4: 'Police des eaux',
+        5: 'Directive Cadre sur l\'Eau',
+        6: 'Suivi qualitatif',
+        7: 'Connaissance des flux',
+        8: 'Zones humides'},
+
     # Grandeur meteorologique
     523: {
         'RR': "Cumul de precipitations",
@@ -256,6 +298,13 @@ NOMENCLATURE = {
         'HR': "Humidite relative",
         'HA': "Humidite absolue"},
 
+    # Type d'illustration de l'image
+    524: {
+        1: 'Localisation générale',
+        2: 'Localisation précise',
+        3: 'Photo'
+    },
+
     # Type du modele de prevision
     525: {
         0: "Inconnu",
@@ -266,6 +315,27 @@ NOMENCLATURE = {
         5: "Modele statistique",
         6: "Enchainement de modeles",
         7: "Modele a propagation empirique"},
+
+    # Code du régime hydrométrique
+    526: {
+        1: 'Basses eaux',
+        2: 'Moyennes eaux',
+        3: 'Hautes eaux'},
+
+    # Rôle du contact hydrométrique
+    527: {
+        'ADM': 'Administrateur',
+        'REF': 'Responsable référentiel',
+        'RC': 'Responsable règles de calcul',
+        'EXP':
+            'Gestion des paramètres liés aux échanges de données temps réel',
+        'DB': 'Responsable données brutes et concentrations',
+        'DC': 'Responsable données corrigées',
+        'DP': 'Responsable données pré validées',
+        'DV': 'Responsable données validées',
+        'MA': 'Responsable maintenance',
+        'CT': 'Droit de consultation',
+        'PRV': 'Prévisionniste'},
 
     # Type de seuil
     528: {1: 'Absolu', 2: 'Gradient'},
@@ -304,6 +374,21 @@ NOMENCLATURE = {
         'LIMNIMERE': 'Limnimetre station mere',
         'LIMNIFILLE': 'Limnimetre station fille'},
 
+    # Droit de pubilcation de la station hydrometrique
+    532: {
+        10: 'Public',
+        11: 'Public sans courbe de tarage ni courbe de correction',
+        12: 'Hauteur publique',
+        14: 'Débit public',
+        20: 'Restreint',
+        30: 'Privé'},
+
+    # Qualification des données de la station hydrométrique
+    533: {
+        12: 'Incertaine',
+        16: 'Non qualifiée',
+        20: 'Bonne'},
+
     # Type de publication de l'evenement
     534: {
         1: 'Fiches site et station',
@@ -315,6 +400,221 @@ NOMENCLATURE = {
 
     # Civilite du contact
     538: {1: 'Monsieur', 2: 'Madame', 3: 'Mademoiselle'},
+
+    # Profil administrateur local
+    539: {'GEST': 'Gestionnaire', 'JAU': 'Jaugeage'},
+
+    # Code pays norme ISO 3166-1 alpha-2
+    678: {
+        'AF': 'AFGHANISTAN',
+        'ZA': 'AFRIQUE DU SUD',
+        'AL': 'ALBANIE',
+        'DZ': 'ALGERIE',
+        'DE': 'ALLEMAGNE',
+        'AD': 'ANDORRE',
+        'AO': 'ANGOLA',
+        'AG': 'ANTIGUA-ET-BARBUDA',
+        'AN': 'ANTILLES NEERLANDAISES',
+        'SA': 'ARABIE SAOUDITE',
+        'AR': 'ARGENTINE',
+        'AM': 'ARMENIE',
+        'AU': 'AUSTRALIE',
+        'AT': 'AUTRICHE',
+        'AZ': 'AZERBAIDJAN',
+        'BS': 'BAHAMAS',
+        'BH': 'BAHREIN',
+        'BD': 'BANGLADESH',
+        'BB': 'BARBADE',
+        'BY': 'BELARUS',
+        'BE': 'BELGIQUE',
+        'BZ': 'BELIZE',
+        'BJ': 'BENIN',
+        'BM': 'BERMUDES',
+        'BT': 'BHOUTAN',
+        'BO': 'BOLIVIE',
+        'BA': 'BOSNIE-HERZEGOVINE',
+        'BW': 'BOTSWANA',
+        'BR': 'BRESIL',
+        'BN': 'BRUNEI DARUSSALAM',
+        'BG': 'BULGARIE',
+        'BF': 'BURKINA FASO',
+        'BI': 'BURUNDI',
+        'KH': 'CAMBODGE',
+        'CM': 'CAMEROUN',
+        'CA': 'CANADA',
+        'CV': 'CAP-VERT',
+        'CF': 'CENTRAFRICAINE, REPUBL.',
+        'CL': 'CHILI',
+        'CN': 'CHINE',
+        'CY': 'CHYPRE',
+        'CO': 'COLOMBIE',
+        'KM': 'COMORES',
+        'CG': 'CONGO (BRAZZA)',
+        'CD': 'CONGO (ZAIRE)',
+        'CK': 'COOK, ILES',
+        'KP': 'COREE DU NORD',
+        'KR': 'COREE DU SUD',
+        'CR': 'COSTA RICA',
+        'CI': 'COTE D\'IVOIRE',
+        'HR': 'CROATIE',
+        'CU': 'CUBA',
+        'DK': 'DANEMARK',
+        'DJ': 'DJIBOUTI',
+        'DO': 'DOMINICAINE, REPUBL.',
+        'DM': 'DOMINIQUE',
+        'EG': 'EGYPTE',
+        'SV': 'EL SALVADOR',
+        'AE': 'EMIRATS ARABES UNIS',
+        'EC': 'EQUATEUR',
+        'ER': 'ERYTHREE',
+        'ES': 'ESPAGNE',
+        'EE': 'ESTONIE',
+        'US': 'ETATS-UNIS',
+        'ET': 'ETHIOPIE',
+        'FJ': 'FIDJI',
+        'FI': 'FINLANDE',
+        'FR': 'FRANCE',
+        'GA': 'GABON',
+        'GM': 'GAMBIE',
+        'GE': 'GEORGIE',
+        'GH': 'GHANA',
+        'GI': 'GIBRALTAR',
+        'GB': 'GRANDE-BRETAGNE',
+        'GR': 'GRECE',
+        'GD': 'GRENADE',
+        'GU': 'GUAM',
+        'GT': 'GUATEMALA',
+        'GN': 'GUINEE',
+        'GW': 'GUINEE-BISSAU',
+        'GQ': 'GUINEE EQUATORIALE',
+        'GY': 'GUYANA',
+        'HT': 'HAITI',
+        'HN': 'HONDURAS',
+        'HK': 'HONG-KONG',
+        'HU': 'HONGRIE',
+        'IN': 'INDE',
+        'ID': 'INDONESIE',
+        'IR': 'IRAN',
+        'IQ': 'IRAQ',
+        'IE': 'IRLANDE',
+        'IS': 'ISLANDE',
+        'IL': 'ISRAEL',
+        'IT': 'ITALIE',
+        'JM': 'JAMAIQUE',
+        'JP': 'JAPON',
+        'JO': 'JORDANIE',
+        'KZ': 'KAZAKHSTAN',
+        'KE': 'KENYA',
+        'KG': 'KIRGHIZISTAN',
+        'KI': 'KIRIBATI',
+        'KW': 'KOWEIT',
+        'LA': 'LAOS',
+        'LS': 'LESOTHO',
+        'LV': 'LETTONIE',
+        'LB': 'LIBAN',
+        'LR': 'LIBERIA',
+        'LY': 'LIBYE',
+        'LI': 'LIECHTENSTEIN',
+        'LT': 'LITUANIE',
+        'LU': 'LUXEMBOURG',
+        'MO': 'MACAO',
+        'MK': 'MACEDOINE',
+        'MG': 'MADAGASCAR',
+        'MY': 'MALAISIE',
+        'MW': 'MALAWI',
+        'MV': 'MALDIVES',
+        'ML': 'MALI',
+        'MT': 'MALTE',
+        'MA': 'MAROC',
+        'MH': 'MARSHALL, ILES',
+        'MU': 'MAURICE',
+        'MR': 'MAURITANIE',
+        'MX': 'MEXIQUE',
+        'FM': 'MICRONESIE',
+        'MD': 'MOLDAVIE',
+        'MC': 'MONACO',
+        'MN': 'MONGOLIE',
+        'MZ': 'MOZAMBIQUE',
+        'MM': 'MYANMAR (BIRMANIE)',
+        'NA': 'NAMIBIE',
+        'NR': 'NAURU',
+        'NP': 'NEPAL',
+        'NI': 'NICARAGUA',
+        'NE': 'NIGER',
+        'NG': 'NIGERIA',
+        'NU': 'NIUE',
+        'NO': 'NORVEGE',
+        'NZ': 'NOUVELLE-ZELANDE',
+        'OM': 'OMAN',
+        'UG': 'OUGANDA',
+        'UZ': 'OUZBEKISTAN',
+        'PK': 'PAKISTAN',
+        'PW': 'PALAOS',
+        'PA': 'PANAMA',
+        'PG': 'PAPOUASIE-NOUV.-GUINEE',
+        'PY': 'PARAGUAY',
+        'NL': 'PAYS-BAS',
+        'PE': 'PEROU',
+        'PH': 'PHILIPPINES',
+        'PL': 'POLOGNE',
+        'PR': 'PORTO RICO',
+        'PT': 'PORTUGAL',
+        'QA': 'QATAR',
+        'RO': 'ROUMANIE',
+        'RU': 'RUSSIE',
+        'RW': 'RWANDA',
+        'LC': 'SAINTE-LUCIE',
+        'KN': 'SAINT-KITTS-ET-NEVIS',
+        'SM': 'SAINT-MARIN',
+        'VC': 'SAINT-VINCENT',
+        'SB': 'SALOMON, ILES',
+        'WS': 'SAMOA',
+        'ST': 'SAO TOME-ET-PRINCIPE',
+        'SN': 'SENEGAL',
+        'CS': 'SERBIE-ET-MONTENEGRO',
+        'SC': 'SEYCHELLES',
+        'SL': 'SIERRA LEONE',
+        'SG': 'SINGAPOUR',
+        'SK': 'SLOVAQUIE',
+        'SI': 'SLOVENIE',
+        'SO': 'SOMALIE',
+        'SD': 'SOUDAN',
+        'LK': 'SRI LANKA',
+        'SE': 'SUEDE',
+        'CH': 'SUISSE',
+        'SR': 'SURINAME',
+        'SZ': 'SWAZILAND',
+        'SY': 'SYRIE',
+        'TJ': 'TADJIKISTAN',
+        'TW': 'TAIWAN',
+        'TZ': 'TANZANIE',
+        'TD': 'TCHAD',
+        'CZ': 'TCHEQUIE',
+        'TH': 'THAILANDE',
+        'TL': 'TIMOR-LESTE',
+        'TG': 'TOGO',
+        'TO': 'TONGA',
+        'TT': 'TRINITE-ET-TOBAGO',
+        'TN': 'TUNISIE',
+        'TM': 'TURKMENISTAN',
+        'TR': 'TURQUIE',
+        'TV': 'TUVALU',
+        'UA': 'UKRAINE',
+        'UY': 'URUGUAY',
+        'VU': 'VANUATU',
+        'VA': 'VATICAN',
+        'VE': 'VENEZUELA',
+        'VN': 'VIET NAM',
+        'YE': 'YEMEN',
+        'ZM': 'ZAMBIE',
+        'ZW': 'ZIMBABWE'},
+
+    # Droit de publication site hydrométrique
+    871: {
+        10: 'Public',
+        20: 'Restreint',
+        30: 'Privé'
+    },
 
     # Contexte de production de l'observation météorologique
     872: {
@@ -342,6 +642,41 @@ NOMENCLATURE = {
           11: 'Autres'
           },
 
+    # Type de publication évènements
+    874: {
+        0: 'Inconnu',
+        10: 'Public hautes eaux',
+        11: 'Public basses eaux',
+        12: 'Public tous régimes',
+        20: 'Privé hautes eaux',
+        21: 'Privé basses eaux',
+        22: 'Privé tous régimes',
+        30: 'Protégé hautes eaux',
+        31: 'Protégé basses eaux',
+        32: 'Protégé tous régimes'
+    },
+
+    # Type de la série d'observations élaborées météorologiques
+    876: {1: 'Observation pondérée',
+          2: 'Indice de précipitations antérieures'},
+
+    # Qualification du jeugeage
+    877: {0: 'Inconnu',
+          1: 'Douteux',
+          2: 'Bon'},
+
+    # Type d'événement hydrométrique ou météorologique
+    891: {
+        0: 'Inconnu',
+        1: 'Recalage hauteur',
+        2: 'Recalage temps',
+        3: 'Déplacement',
+        4: 'Dérangement',
+        5: 'Hauteur influencée',
+        6: 'Lecture échelle',
+        7: 'Commentaire Vigicrues'
+    },
+
     # Continuité de la donnée de l'observation hydro
     923: {
         0: 'Valeur continue',
@@ -353,3 +688,18 @@ NOMENCLATURE = {
 }
 
 NOMENCLATURES = list(NOMENCLATURE.keys())
+
+MODEJAUGEAGEMNEMO = {
+    0: 'Inconnu',
+    1: 'SP',
+    2: 'SI',
+    3: 'PP',
+    4: 'PI',
+    5: 'DI',
+    6: 'DC',
+    7: 'FL',
+    8: 'QD',
+    9: 'AP',
+    10: 'AU',
+    11: 'VS'
+    }

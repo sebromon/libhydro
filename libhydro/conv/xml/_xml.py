@@ -15,7 +15,7 @@ import os as _os
 
 from lxml import etree as _etree
 
-from . import (_from_xml, _to_xml)
+from . import (_from_xml, _to_xml, sandre_tags as _sandre_tags)
 from libhydro.core import (
     _composant,
     intervenant as _intervenant,
@@ -30,7 +30,8 @@ from libhydro.core import (
     obsmeteo as _obsmeteo,
     simulation as _simulation,
     jaugeage as _jaugeage,
-    obselaboreehydro as _obselaboreehydro)
+    obselaboreehydro as _obselaboreehydro,
+    obselaboreemeteo as _obselaboreemeteo)
 
 
 # -- strings ------------------------------------------------------------------
@@ -74,6 +75,7 @@ class Message(object):
         serieshydro (liste de obshydro.Serie)
         seriesmeteo (liste de obsmeteo.Serie)
         seriesobselab (liste de obselaboree.SerieObsElab)
+        seriesobselabmeteo (liste de obselaboreemeteo.SerieObsElabMeteo)
         simulations (liste de simulation.Simulation)
 
     """
@@ -97,13 +99,15 @@ class Message(object):
     serieshydro = _composant.Rlistproperty(cls=_obshydro.Serie)
     seriesmeteo = _composant.Rlistproperty(cls=_obsmeteo.Serie)
     seriesobselab = _composant.Rlistproperty(cls=_obselaboreehydro.SerieObsElab)
+    seriesobselabmeteo = _composant.Rlistproperty(cls=_obselaboreemeteo.SerieObsElabMeteo)
     simulations = _composant.Rlistproperty(cls=_simulation.Simulation)
 
     def __init__(self, scenario, intervenants=None, siteshydro=None,
                  sitesmeteo=None, seuilshydro=None, modelesprevision=None,
                  evenements=None, courbestarage=None, jaugeages=None,
                  courbescorrection=None, serieshydro=None, seriesmeteo=None,
-                 seriesobselab=None, simulations=None, strict=True):
+                 seriesobselab=None, seriesobselabmeteo=None, simulations=None,
+                 strict=True):
         """Initialisation.
 
         Arguments:
@@ -119,7 +123,8 @@ class Message(object):
             courbescorrection (courbecorrection.CourbeCorrection ou None)
             serieshydro (obshydro.Serie iterable ou None)
             seriesmeteo (obsmeteo.Serie iterable ou None)
-            seriesobselab (obselaboreehydro.SerieObsElab ou None)
+            seriesobselab (obselaboreehydro.SerieObsElab iterable ou None)
+            seriesobselabmeteo (obselaboreemeteo.SerieObsElabMeteo iterable ou None)
             simulations (simulation.Simulation iterable ou None)
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite des elements
@@ -147,6 +152,7 @@ class Message(object):
         self.serieshydro = serieshydro or []
         self.seriesmeteo = seriesmeteo or []
         self.seriesobselab = seriesobselab or []
+        self.seriesobselabmeteo = seriesobselabmeteo or []
         self.simulations = simulations or []
 
         # -- full properties --
@@ -236,34 +242,54 @@ class Message(object):
             for alias in nsmap:
                 _remove_namespace(tree.getroot(), nsmap[alias])
 
+        scenario = _from_xml._scenario_from_element(tree.find('Scenario'))
+
+        if scenario.version == '2':
+            tags = _sandre_tags.SandreTagsV2
+            seriesmeteo = _from_xml._seriesmeteo_from_element_v2(
+                tree.find('Donnees/SeriesObsMeteo'))
+            seriesobselab = _from_xml._seriesobselab_from_element_v2(
+                tree.find('Donnees/' + tags.seriesobselabhydro))
+            seriesobselabmeteo = _from_xml._seriesobselabmeteo_from_element_v2(
+                tree.find('Donnees/SeriesObsElaborMeteo'))
+        else:
+            tags = _sandre_tags.SandreTagsV1
+            seriesmeteo, seriesobselabmeteo = _from_xml._seriesmeteo_from_element(
+                tree.find('Donnees/ObssMeteo'))
+            seriesobselab = _from_xml._seriesobselab_from_element(
+                tree.find('Donnees/' + tags.seriesobselabhydro))
+
         return Message(
-            scenario=_from_xml._scenario_from_element(
-                tree.find('Scenario')),
+            scenario=scenario,
             intervenants=_from_xml._intervenants_from_element(
-                tree.find('RefHyd/Intervenants')),
+                tree.find('RefHyd/Intervenants'), scenario.version, tags),
             siteshydro=_from_xml._siteshydro_from_element(
-                tree.find('RefHyd/SitesHydro')),
+                tree.find('RefHyd/SitesHydro'), scenario.version, tags),
             sitesmeteo=_from_xml._sitesmeteo_from_element(
-                tree.find('RefHyd/SitesMeteo')),
+                tree.find('RefHyd/SitesMeteo'), scenario.version, tags),
             seuilshydro=_from_xml._seuilshydro_from_element(
                 element=tree.find('RefHyd/SitesHydro'),
+                version=scenario.version, tags=tags,
                 ordered=ordered),
             modelesprevision=_from_xml._modelesprevision_from_element(
                 tree.find('RefHyd/ModelesPrevision')),
             evenements=_from_xml._evenements_from_element(
-                tree.find('Donnees/Evenements')),
+                tree.find('Donnees/Evenements'), scenario.version, tags),
             courbestarage=_from_xml._courbestarage_from_element(
-                tree.find('Donnees/CourbesTarage')),
+                tree.find('Donnees/CourbesTarage'),
+                scenario.version, tags),
             jaugeages=_from_xml._jaugeages_from_element(
-                tree.find('Donnees/Jaugeages')),
+                tree.find('Donnees/Jaugeages'),
+                scenario.version, tags),
             courbescorrection=_from_xml._courbescorrection_from_element(
-                tree.find('Donnees/CourbesCorrH')),
+                tree.find('Donnees/CourbesCorrH'),
+                scenario.version, tags),
             serieshydro=_from_xml._serieshydro_from_element(
-                tree.find('Donnees/Series')),
-            seriesmeteo=_from_xml._seriesmeteo_from_element(
-                tree.find('Donnees/ObssMeteo')),
-            seriesobselab=_from_xml._seriesobselab_from_element(
-                tree.find('Donnees/ObssElabHydro')),
+                tree.find('Donnees/' + tags.serieshydro),
+                scenario.version, tags),
+            seriesmeteo=seriesmeteo,
+            seriesobselab=seriesobselab,
+            seriesobselabmeteo=seriesobselabmeteo,
             simulations=_from_xml._simulations_from_element(
                 tree.find('Donnees/Simuls')))
 
@@ -310,7 +336,7 @@ class Message(object):
             except Exception as e:
                 raise ValueError('bad element, {}'.format(e))
 
-    def _to_element(self, bdhydro=False, ordered=False):
+    def _to_element(self, bdhydro=False, ordered=False, version=None):
         """Return etree.Element from Message"""
         return _to_xml._to_xml(
                 scenario=self.scenario,
@@ -329,10 +355,11 @@ class Message(object):
                 simulations=self.simulations,
                 bdhydro=bdhydro,
                 ordered=ordered,
-                strict=self._strict)
+                strict=self._strict,
+                version=version)
 
     def write(self, file, encoding='utf-8', compression=0, force=False,
-              bdhydro=False, ordered=False, pretty_print=False):
+              bdhydro=False, ordered=False, pretty_print=False, version=None):
         """Ecrit le Message dans le fichier <file>.
 
         Cette methode est un wrapper autour de lxml.etree.ElementTree.write.
@@ -347,6 +374,8 @@ class Message(object):
             ordered (bool, defaut False) = si True essaie de conserver l'ordre
                 de certains elements
             pretty_print (bool, defaut False) = option de debogage
+            version (str or None) = version Sandre 1.1 ou 2
+                récupération de la version du scenario si None
 
         """
         # check for an exisitng file
@@ -355,13 +384,14 @@ class Message(object):
             raise IOError('file already exists')
         # procede !
         tree = _etree.ElementTree(
-            self._to_element(bdhydro, ordered))
+            self._to_element(bdhydro, ordered, version))
         tree.write(
             file=file, encoding=encoding, method='xml',
             pretty_print=pretty_print, xml_declaration=True,
             compression=compression)
 
-    def show(self, bdhydro=False, ordered=False, pretty_print=False):
+    def show(self, bdhydro=False, ordered=False, pretty_print=False,
+             version=None):
         """Return a pretty print XML.
 
        Arguments:
@@ -372,16 +402,16 @@ class Message(object):
 
         """
         return _etree.tostring(
-            self._to_element(bdhydro, ordered),
+            self._to_element(bdhydro, ordered, version),
             encoding=_sys.stdout.encoding,
             xml_declaration=True,
             pretty_print=pretty_print)
 
-    def to_string(self, bdhydro=False, ordered=False):
+    def to_string(self, bdhydro=False, ordered=False, version=None):
         """Return an unicode xml"""
         # encoding=unicode doesn't support xml_declaration
         return _etree.tostring(
-                       self._to_element(bdhydro, ordered),
+                       self._to_element(bdhydro, ordered, version),
                        encoding='UTF-8',
                        xml_declaration=True,
                        pretty_print=False).decode('utf-8')

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hydrometrie xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2/sandre_sc_hydrometrie.xsd">
+<!-- <hydrometrie> -->
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>2</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2010-02-26T08:05:56</DateHeureCreationFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1520</CdIntervenant>
+      <NomIntervenant>Service de Prévision des Crues (S.P.C.) Grand Delta</NomIntervenant>
+      <CdContact>26</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+    </Destinataire>
+  </Scenario>
+  <RefHyd>
+    <SitesMeteo>
+      <SiteMeteo>
+        <CdSiteMeteo>001072001</CdSiteMeteo>
+        <LbSiteMeteo>CEYZERIAT_PTC</LbSiteMeteo>
+        <LbUsuelSiteMeteo>CEYZERIAT</LbUsuelSiteMeteo>
+        <MnSiteMeteo>Mnémo</MnSiteMeteo>
+        <LieuDitSiteMeteo>Aérodrome de bourg Ceyzeriat</LieuDitSiteMeteo>
+        <CoordSiteMeteo>
+          <CoordXSiteMeteo>827652.0</CoordXSiteMeteo>
+          <CoordYSiteMeteo>2112880.0</CoordYSiteMeteo>
+          <ProjCoordSiteMeteo>26</ProjCoordSiteMeteo>
+        </CoordSiteMeteo>
+        <AltiSiteMeteo>
+          <AltitudeSiteMeteo>53.0</AltitudeSiteMeteo>
+          <SysAltimetriqueSiteMeteo>7</SysAltimetriqueSiteMeteo>
+        </AltiSiteMeteo>
+        <FuseauHoraireSiteMeteo>2</FuseauHoraireSiteMeteo>
+        <DtMajSiteMeteo>2015-03-17T11:54:47</DtMajSiteMeteo>
+        <DtOuvertureSiteMeteo>1950-01-01T00:00:00</DtOuvertureSiteMeteo>
+        <DtFermSiteMeteo>2007-10-24T09:08:01</DtFermSiteMeteo>
+        <DroitPublicationSiteMeteo>true</DroitPublicationSiteMeteo>
+        <EssaiSiteMeteo>false</EssaiSiteMeteo>
+        <ComSiteMeteo>Commentaire</ComSiteMeteo>
+        <ImagesSiteMeteo>
+          <ImageSiteMeteo>
+            <AdressedelImageSiteMeteo>http://xxxxxxx</AdressedelImageSiteMeteo>
+            <TypIllSiteMeteo>3</TypIllSiteMeteo>
+            <FormatIllSiteMeteo>image/jpeg </FormatIllSiteMeteo>
+            <ComImgSiteMeteo>Photo d'ensemble depuis le nord</ComImgSiteMeteo>
+          </ImageSiteMeteo>
+          <ImageSiteMeteo>
+			  <AdressedelImageSiteMeteo>http://toto.fr/img.png</AdressedelImageSiteMeteo>
+          </ImageSiteMeteo>
+        </ImagesSiteMeteo>
+        <ReseauxMesureSiteMeteo>
+           <RSX>
+               <CodeSandreRdd>10</CodeSandreRdd>
+               <NomRdd>Réseau</NomRdd>
+           </RSX>
+           <RSX>
+               <CodeSandreRdd>100000003</CodeSandreRdd>
+           </RSX>
+        </ReseauxMesureSiteMeteo>
+        <RolsContactSiteMeteo>
+          <RolContactSiteMeteo>
+            <CdContact>2</CdContact>
+            <RoleContactSiteMeteo>ADM</RoleContactSiteMeteo>
+            <DtDebutContactSiteMeteo>2008-04-19T11:10:09</DtDebutContactSiteMeteo>
+            <DtFinContactSiteMeteo>2015-10-04T07:20:30</DtFinContactSiteMeteo>
+            <DtMajRoleContactSiteMeteo>2016-12-09T17:58:16</DtMajRoleContactSiteMeteo>
+          </RolContactSiteMeteo>
+        </RolsContactSiteMeteo>
+        <!-- <CdSousSecteurHydro>J21</CdSousSecteurHydro> -->
+        <CdZoneHydro>A123</CdZoneHydro>
+        <CdCommune>35281</CdCommune>
+        <GrdsMeteo>
+          <GrdMeteo>
+            <CdGrdMeteo>RR</CdGrdMeteo>
+            <DtMiseServiceGrdMeteo>1994-04-05T16:00:00</DtMiseServiceGrdMeteo>
+            <DtFermetureServiceGrdMeteo>2011-04-05T16:00:00</DtFermetureServiceGrdMeteo>
+            <EssaiGrdMeteo>true</EssaiGrdMeteo>
+            <ASurveillerGrdMeteo>true</ASurveillerGrdMeteo>
+            <DelaiAbsGrdMeteo>15</DelaiAbsGrdMeteo>
+            <PDTGrdMeteo>4</PDTGrdMeteo>
+            <ClassesQualiteGrd>
+              <ClasseQualiteGrd>
+                <CdqClasseQualiteGrd>3</CdqClasseQualiteGrd>
+                <DtVisiteSiteMeteo>1994-04-05T08:23:00</DtVisiteSiteMeteo>
+                <DtDebutClasseQualiteGrd>1994-04-05T08:21:00</DtDebutClasseQualiteGrd>
+                <DtFinClasseQualiteGrd>2010-04-05T08:28:00</DtFinClasseQualiteGrd>
+              </ClasseQualiteGrd>
+            </ClassesQualiteGrd>
+            <DtMajGrdMeteo>2012-09-04T12:54:17</DtMajGrdMeteo>
+          </GrdMeteo>
+          <GrdMeteo>
+            <CdGrdMeteo>VV</CdGrdMeteo>
+            <DtMiseServiceGrdMeteo>1998-04-05T16:00:00</DtMiseServiceGrdMeteo>
+            <DtFermetureServiceGrdMeteo>2008-04-05T16:00:00</DtFermetureServiceGrdMeteo>
+            <EssaiGrdMeteo>false</EssaiGrdMeteo>
+            <ClassesQualiteGrd>
+              <ClasseQualiteGrd>
+                <CdqClasseQualiteGrd>4</CdqClasseQualiteGrd>
+                <DtVisiteSiteMeteo>1994-04-05T08:54:00</DtVisiteSiteMeteo>
+                <DtDebutClasseQualiteGrd>1994-04-05T08:52:00</DtDebutClasseQualiteGrd>
+                <DtFinClasseQualiteGrd>2015-04-05T08:55:00</DtFinClasseQualiteGrd>
+              </ClasseQualiteGrd>
+            </ClassesQualiteGrd>
+            <!-- <ValeursSeuilsGrdMeteo> -->
+            <!--   <ValeurSeuilGrdMeteo> -->
+            <!--     <CdSeuilGrdMeteo>28</CdSeuilGrdMeteo> -->
+            <!--     <TypSeuilGrdMeteo>1</TypSeuilGrdMeteo> -->
+            <!--     <NatureSeuilGrdMeteo>11</NatureSeuilGrdMeteo> -->
+            <!--     <DureeSeuilGrdMeteo>60</DureeSeuilGrdMeteo> -->
+            <!--     <LbUsuelSeuilGrdMeteo>Vitesse maximale avant arrachement</LbUsuelSeuilGrdMeteo> -->
+            <!--     <MnSeuilGrdMeteo>V max</MnSeuilGrdMeteo> -->
+            <!--     <IndGraviteSeuilGrdMeteo>85</IndGraviteSeuilGrdMeteo> -->
+            <!--     <ComSeuilGrdMeteo>Commentaire seuil</ComSeuilGrdMeteo> -->
+            <!--     <ValSeuilGrdMeteo>25.03</ValSeuilGrdMeteo> -->
+            <!--   </ValeurSeuilGrdMeteo> -->
+            <!-- </ValeursSeuilsGrdMeteo> -->
+          </GrdMeteo>
+        </GrdsMeteo>
+        <VisitesSiteMeteo>
+          <VisiteSiteMeteo>
+            <DtVisiteSiteMeteo>2003-10-15T11:28:34</DtVisiteSiteMeteo>
+          </VisiteSiteMeteo>
+          <VisiteSiteMeteo>
+            <DtVisiteSiteMeteo>2004-04-05T19:36:00</DtVisiteSiteMeteo>
+            <CdContact>4</CdContact>
+            <MethClassVisiteSiteMeteo>Méthode à préciser</MethClassVisiteSiteMeteo>
+            <ModeOperatoireUtiliseVisiteSiteMeteo>Libellé libre</ModeOperatoireUtiliseVisiteSiteMeteo>
+          </VisiteSiteMeteo>
+        </VisitesSiteMeteo>
+      </SiteMeteo>
+    </SitesMeteo>
+  </RefHyd>
+</hydrometrie>

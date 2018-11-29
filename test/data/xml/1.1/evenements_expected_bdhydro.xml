@@ -21,9 +21,11 @@
       <Evenement>
         <CdContact>1</CdContact>
         <CdSiteHydro>A0010101</CdSiteHydro>
+        <!-- <DtEvenement>1999-08-12T00:05:00</DtEvenement> -->
         <DtEvenement>1999-08-12T00:05:00</DtEvenement>
         <DescEvenement>Arrachement de l'échelle</DescEvenement>
         <TypPublicationEvenement>1</TypPublicationEvenement>
+        <!-- <DtMajEvenement>2000-05-10T22:05:00</DtMajEvenement> -->
         <DtMajEvenement>2000-05-10T22:05:00</DtMajEvenement>
       </Evenement>
       <!-- Evenement 1 -->
@@ -32,17 +34,53 @@
         <CdStationHydro>Z853010101</CdStationHydro>
         <DtEvenement>2010-02-26T09:05:00</DtEvenement>
         <DescEvenement>Déplacement de la station de 22.5m</DescEvenement>
-        <TypPublicationEvenement>20</TypPublicationEvenement>
+        <TypPublicationEvenement>10</TypPublicationEvenement>
         <DtMajEvenement>2011-01-13T10:05:00</DtMajEvenement>
       </Evenement>
       <!-- Evenement 2 -->
       <Evenement>
         <CdContact>1</CdContact>
-        <CdSiteMeteo>008530001</CdSiteMeteo>
+        <CdSiteMeteo>08530001</CdSiteMeteo>
         <DtEvenement>1968-02-02T23:00:00</DtEvenement>
         <DescEvenement>Débouchage de la sonde de température</DescEvenement>
         <TypPublicationEvenement>100</TypPublicationEvenement>
         <DtMajEvenement>2000-01-01T22:00:00</DtMajEvenement>
+      </Evenement>
+      <!-- Vigicrues et tableau -->
+      <Evenement>
+        <CdContact>1234</CdContact>
+        <CdStationHydro>Z853011234</CdStationHydro>
+        <DtEvenement>2018-03-27T10:06:01</DtEvenement>
+        <DescEvenement>Déplacement de la station de 34.5m</DescEvenement>
+        <TypPublicationEvenement>10</TypPublicationEvenement>
+        <DtMajEvenement>2018-06-26T11:07:34</DtMajEvenement>
+      </Evenement>
+      <!-- Evenement dernières valeurs-->
+      <Evenement>
+        <CdContact>4321</CdContact>
+        <CdStationHydro>Z853014321</CdStationHydro>
+        <DtEvenement>2017-01-25T08:04:59</DtEvenement>
+        <DescEvenement>Déplacement de la station de 59.5m</DescEvenement>
+        <TypPublicationEvenement>1</TypPublicationEvenement>
+        <DtMajEvenement>2017-07-11T09:11:17</DtMajEvenement>
+      </Evenement>
+      <!-- Evenement archivé -->
+       <Evenement>
+        <CdContact>9876</CdContact>
+        <CdStationHydro>Z853014321</CdStationHydro>
+        <DtEvenement>2016-10-23T14:13:12</DtEvenement>
+        <DescEvenement>Déplacement de la station de 59.5m</DescEvenement>
+        <TypPublicationEvenement>25</TypPublicationEvenement>
+        <DtMajEvenement>2016-11-02T07:15:53</DtMajEvenement>
+      </Evenement>
+      <!-- Evenement archivé sans dtmaj-->
+       <Evenement>
+        <CdContact>9876</CdContact>
+        <CdStationHydro>Z853014321</CdStationHydro>
+        <DtEvenement>2016-10-23T14:13:12</DtEvenement>
+        <DescEvenement>Déplacement de la station de 59.5m</DescEvenement>
+        <TypPublicationEvenement>25</TypPublicationEvenement>
+        <!-- <DtMajEvenement>2016-11-02T07:15:53</DtMajEvenement> -->
       </Evenement>
     </Evenements>
   </Donnees>

@@ -295,11 +295,13 @@ class TestCourbeTarage(unittest.TestCase):
             (ct.code, ct.station, ct.libelle, ct.typect,
              ct.limiteinf, ct.limitesup,
              ct.dn, ct.alpha, ct.beta,
-             ct.commentaire, ct.contact, ct.pivots, ct.periodes, ct.dtmaj),
+             ct.commentaire, ct.contact, ct.pivots, ct.periodes, ct.dtmaj,
+             ct.dtcreation, ct.limiteinfpub, ct.limitesuppub,
+             ct.commentaireprive),
             (code, station, libelle, 0,
              None, None,
              None, None, None,
-             None, None, [], [], None))
+             None, None, [], [], None, None, None, None, None))
 
     def test_base_02(self):
         """CourbeTarage with 2 pivots"""
@@ -415,9 +417,8 @@ class TestCourbeTarage(unittest.TestCase):
         self.assertEqual(ct.periodes[0], periodes[0])
         self.assertEqual(ct.periodes[1], periodes[1])
 
-
     def test_base_08(self):
-        """CourbeTarage"""
+        """Test Full CourbeTarage"""
         code = 'code'
         station = _sitehydro.Station(code='O123456789')
         libelle = 'courbé de tarage'
@@ -436,17 +437,29 @@ class TestCourbeTarage(unittest.TestCase):
                               dtfin=datetime(2016, 1, 1))]
 
         dtmaj = datetime.utcnow()
+        dtcreation = datetime(2016, 8, 4, 11, 54, 36)
+        limiteinfpub = 80.4
+        limitesuppub = 1007.3
+        commentaireprive = 'privé'
+
         ct = CourbeTarage(code=code, station=station, libelle=libelle,
                           typect=typect, limiteinf=limiteinf,
                           limitesup=limitesup, dn=dn, alpha=alpha, beta=beta,
                           commentaire=commentaire, contact=contact,
-                          pivots=pivots, periodes=periodes, dtmaj=dtmaj)
+                          pivots=pivots, periodes=periodes, dtmaj=dtmaj,
+                          dtcreation=dtcreation, limiteinfpub=limiteinfpub,
+                          limitesuppub=limitesuppub,
+                          commentaireprive=commentaireprive)
         self.assertEqual((ct.code, ct.station, ct.libelle, ct.typect,
                           ct.limiteinf, ct.limitesup, ct.dn, ct.alpha, ct.beta,
-                          ct.commentaire, ct.contact, ct.pivots, ct.periodes, ct.dtmaj),
+                          ct.commentaire, ct.contact, ct.pivots, ct.periodes,
+                          ct.dtmaj, ct.dtcreation, ct.limiteinfpub,
+                          ct.limitesuppub, ct.commentaireprive),
                          (code, station, libelle, typect,
                           limiteinf, limitesup, dn, alpha, beta,
-                          commentaire, contact, pivots, periodes, dtmaj))
+                          commentaire, contact, pivots, periodes, dtmaj,
+                          dtcreation, limiteinfpub, limitesuppub,
+                          commentaireprive))
 
     def test_base_09(self):
         """test function get_used_actived_periodes"""
@@ -563,7 +576,6 @@ class TestCourbeTarage(unittest.TestCase):
         CourbeTarage(code=code, station=station, libelle=libelle,
                      pivots=pivots, strict=False)
 
-
     def test_str_01(self):
         """test __str__ strict mode"""
         code = 'courbe 123'
@@ -661,12 +673,12 @@ class TestCourbeTarage(unittest.TestCase):
             CourbeTarage(code=code, libelle=libelle, station=station,
                          pivots=pivots)
 
-        pivots = [pivot]
-        with self.assertRaises(TypeError) as context:
-            CourbeTarage(code=code, libelle=libelle, station=station,
-                         pivots=[pivot])
-        self.assertEqual(str(context.exception),
-                         'pivots must not contain only one pivot')
+#         pivots = [pivot]
+#         with self.assertRaises(TypeError) as context:
+#             CourbeTarage(code=code, libelle=libelle, station=station,
+#                          pivots=[pivot])
+#         self.assertEqual(str(context.exception),
+#                          'pivots must not contain only one pivot')
 
     def test_error_041(self):
         """limiteinf error"""

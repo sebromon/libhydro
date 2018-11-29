@@ -48,7 +48,7 @@ pdf: _subdir installation_guide_windows.md installation_guide_linux.md developme
 	@pandoc --toc installation_guide_windows.md -o ${DST}/installation_guide_windows.pdf
 	@pandoc --toc installation_guide_linux.md -o ${DST}/installation_guide_linux.pdf
 	@# tutorial
-	@ipython2 nbconvert --to markdown development_guide/notebooks/tutorial.ipynb
+	@ipython3 nbconvert --to markdown development_guide/notebooks/tutorial.ipynb
 	@pandoc tutorial.md -o ${DST}/tutorial.pdf --latex-engine=xelatex
 	@rm -rf tutorial.md tutorial_files
 

@@ -14,6 +14,7 @@ from __future__ import (
 )
 
 import datetime as _datetime
+import collections as _collections
 
 from . import (_composant, sitehydro as _sitehydro, sitemeteo as _sitemeteo)
 
@@ -33,6 +34,10 @@ __date__ = """2015-10-30"""
 # -- todos --------------------------------------------------------------------
 # PROGRESS - Evenement 100%
 
+# Namedtuple permettant de manipuler des ressources
+# associées à un évènement
+Ressource = _collections.namedtuple('Ressource', ['url', 'libelle'])
+
 
 # -- class Evenement ----------------------------------------------------------
 class Evenement(object):
@@ -48,18 +53,25 @@ class Evenement(object):
         contact (intervenant.Contact) = contact proprietaire de l'evenement
         dt (datetime.datetime) = date de l'evenement
         publication (entier parmi NOMENCLATURE[534]) = type de publication
-        dtmaj (datetime.datetime) = date de mise a jour
-
+        dtmaj (datetime.datetime ou None) = date de mise a jour
+        typeevt (entier parmi NOMENCLATURE[891]) = type de l'évènement
+        ressources (iterable of evenement.Ressource) = ressources associées
+            à l'évènement
+        dtfin (datetime.datetime ou None) = date de fin
     """
 
     dt = _composant.Datefromeverything(required=False)
-    publication = _composant.Nomenclatureitem(nomenclature=534)
+    # publication = _composant.Nomenclatureitem(nomenclature=534)
+    publication = _composant.Nomenclatureitem(nomenclature=874)
+    typeevt = _composant.Nomenclatureitem(nomenclature=891)
     dtmaj = _composant.Datefromeverything(required=False)
+    dtfin = _composant.Datefromeverything(required=False)
 
     def __init__(
         self, entite, descriptif, contact,
-        dt=_datetime.datetime.utcnow(), publication=100,
-        dtmaj=_datetime.datetime.utcnow(), strict=True
+        dt=None, publication=0,
+        dtmaj=None, typeevt=0, ressources=None,
+        dtfin=None, strict=True
     ):
         """Initialisation.
 
@@ -73,6 +85,10 @@ class Evenement(object):
             publication (entier parmi NOMENCLATURE[534]) = type de publication
             dtmaj (numpy.datetime64 string, datetime.datetime...) =
                 date de mise a jour
+            typeevt (entier parmi NOMENCLATURE[891]) = type de l'évènement
+            ressources (iterable of evenement.Ressource) = ressources associées
+                à l'évènement
+            dtfin (datetime.datetime ou None) = date de fin
             strict (bool, defaut True) = en mode permissif le type de
                 publication n'est pas controle et les proprietes obligatoires
                 sont facultatives
@@ -89,12 +105,17 @@ class Evenement(object):
         self.dt = dt
         self.publication = publication
         self.dtmaj = dtmaj
+        self.typeevt = typeevt
+        self.dtfin = dtfin
 
         # -- full properties --
         self._entite = self._descriptif = self._contact = None
         self.entite = entite
         self.descriptif = descriptif
         self.contact = contact
+
+        self._ressources = None
+        self.ressources = ressources
 
     # -- property entite --
     @property
@@ -146,9 +167,31 @@ class Evenement(object):
                 raise TypeError('contact is required')
         self._contact = contact
 
+    # -- property ressources --
+    @property
+    def ressources(self):
+        """Return ressources."""
+        return self._ressources
+
+    @ressources.setter
+    def ressources(self, ressources):
+        """Set ressources."""
+        self._ressources = []
+        if ressources is None:
+            return
+        if isinstance(ressources, Ressource):
+            self._ressources = [ressources]
+            return
+        for ressource in ressources:
+            if not isinstance(ressource, Ressource):
+                raise TypeError('ressources must be an iterable'
+                                ' of evenement.Ressource')
+            self._ressources.append(ressource)
+
     # -- special methods --
     __all__attrs__ = (
-        'entite', 'descriptif', 'contact', 'dt', 'publication', 'dtmaj'
+        'entite', 'descriptif', 'contact', 'dt', 'publication', 'dtmaj',
+        'typeevt', 'ressources', 'dtfin'
     )
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__

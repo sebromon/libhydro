@@ -240,17 +240,17 @@ class Serie(object):
         # init
         dtdeb, dtfin, dtprod, contact, observations = (None, ) * 5
 
+        if len(series) > 0:
+            contact = series[0].contact
+
         # concatenate simple properties
         for serie in series:
             dtdeb = serie.dtdeb if dtdeb is None else min(dtdeb, serie.dtdeb)
             dtfin = serie.dtfin if dtfin is None else max(dtfin, serie.dtfin)
             dtprod = serie.dtprod if dtprod is None \
                 else min(dtprod, serie.dtprod)
-            if contact is None:
-                contact = serie.contact
-            elif contact != serie.contact:
-                raise ValueError(
-                    "can't concatenate series, contact doesn't match")
+            if contact != serie.contact:
+                contact = None
 
         # concatenate observations
         observations = Observations.concat(

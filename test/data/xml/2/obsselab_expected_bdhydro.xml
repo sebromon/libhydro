@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <hydrometrie xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1/sandre_sc_hydrometrie.xsd"> -->
+<hydrometrie>
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>2</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2010-02-26T23:55:30</DateHeureCreationFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact schemeAgencyID="SANDRE">1</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+    </Destinataire>
+  </Scenario>
+  <Donnees>
+    <SeriesObsElaborHydro>
+    <SerieObsElaborHydro>
+        <DtProdSerieObsElaborHydro>2013-04-17T08:27:48</DtProdSerieObsElaborHydro>
+        <TypDeGrdSerieObsElaborHydro>QmnJ</TypDeGrdSerieObsElaborHydro>
+        <PDTSerieObsElaborHydro>3</PDTSerieObsElaborHydro>
+        <DtDebPlagSerieObsElaborHydro>2011-12-09T17:11:23</DtDebPlagSerieObsElaborHydro>
+        <DtFinPlagSerieObsElaborHydro>2012-02-04T15:09:37</DtFinPlagSerieObsElaborHydro>
+        <DtDesactivationSerieObsElaborHydro>2015-08-11T13:04:12</DtDesactivationSerieObsElaborHydro>
+        <DtActivationSerieObsElaborHydro>2010-11-03T14:51:40</DtActivationSerieObsElaborHydro>
+        <SysAltiSerieObsElaborHydro>1</SysAltiSerieObsElaborHydro>
+        <GlissanteSerieObsElaborHydro>false</GlissanteSerieObsElaborHydro>
+        <DtDebutRefAlti>2008-03-24T06:11:27</DtDebutRefAlti>
+        <CdContact>54</CdContact>
+        <CdSiteHydro>K1234567</CdSiteHydro>
+        <ObssElaborHydro>
+            <ObsElaborHydro>
+                <DtObsElaborHydro>2013-04-17T08:27:48</DtObsElaborHydro>
+                <ResObsElaborHydro>873.1</ResObsElaborHydro>
+                <QualifObsElaborHydro>20</QualifObsElaborHydro>
+                <MethObsElaborHydro>4</MethObsElaborHydro>
+                <ContObsElaborHydro>1</ContObsElaborHydro>
+                <StObsElaborHydro>8</StObsElaborHydro>
+            </ObsElaborHydro>
+        </ObssElaborHydro>
+        </SerieObsElaborHydro>
+    </SeriesObsElaborHydro>
+  </Donnees>
+</hydrometrie>

@@ -48,6 +48,7 @@ __date__ = """2017-07-05"""
 
 # -- config -------------------------------------------------------------------
 FILES_PATH = os.path.join('data', 'xml', '1.1')
+FILES_PATH_V2 = os.path.join('data', 'xml', '2')
 
 
 # -- class TestScenario -------------------------------------------------------
@@ -104,12 +105,38 @@ class TestScenario(unittest.TestCase):
         )
         self.assertEqual(sce.dtprod, datetime.datetime(2012, 12, 12, 5, 33))
 
+    def test_sandre_version(self):
+        """Version Sandre tests"""
+        emetteur = intervenant.Intervenant()
+        destinataire = intervenant.Contact(
+            code=55,
+            intervenant=intervenant.Intervenant(code=1537)
+        )
+        Scenario(emetteur=emetteur, destinataire=destinataire)
+
+        versions = ('1.1', '2', 1.1, 2)
+        versions_expected = ('1.1', '2', '1.1', '2')
+        for index, version in enumerate(versions):
+            sce = Scenario(emetteur=emetteur, destinataire=destinataire,
+                           version=version)
+            self.assertEqual(sce.version, versions_expected[index])
+
     def test_str_01(self):
         """Test __str__ method."""
         emetteur = intervenant.Intervenant()
         destinataire = intervenant.Intervenant()
         sce = Scenario(emetteur=emetteur, destinataire=destinataire)
         self.assertTrue(sce.__str__().rfind('Message') > -1)
+
+    def test_str_02(self):
+        """Test __str__ method."""
+        emetteur = intervenant.Intervenant()
+        destinataire = intervenant.Intervenant()
+        version = '2'
+        sce = Scenario(emetteur=emetteur, destinataire=destinataire,
+                       version=version)
+        self.assertTrue(sce.__str__().rfind('Message') > -1)
+        self.assertTrue(sce.__str__().rfind('version 2') > -1)
 
     def test_error_01(self):
         """Emetteur error."""
@@ -161,6 +188,19 @@ class TestScenario(unittest.TestCase):
                 dtprod='2012-13-24'
             )
 
+    def test_error_04(self):
+        """Sandre version error"""
+        emetteur = intervenant.Intervenant(code=5)
+        destinataire = intervenant.Intervenant(code=8, nom='toto')
+        Scenario(emetteur=emetteur, destinataire=destinataire, version='1.1')
+        with self.assertRaises(TypeError):
+            Scenario(emetteur=emetteur, destinataire=destinataire,
+                     version=None)
+        with self.assertRaises(ValueError):
+            Scenario(emetteur=emetteur, destinataire=destinataire,
+                     version='1.0')
+
+
 
 # -- class TestMessage --------------------------------------------------------
 class TestMessage(unittest.TestCase):
@@ -180,6 +220,24 @@ class TestMessage(unittest.TestCase):
         self.file_serm = os.path.join(FILES_PATH, 'seriesmeteo.xml')
         self.file_sim = os.path.join(FILES_PATH, 'simulations.xml')
         self.file_serelab = os.path.join(FILES_PATH, 'obsselaboree.xml')
+        self.file_serelabmeteo = os.path.join(FILES_PATH,
+                                              'obsselaboreemeteo.xml')
+        self.file_inter = os.path.join(FILES_PATH, 'intervenants.xml')
+
+        # XML version2
+        self.file_serh_v2 = os.path.join(FILES_PATH_V2, 'serieshydro.xml')
+        self.file_serm_v2 = os.path.join(FILES_PATH_V2, 'seriesmeteo.xml')
+        self.file_serelab_v2 = os.path.join(FILES_PATH_V2, 'obsselab.xml')
+        self.file_serelabmeteo_v2 = os.path.join(FILES_PATH_V2,
+                                                 'obsselabmeteo.xml')
+        self.file_ct_v2 = os.path.join(FILES_PATH_V2, 'courbestarage.xml')
+        self.file_cc_v2 = os.path.join(FILES_PATH_V2, 'courbescorrection.xml')
+        self.file_jau_v2 = os.path.join(FILES_PATH_V2, 'jaugeages.xml')
+        self.file_eve_v2 = os.path.join(FILES_PATH_V2, 'evenements.xml')
+        self.file_sith_v2 = os.path.join(FILES_PATH_V2, 'siteshydro.xml')
+        self.file_sitm_v2 = os.path.join(FILES_PATH_V2, 'sitesmeteo.xml')
+        self.file_inter_v2 = os.path.join(FILES_PATH_V2, 'intervenants.xml')
+
         self.tmp_dir = tempfile.mkdtemp(prefix='test_xml_')
         self.tmp_file = tempfile.mktemp(dir=self.tmp_dir)
 
@@ -311,6 +369,84 @@ class TestMessage(unittest.TestCase):
         msg = Message.from_file(self.file_serelab)
         msg.write(self.tmp_file, force=True)
         msg.seriesobselab.insert(0, msg.seriesobselab[0])
+
+    def test_base_17(self):
+        """Message from file serieshydro Sandre V2"""
+        msg = Message.from_file(self.file_serh_v2)
+        msg.write(self.tmp_file, force=True, version='2')
+        self.assertNotEqual(msg.serieshydro, [])
+
+    def test_base_18(self):
+        """Message from file seriesmeteo Sandre V2"""
+        msg = Message.from_file(self.file_serm_v2)
+        msg.write(self.tmp_file, force=True, version='2')
+        self.assertNotEqual(msg.seriesmeteo, [])
+
+    def test_base_19(self):
+        """Message from file obsselab Sandre V2"""
+        msg = Message.from_file(self.file_serelab_v2)
+        msg.write(self.tmp_file, force=True, version='2')
+        self.assertNotEqual(msg.seriesobselab, [])
+
+    def test_base_20(self):
+        """Message from file obsselab Sandre V1.1"""
+        msg = Message.from_file(self.file_serelabmeteo)
+        msg.write(self.tmp_file, force=True, version='1.1')
+        self.assertNotEqual(msg.seriesobselabmeteo, [])
+
+    def test_base_21(self):
+        """Message from file obsselabmeteo Sandre V2"""
+        msg = Message.from_file(self.file_serelabmeteo_v2)
+        msg.write(self.tmp_file, force=True, version='2')
+        self.assertNotEqual(msg.seriesobselabmeteo, [])
+
+    def test_base_22(self):
+        """Message from file courbestarage Sandre V2"""
+        msg = Message.from_file(self.file_ct_v2)
+        msg.write(self.tmp_file, force=True, version='2')
+        self.assertNotEqual(msg.courbestarage, [])
+
+    def test_base_23(self):
+        """Message from file courbescorrection Sandre V2"""
+        msg = Message.from_file(self.file_cc_v2)
+        msg.write(self.tmp_file, force=True, version='2')
+        self.assertNotEqual(msg.courbescorrection, [])
+
+    def test_base_24(self):
+        """Message from file jaugeages Sandre V2"""
+        msg = Message.from_file(self.file_jau_v2)
+        msg.write(self.tmp_file, force=True, version='2')
+        self.assertNotEqual(msg.jaugeages, [])
+
+    def test_base_25(self):
+        """Message from file evenements Sandre V2"""
+        msg = Message.from_file(self.file_eve_v2)
+        msg.write(self.tmp_file, force=True, version='2')
+        self.assertNotEqual(msg.evenements, [])
+
+    def test_base_26(self):
+        """Message from file sites hydro Sandre V2"""
+        msg = Message.from_file(self.file_sith_v2)
+        msg.write(self.tmp_file, force=True, version='2')
+        self.assertNotEqual(msg.siteshydro, [])
+
+    def test_base_27(self):
+        """Message from file sites meteo Sandre V2"""
+        msg = Message.from_file(self.file_sitm_v2)
+        msg.write(self.tmp_file, force=True, version='2')
+        self.assertNotEqual(msg.sitesmeteo, [])
+
+    def test_base_28(self):
+        """Message from file intervenants Sandre V2"""
+        msg = Message.from_file(self.file_inter_v2)
+        msg.write(self.tmp_file, force=True, version='2')
+        self.assertNotEqual(msg.intervenants, [])
+
+    def test_base_29(self):
+        """Message from file intervenants Sandre V1.1"""
+        msg = Message.from_file(self.file_inter)
+        msg.write(self.tmp_file, force=True, version='1.1')
+        self.assertNotEqual(msg.intervenants, [])
 
     def test_str_01(self):
         """Test __str__ method with basic values."""

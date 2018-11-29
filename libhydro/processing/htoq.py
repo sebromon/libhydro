@@ -57,7 +57,7 @@ def courbetarage_active(courbestarage, dte):
         courbestarage: a CourbeTarage or an iterable of CourbeTarage
         dte (datetime.datetime): date de rechercher
 
-    Return : CourbeTarge or None : la pramière courbe de tarage active
+    Return : CourbeTarge or None : la première courbe de tarage active
     """
     if isinstance(courbestarage, CourbeTarage):
         courbestarage = [courbestarage]
@@ -125,6 +125,14 @@ def obsh_to_obsq(obsh, courbestarage):
     # de l'observation'
     qualif = obsh['qal'].item() if obsh['qal'].item() is not None else 16
     qualif = min(qualif, qualif_pivots)
+
+    # Vérification que la hauteur est bien dans la zone d'utilisation
+    if ctar.limiteinf is not None:
+        if hauteur <= ctar.limiteinf:
+            qualif = 12
+    if ctar.limitesup is not None:
+        if hauteur >= ctar.limitesup:
+            qualif = 12
 
     return _obshydro.Observation(dte=obsh['dte'].item(),
                                  res=debit,
@@ -213,7 +221,7 @@ def _debit_ctar_puissance(hauteur, ctar):
     return (debit, qualif)
 
 
-def correction_hauteurs(seriehydro, ccor):
+def correction_hauteurs(seriehydro, courbecorrection):
     """Correction des hauteurs à partir d'une courbe de correction
 
     Arguments:
@@ -230,7 +238,7 @@ def correction_hauteurs(seriehydro, ccor):
     for obs in seriehydro.observations.itertuples():
         hcor = hauteur_corrigee(dte=obs.Index,
                                 hauteur=obs.res,
-                                ccor=ccor)
+                                ccor=courbecorrection)
         obss_hcor.append(_obshydro.Observation(dte=obs.Index, res=hcor, mth=8,
                                                cnt=obs.cnt, qal=obs.qal,
                                                statut=obs.statut))

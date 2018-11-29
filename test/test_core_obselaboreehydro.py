@@ -68,7 +68,7 @@ class TestObservationElaboree(unittest.TestCase):
         """Check default values."""
         # dte = datetime.datetime(2016, 2, 10, 9, 17, 43)
         obs = ObservationElaboree()
-        statut = 4
+        statut = 0
         qal = 16
         mth = 0
         cnt = 0
@@ -377,7 +377,7 @@ class TestSerieObsElab(unittest.TestCase):
         typegrd = 'QINnJ'
         pdt = _composant.PasDeTemps(duree=1,
                                     unite=_composant.PasDeTemps.JOURS)
-        glissant = True
+        glissante = True
         sysalti = 1
         obs = ObservationsElaborees(
             ObservationElaboree(res=33),
@@ -387,15 +387,15 @@ class TestSerieObsElab(unittest.TestCase):
         serie = SerieObsElab(entite=entite, dtprod=dtprod, typegrd=typegrd,
                              pdt=pdt, dtdeb=dtdeb, dtfin=dtfin,
                              dtdesactivation=dtdesactivation, sysalti=sysalti,
-                             dtactivation=dtactivation, glissant=glissant,
+                             dtactivation=dtactivation, glissante=glissante,
                              contact=contact, observations=obs)
         self.assertEqual((serie.entite, serie.dtprod, serie.typegrd, serie.pdt,
                           serie.dtdeb, serie.dtfin, serie.dtdesactivation,
-                          serie.sysalti, serie.dtactivation, serie.glissant,
+                          serie.sysalti, serie.dtactivation, serie.glissante,
                           serie.contact),
                          (entite, dtprod, typegrd, pdt,
                           dtdeb, dtfin, dtdesactivation,
-                          sysalti, dtactivation, glissant, contact))
+                          sysalti, dtactivation, glissante, contact))
 
     def test_base_02(self):
         """default value"""
@@ -405,7 +405,7 @@ class TestSerieObsElab(unittest.TestCase):
         serie = SerieObsElab(entite=entite, dtprod=dtprod, typegrd=typegrd)
         self.assertEqual((serie.entite, serie.dtprod, serie.typegrd, serie.pdt,
                           serie.dtdeb, serie.dtfin, serie.dtdesactivation,
-                          serie.sysalti, serie.dtactivation, serie.glissant,
+                          serie.sysalti, serie.dtactivation, serie.glissante,
                           serie.contact),
                          (entite, dtprod, typegrd, None,
                           None, None, None,
@@ -422,7 +422,7 @@ class TestSerieObsElab(unittest.TestCase):
                              pdt=pdt)
         self.assertEqual((serie.entite, serie.dtprod, serie.typegrd, serie.pdt,
                           serie.dtdeb, serie.dtfin, serie.dtdesactivation,
-                          serie.sysalti, serie.dtactivation, serie.glissant,
+                          serie.sysalti, serie.dtactivation, serie.glissante,
                           serie.contact),
                          (entite, dtprod, typegrd, pdt,
                           None, None, None,
@@ -437,7 +437,7 @@ class TestSerieObsElab(unittest.TestCase):
                              pdt=pdt)
         self.assertEqual((serie.entite, serie.dtprod, serie.typegrd, serie.pdt,
                           serie.dtdeb, serie.dtfin, serie.dtdesactivation,
-                          serie.sysalti, serie.dtactivation, serie.glissant,
+                          serie.sysalti, serie.dtactivation, serie.glissante,
                           serie.contact),
                          (entite, dtprod, typegrd, pdt,
                           None, None, None,
@@ -556,17 +556,17 @@ class TestSerieObsElab(unittest.TestCase):
             SerieObsElab(entite=entite, dtprod=dtprod, typegrd=typegrd,
                          pdt=pdt)
 
-    def test_error_glissant(self):
+    def test_error_glissante(self):
         entite = _sitehydro.Station(code='A123456789')
         dtprod = datetime.datetime(2015, 3, 4, 15, 47, 23)
         typegrd = 'QmM'
-        glissant = True
+        glissante = True
         SerieObsElab(entite=entite, dtprod=dtprod, typegrd=typegrd,
-                     glissant=glissant)
-        glissant = 'toto'
+                     glissante=glissante)
+        glissante = 'toto'
         with self.assertRaises(Exception) as cm:
             SerieObsElab(entite=entite, dtprod=dtprod, typegrd=typegrd,
-                         glissant=glissant)
+                         glissante=glissante)
 
     def test_error_contact(self):
         entite = _sitehydro.Station(code='A123456789')

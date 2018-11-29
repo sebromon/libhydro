@@ -22,7 +22,7 @@ import datetime
 import math
 
 from libhydro.conv.xml import _from_xml as from_xml
-from libhydro.core import (sitehydro, sitemeteo, _composant)
+from libhydro.core import (sitehydro, sitemeteo, _composant, _composant_site)
 
 
 # -- strings ------------------------------------------------------------------
@@ -68,7 +68,7 @@ class TestFromXmlIntervenants(unittest.TestCase):
                  'seuilshydro', 'modelesprevision', 'evenements',
                  'courbestarage', 'jaugeages', 'courbescorrection',
                  'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'simulations')))
+                 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertNotEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -97,12 +97,36 @@ class TestFromXmlIntervenants(unittest.TestCase):
         """intervenant 0 test."""
         # intervenant
         i = self.data['intervenants'][0]
+        i_adr = i.adresse
         self.assertEqual(i.code, 11)
         self.assertEqual(i.origine, 'SANDRE')
         self.assertEqual(i.nom, 'Nom')
+        self.assertEqual(i.statut, 'Gelé')
+        self.assertEqual(i.dtcreation, datetime.datetime(1967, 8, 13, 0, 0, 0))
+        self.assertEqual(i.dtmaj, datetime.datetime(2001, 12, 17, 4, 30, 47))
+        self.assertEqual(i.auteur, 'Auteur')
         self.assertEqual(i.mnemo, 'Mnemo')
+        self.assertEqual(i_adr.boitepostale, 'Boite postale')
+        self.assertEqual(i_adr.adresse1_cplt, 'complément')
+        self.assertEqual(i_adr.adresse1, '1 rue toto')
+        self.assertEqual(i_adr.lieudit, 'Lieu-dit')
+        self.assertEqual(i_adr.ville, 'Ville')
+        self.assertEqual(i_adr.dep, '31')
+        self.assertEqual(i.commentaire, 'Commentaire')
+        self.assertEqual(i.activite, 'Activités')
+        self.assertEqual(i_adr.codepostal, 'Code postal')
+        self.assertEqual(i.nominternational, 'International')
+        self.assertEqual(i.siret, 12345678901234)
+        self.assertEqual(i.commune.code, '32001')
+        self.assertEqual(i_adr.pays, 'FR')
+        self.assertEqual(i_adr.adresse2, 'Adresse étrangère')
+        self.assertEqual(i.telephone, '0600')
+        self.assertEqual(i.fax, '0000')
+        self.assertEqual(i.siteweb, 'http://toto.fr')
+        self.assertEqual(i.pere.code, 33)
+        self.assertEqual(i.pere.origine, 'SANDRE')
         # contacts
-        self.assertEqual(len(i.contacts), 2)
+        self.assertEqual(len(i.contacts), 3)
         c = i.contacts[0]
         self.assertEqual(c.code, '1')
         self.assertEqual(c.nom, 'Nom')
@@ -110,6 +134,38 @@ class TestFromXmlIntervenants(unittest.TestCase):
         self.assertEqual(c.civilite, 1)
         self.assertEqual(c.intervenant, i)
         self.assertEqual(c.profilasstr, '001')
+        self.assertIsNotNone(c.adresse)
+        adr = c.adresse
+        self.assertEqual(adr.adresse1, 'Adresse')
+        self.assertEqual(adr.adresse2, 'Adresse étrangère')
+        self.assertEqual(adr.codepostal, '31000')
+        self.assertEqual(adr.ville, 'Toulouse')
+        self.assertEqual(adr.pays, 'FR')
+        self.assertEqual(c.fonction, 'Hydromètre')
+        self.assertEqual(c.telephone, '0000')
+        self.assertEqual(c.portable, '0600')
+        self.assertEqual(c.fax, 'Fax')
+        self.assertEqual(c.mel, 'Mail')
+        self.assertEqual(c.dtmaj, datetime.datetime(2015, 2, 3, 12, 10, 38))
+        self.assertEqual(len(c.profilsadmin), 2)
+        profil0 = c.profilsadmin[0]
+        self.assertEqual(profil0.profil, 'GEST')
+        self.assertEqual(profil0.zoneshydro, ['A123', 'Z987'])
+        self.assertEqual(profil0.dtactivation,
+                         datetime.datetime(2004, 4, 15, 17, 18, 19))
+        self.assertEqual(profil0.dtdesactivation,
+                         datetime.datetime(2005, 8, 10, 13, 36, 43))
+        profil1 = c.profilsadmin[1]
+        self.assertEqual(profil1.profil, 'JAU')
+        self.assertEqual(profil1.zoneshydro, ['L000', 'K444'])
+        self.assertIsNone(profil1.dtactivation)
+        self.assertIsNone(profil1.dtdesactivation)
+        self.assertEqual(c.alias, 'ALIAS')
+        self.assertEqual(c.motdepasse, 'mot de passe')
+        self.assertEqual(c.dtactivation,
+                         datetime.datetime(2001, 12, 17, 9, 30, 47))
+        self.assertEqual(c.dtdesactivation,
+                         datetime.datetime(2013, 10, 25, 11, 45, 36))
         c = i.contacts[1]
         self.assertEqual(c.code, '2')
         self.assertEqual(c.nom, 'Nom2')
@@ -117,6 +173,13 @@ class TestFromXmlIntervenants(unittest.TestCase):
         self.assertEqual(c.civilite, 2)
         self.assertEqual(c.intervenant, i)
         self.assertEqual(c.profilasstr, '010')
+        c = i.contacts[2]
+        self.assertEqual(c.code, '999')
+        self.assertIsNone(c.nom)
+        self.assertIsNone(c.prenom)
+        self.assertIsNone(c.civilite)
+        self.assertEqual(c.intervenant, i)
+        self.assertEqual(c.profilasstr, '000')
 
     def test_intervenant_1(self):
         """intervenant 1 test."""
@@ -155,7 +218,7 @@ class TestFromXmlSitesHydros(unittest.TestCase):
                  'seuilshydro', 'modelesprevision', 'evenements',
                  'courbestarage', 'jaugeages', 'courbescorrection',
                  'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'simulations')))
+                 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertNotEqual(self.data['siteshydro'], [])
@@ -194,7 +257,9 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(sh.libelleusuel, 'St-Martin-du-Touch')
         self.assertEqual(sh.typesite, 'SOURCE')
         self.assertEqual(sh.code, 'O1984310')
-        self.assertEqual(sh.communes, ['11354', '11355', '2B021'])
+        self.assertEqual(sh.communes, [_composant_site.Commune(code='11354'),
+                                       _composant_site.Commune(code='11355'),
+                                       _composant_site.Commune(code='2B021')])
         self.assertEqual(len(sh.stations), 3)
         # check stations
         for i in range(1, 3):
@@ -250,31 +315,147 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(site.coord.y, 1781803)
         self.assertEqual(site.coord.proj, 26)
         self.assertEqual(site.codeh2, 'O1235401')
-        self.assertEqual(len(site.tronconsvigilance), 2)
-        self.assertEqual(site.tronconsvigilance[0].code, 'AG3')
-        self.assertEqual(site.tronconsvigilance[1].code, 'AG5')
+        self.assertEqual(len(site.entitesvigicrues), 2)
+        self.assertEqual(site.entitesvigicrues[0].code, 'AG3')
+        self.assertEqual(site.entitesvigicrues[1].code, 'AG5')
         self.assertEqual(
-            site.tronconsvigilance[1].libelle, 'Troncon Adour àvâl')
+            site.entitesvigicrues[1].libelle, 'Troncon Adour àvâl')
         self.assertEqual(site.entitehydro, 'Y1524018')
+
+        self.assertEqual(len(site.images), 2)
+        image0 = site.images[0]
+        self.assertEqual((image0.adresse, image0.typeill,
+                          image0.formatimg, image0.commentaire),
+                         ('http://image1.jpeg', 1,
+                          'image/jpeg', 'Commentaire'))
+        image1 = site.images[1]
+        self.assertEqual((image1.adresse, image1.typeill,
+                          image1.formatimg, image1.commentaire),
+                         ('http://image2.bmp', 2,
+                          'image/bmp', None))
+
+
+        self.assertEqual(len(site.roles), 2)
+        role1 = site.roles[0]
+        self.assertEqual(role1.contact.code, '2')
+        self.assertEqual(role1.role, 'ADM')
+        self.assertIsNone(role1.dtdeb)
+        self.assertIsNone(role1.dtfin)
+        self.assertIsNone(role1.dtmaj)
+
+        role2 = site.roles[1]
+        self.assertEqual(role2.contact.code, '1234')
+        self.assertEqual(role2.role, 'REF')
+        self.assertEqual(role2.dtdeb,
+                         datetime.datetime(2010, 5, 17, 11, 26, 39))
+        self.assertEqual(role2.dtfin,
+                         datetime.datetime(2038, 1, 19, 20, 55, 30))
+        self.assertEqual(role2.dtmaj,
+                         datetime.datetime(2017, 11, 4, 9, 23, 31))
+
         self.assertEqual(site.tronconhydro, 'O0011532')
         self.assertEqual(site.zonehydro, 'H420')
         self.assertEqual(site.precisioncoursdeau, 'bras principal')
         # check station
         station = site.stations[0]
-        self.assertEqual(station.ddcs, ['10', '1000000001'])
-        self.assertEqual(station.commune, '11354')
-        self.assertEqual(station.codeh2, 'O1712510')
-        self.assertEqual(station.niveauaffichage, 1)
+        self.assertEqual(station.code, 'O171251001')
+        self.assertEqual(station.libelle,
+                         'L\'Ariège à Auterive - station de secours')
+        self.assertEqual(station.typestation, 'DEB')
         self.assertEqual(station.libellecomplement, 'Complément du libellé')
-        self.assertEqual(station.descriptif, 'Station située à Auterive')
+        self.assertEqual(station.commentaireprive, 'Station située à Auterive')
         self.assertEqual(station.dtmaj,
                          datetime.datetime(2017, 7, 17, 11, 23, 34))
+        self.assertEqual(station.coord.x, 15.0)
+        self.assertEqual(station.coord.y, 16.0)
+        self.assertEqual(station.coord.proj, 26)
         self.assertEqual(station.pointk, 153.71)
         self.assertEqual(station.dtmiseservice,
                          datetime.datetime(1991, 10, 7, 14, 15, 16))
         self.assertEqual(station.dtfermeture,
                          datetime.datetime(2012, 4, 21, 19, 58, 3))
         self.assertEqual(station.surveillance, True)
+        self.assertEqual(station.niveauaffichage, 991)
+        self.assertEqual(station.droitpublication, 20)
+        self.assertEqual(station.essai, False)
+        self.assertEqual(station.influence, 2)
+        self.assertEqual(station.influencecommentaire, 'Libellé influence')
+        self.assertEqual(station.commentaire,
+                         'commentaire1 création station hydro')
+        self.assertEqual(len(station.stationsanterieures), 1)
+        self.assertEqual(station.stationsanterieures[0].code, 'G876542134')
+        self.assertEqual(len(station.stationsposterieures), 0)
+
+        self.assertEqual(len(station.plagesstationsfille), 1)
+        self.assertEqual(station.plagesstationsfille[0].code,
+                         'L854795216')
+        self.assertEqual(len(station.plagesstationsmere), 0)
+
+        self.assertEqual(len(station.qualifsdonnees), 2)
+        qualif0 = station.qualifsdonnees[0]
+        self.assertEqual(qualif0.coderegime, 1)
+        self.assertEqual(qualif0.qualification, 12)
+        self.assertEqual(qualif0.commentaire, 'Commentaire qualif')
+        qualif1 = station.qualifsdonnees[1]
+        self.assertEqual(qualif1.coderegime, 2)
+        self.assertEqual(qualif1.qualification, 16)
+        self.assertIsNone(qualif1.commentaire)
+        self.assertEqual(station.finalites, [1, 2])
+        self.assertEqual(len(station.loisstat), 3)
+        loi0 = station.loisstat[0]
+        self.assertEqual((loi0.contexte, loi0.loi),
+                         (1, 1))
+        loi1 = station.loisstat[1]
+        self.assertEqual((loi1.contexte, loi1.loi),
+                         (3, 2))
+        loi2 = station.loisstat[2]
+        self.assertEqual((loi2.contexte, loi2.loi),
+                         (2, 3))
+
+        self.assertEqual(len(station.images), 2)
+        image0 = station.images[0]
+        self.assertEqual((image0.adresse, image0.typeill, image0.formatimg,
+                          image0.commentaire),
+                         ('http://toto.fr/station.png', 2, 'png',
+                          'Image de la station'))
+        image1 = station.images[1]
+        self.assertEqual((image1.adresse, image1.typeill, image1.formatimg,
+                          image1.commentaire),
+                         ('http://tata.fr/station2.bmp', None, None, None))
+
+        self.assertEqual(len(station.roles), 2)
+        role0 = station.roles[0]
+        self.assertEqual((role0.contact.code, role0.role, role0.dtdeb,
+                          role0.dtfin, role0.dtmaj),
+                         ('2', 'ADM',
+                          datetime.datetime(2005, 11, 18, 14, 56, 54),
+                          datetime.datetime(2007, 5, 4, 14, 12, 28),
+                          datetime.datetime(2012, 10, 4, 11, 35, 21)))
+        role1 = station.roles[1]
+        self.assertEqual((role1.contact.code, role1.role, role1.dtdeb,
+                          role1.dtfin, role1.dtmaj),
+                         ('999', 'REF', None, None, None))
+
+        self.assertEqual(len(station.plages), 2)
+        plage0 = station.plages[0]
+        self.assertEqual((plage0.dtdeb, plage0.dtfin, plage0.dtactivation,
+                          plage0.dtdesactivation, plage0.active),
+                         (datetime.datetime(2006, 4, 25, 16, 0, 0),
+                          datetime.datetime(2006, 4, 30, 17, 0, 0),
+                          datetime.datetime(2007, 1, 18, 15, 10, 5),
+                          datetime.datetime(2014, 10, 11, 9, 47, 44),
+                          True
+                          ))
+        plage1 = station.plages[1]
+        self.assertEqual((plage1.dtdeb, plage1.dtfin, plage1.dtactivation,
+                          plage1.dtdesactivation, plage1.active),
+                         (datetime.datetime(2006, 5, 25, 16, 0, 0),
+                          datetime.datetime(2006, 5, 30, 17, 0, 0),
+                          None, None, False))
+
+        self.assertEqual([reseau.code for reseau in station.reseaux],
+                         ['10', '1000000001'])
+
         # checkcapteurs
         capteurs = station.capteurs
         self.assertEqual(len(capteurs), 2)
@@ -282,13 +463,23 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(capteurs[0].typemesure, 'H')
         self.assertEqual(capteurs[0].typecapteur, 0)  # default type
         self.assertEqual(capteurs[1].code, 'O17125100101')
+        self.assertEqual(capteurs[1].libelle, 'Ultrasons principal')
+        self.assertEqual(capteurs[1].mnemo, 'UP')
         self.assertEqual(capteurs[1].typemesure, 'H')
         self.assertEqual(capteurs[1].codeh2, 'O1712510')
         self.assertEqual(capteurs[1].typecapteur, 3)
+        self.assertEqual(capteurs[1].surveillance, False)
+        self.assertEqual(capteurs[1].dtmaj,
+                         datetime.datetime(2016, 5, 18, 14, 5, 35))
+        self.assertEqual(capteurs[1].pdt, 6)
+        self.assertEqual(capteurs[1].essai, True)
+        self.assertEqual(capteurs[1].commentaire, 'Capteur jaune')
+        self.assertEqual(capteurs[1].observateur.code, '3')
 
         # check plages utilisatino capteurs
         self.assertEqual(len(capteurs[0].plages), 0)
         self.assertEqual(len(capteurs[1].plages), 2)
+
         plage = capteurs[1].plages[0]
         self.assertEqual(plage.dtdeb,
                          datetime.datetime(2009, 11, 3, 15, 19, 18))
@@ -307,6 +498,34 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertIsNone(plage.dtactivation)
         self.assertIsNone(plage.dtdesactivation)
         self.assertIsNone(plage.active)
+        # Fin capteurs
+
+        self.assertEqual(len(station.refsalti), 2)
+        refalti0 = station.refsalti[0]
+        self.assertEqual((refalti0.dtdeb, refalti0.dtfin,
+                          refalti0.dtactivation, refalti0.dtdesactivation,
+                          refalti0.altitude.altitude,
+                          refalti0.altitude.sysalti, refalti0.dtmaj),
+                         (datetime.datetime(2006, 1, 1, 8, 0, 0),
+                          datetime.datetime(2006, 1, 31, 10, 0, 0),
+                          datetime.datetime(2009, 12, 4, 11, 32, 4),
+                          datetime.datetime(2013, 7, 28, 8, 10, 57),
+                          999.0, 4,
+                          datetime.datetime(2014, 4, 24, 16, 54, 21)
+                          ))
+
+        refalti1 = station.refsalti[1]
+        self.assertEqual((refalti1.dtdeb, refalti1.dtfin,
+                          refalti1.dtactivation, refalti1.dtdesactivation,
+                          refalti1.altitude.altitude,
+                          refalti1.altitude.sysalti, refalti1.dtmaj),
+                         (datetime.datetime(2007, 2, 1, 8, 0, 0),
+                          datetime.datetime(2007, 2, 28, 10, 0, 0),
+                          None, None,
+                          777.0, 7, None
+                          ))
+        self.assertEqual(station.codeh2, 'O1712510')
+        self.assertEqual(station.commune, '11354')
 
     def test_error_1(self):
         """Xml file with namespace error test."""
@@ -334,7 +553,7 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
                  'seuilshydro', 'modelesprevision', 'evenements',
                  'courbestarage', 'jaugeages', 'courbescorrection',
                  'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'simulations')))
+                 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertNotEqual(self.data['siteshydro'], [])
@@ -518,7 +737,7 @@ class TestFromXmlSitesMeteo(unittest.TestCase):
                  'seuilshydro', 'modelesprevision', 'evenements',
                  'courbestarage', 'jaugeages', 'courbescorrection',
                  'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'simulations')))
+                 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -551,18 +770,86 @@ class TestFromXmlSitesMeteo(unittest.TestCase):
         self.assertEqual(sm.code, '001072001')
         self.assertEqual(sm.libelle, 'CEYZERIAT_PTC')
         self.assertEqual(sm.libelleusuel, 'CEYZERIAT')
+        self.assertEqual(sm.mnemo, 'Mnémo')
+        self.assertEqual(sm.lieudit, 'Aérodrome de bourg Ceyzeriat')
         self.assertEqual(sm.coord.x, 827652)
         self.assertEqual(sm.coord.y, 2112880)
         self.assertEqual(sm.coord.proj, 26)
+        self.assertEqual(sm.altitude.altitude, 53.0)
+        self.assertEqual(sm.altitude.sysalti, 7)
+        self.assertEqual(sm.fuseau, 2)
+        self.assertEqual(sm.dtmaj, datetime.datetime(2015, 3, 17, 11, 54, 47))
+        self.assertEqual(sm.dtouverture,
+                         datetime.datetime(1950, 1, 1, 0, 0, 0))
+        self.assertEqual(sm.dtfermeture,
+                         datetime.datetime(2007, 10, 24, 9, 8, 1))
+        self.assertTrue(sm.droitpublication)
+        self.assertFalse(sm.essai)
+        self.assertEqual(sm.commentaire, 'Commentaire')
+
+        self.assertEqual(len(sm.images), 2)
+        image0 = sm.images[0]
+        self.assertEqual((image0.adresse, image0.typeill, image0.formatimg,
+                          image0.commentaire),
+                         ('http://xxxxxxx', 3, 'image/jpeg ',
+                          'Photo d\'ensemble depuis le nord'))
+        image1 = sm.images[1]
+        self.assertEqual((image1.adresse, image1.typeill, image1.formatimg,
+                          image1.commentaire),
+                         ('http://toto.fr/img.png', None, None, None))
+
+        self.assertEqual(len(sm.reseaux), 2)
+        self.assertEqual(sm.reseaux[0].code, '10')
+        self.assertEqual(sm.reseaux[1].code, '100000003')
+        self.assertEqual(len(sm.roles), 1)
+        role = sm.roles[0]
+        self.assertEqual(role.contact.code, '2')
+        self.assertEqual(role.role, 'ADM')
+        self.assertEqual(role.dtdeb, datetime.datetime(2008, 4, 19, 11, 10, 9))
+        self.assertEqual(role.dtfin, datetime.datetime(2015, 10, 4, 7, 20, 30))
+        self.assertEqual(role.dtmaj,
+                         datetime.datetime(2016, 12, 9, 17, 58, 16))
         self.assertEqual(sm.commune, '35281')
         self.assertEqual(sm._strict, True)
         self.assertEqual(len(sm.grandeurs), 2)
         for grandeur in sm.grandeurs:
             self.assertEqual(grandeur.sitemeteo, sm)
-        self.assertEqual(sm.grandeurs[0].typemesure, 'RR')
-        self.assertEqual(sm.grandeurs[0].pdt, 4)
+
+        grd0 = sm.grandeurs[0]
+        self.assertEqual(grd0.typemesure, 'RR')
+        self.assertEqual(grd0.dtmiseservice,
+                         datetime.datetime(1994, 4, 5, 16, 0, 0))
+        self.assertEqual(grd0.dtfermeture,
+                         datetime.datetime(2011, 4, 5, 16, 0, 0))
+        self.assertEqual(grd0.essai, True)
+        self.assertEqual(grd0.pdt, 4)
+        self.assertEqual(len(grd0.classesqualite), 1)
+        cl0 = grd0.classesqualite[0]
+        self.assertEqual(cl0.classe, 3)
+        self.assertEqual(cl0.visite.dtvisite,
+                         datetime.datetime(1994, 4, 5, 8, 23, 0))
+        self.assertEqual(cl0.dtdeb, datetime.datetime(1994, 4, 5, 8, 21, 0))
+        self.assertEqual(cl0.dtfin, datetime.datetime(2010, 4, 5, 8, 28, 0))
+        self.assertEqual(grd0.dtmaj, datetime.datetime(2012, 9, 4, 12, 54, 17))
+
         self.assertEqual(sm.grandeurs[1].typemesure, 'VV')
         self.assertIsNone(sm.grandeurs[1].pdt)
+
+        self.assertEqual(len(sm.visites), 2)
+        visite = sm.visites[0]
+        self.assertEqual(visite.dtvisite,
+                         datetime.datetime(2003, 10, 15, 11, 28, 34))
+        self.assertIsNone(visite.contact)
+        self.assertIsNone(visite.methode)
+        self.assertIsNone(visite.modeop)
+
+        
+        visite = sm.visites[1]
+        self.assertEqual(visite.dtvisite,
+                         datetime.datetime(2004, 4, 5, 19, 36, 0))
+        self.assertEqual(visite.contact.code, '4')
+        self.assertEqual(visite.methode, 'Méthode à préciser')
+        self.assertEqual(visite.modeop, 'Libellé libre')
 
 
 # -- class TestFromXmlModelesPrevision ----------------------------------------
@@ -583,7 +870,7 @@ class TestFromXmlModelesPrevision(unittest.TestCase):
                  'seuilshydro', 'modelesprevision', 'evenements',
                  'courbestarage', 'jaugeages', 'courbescorrection',
                  'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'simulations')))
+                 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -647,7 +934,7 @@ class TestFromXmlEvenements(unittest.TestCase):
                  'seuilshydro', 'modelesprevision', 'evenements',
                  'courbestarage', 'jaugeages', 'courbescorrection',
                  'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'simulations')))
+                 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -678,7 +965,7 @@ class TestFromXmlEvenements(unittest.TestCase):
         self.assertEqual(evenement.contact.code, '1')
         self.assertEqual(evenement.dt, datetime.datetime(1999, 8, 12, 0, 5))
         self.assertEqual(evenement.descriptif, "Arrachement de l'échelle")
-        self.assertEqual(evenement.publication, 1)
+        self.assertEqual(evenement.publication, 12)
         self.assertEqual(evenement.dtmaj,
                          datetime.datetime(2000, 5, 10, 22, 5))
 
@@ -691,7 +978,8 @@ class TestFromXmlEvenements(unittest.TestCase):
         self.assertEqual(evenement.dt, datetime.datetime(2010, 2, 26, 9, 5))
         self.assertEqual(evenement.descriptif,
                          'Déplacement de la station de 22.5m')
-        self.assertEqual(evenement.publication, 20)
+        self.assertEqual(evenement.publication, 12)
+        self.assertEqual(evenement.typeevt, 7)
         self.assertEqual(evenement.dtmaj,
                          datetime.datetime(2011, 1, 13, 10, 5))
 
@@ -704,10 +992,49 @@ class TestFromXmlEvenements(unittest.TestCase):
         self.assertEqual(evenement.dt, datetime.datetime(1968, 2, 2, 23, 0))
         self.assertEqual(evenement.descriptif,
                          'Débouchage de la sonde de température')
-        self.assertEqual(evenement.publication, 100)
+        self.assertEqual(evenement.publication, 22)
         self.assertEqual(evenement.dtmaj,
                          datetime.datetime(2000, 1, 1, 22, 0))
 
+    def test_evenement_3(self):
+        """Evenement 3 test."""
+        evenement = self.data['evenements'][3]
+        self.assertEqual(evenement.entite.code, 'Z853011234')
+        self.assertEqual(evenement.contact.code, '1234')
+        self.assertEqual(evenement.dt,
+                         datetime.datetime(2018, 3, 27, 10, 6, 1))
+        self.assertEqual(evenement.descriptif,
+                         'Déplacement de la station de 34.5m')
+        self.assertEqual(evenement.publication, 12)
+        self.assertEqual(evenement.typeevt, 7)
+        self.assertEqual(evenement.dtmaj,
+                         datetime.datetime(2018, 6, 26, 11, 7, 34))
+
+    def test_evenement_4(self):
+        """Evenement 4 test."""
+        evenement = self.data['evenements'][4]
+        self.assertEqual(evenement.entite.code, 'Z853014321')
+        self.assertEqual(evenement.contact.code, '4321')
+        self.assertEqual(evenement.dt,
+                         datetime.datetime(2017, 1, 25, 8, 4, 59))
+        self.assertEqual(evenement.descriptif,
+                         'Déplacement de la station de 59.5m')
+        self.assertEqual(evenement.publication, 12)
+        self.assertEqual(evenement.dtmaj,
+                         datetime.datetime(2017, 7, 11, 9, 11, 17))
+
+    def test_evenement_5(self):
+        """Evènement archivé"""
+        evt = self.data['evenements'][5]
+        dtmaj = datetime.datetime(2016, 11, 2, 7, 15, 53)
+        self.assertEqual(evt.dtmaj, dtmaj)
+        self.assertEqual(evt.dtfin, dtmaj)
+
+    def test_evenement_6(self):
+        """Evènement archivé sans dtmaj"""
+        evt = self.data['evenements'][6]
+        self.assertIsNone(evt.dtmaj)
+        self.assertIsNotNone(evt.dtfin)
 
 # -- class TestFromXmlJaugeages ----------------------------------------------
 class TestFromXmlJaugeages(unittest.TestCase):
@@ -727,7 +1054,7 @@ class TestFromXmlJaugeages(unittest.TestCase):
                  'seuilshydro', 'modelesprevision', 'evenements',
                  'courbestarage', 'jaugeages', 'courbescorrection',
                  'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'simulations')))
+                 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -740,7 +1067,7 @@ class TestFromXmlJaugeages(unittest.TestCase):
     def test_jaugeage_01(self):
         """check simple jaugeage"""
         jaugeage = self.data['jaugeages'][0]
-        self.assertEqual(jaugeage.code, '184')
+        self.assertEqual(jaugeage.code, 184)
 
         self.assertIsNone(jaugeage.dte)
         self.assertIsNone(jaugeage.dtdeb)
@@ -750,11 +1077,11 @@ class TestFromXmlJaugeages(unittest.TestCase):
         self.assertIsNone(jaugeage.section_mouillee)
         self.assertIsNone(jaugeage.perimetre_mouille)
         self.assertIsNone(jaugeage.largeur_miroir)
-        self.assertIsNone(jaugeage.mode)
+        self.assertEqual(jaugeage.mode, 0)
         self.assertIsNone(jaugeage.commentaire)
         self.assertIsNone(jaugeage.vitessemoy)
         self.assertIsNone(jaugeage.vitessemax)
-        self.assertIsNone(jaugeage.vitessemoy_surface)
+        self.assertIsNone(jaugeage.vitessemax_surface)
 
         self.assertEqual(jaugeage.site.code, 'K0101010')
         self.assertEqual(len(jaugeage.hauteurs), 0)
@@ -763,7 +1090,7 @@ class TestFromXmlJaugeages(unittest.TestCase):
     def test_jaugeage_02(self):
         """check full jaugeage"""
         jaugeage = self.data['jaugeages'][1]
-        self.assertEqual(jaugeage.code, '159')
+        self.assertEqual(jaugeage.code, 159)
         self.assertEqual(jaugeage.dte, datetime.datetime(2015, 8, 3, 4, 5, 17))
         self.assertEqual(jaugeage.dtdeb,
                          datetime.datetime(2015, 8, 2, 6, 13, 34))
@@ -773,11 +1100,11 @@ class TestFromXmlJaugeages(unittest.TestCase):
         self.assertEqual(jaugeage.section_mouillee, 341.25)
         self.assertEqual(jaugeage.perimetre_mouille, 987.54)
         self.assertEqual(jaugeage.largeur_miroir, 156423.12)
-        self.assertEqual(jaugeage.mode, 5)
+        self.assertEqual(jaugeage.mode, 3)
         self.assertEqual(jaugeage.commentaire, 'Commentaire')
         self.assertEqual(jaugeage.vitessemoy, 17.54)
         self.assertEqual(jaugeage.vitessemax, 19.43)
-        self.assertEqual(jaugeage.vitessemoy_surface, 18.87)
+        self.assertEqual(jaugeage.vitessemax_surface, 18.87)
         self.assertEqual(jaugeage.site.code, 'A1234567')
 
         self.assertEqual(len(jaugeage.hauteurs), 3)
@@ -835,7 +1162,7 @@ class TestFromXmlCourbesTarage(unittest.TestCase):
                  'seuilshydro', 'modelesprevision', 'evenements',
                  'courbestarage', 'jaugeages', 'courbescorrection',
                  'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'simulations')))
+                 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -986,7 +1313,7 @@ class TestFromXmlCourbesCorrection(unittest.TestCase):
                  'seuilshydro', 'modelesprevision', 'evenements',
                  'courbestarage', 'jaugeages', 'courbescorrection',
                  'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'simulations')))
+                 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -1066,7 +1393,7 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
                  'seuilshydro', 'modelesprevision', 'evenements',
                  'courbestarage', 'jaugeages', 'courbescorrection',
                  'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'simulations')))
+                 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -1145,7 +1472,7 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
                  'seuilshydro', 'modelesprevision', 'evenements',
                  'courbestarage', 'jaugeages', 'courbescorrection',
                  'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'simulations')))
+                 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -1247,7 +1574,7 @@ class TestFromXmlSimulations(unittest.TestCase):
                  'seuilshydro', 'modelesprevision', 'evenements',
                  'courbestarage', 'jaugeages', 'courbescorrection',
                  'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'simulations')))
+                 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -1387,7 +1714,7 @@ class TestFromXmlObssElab(unittest.TestCase):
                  'seuilshydro', 'modelesprevision', 'evenements',
                  'courbestarage', 'jaugeages', 'courbescorrection',
                  'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'simulations')))
+                 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -1429,3 +1756,45 @@ class TestFromXmlObssElab(unittest.TestCase):
         self.assertEqual(len(series[4].observations), 1)
         self.assertEqual(series[4].dtprod,
                          datetime.datetime(2013, 6, 14, 7, 4, 29))
+
+
+# -- class TestFromXmlObssElab ---------------------------------------------
+class TestFromXmlObssElabMeteo(unittest.TestCase):
+
+    """FromXmlObssElab class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '1.1', 'obsselaboreemeteo.xml'))
+
+    def test_base(self):
+        """Check keys test."""
+        self.assertEqual(
+            set(self.data.keys()),
+            set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
+                 'seuilshydro', 'modelesprevision', 'evenements',
+                 'courbestarage', 'jaugeages', 'courbescorrection',
+                 'serieshydro', 'seriesmeteo', 'seriesobselab',
+                 'seriesobselabmeteo', 'simulations')))
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertEqual(self.data['intervenants'], [])
+        self.assertEqual(self.data['siteshydro'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['seriesobselab'], [])
+        self.assertEqual(self.data['simulations'], [])
+        self.assertNotEqual(self.data['seriesmeteo'], [])
+        self.assertNotEqual(self.data['seriesobselabmeteo'], [])
+
+    def test_series(self):
+        series = self.data['seriesobselabmeteo']
+        self.assertEqual(series[0].site.code, 'A0010330')
+        self.assertEqual(series[0].grandeur, 'RR')
+        self.assertEqual(series[0].typeserie, 1)
+        self.assertEqual(len(series[0].observations), 2)
+
+        self.assertEqual(series[1].site.code, 'A0010331')
+        self.assertEqual(series[1].typeserie, 1)
+        self.assertEqual(len(series[1].observations), 1)
