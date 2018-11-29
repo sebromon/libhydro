@@ -9,7 +9,7 @@ Le meta-package libhydro est constitue des packages:
 
 """
 
-__version__ = '0.8.0'
+__version__ = '0.9.0'
 __all__ = ['core', 'conv', 'processing']
 
 # from .bdhydro import bdhydro
