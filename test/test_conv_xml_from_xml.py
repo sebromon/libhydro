@@ -97,10 +97,34 @@ class TestFromXmlIntervenants(unittest.TestCase):
         """intervenant 0 test."""
         # intervenant
         i = self.data['intervenants'][0]
+        i_adr = i.adresse
         self.assertEqual(i.code, 11)
         self.assertEqual(i.origine, 'SANDRE')
         self.assertEqual(i.nom, 'Nom')
+        self.assertEqual(i.statut, 'Gelé')
+        self.assertEqual(i.dtcreation, datetime.datetime(1967, 8, 13, 0, 0, 0))
+        self.assertEqual(i.dtmaj, datetime.datetime(2001, 12, 17, 4, 30, 47))
+        self.assertEqual(i.auteur, 'Auteur')
         self.assertEqual(i.mnemo, 'Mnemo')
+        self.assertEqual(i_adr.boitepostale, 'Boite postale')
+        self.assertEqual(i_adr.adresse1_cplt, 'complément')
+        self.assertEqual(i_adr.adresse1, '1 rue toto')
+        self.assertEqual(i_adr.lieudit, 'Lieu-dit')
+        self.assertEqual(i_adr.ville, 'Ville')
+        self.assertEqual(i_adr.dep, '31')
+        self.assertEqual(i.commentaire, 'Commentaire')
+        self.assertEqual(i.activite, 'Activités')
+        self.assertEqual(i_adr.codepostal, 'Code postal')
+        self.assertEqual(i.nominternational, 'International')
+        self.assertEqual(i.siret, 12345678901234)
+        self.assertEqual(i.commune.code, '32001')
+        self.assertEqual(i_adr.pays, 'FR')
+        self.assertEqual(i_adr.adresse2, 'Adresse étrangère')
+        self.assertEqual(i.telephone, '0600')
+        self.assertEqual(i.fax, '0000')
+        self.assertEqual(i.siteweb, 'http://toto.fr')
+        self.assertEqual(i.pere.code, 33)
+        self.assertEqual(i.pere.origine, 'SANDRE')
         # contacts
         self.assertEqual(len(i.contacts), 3)
         c = i.contacts[0]

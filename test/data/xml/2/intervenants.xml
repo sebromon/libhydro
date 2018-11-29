@@ -21,23 +21,25 @@
       <Intervenant>
         <CdIntervenant schemeAgencyID="SANDRE">11</CdIntervenant>
         <NomIntervenant>Nom</NomIntervenant>
-        <StIntervenant>String</StIntervenant>
+        <StIntervenant>Gelé</StIntervenant>
         <DateCreationIntervenant>1967-08-13</DateCreationIntervenant>
         <DateMajIntervenant>2001-12-17T04:30:47</DateMajIntervenant>
         <AuteurIntervenant>Auteur</AuteurIntervenant>
         <MnIntervenant>Mnemo</MnIntervenant>
-        <BpIntervenant>String</BpIntervenant>
-        <ImmoIntervenant>String</ImmoIntervenant>
-        <RueIntervenant>String</RueIntervenant>
-        <LieuIntervenant>String</LieuIntervenant>
-        <VilleIntervenant>String</VilleIntervenant>
-        <DepIntervenant>String</DepIntervenant>
-        <CommentairesIntervenant>String</CommentairesIntervenant>
-        <ActivitesIntervenant>String</ActivitesIntervenant>
-        <CPIntervenant>Strin</CPIntervenant>
-        <NomInternationalIntervenant>String</NomInternationalIntervenant>
-        <CdSIRETRattacheIntervenant>token</CdSIRETRattacheIntervenant>
-        <CdCommune>32001</CdCommune>
+        <BpIntervenant>Boite postale</BpIntervenant>
+        <ImmoIntervenant>complément</ImmoIntervenant>
+        <RueIntervenant>1 rue toto</RueIntervenant>
+        <LieuIntervenant>Lieu-dit</LieuIntervenant>
+        <VilleIntervenant>Ville</VilleIntervenant>
+        <DepIntervenant>31</DepIntervenant>
+        <CommentairesIntervenant>Commentaire</CommentairesIntervenant>
+        <ActivitesIntervenant>Activités</ActivitesIntervenant>
+        <CPIntervenant>Code postal</CPIntervenant>
+        <NomInternationalIntervenant>International</NomInternationalIntervenant>
+        <CdSIRETRattacheIntervenant>12345678901234</CdSIRETRattacheIntervenant>
+        <Commune>
+            <CdCommune>32001</CdCommune>
+        </Commune>
         <Contacts>
           <Contact>
             <CdContact>1</CdContact>
@@ -127,10 +129,10 @@
           </Contact>
         </Contacts>
         <PaysComplementIntervenant>FR</PaysComplementIntervenant>
-        <AdEtrangereComplementIntervenant>String</AdEtrangereComplementIntervenant>
-        <TelephoneComplementIntervenant>String</TelephoneComplementIntervenant>
-        <FaxComplementIntervenant>String</FaxComplementIntervenant>
-        <SiteWebComplementIntervenant>String</SiteWebComplementIntervenant>
+        <AdEtrangereComplementIntervenant>Adresse étrangère</AdEtrangereComplementIntervenant>
+        <TelephoneComplementIntervenant>0600</TelephoneComplementIntervenant>
+        <FaxComplementIntervenant>0000</FaxComplementIntervenant>
+        <SiteWebComplementIntervenant>http://toto.fr</SiteWebComplementIntervenant>
         <IntervenantPere>
           <CdIntervenant schemeAgencyID="SANDRE">33</CdIntervenant>
         </IntervenantPere>
@@ -139,23 +141,7 @@
       <Intervenant>
         <CdIntervenant schemeAgencyID="SIRET">12345671234567</CdIntervenant>
         <NomIntervenant>Nom Sirét</NomIntervenant>
-        <StIntervenant>String</StIntervenant>
-        <DateCreationIntervenant>1967-08-13</DateCreationIntervenant>
-        <DateMajIntervenant>2001-12-17T09:30:47</DateMajIntervenant>
-        <AuteurIntervenant>String</AuteurIntervenant>
         <MnIntervenant>Captâîn Mnémo</MnIntervenant>
-        <BpIntervenant>String</BpIntervenant>
-        <ImmoIntervenant>String</ImmoIntervenant>
-        <RueIntervenant>String</RueIntervenant>
-        <LieuIntervenant>String</LieuIntervenant>
-        <VilleIntervenant>String</VilleIntervenant>
-        <DepIntervenant>String</DepIntervenant>
-        <CommentairesIntervenant>String</CommentairesIntervenant>
-        <ActivitesIntervenant>String</ActivitesIntervenant>
-        <CPIntervenant>Strin</CPIntervenant>
-        <NomInternationalIntervenant>String</NomInternationalIntervenant>
-        <CdSIRETRattacheIntervenant>token</CdSIRETRattacheIntervenant>
-        <CdCommune>2B002</CdCommune>
         <Contacts>
           <Contact>
             <CdContact>5</CdContact>
@@ -200,14 +186,6 @@
             <DtDesactivationContact>2001-12-17T09:30:47</DtDesactivationContact> -->
           </Contact>
         </Contacts>
-        <PaysComplementIntervenant>AD</PaysComplementIntervenant>
-        <AdEtrangereComplementIntervenant>String</AdEtrangereComplementIntervenant>
-        <TelephoneComplementIntervenant>String</TelephoneComplementIntervenant>
-        <FaxComplementIntervenant>String</FaxComplementIntervenant>
-        <SiteWebComplementIntervenant>String</SiteWebComplementIntervenant>
-        <IntervenantPere>
-          <CdIntervenant schemeAgencyID="SIRET">82400001234567</CdIntervenant>
-        </IntervenantPere>
       </Intervenant>
     </Intervenants>
   </RefHyd>

@@ -19,7 +19,7 @@ from __future__ import (
 import unittest
 from datetime import datetime
 
-from libhydro.core import intervenant
+from libhydro.core import intervenant, _composant_site
 
 
 # -- strings ------------------------------------------------------------------
@@ -44,8 +44,14 @@ class TestIntervenant(unittest.TestCase):
         """Empty Intervenant."""
         i = intervenant.Intervenant()
         self.assertEqual(
-            (i.code, i.origine, i.nom, i.mnemo, i.contacts),
-            (0, 'SANDRE', None, None, []))
+            (i.code, i.origine, i.nom, i.statut, i.dtcreation, i.dtmaj,
+             i.auteur, i.mnemo, i.adresse, i.commentaire, i.activite,
+             i.nominternational, i.commune, i.siret, i.contacts, i.telephone,
+             i.fax, i.siteweb, i.pere),
+            (0, 'SANDRE', None, None, None, None,
+             None, None, None, None, None,
+             None, None, None, [], None,
+             None, None, None))
 
     def test_base_02(self):
         """SIRET auto Intervenant."""
@@ -58,13 +64,38 @@ class TestIntervenant(unittest.TestCase):
         code = 12345678901234
         origine = 'SIRET'
         nom = 'Service Central de la Pluie'
+        statut = 'Gelé'
+        dtcreation = datetime(2014, 9, 23, 18, 17, 16)
+        dtmaj = datetime(2016, 5, 11, 17, 15, 20)
+        auteur = 'Auteur'
         mnemo = 'SCHAPI'
+        adresse = intervenant.Adresse(ville='Toulouse')
+        commentaire = 'Commentaire'
+        activite = 'Hydromètre'
+        nominternational='Nom intervational'
+        commune = _composant_site.Commune('11111')
+        siret = '9' * 14
         contacts = [intervenant.Contact(code=0), intervenant.Contact(code=1)]
+        telephone ='0500'
+        fax = '0900'
+        siteweb = 'http://toto.fr'
+        pere = intervenant.Intervenant(code='3')
         it = intervenant.Intervenant(
-            code=code, origine='I', nom=nom, mnemo=mnemo, contacts=contacts)
+            code=code, origine=origine, nom=nom, statut=statut,
+            dtcreation=dtcreation, dtmaj=dtmaj, auteur=auteur, mnemo=mnemo,
+            adresse=adresse, commentaire=commentaire, activite=activite,
+            nominternational=nominternational, commune=commune, siret=siret,
+            contacts=contacts, telephone=telephone, fax=fax, siteweb=siteweb,
+            pere=pere)
         self.assertEqual(
-            (it.code, it.origine, it.nom, it.mnemo, it.contacts),
-            (code, origine, nom, mnemo, contacts))
+            (it.code, it.origine, it.nom, it.statut, it.dtcreation, it.dtmaj,
+             it.auteur, it.mnemo, it.adresse, it.commentaire, it.activite,
+             it.nominternational, it.commune, it.siret, it.contacts,
+             it.telephone, it.fax, it.siteweb, it.pere),
+            (code, origine, nom, statut, dtcreation, dtmaj,
+             auteur, mnemo, adresse, commentaire, activite,
+             nominternational, commune, int(siret), contacts, telephone,
+             fax, siteweb, pere))
         for ct in it.contacts:
             self.assertEqual(ct.intervenant, it)
 
@@ -153,6 +184,41 @@ class TestIntervenant(unittest.TestCase):
         self.assertRaises(
             ValueError, it2.__setattr__, *('contacts', contacts[0]))
 
+    def test_siret(self):
+        """Siret test"""
+        code = 12345678901234
+        for siret in [None, 12345678901234, '12345678901234']:
+            intervenant.Intervenant(code=code, siret=siret)
+        for siret in [0, 100, '100', 123456789012345]:
+            with self.assertRaises(Exception):
+                intervenant.Intervenant(code=code, siret=siret)
+
+    def test_commune(self):
+        """Commune test"""
+        code = 12345678901234
+        for commune in [None, _composant_site.Commune('99999')]:
+            intervenant.Intervenant(code=code, commune=commune)
+        for commune in ['99999', 12345]:
+            with self.assertRaises(Exception):
+                intervenant.Intervenant(code=code, commune=commune)
+
+    def test_pere(self):
+        """Pere test"""
+        code = 12345678901234
+        for pere in [None, intervenant.Intervenant(code='5')]:
+            intervenant.Intervenant(code=code, pere=pere)
+        pere = '5'
+        with self.assertRaises(Exception):
+            intervenant.Intervenant(code=code, pere=pere)
+
+    def test_adresse(self):
+        """Adresse test"""
+        code = 12345678901234
+        for adresse in [None, intervenant.Adresse(ville='Toulouse')]:
+            intervenant.Intervenant(code=code, adresse=adresse)
+        adresse = 'Toulouse'
+        with self.assertRaises(Exception):
+            intervenant.Intervenant(code=code, adresse=adresse)
 
 # -- class TestContact --------------------------------------------------------
 class TestContact(unittest.TestCase):
@@ -374,17 +440,23 @@ class TestAdresse(unittest.TestCase):
     def test_full_adresse(self):
         ville = 'Bordeaux'
         adresse1 = '17 rue toto'
+        adresse1_cplt = 'Complément'
         adresse2 = '134 avenue tata'
         codepostal = '33000'
         boitepostale = 'boîte postale'
         pays = 'FR'
+        dep = '31'
+        lieudit = 'Lieu-dit'
         adr = intervenant.Adresse(ville=ville, adresse1=adresse1,
-                                  adresse2=adresse2, boitepostale=boitepostale,
-                                  codepostal=codepostal, pays=pays)
-        self.assertEqual((adr.ville, adr.adresse1, adr.adresse2,
-                          adr.boitepostale, adr.codepostal, adr.pays),
-                         (ville, adresse1, adresse2,
-                          boitepostale, codepostal, pays))
+                                  adresse1_cplt=adresse1_cplt,
+                                  adresse2=adresse2, lieudit=lieudit,
+                                  boitepostale=boitepostale,
+                                  codepostal=codepostal, dep=dep, pays=pays)
+        self.assertEqual((adr.ville, adr.adresse1, adr.adresse1_cplt,
+                          adr.adresse2, adr.lieudit, adr.boitepostale,
+                          adr.codepostal, adr.dep, adr.pays),
+                         (ville, adresse1, adresse1_cplt, adresse2, lieudit,
+                          boitepostale, codepostal, dep, pays))
 
     def test_str_01(self):
         ville = 'Agen'

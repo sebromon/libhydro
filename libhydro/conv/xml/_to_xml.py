@@ -189,7 +189,8 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
         # intervenants
         if args['intervenants'] is not None:
             sub.append(_intervenants_to_element(
-                args['intervenants'], bdhydro=bdhydro, strict=strict))
+                args['intervenants'], bdhydro=bdhydro, strict=strict,
+                version=version))
 
         # siteshydro and seuilshydro
         if (args['siteshydro'], args['seuilshydro']) != (None, None):
@@ -312,16 +313,58 @@ def _intervenant_to_element(intervenant, bdhydro=False, strict=True, version='1.
         if strict:
             _required(intervenant, ['code'])
 
+        cdcommune = intervenant.commune.code \
+            if intervenant.commune is not None else None
+        adresse = intervenant.adresse \
+            if intervenant.adresse is not None else None
+
         # template for intervenant simple elements
         story = _collections.OrderedDict((
             ('CdIntervenant', {
                 'value': str(intervenant.code),
                 'attr': {'schemeAgencyID': intervenant.origine}}),
             ('NomIntervenant', {'value': intervenant.nom}),
+            ('StIntervenant', {'value': intervenant.statut}),
+            ('DateCreationIntervenant', {'value': date2iso(intervenant.dtcreation)}),
+            ('DateMajIntervenant', {'value': datetime2iso(intervenant.dtmaj)}),
+            ('AuteurIntervenant', {'value': intervenant.auteur}),
             ('MnIntervenant', {'value': intervenant.mnemo}),
-            ('Contacts', {
+            ('BpIntervenant', {'value': adresse.boitepostale}),
+            ('ImmoIntervenant', {'value': adresse.adresse1_cplt}),
+            ('RueIntervenant', {'value': adresse.adresse1}),
+            ('LieuIntervenant', {'value': adresse.lieudit}),
+            ('VilleIntervenant', {'value': adresse.ville}),
+            ('DepIntervenant', {'value': adresse.dep}),
+            ('CommentairesIntervenant', {'value': intervenant.commentaire}),
+            ('ActivitesIntervenant', {'value': intervenant.activite}),
+            ('CPIntervenant', {'value': adresse.codepostal}),
+            ('NomInternationalIntervenant', {'value': intervenant.nominternational}),
+            ('CdSIRETRattacheIntervenant', {'value': intervenant.siret})))
+        
+        if cdcommune is not None:
+            if version < '2':
+                story['CdCommune'] = {'value': cdcommune}
+            else :
+                story['Commune'] = {
+                    'value': None,
+                    'sub': _collections.OrderedDict((
+                            ('CdCommune', {'value': cdcommune}), ))}
+        story['Contacts'] = {
                 'value': None,
-                'force': True if (len(intervenant.contacts) > 0) else False})))
+                'force': True if (len(intervenant.contacts) > 0) else False}
+        story['PaysComplementIntervenant'] = {'value': adresse.pays}
+        story['AdEtrangereComplementIntervenant'] = {'value': adresse.adresse2}
+        story['TelephoneComplementIntervenant'] = {'value': intervenant.telephone}
+        story['FaxComplementIntervenant'] = {'value': intervenant.fax}
+        story['SiteWebComplementIntervenant'] = {'value': intervenant.siteweb}
+        
+        if intervenant.pere is not None:
+            pere = {'CdIntervenant': {
+                'value': intervenant.pere.code,
+                'attr': {'schemeAgencyID': intervenant.pere.origine}}}
+            story['IntervenantPere'] = {'value': None,
+                                        'sub': pere}
+
 
         # make element <Intervenant>
         element = _factory(root=_etree.Element('Intervenant'), story=story)
@@ -336,7 +379,6 @@ def _intervenant_to_element(intervenant, bdhydro=False, strict=True, version='1.
 
         # return
         return element
-
 
 def _contact_to_element(contact, bdhydro=False, strict=True, version='1.1'):
     """Return a <Contact> element from a intervenant.Contact."""

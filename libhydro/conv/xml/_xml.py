@@ -262,7 +262,7 @@ class Message(object):
         return Message(
             scenario=scenario,
             intervenants=_from_xml._intervenants_from_element(
-                tree.find('RefHyd/Intervenants')),
+                tree.find('RefHyd/Intervenants'), scenario.version, tags),
             siteshydro=_from_xml._siteshydro_from_element(
                 tree.find('RefHyd/SitesHydro'), scenario.version, tags),
             sitesmeteo=_from_xml._sitesmeteo_from_element(

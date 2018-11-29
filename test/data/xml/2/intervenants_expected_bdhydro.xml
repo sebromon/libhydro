@@ -21,23 +21,25 @@
       <Intervenant>
         <CdIntervenant schemeAgencyID="SANDRE">11</CdIntervenant>
         <NomIntervenant>Nom</NomIntervenant>
-        <!-- <StIntervenant>String</StIntervenant> -->
-        <!-- <DateCreationIntervenant>1967-08-13</DateCreationIntervenant> -->
-        <!-- <DateMajIntervenant>2001-12-17T09:30:47+05:00</DateMajIntervenant> -->
-        <!-- <AuteurIntervenant>Auteur</AuteurIntervenant> -->
+        <StIntervenant>Gelé</StIntervenant>
+        <DateCreationIntervenant>1967-08-13</DateCreationIntervenant>
+        <DateMajIntervenant>2001-12-17T04:30:47</DateMajIntervenant>
+        <AuteurIntervenant>Auteur</AuteurIntervenant>
         <MnIntervenant>Mnemo</MnIntervenant>
-        <!-- <BpIntervenant>String</BpIntervenant> -->
-        <!-- <ImmoIntervenant>String</ImmoIntervenant> -->
-        <!-- <RueIntervenant>String</RueIntervenant> -->
-        <!-- <LieuIntervenant>String</LieuIntervenant> -->
-        <!-- <VilleIntervenant>String</VilleIntervenant> -->
-        <!-- <DepIntervenant>String</DepIntervenant> -->
-        <!-- <CommentairesIntervenant>String</CommentairesIntervenant> -->
-        <!-- <ActivitesIntervenant>String</ActivitesIntervenant> -->
-        <!-- <CPIntervenant>Strin</CPIntervenant> -->
-        <!-- <NomInternationalIntervenant>String</NomInternationalIntervenant> -->
-        <!-- <CdSIRETRattacheIntervenant>token</CdSIRETRattacheIntervenant> -->
-        <!-- <CdCommune>0aaaa</CdCommune> -->
+        <BpIntervenant>Boite postale</BpIntervenant>
+        <ImmoIntervenant>complément</ImmoIntervenant>
+        <RueIntervenant>1 rue toto</RueIntervenant>
+        <LieuIntervenant>Lieu-dit</LieuIntervenant>
+        <VilleIntervenant>Ville</VilleIntervenant>
+        <DepIntervenant>31</DepIntervenant>
+        <CommentairesIntervenant>Commentaire</CommentairesIntervenant>
+        <ActivitesIntervenant>Activités</ActivitesIntervenant>
+        <CPIntervenant>Code postal</CPIntervenant>
+        <NomInternationalIntervenant>International</NomInternationalIntervenant>
+        <CdSIRETRattacheIntervenant>12345678901234</CdSIRETRattacheIntervenant>
+        <Commune>
+            <CdCommune>32001</CdCommune>
+        </Commune>
         <Contacts>
           <Contact>
             <CdContact schemeAgencyID="SANDRE">1</CdContact>
@@ -126,14 +128,14 @@
 			  <ProfilContact>000</ProfilContact>
           </Contact>
         </Contacts>
-        <!-- <PaysComplementIntervenant>Str</PaysComplementIntervenant> -->
-        <!-- <AdEtrangereComplementIntervenant>String</AdEtrangereComplementIntervenant> -->
-        <!-- <TelephoneComplementIntervenant>String</TelephoneComplementIntervenant> -->
-        <!-- <FaxComplementIntervenant>String</FaxComplementIntervenant> -->
-        <!-- <SiteWebComplementIntervenant>String</SiteWebComplementIntervenant> -->
-        <!-- <IntervenantPere> -->
-        <!--   <CdIntervenant schemeAgencyID="SANDRE">33</CdIntervenant> -->
-        <!-- </IntervenantPere> -->
+        <PaysComplementIntervenant>FR</PaysComplementIntervenant>
+        <AdEtrangereComplementIntervenant>Adresse étrangère</AdEtrangereComplementIntervenant>
+        <TelephoneComplementIntervenant>0600</TelephoneComplementIntervenant>
+        <FaxComplementIntervenant>0000</FaxComplementIntervenant>
+        <SiteWebComplementIntervenant>http://toto.fr</SiteWebComplementIntervenant>
+        <IntervenantPere>
+          <CdIntervenant schemeAgencyID="SANDRE">33</CdIntervenant>
+        </IntervenantPere>
       </Intervenant>
       <!-- intervenant 1 -->
       <Intervenant>

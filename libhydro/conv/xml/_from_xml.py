@@ -319,7 +319,8 @@ def _parse(src, ordered=True):
     return {
         'scenario': scenario,
         'intervenants': _intervenants_from_element(
-            tree.find('RefHyd/Intervenants')),
+            tree.find('RefHyd/Intervenants'), version=scenario.version,
+            tags=tags),
         'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro'),
                                                version=scenario.version,
                                                tags=tags),
@@ -382,7 +383,7 @@ def _scenario_from_element(element):
             version=_value(element, 'VersionScenario'))
 
 
-def _intervenant_from_element(element):
+def _intervenant_from_element(element, version, tags):
     """Return a intervenant.Intervenant from a <Intervenant> element."""
     if element is not None:
         # prepare args
@@ -391,7 +392,31 @@ def _intervenant_from_element(element):
         args['origine'] = element.find('CdIntervenant').attrib[
             'schemeAgencyID']
         args['nom'] = _value(element, 'NomIntervenant')
+        args['statut'] = _value(element, 'StIntervenant')
+        args['dtcreation'] = _value(element, 'DateCreationIntervenant')
+        args['dtmaj'] = _value(element, 'DateMajIntervenant')
+        args['auteur'] = _value(element, 'AuteurIntervenant')
+
         args['mnemo'] = _value(element, 'MnIntervenant')
+        args['adresse'] = _adresse_from_element(element, 'Intervenant')
+        args['commentaire'] = _value(element, 'CommentairesIntervenant')
+        args['activite'] = _value(element, 'ActivitesIntervenant')
+        args['nominternational'] = _value(
+            element, 'NomInternationalIntervenant')
+        args['siret'] = _value(element, 'CdSIRETRattacheIntervenant')
+        if version < '2':
+            cdcommune = _value(element, 'CdCommune')
+        else:
+            cdcommune = _value(element, 'Commune/CdCommune')
+        if cdcommune is not None:
+            args['commune'] = _composant_site.Commune(code=cdcommune)
+        args['telephone'] = _value(element, 'TelephoneComplementIntervenant')
+        args['fax'] = _value(element, 'FaxComplementIntervenant')
+        args['siteweb'] = _value(element, 'SiteWebComplementIntervenant')
+
+        cdpere = _value(element, 'IntervenantPere/CdIntervenant')
+        if cdpere is not None:
+            args['pere'] = _intervenant.Intervenant(code=cdpere)
         args['contacts'] = [_contact_from_element(e)
                             for e in element.findall('Contacts/Contact')]
         # build an Intervenant
@@ -401,6 +426,7 @@ def _intervenant_from_element(element):
             contact.intervenant = intervenant
         # return
         return intervenant
+
 
 
 def _contact_from_element(element, intervenant=None):
@@ -416,7 +442,7 @@ def _contact_from_element(element, intervenant=None):
         profil = _value(element, 'ProfilContact')
         if profil is not None:
             args['profil'] = profil
-        args['adresse'] = _contact_adresse_from_element(element)
+        args['adresse'] = _adresse_from_element(element, 'Contact')
         args['fonction'] = _value(element, 'FonctionContact')
         args['telephone'] = _value(element, 'TelephoneContact')
         args['portable'] = _value(element, 'PortContact')
@@ -436,17 +462,32 @@ def _contact_from_element(element, intervenant=None):
         return _intervenant.Contact(**args)
 
 
-def _contact_adresse_from_element(element):
-    """Return a intervenant.Adresse from a <Contact> element."""
+def _adresse_from_element(element, entite):
+    """Return a intervenant.Adresse
+    from a <Contact> element or a <Intervenant> element
+    and entite (str) = Contact ou Intervenant
+    """
     if element is None:
         return
     args = {}
-    args['adresse1'] = _value(element, 'AdContact')
-    args['adresse2'] = _value(element, 'AdEtrangereContact')
-    args['codepostal'] = _value(element, 'CpContact')
-    args['ville'] = _value(element, 'VilleContact')
-    args['pays'] = _value(element, 'PaysContact')
+    if entite == 'Intervenant':
+        args['adresse1'] = _value(element, 'RueIntervenant')
+        args['adresse1_cplt'] = _value(element, 'ImmoIntervenant')
+        args['lieudit'] = _value(element, 'LieuIntervenant')
+        args['boitepostale'] = _value(element, 'BpIntervenant')
+        args['dep'] = _value(element, 'DepIntervenant')
+        args['codepostal'] = _value(element, 'CP' + entite)
+        args['pays'] = _value(element, 'PaysComplementIntervenant')
+        args['adresse2'] = _value(element, 'AdEtrangereComplementIntervenant')
+    else:
+        args['adresse1'] = _value(element, 'Ad' + entite)
+        args['codepostal'] = _value(element, 'Cp' + entite)
+        args['pays'] = _value(element, 'Pays' + entite)
+        args['adresse2'] = _value(element, 'AdEtrangere' + entite)
+    args['ville'] = _value(element, 'Ville' + entite)
+
     return _intervenant.Adresse(**args)
+
 
 
 def _contact_profiladmin_from_element(element):
@@ -1874,8 +1915,8 @@ def _global_function_builder(xpath, func):
     return closure
 
 # return a list of intervenant.Intervenant from a <Intervenants> element
-_intervenants_from_element = _global_function_builder(
-    './Intervenant', _intervenant_from_element)
+# _intervenants_from_element = _global_function_builder(
+#     './Intervenant', _intervenant_from_element)
 # return a list of sitehydro.Sitehydro from a <SitesHydro> element
 # _siteshydro_from_element = _global_function_builder(
 #     './SiteHydro', _sitehydro_from_element)
@@ -1906,6 +1947,14 @@ _seriesmeteo_from_element_v2 = _global_function_builder(
 # return a list of simulation.Simulation from a <Simuls> element
 _simulations_from_element = _global_function_builder(
     './Simul', _simulation_from_element)
+
+
+def _intervenants_from_element(elem, version, tags):
+    intervenants = []
+    if elem is not None:
+        for item in elem.findall('./Intervenant'):
+            intervenants.append(_intervenant_from_element(item, version, tags))
+    return intervenants
 
 
 def _evenements_from_element(elem, version, tags):

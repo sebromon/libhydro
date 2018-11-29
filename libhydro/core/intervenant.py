@@ -12,7 +12,7 @@ from __future__ import (
     division as _division, print_function as _print_function)
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
-from . import _composant
+from . import _composant, _composant_site
 
 
 # -- strings ------------------------------------------------------------------
@@ -54,18 +54,15 @@ class Intervenant(object):
 
     """
 
-    # Intervenant other properties
+    dtcreation = _composant.Datefromeverything(required=False)
+    dtmaj = _composant.Datefromeverything(required=False)
 
-    # statut
-    # auteur
-    # activite
-    # Adresse
-    # commentaire
-    # dtcreation
-    # dtmaj
-
-    def __init__(self, code=0, origine=None, nom=None, mnemo=None,
-                 contacts=None):
+    def __init__(self, code=0, origine=None, nom=None, statut=None,
+                 dtcreation=None, dtmaj=None, auteur=None, mnemo=None,
+                 adresse=None, commentaire=None, activite=None,
+                 nominternational=None, commune=None, siret=None,
+                 contacts=None, telephone=None, fax=None, siteweb=None,
+                 pere=None):
         """Initialisation.
 
         Arguments:
@@ -80,7 +77,20 @@ class Intervenant(object):
 
         # -- simple properties --
         self.nom = str(nom) if (nom is not None) else None
+        self.auteur = str(auteur) if auteur is not None else None
         self.mnemo = str(mnemo) if (mnemo is not None) else None
+        self.commentaire = str(commentaire) if commentaire is not None \
+            else None
+        self.activite = str(activite) if activite is not None else None
+        self.nominternational = str(nominternational) \
+            if nominternational is not None else None
+        self.telephone = str(telephone) if telephone is not None else None
+        self.fax = str(fax) if fax is not None else None
+        self.siteweb = str(siteweb) if siteweb is not None else None
+        self.statut = str(statut) if statut is not None else None
+
+        self.dtcreation = dtcreation
+        self.dtmaj = dtmaj
 
         # -- full properties --
         self._code = 0
@@ -90,6 +100,14 @@ class Intervenant(object):
             self.origine = origine
         self._contacts = None
         self.contacts = contacts
+        self._adresse = None
+        self.adresse = adresse
+        self._commune = None
+        self.commune = commune
+        self._pere = None
+        self.pere = pere
+        self._siret = None
+        self.siret = siret
 
     @property
     def code(self):
@@ -156,6 +174,61 @@ class Intervenant(object):
             raise
 
     @property
+    def adresse(self):
+        """Return adresse intervenant."""
+        return self._adresse
+
+    @adresse.setter
+    def adresse(self, adresse):
+        """Set adresse intervenant."""
+        if adresse is not None:
+            if not isinstance(adresse, Adresse):
+                raise TypeError('adresse must be an instance of Adresse')
+        self._adresse = adresse
+
+    @property
+    def commune(self):
+        """Return commune intervenant."""
+        return self._commune
+
+    @commune.setter
+    def commune(self, commune):
+        """Set commune intervenant."""
+        if commune is not None:
+            if not isinstance(commune, _composant_site.Commune):
+                raise TypeError(
+                    'commune must be an instance of _composant.Commune')
+        self._commune = commune
+
+    @property
+    def pere(self):
+        """Return pere intervenant."""
+        return self._pere
+
+    @pere.setter
+    def pere(self, pere):
+        """Set pere intervenant."""
+        if pere is not None:
+            if not isinstance(pere, Intervenant):
+                raise TypeError(
+                    'pere must be an instance of Intervenant')
+        self._pere = pere
+
+    @property
+    def siret(self):
+        """Return siret intervenant."""
+        return self._siret
+
+    @siret.setter
+    def siret(self, siret):
+        """Set siret intervenant."""
+        if siret is not None:
+            siret = int(siret)
+            if len(str(siret)) != 14:
+                raise ValueError('SIRET code must be 14 bytes long')
+        self._siret = siret
+
+    @property
     def contacts(self):
         """Return contacts."""
         return self._contacts
@@ -189,6 +262,7 @@ class Intervenant(object):
     __all__attrs__ = ('code', 'origine', 'nom', 'mnemo', 'contacts')
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
 
     def __unicode__(self):
         """Return unicode representation."""
@@ -551,8 +625,9 @@ class Adresse(object):
 
     pays = _composant.Nomenclatureitem(nomenclature=678, required=False)
 
-    def __init__(self, ville=None, adresse1=None, adresse2=None,
-                 boitepostale=None, codepostal=None, pays=None):
+    def __init__(self, ville=None, adresse1=None, adresse1_cplt=None,
+                 adresse2=None, lieudit=None, boitepostale=None,
+                 codepostal=None, dep=None, pays=None):
         """Constructeur
 
         Arguments:
@@ -567,11 +642,15 @@ class Adresse(object):
         """
         self.pays = pays
         self.adresse1 = str(adresse1) if adresse1 is not None else None
+        self.adresse1_cplt = str(adresse1_cplt) \
+            if adresse1_cplt is not None else None
         self.adresse2 = str(adresse2) if adresse2 is not None else None
         self.boitepostale = str(boitepostale) if boitepostale is not None \
             else None
         self.codepostal = str(codepostal) if codepostal is not None else None
         self.ville = str(ville) if ville is not None else None
+        self.lieudit = str(lieudit) if lieudit is not None else None
+        self.dep = str(dep) if dep is not None else None
 
     def __unicode__(self):
         """Return unicode representation."""
