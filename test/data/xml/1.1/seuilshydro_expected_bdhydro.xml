@@ -52,7 +52,7 @@
             <CdSeuilSiteHydro>2214</CdSeuilSiteHydro>
             <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
             <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro>
-            <DureeSeuilSiteHydro>0.0</DureeSeuilSiteHydro>
+            <DureeSeuilSiteHydro>0</DureeSeuilSiteHydro>
             <LbUsuelSeuilSiteHydro>Crue du 24/11/2003</LbUsuelSeuilSiteHydro>
             <MnemoSeuilSiteHydro>Mnemonique</MnemoSeuilSiteHydro>
             <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro>
@@ -76,7 +76,7 @@
             <CdSeuilSiteHydro>82</CdSeuilSiteHydro>
             <TypSeuilSiteHydro>2</TypSeuilSiteHydro>
             <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro>
-            <DureeSeuilSiteHydro>60.0</DureeSeuilSiteHydro>
+            <DureeSeuilSiteHydro>60</DureeSeuilSiteHydro>
             <LbUsuelSeuilSiteHydro>Gradient durée 60</LbUsuelSeuilSiteHydro>
             <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
             <ValDebitSeuilSiteHydro>85.0</ValDebitSeuilSiteHydro>
@@ -114,7 +114,7 @@
             <CdSeuilSiteHydro>1</CdSeuilSiteHydro>
             <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
             <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro>
-            <DureeSeuilSiteHydro>0.0</DureeSeuilSiteHydro>
+            <DureeSeuilSiteHydro>0</DureeSeuilSiteHydro>
             <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro>
             <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
             <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro>
@@ -124,7 +124,7 @@
             <CdSeuilSiteHydro>2</CdSeuilSiteHydro>
             <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
             <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro>
-            <DureeSeuilSiteHydro>0.0</DureeSeuilSiteHydro>
+            <DureeSeuilSiteHydro>0</DureeSeuilSiteHydro>
             <MnemoSeuilSiteHydro>Seuil de vigilance ORANGE</MnemoSeuilSiteHydro>
             <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
             <IndiceGraviteSeuilSiteHydro>50</IndiceGraviteSeuilSiteHydro>
@@ -134,7 +134,7 @@
             <CdSeuilSiteHydro>3</CdSeuilSiteHydro>
             <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
             <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro>
-            <DureeSeuilSiteHydro>0.0</DureeSeuilSiteHydro>
+            <DureeSeuilSiteHydro>0</DureeSeuilSiteHydro>
             <MnemoSeuilSiteHydro>Seuil de vigilance ROUGE</MnemoSeuilSiteHydro>
             <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
             <IndiceGraviteSeuilSiteHydro>75</IndiceGraviteSeuilSiteHydro>
@@ -144,7 +144,7 @@
             <CdSeuilSiteHydro>4</CdSeuilSiteHydro>
             <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
             <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro>
-            <DureeSeuilSiteHydro>0.0</DureeSeuilSiteHydro>
+            <DureeSeuilSiteHydro>0</DureeSeuilSiteHydro>
             <LbUsuelSeuilSiteHydro>Crue du 06/11/1997</LbUsuelSeuilSiteHydro>
             <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro>
             <ValForceeSeuilSiteHydro>true</ValForceeSeuilSiteHydro>
@@ -160,7 +160,7 @@
             <CdSeuilSiteHydro>338</CdSeuilSiteHydro>
             <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
             <NatureSeuilSiteHydro>22</NatureSeuilSiteHydro>
-            <DureeSeuilSiteHydro>0.0</DureeSeuilSiteHydro>
+            <DureeSeuilSiteHydro>0</DureeSeuilSiteHydro>
             <MnemoSeuilSiteHydro>Seuil de vigilance JAUNE</MnemoSeuilSiteHydro>
             <DroitPublicationSeuilSiteHydro>false</DroitPublicationSeuilSiteHydro>
             <IndiceGraviteSeuilSiteHydro>25</IndiceGraviteSeuilSiteHydro>
@@ -179,7 +179,7 @@
             <CdSeuilSiteHydro>341</CdSeuilSiteHydro>
             <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
             <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro>
-            <DureeSeuilSiteHydro>0.0</DureeSeuilSiteHydro>
+            <DureeSeuilSiteHydro>0</DureeSeuilSiteHydro>
             <LbUsuelSeuilSiteHydro>Crue du 08/04/1994</LbUsuelSeuilSiteHydro>
             <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro>
             <IndiceGraviteSeuilSiteHydro>30</IndiceGraviteSeuilSiteHydro>
@@ -204,7 +204,7 @@
             <CdSeuilSiteHydro>19</CdSeuilSiteHydro>
             <TypSeuilSiteHydro>1</TypSeuilSiteHydro>
             <NatureSeuilSiteHydro>32</NatureSeuilSiteHydro>
-            <DureeSeuilSiteHydro>0.0</DureeSeuilSiteHydro>
+            <DureeSeuilSiteHydro>0</DureeSeuilSiteHydro>
             <LbUsuelSeuilSiteHydro>Crue du 24/11/2003</LbUsuelSeuilSiteHydro>
             <DroitPublicationSeuilSiteHydro>true</DroitPublicationSeuilSiteHydro>
             <IndiceGraviteSeuilSiteHydro>65</IndiceGraviteSeuilSiteHydro>

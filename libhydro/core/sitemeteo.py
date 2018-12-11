@@ -499,7 +499,7 @@ class Grandeur(object):
     Classe pour manipuler des grandeurs meteorologiques.
 
     Proprietes:
-        typegrandeur (string parmi NOMENCLATURE[523]) = type de grandeur
+        typemesure (string parmi NOMENCLATURE[523]) = type de mesure
         sitemeteo (Sitemeteo ou None) : site dont dépend la grandeur
         dtmiseservice (datetime.datetime ou None) = date de mise en service
         dtfermeture (datetime.datetime ou None) = date de fermeture
@@ -531,7 +531,7 @@ class Grandeur(object):
         """Initialisation.
 
         Arguments:
-            typegrandeur (string parmi NOMENCLATURE[523]) = type de grandeur
+            typemesure (string parmi NOMENCLATURE[523]) = type de mesure
             sitemeteo (Sitemeteo ou None) : site dont dépend la grandeur
             dtmiseservice (datetime.datetime ou None) = date de mise en service
             dtfermeture (datetime.datetime ou None) = date de fermeture

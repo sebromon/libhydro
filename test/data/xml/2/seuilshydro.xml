@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <hydrometrie xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1/sandre_sc_hydrometrie.xsd"> -->
+<hydrometrie>
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>2</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2012-06-04T09:22:44</DateHeureCreationFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact>1</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact>7</CdContact>
+    </Destinataire>
+  </Scenario>
+  <RefHyd>
+    <SeuilsHydro>
+        <!-- 1 SEUIL - seuil de débit associé à un site -->
+      <SeuilHydro>
+        <CdSeuilHydro>2214</CdSeuilHydro>
+        <SiteHydro>
+            <CdSiteHydro>U2655010</CdSiteHydro>
+            <LbSiteHydro>Libellé du site</LbSiteHydro>
+        </SiteHydro>
+        <TypSeuilHydro>1</TypSeuilHydro>
+        <NatureSeuilHydro>32</NatureSeuilHydro>
+        <!-- <DureeSeuilHydro></DureeSeuilHydro> -->
+        <LbUsuelSeuilHydro>Crue du 24/11/2003</LbUsuelSeuilHydro>
+        <MnSeuilHydro>Mnemonique</MnSeuilHydro>
+        <TypPubliSeuilHydro>12</TypPubliSeuilHydro>
+        <IndiceGraviteSeuilHydro>65</IndiceGraviteSeuilHydro>
+        <ValForceeSeuilHydro>true</ValForceeSeuilHydro>
+        <DtMajSeuilHydro>2012-02-19T08:25:00</DtMajSeuilHydro>
+        <ComSeuilHydro>Commentaire du seuil</ComSeuilHydro>
+        <ValsSeuilHydro>
+            <ValSeuilHydro>
+                <ValValSeuilHydro>7000465</ValValSeuilHydro>
+                <ToleranceValSeuilHydro>100</ToleranceValSeuilHydro>
+                <DtActivationValSeuilHydro>2010-05-17T13:40:02</DtActivationValSeuilHydro>
+                <DtDesactivationValSeuilHydro>2012-02-19T09:28:00</DtDesactivationValSeuilHydro>
+                <SiteHydro>
+                    <CdSiteHydro>U2655010</CdSiteHydro>
+                    <LbSiteHydro>Libellé du site</LbSiteHydro>
+                </SiteHydro>
+            </ValSeuilHydro>
+        </ValsSeuilHydro>
+      </SeuilHydro>
+      <!-- 1 SEUIL - seuil de gradient de hauteurpour 1 site et 3 stations -->
+      <SeuilHydro>
+        <CdSeuilHydro>82</CdSeuilHydro>
+        <SiteHydro>
+            <CdSiteHydro>O2000040</CdSiteHydro>
+            <LbSiteHydro>Libellé du site</LbSiteHydro>
+        </SiteHydro>
+        <TypSeuilHydro>2</TypSeuilHydro>
+        <NatureSeuilHydro>32</NatureSeuilHydro>
+        <DureeSeuilHydro>60</DureeSeuilHydro>
+        <LbUsuelSeuilHydro>Gradient durée 60</LbUsuelSeuilHydro>
+        <!-- <MnSeuilHydro>Mnemonique</MnSeuilHydro> -->
+        <TypPubliSeuilHydro>22</TypPubliSeuilHydro>
+        <!-- <IndiceGraviteSeuilHydro>65</IndiceGraviteSeuilHydro> -->
+        <!-- <ValForceeSeuilHydro>true</ValForceeSeuilHydro> -->
+        <DtMajSeuilHydro>2014-03-23T09:51:56</DtMajSeuilHydro>
+        <!-- <ComSeuilHydro>Commentaire du seuil</ComSeuilHydro> -->
+        <ValsSeuilHydro>
+            <ValSeuilHydro>
+                <ValValSeuilHydro>85</ValValSeuilHydro>
+                <ToleranceValSeuilHydro>5</ToleranceValSeuilHydro>
+                <SiteHydro>
+                    <CdSiteHydro>O2000040</CdSiteHydro>
+                </SiteHydro>
+            </ValSeuilHydro>
+            <ValSeuilHydro>
+                <ValValSeuilHydro>4380</ValValSeuilHydro>
+                <ToleranceValSeuilHydro>20</ToleranceValSeuilHydro>
+                <DtActivationValSeuilHydro>2010-06-10T10:52:57</DtActivationValSeuilHydro>
+                <StationHydro>
+                    <CdStationHydro>O200004001</CdStationHydro>
+                    <LbStationHydro>Libellé de la station</LbStationHydro>
+                </StationHydro>
+            </ValSeuilHydro>
+            <ValSeuilHydro>
+                <ValValSeuilHydro>3520</ValValSeuilHydro>
+                <DtActivationValSeuilHydro>2010-06-10T11:32:57</DtActivationValSeuilHydro>
+                <DtDesactivationValSeuilHydro>2013-10-05T05:59:29</DtDesactivationValSeuilHydro>
+                <StationHydro>
+                    <CdStationHydro>O200004002</CdStationHydro>
+                </StationHydro>
+            </ValSeuilHydro>
+            <ValSeuilHydro>
+                <ValValSeuilHydro>8320</ValValSeuilHydro>
+                <ToleranceValSeuilHydro>10</ToleranceValSeuilHydro>
+                <DtActivationValSeuilHydro>2010-06-10T11:52:57</DtActivationValSeuilHydro>
+                <StationHydro>
+                    <CdStationHydro>O200004003</CdStationHydro>
+                </StationHydro>
+            </ValSeuilHydro>
+        </ValsSeuilHydro>
+      </SeuilHydro>
+      <!-- 2 SEUILS without values -->
+      <SeuilHydro>
+        <CdSeuilHydro>1</CdSeuilHydro>
+        <SiteHydro>
+            <CdSiteHydro>O0144020</CdSiteHydro>
+        </SiteHydro>
+        <TypSeuilHydro>1</TypSeuilHydro>
+        <NatureSeuilHydro>22</NatureSeuilHydro>
+
+        <MnSeuilHydro>Seuil de vigilance JAUNE</MnSeuilHydro>
+        <TypPubliSeuilHydro>32</TypPubliSeuilHydro>
+        <IndiceGraviteSeuilHydro>25</IndiceGraviteSeuilHydro>
+        <ValForceeSeuilHydro>true</ValForceeSeuilHydro>
+      </SeuilHydro>
+      <SeuilHydro>
+        <CdSeuilHydro>2</CdSeuilHydro>
+        <SiteHydro>
+            <CdSiteHydro>O0144020</CdSiteHydro>
+        </SiteHydro>
+        <TypSeuilHydro>1</TypSeuilHydro>
+        <NatureSeuilHydro>22</NatureSeuilHydro>
+        <MnSeuilHydro>Seuil de vigilance ORANGE</MnSeuilHydro>
+        <TypPubliSeuilHydro>32</TypPubliSeuilHydro>
+        <IndiceGraviteSeuilHydro>50</IndiceGraviteSeuilHydro>
+        <ValForceeSeuilHydro>true</ValForceeSeuilHydro>
+      </SeuilHydro>
+      <!-- only code -->
+      <SeuilHydro>
+        <CdSeuilHydro>999</CdSeuilHydro>
+      </SeuilHydro>
+
+      <!-- 1 seuil avec 3 valeurs aun niveau du site d'une station et d'un capteur -->
+      <SeuilHydro>
+        <CdSeuilHydro>338</CdSeuilHydro>
+        <SiteHydro>
+            <CdSiteHydro>O6793330</CdSiteHydro>
+        </SiteHydro>
+        <TypSeuilHydro>1</TypSeuilHydro>
+        <NatureSeuilHydro>22</NatureSeuilHydro>
+        <!-- <DureeSeuilHydro></DureeSeuilHydro> -->
+        <MnSeuilHydro>Seuil de vigilance JAUNE</MnSeuilHydro>
+        <TypPubliSeuilHydro>32</TypPubliSeuilHydro>
+        <IndiceGraviteSeuilHydro>25</IndiceGraviteSeuilHydro>
+        <ValForceeSeuilHydro>true</ValForceeSeuilHydro>
+        <DtMajSeuilHydro>2012-02-19T08:25:00</DtMajSeuilHydro>
+        <ComSeuilHydro>Commentaire du seuil</ComSeuilHydro>
+        <ValsSeuilHydro>
+            <ValSeuilHydro>
+                <ValValSeuilHydro>100</ValValSeuilHydro>
+                <SiteHydro>
+                    <CdSiteHydro>O6793330</CdSiteHydro>
+                </SiteHydro>
+            </ValSeuilHydro>
+            <ValSeuilHydro>
+                <ValValSeuilHydro>200</ValValSeuilHydro>
+                <StationHydro>
+                    <CdStationHydro>O679333001</CdStationHydro>
+                    <LbStationHydro>Libellé de la station</LbStationHydro>
+                </StationHydro>
+            </ValSeuilHydro>
+            <ValSeuilHydro>
+                <ValValSeuilHydro>300</ValValSeuilHydro>
+                <Capteur>
+                    <CdCapteur>O67933300101</CdCapteur>
+                    <LbCapteur>Libellé du capteur</LbCapteur>
+                </Capteur>
+            </ValSeuilHydro>
+            <ValSeuilHydro>
+            <ValValSeuilHydro>400</ValValSeuilHydro>
+                <Capteur>
+                    <CdCapteur>O67933300102</CdCapteur>
+                </Capteur>
+            </ValSeuilHydro>
+        </ValsSeuilHydro>
+      </SeuilHydro>
+    </SeuilsHydro>
+  </RefHyd>
+</hydrometrie>

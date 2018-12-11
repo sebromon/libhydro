@@ -23,7 +23,7 @@ import datetime
 import unittest
 
 from libhydro.core.seuil import Seuilhydro, Valeurseuil
-from libhydro.core import sitehydro
+from libhydro.core import sitehydro, sitemeteo
 
 
 # -- strings ------------------------------------------------------------------
@@ -63,19 +63,22 @@ class TestSeuilhydro(unittest.TestCase):
     def test_base_02(self):
         """Full Seuilhydro."""
         site = sitehydro.Sitehydro('R5330001')
+        capteur = sitehydro.Capteur('R53300010101')
         code = 175896
         typeseuil = 2
-        duree = 25.8
+        duree = 25
         nature = 11
         libelle = 'Libellé du çeuil'
         mnemo = None
         gravite = 54
         commentaire = 'Ce seuil ne sera jamais dépassé'
-        publication = True
+        publication = 20
         valeurforcee = True
         dtmaj = datetime.datetime(1953, 12, 31, 8)
         valeurs = [
-            Valeurseuil(10), Valeurseuil(11), Valeurseuil(12)
+            Valeurseuil(valeur=10, entite=capteur),
+            Valeurseuil(valeur=11, entite=capteur),
+            Valeurseuil(valeur=12, entite=capteur)
         ]
         seuil = Seuilhydro(
             code=code,
@@ -105,6 +108,25 @@ class TestSeuilhydro(unittest.TestCase):
                 dtmaj, valeurs
             )
         )
+
+    def test_publication(self):
+        code = 999
+        site = sitehydro.Sitehydro('A1234567')
+        for publication in [None, 0, 10, 30, 32]:
+            Seuilhydro(code=code, sitehydro=site, publication=publication)
+        for publication in ['toto', -5, 5, 100]:
+            with self.assertRaises(Exception):
+                Seuilhydro(code=code, sitehydro=site, publication=publication)
+
+    def test_valeurforcee(self):
+        code = 999
+        site = sitehydro.Sitehydro('A1234567')
+        for valeurforcee in [None, False, True]:
+            s = Seuilhydro(code=code, sitehydro=site,
+                           valeurforcee=valeurforcee)
+            self.assertEqual(s.valeurforcee, valeurforcee)
+        s.valeurforcee = 1
+        self.assertEqual(s.valeurforcee, True)
 
     def test_str_01(self):
         """Test __str__ method."""
@@ -161,7 +183,8 @@ class TestSeuilhydro(unittest.TestCase):
     def test_equality_02(self):
         """Test equality and inequality with valeurs."""
         # assert equality
-        valeurs = [Valeurseuil(i) for i in range(10)]
+        station = sitehydro.Station('Z987654321')
+        valeurs = [Valeurseuil(valeur=i, entite=station) for i in range(10)]
         seuil = Seuilhydro(code=1, valeurs=valeurs[:])
         other = Seuilhydro(code=1, valeurs=valeurs[:])
         self.assertEqual(seuil, other)
@@ -175,9 +198,9 @@ class TestSeuilhydro(unittest.TestCase):
         self.assertFalse(seuil.__ne__(other, ignore=['valeurs']))
         self.assertTrue(seuil.__ne__(other, ignore=['code']))
         # a different value
-        seuil.valeurs = other.valeurs = [Valeurseuil(0)]
+        seuil.valeurs = other.valeurs = [Valeurseuil(0, entite=station)]
         self.assertEqual(seuil, other)
-        other.valeurs = [Valeurseuil(899.3)]
+        other.valeurs = [Valeurseuil(899.3, entite=station)]
         self.assertNotEqual(seuil, other)
         # None case
         seuil.valeurs = other.valeurs = None
@@ -219,7 +242,7 @@ class TestSeuilhydro(unittest.TestCase):
     def test_error_03(self):
         """Duree error."""
         # not an integer
-        duree = 10.5
+        duree = 10
         seuil = Seuilhydro(code=1, duree=duree)
         self.assertEqual(seuil.duree, duree)
         self.assertRaises(
@@ -285,7 +308,8 @@ class TestSeuilhydro(unittest.TestCase):
 
     def test_error_06(self):
         """Valeurs error."""
-        valeurs = [Valeurseuil(10)]
+        station = sitehydro.Station('P121236541')
+        valeurs = [Valeurseuil(10, entite=station)]
         seuil = Seuilhydro(code='A22', valeurs=valeurs)
         self.assertEqual(seuil.code, 'A22')
         self.assertRaises(
@@ -302,8 +326,11 @@ class TestValeurseuil(unittest.TestCase):
 
     def test_base_01(self):
         """Minimum Valeurseuil."""
-        valseuil = Valeurseuil(33)
-        self.assertEqual(valseuil.valeur, 33)
+        site = sitehydro.Sitehydro('A1234567')
+        valeur = 33.0
+        valseuil = Valeurseuil(valeur=valeur, entite=site)
+        self.assertEqual((valseuil.valeur, valseuil.entite),
+                         (valeur, site))
 
     def test_base_02(self):
         """Full Valeurseuil."""
@@ -377,15 +404,31 @@ class TestValeurseuil(unittest.TestCase):
     def test_error_01(self):
         """Valeur error."""
         valeur = 8
-        valseuil = Valeurseuil(valeur=valeur)
+        station = sitehydro.Station('A123456789')
+        valseuil = Valeurseuil(valeur=valeur, entite=station)
         self.assertEqual(valseuil.valeur, valeur)
         self.assertRaises(
             TypeError,
             Valeurseuil,
-            **{'valeur': None}
+            **{'valeur': None,
+               'entite': station}
         )
         self.assertRaises(
             ValueError,
             Valeurseuil,
             **{'valeur': 'not a number'}
         )
+
+    def test_entite(self):
+        """Entite test"""
+        valeur = 15.5
+        smeteo = sitemeteo.Sitemeteo('123456789')
+        entites = [sitehydro.Sitehydro('A1234567'),
+                   sitehydro.Station('A123456789'),
+                   sitehydro.Capteur('A12345678901'),
+                   sitemeteo.Grandeur(typemesure='RR', sitemeteo=smeteo)]
+        for entite in entites:
+            Valeurseuil(valeur=valeur, entite=entite)
+        for entite in [None, 'A1234567', smeteo]:
+            with self.assertRaises(Exception):
+                Valeurseuil(valeur=valeur, entite=entite)

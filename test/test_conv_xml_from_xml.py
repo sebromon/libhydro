@@ -584,7 +584,7 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         self.assertEqual(seuil.mnemo, 'Mnemonique')
         self.assertEqual(seuil.gravite, 65)
         self.assertEqual(seuil.commentaire, 'Commentaire du seuil')
-        self.assertEqual(seuil.publication, True)
+        self.assertEqual(seuil.publication, 12)
         self.assertEqual(seuil.valeurforcee, True)
         self.assertEqual(seuil.dtmaj, datetime.datetime(2012, 2, 19, 8, 25))
         self.assertEqual(seuil._strict, True)
@@ -621,7 +621,7 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         self.assertEqual(seuil.mnemo, None)
         self.assertEqual(seuil.gravite, None)
         self.assertEqual(seuil.commentaire, None)
-        self.assertEqual(seuil.publication, False)
+        self.assertEqual(seuil.publication, 22)
         self.assertEqual(seuil.valeurforcee, None)
         self.assertEqual(seuil.dtmaj,
                          datetime.datetime(2014, 3, 23, 9, 51, 56))

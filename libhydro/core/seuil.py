@@ -15,7 +15,7 @@ from __future__ import (
 )
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
-from . import _composant
+from . import (_composant, sitehydro as _sitehydro, sitemeteo as _sitemeteo)
 
 
 # -- strings ------------------------------------------------------------------
@@ -136,7 +136,7 @@ class _Seuil(object):
         """Set duree."""
         if duree is not None:
             try:
-                duree = float(duree)
+                duree = int(duree)
             except:
                 raise TypeError('duree should be a number')
         self._duree = duree
@@ -250,7 +250,7 @@ class Seuilhydro(_Seuil):
         mnemo (string[50]) = mnemonique
         gravite (0 < entier < 100)
         commentaire (texte)
-        publication (bool)
+        publication (entier parmi NOMENCLATURE[529]) = type de publication
         valeurforcee (bool)
         dtmaj (datetime.datetime) = date de mise a jour
         valeurs (liste de Valeurseuil)
@@ -259,6 +259,8 @@ class Seuilhydro(_Seuil):
         Le libelle et le mnemonique sont exclusifs.
 
     """
+
+    publication = _composant.Nomenclatureitem(nomenclature=874, required=False)
 
     def __init__(
         self, code, sitehydro=None, typeseuil=None, duree=None,
@@ -278,7 +280,7 @@ class Seuilhydro(_Seuil):
             mnemo (string[50]) = mnemonique
             gravite (0 < entier < 100)
             commentaire (texte)
-            publication (bool, defaut False)
+            publication (entier parmi NOMENCLATURE[529]) = type de publication
             valeurforcee (bool, defaut False)
             dtmaj (numpy.datetime64 string, datetime.datetime...) =
                 date de mise a jour
@@ -297,10 +299,22 @@ class Seuilhydro(_Seuil):
         # -- simple properties --
         # FIXME - seuil.sitehydro should be  a full property
         self.sitehydro = sitehydro
-        self.publication = bool(publication) if publication is not None \
-            else None
-        self.valeurforcee = bool(valeurforcee) if valeurforcee is not None \
-            else None
+        self.publication = publication
+        self._valeurforcee = None
+        self.valeurforcee = valeurforcee
+
+    # -- property valeurforcee --
+    @property
+    def valeurforcee(self):
+        """Return valeurforcee."""
+        return self._valeurforcee
+
+    @valeurforcee.setter
+    def valeurforcee(self, valeurforcee):
+        """Set valeurforcee."""
+        if valeurforcee is not None:
+            valeurforcee = bool(valeurforcee)
+        self._valeurforcee = valeurforcee
 
     # -- special methods --
     __all__attrs__ = (
@@ -321,7 +335,7 @@ class Valeurseuil (object):
     Proprietes:
         valeur (numerique) = valeur du seuil
         seuil (Seuilhydro ou Seuilmeteo)
-        entite (Sitehydro, Station ou Grandeurmeteo)
+        entite (Sitehydro, Station, Capteur ou Grandeurmeteo)
         tolerance (numerique)
         dtactivation (datetime.datetime)
         dtdesactivation (datetime.datetime)
@@ -342,7 +356,7 @@ class Valeurseuil (object):
         Arguments:
             valeur (numerique) = valeur du seuil
             seuil (Seuilhydro ou Seuilmeteo)
-            entite (Sitehydro, Station ou Grandeurmeteo)
+            entite (Sitehydro, Station, Capteur ou Grandeurmeteo)
             tolerance (numerique)
             dtactivation (numpy.datetime64 string, datetime.datetime...)
             dtdesactivation (numpy.datetime64 string, datetime.datetime...)
@@ -358,6 +372,7 @@ class Valeurseuil (object):
         # TODO - Valeurseuil.seuil is required unless strict is False
         self.seuil = seuil
         # TODO - Valeurseuil.entite is required unless strict is False
+        self._entite = None
         self.entite = entite
         self.tolerance = float(tolerance) if tolerance else None
         self._strict = bool(strict)
@@ -365,6 +380,25 @@ class Valeurseuil (object):
         # -- descriptors --
         self.dtactivation = dtactivation
         self.dtdesactivation = dtdesactivation
+
+    # -- property entite --
+    @property
+    def entite(self):
+        """Return entite."""
+        return self._entite
+
+    @entite.setter
+    def entite(self, entite):
+        """Set entite."""
+        if entite is None:
+            raise TypeError('entite is required')
+        if not isinstance(entite,  (_sitehydro.Sitehydro, _sitehydro.Station,
+                                    _sitehydro.Capteur,
+                                    _sitemeteo.Grandeur)):
+            raise TypeError('entite shoud be a Sitehydro or a Station'
+                            ' or a Capteur or Grandeur')
+        self._entite = entite
+
 
     # -- special methods --
     __all__attrs__ = (

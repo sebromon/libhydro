@@ -252,12 +252,18 @@ class Message(object):
                 tree.find('Donnees/' + tags.seriesobselabhydro))
             seriesobselabmeteo = _from_xml._seriesobselabmeteo_from_element_v2(
                 tree.find('Donnees/SeriesObsElaborMeteo'))
+            seuilshydro = _from_xml._seuilshydro_from_element_v2(
+                element=tree.find('RefHyd/SeuilsHydro'),
+                version=scenario.version, tags=tags)
         else:
             tags = _sandre_tags.SandreTagsV1
             seriesmeteo, seriesobselabmeteo = _from_xml._seriesmeteo_from_element(
                 tree.find('Donnees/ObssMeteo'))
             seriesobselab = _from_xml._seriesobselab_from_element(
                 tree.find('Donnees/' + tags.seriesobselabhydro))
+            seuilshydro = _from_xml._seuilshydro_from_element(
+                element=tree.find('RefHyd/SitesHydro'),
+                version=scenario.version, tags=tags, ordered=ordered)
 
         return Message(
             scenario=scenario,
@@ -267,10 +273,7 @@ class Message(object):
                 tree.find('RefHyd/SitesHydro'), scenario.version, tags),
             sitesmeteo=_from_xml._sitesmeteo_from_element(
                 tree.find('RefHyd/SitesMeteo'), scenario.version, tags),
-            seuilshydro=_from_xml._seuilshydro_from_element(
-                element=tree.find('RefHyd/SitesHydro'),
-                version=scenario.version, tags=tags,
-                ordered=ordered),
+            seuilshydro=seuilshydro,
             modelesprevision=_from_xml._modelesprevision_from_element(
                 tree.find('RefHyd/ModelesPrevision')),
             evenements=_from_xml._evenements_from_element(

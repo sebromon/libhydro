@@ -308,6 +308,9 @@ def _parse(src, ordered=True):
             tree.find('Donnees/' + tags.seriesobselabhydro))
         seriesobselabmeteo = _seriesobselabmeteo_from_element_v2(
             tree.find('Donnees/SeriesObsElaborMeteo'))
+        seuilshydro = _seuilshydro_from_element_v2(
+            element=tree.find('RefHyd/SeuilsHydro'), version=scenario.version,
+            tags=tags)
     else:
         tags = _sandre_tags.SandreTagsV1
         # on récupére des obs élaboré depuis des séries météo
@@ -315,6 +318,9 @@ def _parse(src, ordered=True):
             tree.find('Donnees/ObssMeteo'))
         seriesobselab = _seriesobselab_from_element(
             tree.find('Donnees/' + tags.seriesobselabhydro))
+        seuilshydro = _seuilshydro_from_element(
+            element=tree.find('RefHyd/SitesHydro'), version=scenario.version,
+            tags=tags, ordered=ordered)
 
     return {
         'scenario': scenario,
@@ -327,9 +333,7 @@ def _parse(src, ordered=True):
         'sitesmeteo': _sitesmeteo_from_element(
             tree.find('RefHyd/SitesMeteo'), version=scenario.version,
             tags=tags),
-        'seuilshydro': _seuilshydro_from_element(
-            element=tree.find('RefHyd/SitesHydro'), version=scenario.version,
-            tags=tags, ordered=ordered),
+        'seuilshydro': seuilshydro,
         'modelesprevision': _modelesprevision_from_element(
             tree.find('RefHyd/ModelesPrevision')),
         'evenements': _evenements_from_element(
@@ -1104,39 +1108,61 @@ def _classequalite_from_element(element):
     return _sitemeteo.ClasseQualite(**args)
 
 
-def _seuilhydro_from_element(element, sitehydro):
+def _seuilhydro_from_element(element, sitehydro=None, version=None, tags=None):
     """Return a seuil.Seuilhydro from a <ValeursSeuilSiteHydro> element."""
     if element is not None:
         # prepare args
         args = {}
-        args['sitehydro'] = sitehydro
-        args['code'] = _value(element, 'CdSeuilSiteHydro')
-        typeseuil = _value(element, 'TypSeuilSiteHydro')
+
+        if version < '2':
+            args['sitehydro'] = sitehydro
+        else:
+            elsite = element.find('SiteHydro')
+            if elsite is not None:
+                args['sitehydro'] = _sitehydro_from_element(
+                    element=elsite, version=version, tags=tags)
+
+        args['code'] = _value(element, tags.cdseuilhydro)
+        typeseuil = _value(element, tags.typseuilhydro)
         if typeseuil is not None:
             args['typeseuil'] = typeseuil
-        duree = _value(element, 'DureeSeuilSiteHydro')
+        duree = _value(element, tags.dureeseuilhydro, int)
         if duree is not None:
             args['duree'] = duree
-        args['nature'] = _value(element, 'NatureSeuilSiteHydro')
-        args['libelle'] = _value(element, 'LbUsuelSeuilSiteHydro')
-        args['mnemo'] = _value(element, 'MnemoSeuilSiteHydro')
-        args['gravite'] = _value(element, 'IndiceGraviteSeuilSiteHydro')
-        args['commentaire'] = _value(element, 'ComSeuilSiteHydro')
-        args['publication'] = _value(
-            element, 'DroitPublicationSeuilSiteHydro', bool)
-        args['valeurforcee'] = _value(element, 'ValForceeSeuilSiteHydro')
-        args['dtmaj'] = _value(element, 'DtMajSeuilSiteHydro')
+        args['nature'] = _value(element, tags.natureseuilhydro)
+        args['libelle'] = _value(element, tags.lbusuelseuilhydro)
+        args['mnemo'] = _value(element, tags.mnseuilhydro)
+        args['gravite'] = _value(element, tags.indicegraviteseuilhydro)
+        args['commentaire'] = _value(element, tags.comseuilhydro)
+
+        if version < '2':
+            publication = _value(element, tags.typpubliseuilhydro, bool)
+            if publication is not None:
+                if publication:
+                    args['publication'] = 12  # public tous régimes
+                else:
+                    args['publication'] = 22  # privé tous régimes
+        else:
+            args['publication'] = _value(element, tags.typpubliseuilhydro, int)
+
+        args['valeurforcee'] = _value(element, tags.valforceeseuilhydro, bool)
+        args['dtmaj'] = _value(element, tags.dtmajseuilhydro)
         seuil = _seuil.Seuilhydro(**args)
         # add the values
-        args['valeurs'] = []
-        valeurseuil = _valeurseuilsitehydro_from_element(
-            element, sitehydro, seuil)
-        if valeurseuil is not None:
-            args['valeurs'].append(valeurseuil)
-        args['valeurs'].extend([
-            _valeurseuilstation_from_element(e, seuil)
-            for e in element.findall(
-                './ValeursSeuilsStationHydro/ValeursSeuilStationHydro')])
+        if version < '2':
+            args['valeurs'] = []
+            valeurseuil = _valeurseuilsitehydro_from_element(
+                element, sitehydro, seuil)
+            if valeurseuil is not None:
+                args['valeurs'].append(valeurseuil)
+            args['valeurs'].extend([
+                _valeurseuilstation_from_element(e, seuil)
+                for e in element.findall(
+                    './ValeursSeuilsStationHydro/ValeursSeuilStationHydro')])
+        else:
+            args['valeurs'] = [
+                _valeurseuilhydro_from_element_v2(e, seuil, version, tags)
+                for e in element.findall('./ValsSeuilHydro/ValSeuilHydro')]
         # build a Seuilhydro and return
         # FIXME - why do we use a second Seuilhydro ????
         return _seuil.Seuilhydro(**args)
@@ -1178,6 +1204,38 @@ def _valeurseuilstation_from_element(element, seuil):
             element, 'DtActivationSeuilStationHydro')
         args['dtdesactivation'] = _value(
             element, 'DtDesactivationSeuilStationHydro')
+        # build a Valeurseuil and return
+        return _seuil.Valeurseuil(**args)
+
+
+def _valeurseuilhydro_from_element_v2(element, seuil, version, tags):
+    """Return a seuil.Valeurseuil from a <ValSeuilHydro> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+        args['valeur'] = _value(element, 'ValValSeuilHydro')
+        args['seuil'] = seuil
+
+        stationel = element.find('StationHydro')
+        if stationel is not None:
+            station = _station_from_element(stationel, version, tags)
+            args['entite'] = station
+        else:
+            siteel = element.find('SiteHydro')
+            if siteel is not None:
+                site = _sitehydro_from_element(siteel, version, tags)
+                args['entite'] = site
+            else:
+                capteurel = element.find('Capteur')
+                if capteurel is not None:
+                    capteur = _capteur_from_element(capteurel, version, tags)
+                    args['entite'] = capteur
+
+        args['tolerance'] = _value(element, 'ToleranceValSeuilHydro')
+        args['dtactivation'] = _value(
+            element, 'DtActivationValSeuilHydro')
+        args['dtdesactivation'] = _value(
+            element, 'DtDesactivationValSeuilHydro')
         # build a Valeurseuil and return
         return _seuil.Valeurseuil(**args)
 
@@ -2040,7 +2098,9 @@ def _seuilshydro_from_element(element, version, tags, ordered=False):
         sitehydro = _sitehydro_from_element(elementsitehydro, version, tags)
         for elementseuilhydro in elementsitehydro.findall(
                 './ValeursSeuilsSiteHydro/ValeursSeuilSiteHydro'):
-            seuilhydro = _seuilhydro_from_element(elementseuilhydro, sitehydro)
+            seuilhydro = _seuilhydro_from_element(element=elementseuilhydro,
+                                                  sitehydro=sitehydro,
+                                                  version=version, tags=tags)
             if (sitehydro.code, seuilhydro.code) in seuilshydro:
                 # check that the seuil complies with it predecessors
                 if not seuilhydro.__eq__(
@@ -2066,6 +2126,17 @@ def _seuilshydro_from_element(element, version, tags, ordered=False):
 
     # return a list of seuils
     return list(seuilshydro.values())
+
+
+def _seuilshydro_from_element_v2(element, version, tags):
+    """Return a list of seuil.Seuilhydro from a <SeuilsHydro> element."""
+    seuils = []
+    if element is not None:
+        for item in element.findall('./SeuilHydro'):
+            seuils.append(_seuilhydro_from_element(
+                    element=item, version=version, tags=tags))
+    return seuils
+
 
 def _seriesmeteo_from_element(element):
     """Return a list of obsmeteo.Serie from a <ObssMeteo> element.

@@ -237,6 +237,7 @@ class TestMessage(unittest.TestCase):
         self.file_sith_v2 = os.path.join(FILES_PATH_V2, 'siteshydro.xml')
         self.file_sitm_v2 = os.path.join(FILES_PATH_V2, 'sitesmeteo.xml')
         self.file_inter_v2 = os.path.join(FILES_PATH_V2, 'intervenants.xml')
+        self.file_seu_v2 = os.path.join(FILES_PATH_V2, 'seuilshydro.xml')
 
         self.tmp_dir = tempfile.mkdtemp(prefix='test_xml_')
         self.tmp_file = tempfile.mktemp(dir=self.tmp_dir)
@@ -447,6 +448,12 @@ class TestMessage(unittest.TestCase):
         msg = Message.from_file(self.file_inter)
         msg.write(self.tmp_file, force=True, version='1.1')
         self.assertNotEqual(msg.intervenants, [])
+
+    def test_base_30(self):
+        """Message from file seuils Sandre V2"""
+        msg = Message.from_file(self.file_seu_v2)
+        msg.write(self.tmp_file, force=True, version='2')
+        self.assertNotEqual(msg.seuilshydro, [])
 
     def test_str_01(self):
         """Test __str__ method with basic values."""
