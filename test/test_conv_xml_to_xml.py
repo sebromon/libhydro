@@ -34,9 +34,10 @@ __date__ = '2017-07-05'
 # V0.6.1 - SR - 2017-07-05
 # Add xml fim with jaugeages
 # V0.6 - SR - 2017-06-22
-# Ajout xml contenant des courbes de correction
+#   add xml file with jaugeages
+#   ajout xml contenant des courbes de correction
 # V0.5 - SR - 2017-06-20
-# Ajout xml contenant des courbes de tarage
+#   ajout xml contenant des courbes de tarage
 # V0.4 - 2014-08-04
 #   fix some pandas failures
 #   temporarily escape some unstable tests (FIXME)
@@ -207,7 +208,7 @@ class ToXmlBaseTest(ParametrizedTestCase):
 #                 "the 'seriesmeteo' test can fail for ordering problems...")
         self.assertEqual(
             xml, self.expected,
-            msg='To XML SANDRE format test for unit <%s>' % self.param)
+            msg='To XML V%s test for unit <%s> fails' % (self.version, self.param))
 
     def test_bdhydro(self):
         """Bdhydro format test."""

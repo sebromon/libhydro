@@ -100,14 +100,9 @@ class Observation(_numpy.ndarray):
     defaut.
 
     Proprietes:
-        dte (numpy.datetime64) = date UTC de l'observation au format
-            ISO 8601, arrondie a la seconde. A l'initialisation par une string
-            si le fuseau horaire n'est pas precise, la date est consideree eni
-            heure locale.  Pour forcer la sasie d'une date UTC utiliser
-            le fuseau +00:
-                np.datetime64('2000-01-01T09:28+00')
-                ou
-                np.datetime64('2000-01-01 09:28Z')
+        dte (numpy.datetime64) = date UTC de l'observation au format ISO 8601,
+            arrondie a la seconde. A l'initialisation par une string, si le
+            fuseau horaire n'est pas precise, la date est consideree en TU
         res (numpy.float) = resultat
         mth (numpy.int8, defaut 0) = methode d'obtention de la donnees suivant
             la NOMENCLATURE[512])
