@@ -12,6 +12,8 @@ from __future__ import (
     print_function as _print_function
 )
 
+import datetime as _datetime
+
 
 def interpolation_date(dt, dt1, v1, dt2, v2):
     """ Interpolation d'un valeur entre deux dates
@@ -24,6 +26,8 @@ def interpolation_date(dt, dt1, v1, dt2, v2):
     :return: la valeur interpolée ou None si dt1=dt2
     :rtype: float ou None
     """
+    v1 = float(v1)
+    v2 = float(v2)
     delta_dt = (dt2 - dt1).total_seconds()
     # print(delta_dt)
     if delta_dt == 0:
@@ -32,6 +36,34 @@ def interpolation_date(dt, dt1, v1, dt2, v2):
     # print(coeff)
     # print((dt-dt1).total_seconds())
     return v1 + coeff * (dt - dt1).total_seconds()
+
+
+def interpolation_date_from_value(val, dt1, val1, dt2, val2):
+    """ Interpolation d'une date à partir d'une valeur et deux points
+
+    :param val: valeur de l'interpolation
+    :param dt1: Première date
+    :param val1:  valeur associée à dt1
+    :param dt2: Deuxième date
+    :param val2: valeur associée à dt2
+    :return: la date de l'interpolation
+    :rtype: datetime.datetime ou None
+    """
+    val = float(val)
+    val1 = float(val1)
+    val2 = float(val2)
+    if val1 == val2:
+        raise ValueError(
+            'val1 {} and val2 {} must be different for interpolation'.format(
+                val1, val2))
+    delta_dt = (dt2 - dt1).total_seconds()
+    # print(delta_dt)
+    if delta_dt == 0:
+        raise ValueError(
+            'dt1 {} and dt2 {} must be different for interpolation'.format(
+                dt1, dt2))
+    delta2 = (val - val1) * delta_dt / (val2 - val1)
+    return dt1 + _datetime.timedelta(seconds=int(round(delta2)))
 
 
 def interpolation(x, x1, y1, x2, y2):
@@ -47,6 +79,12 @@ def interpolation(x, x1, y1, x2, y2):
     :rtype: float ou None
 
     """
+    x = float(x)
+    x1 = float(x1)
+    x2 = float(x2)
+    y1 = float(y1)
+    y2 = float(y2)
+
     if x1 == x2:
         return None
     coeff = (y2 - y1) / (x2 - x1)

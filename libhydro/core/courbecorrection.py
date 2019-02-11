@@ -205,6 +205,29 @@ class CourbeCorrection(object):
             except TypeError:
                 pass
 
+    def get_pivots_between_dates(self, dt1=None, dt2=None):
+        """Retourne les pivots entre les deux dates
+
+        Si dt1=None, retourne les points dont la date est antérieure à dt2
+        Si dt2=None, retourne les points dont la date est ultérieure à dt1
+
+        Arguments:
+            dt1 (datetime.datetime or None) = borne inférieure
+            dt2 (datetime.datetime or None) = borne supérieure
+
+        Retour:
+            a list of PivotCC
+        """
+        pivots = []
+        for pivot in self.pivots:
+            if dt1 is not None:
+                if pivot.dte < dt1:
+                    continue
+            if dt2 is not None:
+                if pivot.dte > dt2:
+                    break
+            pivots.append(pivot)
+        return pivots
 
     def remove_deactived_pivots(self):
         """remove pivots which dtdesactivation is not None"""

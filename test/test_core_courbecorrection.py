@@ -17,7 +17,7 @@ from __future__ import (
     division as _division, print_function as _print_function)
 
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from libhydro.core.courbecorrection import (CourbeCorrection, PivotCC)
 import libhydro.core.sitehydro as _sitehydro
@@ -251,6 +251,54 @@ class TestCourbeCorrection(unittest.TestCase):
         self.assertNotEqual(ccor.pivots, pivots)
         actived_pivots = [pivot1, pivot3]
         self.assertEqual(ccor.pivots, actived_pivots)
+
+    def test_get_pivots_betwwen_dates(self):
+        station = _sitehydro.Station(code='O123456789')
+        dt1 = datetime(2010, 1, 2, 3, 4, 5)
+        pivot1 = PivotCC(dte=dt1, deltah=-10.5)
+
+        dt2 = datetime(2011, 4, 5, 23, 12, 56)
+        pivot2 = PivotCC(dte=dt2, deltah=20.8,
+                         dtactivation=datetime(2015, 3, 14, 11, 56, 12),
+                         dtdesactivation=datetime(2016, 4, 19, 5, 17, 42))
+
+        dt3 = datetime(2014, 10, 15, 22, 10, 4)
+        pivot3 = PivotCC(dte=dt3, deltah=48.4)
+
+        ccor = CourbeCorrection(station=station,
+                                pivots=[pivot1, pivot2, pivot3])
+
+
+        pivots = ccor.get_pivots_between_dates(dt1=dt2, dt2=dt2)
+        self.assertEqual(pivots, [pivot2])
+
+        pivots = ccor.get_pivots_between_dates(dt1=dt2, dt2=dt3)
+        self.assertEqual(len(pivots), 2)
+        self.assertEqual(pivots, [pivot2, pivot3])
+        pivots = ccor.get_pivots_between_dates(dt1=dt2,
+                                               dt2=dt3-timedelta(seconds=1))
+        self.assertEqual(len(pivots), 1)
+        self.assertEqual(pivots, [pivot2])
+
+        pivots = ccor.get_pivots_between_dates(dt1=dt2 + timedelta(seconds=1),
+                                               dt2=dt3 - timedelta(seconds=1))
+
+        self.assertEqual(len(pivots), 0)
+
+        pivots = ccor.get_pivots_between_dates(dt1=None,
+                                               dt2=dt3 - timedelta(seconds=1))
+        self.assertEqual(len(pivots), 2)
+        self.assertEqual(pivots, [pivot1, pivot2])
+
+        pivots = ccor.get_pivots_between_dates(dt1=dt2,
+                                               dt2=None)
+        self.assertEqual(len(pivots), 2)
+        self.assertEqual(pivots, [pivot2, pivot3])
+
+        pivots = ccor.get_pivots_between_dates(dt1=None,
+                                               dt2=None)
+        self.assertEqual(len(pivots), 3)
+        self.assertEqual(pivots, [pivot1, pivot2, pivot3])
 
     def test_str_01(self):
         """ test __str__ method without pivots and libelle """

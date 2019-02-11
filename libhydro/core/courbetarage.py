@@ -715,6 +715,32 @@ class CourbeTarage(object):
                         return True
         return False
 
+    def get_pivots_between_hauteurs(self, hmin, hmax):
+        """Return pivots entre les hauteurs hauteur1 et hauteur2
+
+        Si hmin=None, retourne les points dont la hauteur est inférieure à hmax
+            hauteur2
+        Si hmax=None, retourne les points dont la hauteur est supérieure à hmin
+
+        Arguments:
+            hmin (float or None) = borne inférieure
+            hmax (float or None) = borne supérieure
+
+        Retour:
+            a list of PivotCTPoly or PivotCTPuissance
+
+        """
+        pivots = []
+        for pivot in self.pivots:
+            if hmin is not None:
+                if pivot.hauteur < hmin:
+                    continue
+            if hmax is not None:
+                if pivot.hauteur > hmax:
+                    break
+            pivots.append(pivot)
+        return pivots
+
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""

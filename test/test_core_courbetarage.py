@@ -576,6 +576,48 @@ class TestCourbeTarage(unittest.TestCase):
         CourbeTarage(code=code, station=station, libelle=libelle,
                      pivots=pivots, strict=False)
 
+    def test_get_pivots_between_hauteurs(self):
+        """Test fucntion get_pivots_between_hauteurs"""
+        hauteur1 = 100.6
+        debit1 = 2.3
+        pivot1 = PivotCTPoly(hauteur=hauteur1, debit=debit1)
+
+        hauteur2 = 145.2
+        debit2 = 3.4
+        pivot2 = PivotCTPoly(hauteur=hauteur2, debit=debit2)
+
+        hauteur3 = 160.1
+        debit3 = 4.8
+        pivot3 = PivotCTPoly(hauteur=hauteur3, debit=debit3)
+
+        code = 'tre'
+        libelle = 'libellé'
+        station = _sitehydro.Station(code='O123456789')
+
+        ctar = CourbeTarage(code=code, libelle=libelle, station=station,
+                            pivots=[pivot1, pivot2, pivot3])
+
+        pivots = ctar.get_pivots_between_hauteurs(hmin=100.6, hmax=145.2)
+        self.assertEqual(pivots, [pivot1, pivot2])
+
+        pivots = ctar.get_pivots_between_hauteurs(hmin=100.7, hmax=145.2)
+        self.assertEqual(pivots, [pivot2])
+
+        pivots = ctar.get_pivots_between_hauteurs(hmin=100.7, hmax=145.0)
+        self.assertEqual(pivots, [])
+
+        pivots = ctar.get_pivots_between_hauteurs(hmin=50, hmax=180.0)
+        self.assertEqual(pivots, [pivot1, pivot2, pivot3])
+
+        pivots = ctar.get_pivots_between_hauteurs(hmin=None, hmax=140.0)
+        self.assertEqual(pivots, [pivot1])
+
+        pivots = ctar.get_pivots_between_hauteurs(hmin=150.1, hmax=None)
+        self.assertEqual(pivots, [pivot3])
+
+        pivots = ctar.get_pivots_between_hauteurs(hmin=None, hmax=None)
+        self.assertEqual(pivots, [pivot1, pivot2, pivot3])
+
     def test_str_01(self):
         """test __str__ strict mode"""
         code = 'courbe 123'

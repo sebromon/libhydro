@@ -220,13 +220,14 @@ def _debit_ctar_puissance(hauteur, ctar):
     qualif = pivot.qualif if pivot.qualif is not None else 16
     return (debit, qualif)
 
-
-def correction_hauteurs(seriehydro, courbecorrection):
+def correction_hauteurs(seriehydro, courbecorrection, pivots=False):
     """Correction des hauteurs à partir d'une courbe de correction
 
     Arguments:
         seriehydro (obshydro.Serie): serie hydro
         ccor (CourbeCorrection) : courbe de correction à appliquer à la série
+        pivots (bool): si True ajoute des points au niveau des pivots
+        de la courbe de correction
 
     Return a serie hydro (obshydro.Serie)
     """
@@ -235,13 +236,34 @@ def correction_hauteurs(seriehydro, courbecorrection):
     if seriehydro.observations is None:  # or len(seriehydro.observations) == 0:
         return _copy.copy(seriehydro)
     obss_hcor = []
+    prev_obs = None
     for obs in seriehydro.observations.itertuples():
+
+        # Ajout d'observations au niveau des pivots de la courbe de correction
+        if pivots and prev_obs is not None:
+            pivots_cc = courbecorrection.get_pivots_between_dates(
+                prev_obs.Index, obs.Index)
+            for pivot in pivots_cc:
+                if pivot.dte > prev_obs.Index and pivot.dte < obs.Index:
+                    hauteur = _interpolation.interpolation_date(
+                            dt=pivot.dte, dt1=prev_obs.Index, v1=prev_obs.res,
+                            dt2=obs.Index, v2=obs.res)
+                    hcor = hauteur_corrigee(dte=pivot.dte,
+                                            hauteur=hauteur,
+                                            ccor=courbecorrection)
+                    obss_hcor.append(_obshydro.Observation(
+                            dte=pivot.dte, res=hcor, mth=8,
+                            cnt=obs.cnt, qal=obs.qal,
+                            statut=obs.statut))
+
         hcor = hauteur_corrigee(dte=obs.Index,
                                 hauteur=obs.res,
                                 ccor=courbecorrection)
+
         obss_hcor.append(_obshydro.Observation(dte=obs.Index, res=hcor, mth=8,
                                                cnt=obs.cnt, qal=obs.qal,
                                                statut=obs.statut))
+        prev_obs = obs
 
     # print(len(obss_hcor))
     return _obshydro.Serie(
@@ -252,15 +274,16 @@ def correction_hauteurs(seriehydro, courbecorrection):
         dtprod=_datetime.datetime.utcnow().replace(microsecond=0),
         observations=_obshydro.Observations(* obss_hcor))
 
-
 def serieh_to_serieq(seriehydro=None, courbestarage=None,
-                     courbecorrection=None):
+                     courbecorrection=None, pivots=False):
     """Conversion d'une série hydro de hauteur en une série hydro de débit
 
     Arguments:
         seriehydro (_obshydro.Serie): une serie hydro
         courbestarage (an iterable of CourbeTarage): courbes de tarages
         courbecorrection (CourbeCorrection or None): courbe de correction
+        pivots (bool): si True ajoute des points au niveau des pivots des
+        courbes de tarage et de correction
 
     Return: (_obshydro.Serie): une serie hydro de débit
     """
@@ -279,9 +302,10 @@ def serieh_to_serieq(seriehydro=None, courbestarage=None,
         courbestarage = [courbestarage]
 
     if courbecorrection is not None:
-        seriehydro = correction_hauteurs(seriehydro, courbecorrection)
+        seriehydro = correction_hauteurs(seriehydro, courbecorrection, pivots)
 
     prev_obsq = None
+    prev_obstuple = None
     obssq = []
     for obstuple in seriehydro.observations.itertuples():
         observation = _obshydro.Observation(dte=obstuple.Index,
@@ -290,8 +314,59 @@ def serieh_to_serieq(seriehydro=None, courbestarage=None,
                                             qal=obstuple.qal,
                                             cnt=obstuple.cnt,
                                             statut=obstuple.statut)
+
+        ctar = courbetarage_active(courbestarage, obstuple.Index)
+        ctars = [ctar] if ctar is not None else []
+        if pivots:
+            # ajout des points intermédiaires de la courbe de tarage
+            if prev_obstuple is not None and ctar is not None \
+                    and len(ctar.pivots) > 0:
+
+                if prev_obstuple.res <= obstuple.res:
+                    hmin = prev_obstuple.res
+                    hmax = obstuple.res
+                else:
+                    hmax = prev_obstuple.res
+                    hmin = obstuple.res
+                pivots_ctar = ctar.get_pivots_between_hauteurs(
+                    hmin=hmin, hmax=hmax)
+                if prev_obstuple.res > obstuple.res:
+                    pivots_ctar = reversed(pivots_ctar)
+                for pivot in pivots_ctar:
+                    if pivot.hauteur > hmin and pivot.hauteur < hmax:
+                        # interpolation de la date
+                        dte = _interpolation.interpolation_date_from_value(
+                            val=pivot.hauteur, dt1=prev_obstuple.Index,
+                            val1=prev_obstuple.res, dt2=obstuple.Index,
+                            val2=obstuple.res)
+                        if prev_obsq is not None \
+                                and prev_obsq['dte'].item() == dte:
+                            # avoid points with same date
+                            continue
+                        observation_pivot = _obshydro.Observation(
+                                dte=dte,
+                                res=pivot.hauteur,
+                                mth=obstuple.mth,
+                                qal=obstuple.qal,
+                                cnt=obstuple.cnt,
+                                statut=obstuple.statut)
+                        obsq = obsh_to_obsq(obsh=observation_pivot,
+                                            courbestarage=ctars)
+                        # Calcul continuite en fonction de l'observation précédente
+                        cnt = obsq['cnt'].item()
+                        if cnt != 1 and prev_obsq is not None:
+                            prev_debit = prev_obsq['res'].item()
+                            if _numpy.isnan(prev_debit):
+                                obsq['cnt'] = prev_obsq['cnt'].item()
+
+                        obssq.append(obsq)
+                        prev_obsq = obsq
+        if prev_obsq is not None \
+                and prev_obsq['dte'].item() == observation['dte'].item():
+            # avoid points with same date
+            continue
         obsq = obsh_to_obsq(obsh=observation,
-                            courbestarage=courbestarage)
+                            courbestarage=ctars)
 
         # Calcul continuite en fonction de l'observation précédente
         cnt = obsq['cnt'].item()
@@ -302,6 +377,7 @@ def serieh_to_serieq(seriehydro=None, courbestarage=None,
 
         obssq.append(obsq)
         prev_obsq = obsq
+        prev_obstuple = obstuple
 
     return _obshydro.Serie(
         entite=seriehydro.entite,
