@@ -361,6 +361,9 @@ def serieh_to_serieq(seriehydro=None, courbestarage=None,
 
                         obssq.append(obsq)
                         prev_obsq = obsq
+
+        prev_obstuple = obstuple
+
         if prev_obsq is not None \
                 and prev_obsq['dte'].item() == observation['dte'].item():
             # avoid points with same date
@@ -377,7 +380,6 @@ def serieh_to_serieq(seriehydro=None, courbestarage=None,
 
         obssq.append(obsq)
         prev_obsq = obsq
-        prev_obstuple = obstuple
 
     return _obshydro.Serie(
         entite=seriehydro.entite,
