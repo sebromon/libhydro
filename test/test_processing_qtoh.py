@@ -224,6 +224,40 @@ class TestSerieQToSerieH(unittest.TestCase):
                                      station=station, pivots=pivots,
                                      periodes=periodes)
 
+        pivots = [PivotCTPuissance(hauteur=1860, qualif=20,
+                                   vara=1, varb=1, varh=1),
+                  PivotCTPuissance(hauteur=2050, qualif=20,
+                                   vara=0.001126, varb=1, varh=1814.7),
+                  PivotCTPuissance(hauteur=2205, qualif=20,
+                                   vara=0.005541, varb=1.1531, varh=2021.4),
+                  PivotCTPuissance(hauteur=2410, qualif=20,
+                                   vara=2.916e-5, varb=1.9683, varh=1900.2),
+                  PivotCTPuissance(hauteur=2615, qualif=20,
+                                   vara=0.0007625, varb=1.5107, varh=2021.6),
+                  PivotCTPuissance(hauteur=3400, qualif=20,
+                                   vara=0.001033, varb=1.5212, varh=2149.9),
+                  PivotCTPuissance(hauteur=4010, qualif=20,
+                                   vara=0.001118, varb=1.5289, varh=2254.7),
+                  PivotCTPuissance(hauteur=4400, qualif=20,
+                                   vara=0.001702, varb=1.5289, varh=2676.8),
+                  PivotCTPuissance(hauteur=5000, qualif=20,
+                                   vara=0.002383, varb=1.5289, varh=3017.3),
+                  PivotCTPuissance(hauteur=5530, qualif=20,
+                                   vara=0.003782, varb=1.5289, varh=3534.3),
+                  PivotCTPuissance(hauteur=6000, qualif=20,
+                                   vara=0.004471, varb=1.5289, varh=3741.2)]
+        station = _sitehydro.Station(code='A123456789')
+        periode1 = PeriodeCT(dtdeb=_datetime.datetime(2015, 1, 1),
+                             dtfin=_datetime.datetime(2016, 1, 1))
+        periode2 = PeriodeCT(dtdeb=_datetime.datetime(2016, 2, 1),
+                             dtfin=_datetime.datetime(2017, 1, 1))
+        periodes = [periode1, periode2]
+        cls.ctar_puissance = CourbeTarage(code=-1,
+                                          typect=4,
+                                          station=station,
+                                          libelle='toto', pivots=pivots,
+                                          periodes=periodes)
+
     def test_base_01(self):
         """basic test"""
         entite = _sitehydro.Capteur(
@@ -519,6 +553,254 @@ class TestSerieQToSerieH(unittest.TestCase):
         # Vérification des continuités
         cnts = serieh.observations['cnt'].tolist()
         self.assertEqual(cnts, [4, 4, 0, 1, 1, 8, 8])
+
+
+    def test_pivots_cc_01(self):
+        """test with adding pivots of courbe de correction"""
+        entite = _sitehydro.Capteur(
+            code='A12345678901', libelle='Le Rhône à Marseille'
+        )
+        grandeur = 'H'
+        obs_dt1 = _datetime.datetime(2012, 10, 1)
+        obs_dt2 = _datetime.datetime(2012, 11, 1)
+        obss = _obshydro.Observations(
+            _obshydro.Observation(obs_dt1, 0),
+            _obshydro.Observation(obs_dt2, 0),
+        )
+        dtdeb = '2012-10-01 00:00'
+        dtfin = '2012-11-01 00:00'
+        dtprod = '2012-10-03 10:00'
+
+        serie = _obshydro.Serie(
+            entite=entite, grandeur=grandeur,
+            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, observations=obss)
+
+        dt1 = _datetime.datetime(2012, 10, 3, 6, 0, 0)
+        deltah1 = 0
+        dt2 = _datetime.datetime(2012, 10, 3, 7, 0, 0)
+        deltah2 = -10
+        dt3 = _datetime.datetime(2012, 10, 3, 8, 0, 0)
+        deltah3 = 0
+        station = _sitehydro.Station(code='O123456789')
+
+        pivot1 = PivotCC(dte=dt1, deltah=deltah1)
+        pivot2 = PivotCC(dte=dt2, deltah=deltah2)
+        pivot3 = PivotCC(dte=dt3, deltah=deltah3)
+        pivots = [pivot1, pivot2, pivot3]
+        dtmaj = _datetime.datetime(2017, 6, 21, 8, 37, 15)
+
+        ccor = CourbeCorrection(station=station, pivots=pivots, dtmaj=dtmaj)
+
+        serie_hcor = _qtoh.annuler_correction_hauteurs(
+                seriehydro=serie, courbecorrection=ccor, pivots=False)
+
+        self.assertEqual(len(serie_hcor.observations), 2)
+        serie_hcor = _qtoh.annuler_correction_hauteurs(
+                seriehydro=serie, courbecorrection=ccor, pivots=True)
+        self.assertEqual(len(serie_hcor.observations), 5)
+        self.assertEqual(serie_hcor.observations['res'].tolist(),
+                         [0, 0, 10, 0, 0])
+        self.assertEqual(
+            serie_hcor.observations.index.to_pydatetime().tolist(),
+            [obs_dt1, dt1, dt2, dt3, obs_dt2])
+
+    def test_pivots_02(self):
+        # test with adding pivots with wrong courbe de correction
+        entite = _sitehydro.Capteur(
+            code='A12345678901', libelle='Le Rhône à Marseille'
+        )
+        grandeur = 'H'
+        obs_dt1 = _datetime.datetime(2012, 10, 3, 0, 0)
+        obs_dt2 = _datetime.datetime(2012, 10, 3, 6, 0)
+        obss = _obshydro.Observations(
+            _obshydro.Observation(obs_dt1, 0),
+            _obshydro.Observation(obs_dt2, 60),
+        )
+        dtdeb = '2012-10-01 00:00'
+        dtfin = '2012-11-01 00:00'
+        dtprod = '2012-10-03 10:00'
+
+        serie = _obshydro.Serie(
+            entite=entite, grandeur=grandeur,
+            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, observations=obss)
+
+        dt1 = _datetime.datetime(2012, 10, 3, 1, 0, 0)
+        deltah1 = -10
+        dt2 = _datetime.datetime(2012, 10, 3, 2, 0, 0)
+        deltah2 = -15
+        dt3 = _datetime.datetime(2012, 10, 3, 3, 0, 0)
+        deltah3 = -20
+        station = _sitehydro.Station(code='O123456789')
+
+        pivot1 = PivotCC(dte=dt1, deltah=deltah1)
+        pivot2 = PivotCC(dte=dt2, deltah=deltah2)
+        pivot3 = PivotCC(dte=dt3, deltah=deltah3)
+        pivots = [pivot1, pivot2, pivot3]
+        dtmaj = _datetime.datetime(2017, 6, 21, 8, 37, 15)
+
+        ccor = CourbeCorrection(station=station, pivots=pivots, dtmaj=dtmaj)
+
+        serie_hcor = _qtoh.annuler_correction_hauteurs(
+                seriehydro=serie, courbecorrection=ccor, pivots=False)
+
+        self.assertEqual(len(serie_hcor.observations), 2)
+
+        serie_hcor = _qtoh.annuler_correction_hauteurs(
+                seriehydro=serie, courbecorrection=ccor, pivots=True)
+        # print(serie_hcor.observations)
+        self.assertEqual(len(serie_hcor.observations), 5)
+        hcors = serie_hcor.observations['res'].tolist()
+        self.assertTrue(_numpy.isnan(hcors[0]))
+        self.assertEqual(hcors[1:4], [20, 35, 50])
+        self.assertTrue(_numpy.isnan(hcors[4]))
+        self.assertEqual(
+            serie_hcor.observations.index.to_pydatetime().tolist(),
+            [obs_dt1, dt1, dt2, dt3, obs_dt2])
+
+    def test_pivots_ct_01(self):
+        """test with adding pivots with courbe tarage poly"""
+        entite = _sitehydro.Capteur(
+            code='A12345678901', libelle='Le Rhône à Marseille'
+        )
+        grandeur = 'Q'
+        obs_dt1 = _datetime.datetime(2015, 10, 3, 0, 0)
+        obs_dt2 = _datetime.datetime(2015, 10, 3, 6, 0)
+        obss = _obshydro.Observations(
+            _obshydro.Observation(obs_dt1, 40),
+            _obshydro.Observation(obs_dt2, 70),
+        )
+        dtdeb = '2015-10-03 00:00'
+        dtfin = '2015-10-04 00:00'
+        dtprod = '2015-10-04 00:00'
+
+        serie = _obshydro.Serie(
+            entite=entite, grandeur=grandeur,
+            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, observations=obss)
+
+        serie_hcor = _qtoh.serieq_to_serieh(seriehydro=serie,
+                                            courbestarage=[self.ctar_poly],
+                                            pivots=False)
+        self.assertEqual(len(serie_hcor.observations), 2)
+
+        serie_hcor = _qtoh.serieq_to_serieh(seriehydro=serie,
+                                            courbestarage=[self.ctar_poly],
+                                            pivots=True)
+
+        self.assertEqual(len(serie_hcor.observations), 3)
+        self.assertEqual(serie_hcor.observations['res'].tolist(),
+                         [20, 30, 40])
+
+        # date de point au deux_tiers
+        self.assertEqual(
+           serie_hcor.observations.index.to_pydatetime().tolist(),
+           [obs_dt1, _datetime.datetime(2015, 10, 3, 4, 0), obs_dt2])
+
+    def test_pivots_ct_02(self):
+        """test with adding pivots with courbe tarage puissance"""
+        entite = _sitehydro.Capteur(
+            code='A12345678901', libelle='Le Rhône à Marseille'
+        )
+        grandeur = 'Q'
+        obs_dt1 = _datetime.datetime(2015, 1, 1, 0, 0, 0)
+        obs_dt2 = _datetime.datetime(2015, 1, 2, 0, 0, 0)
+        obss = _obshydro.Observations(
+            _obshydro.Observation(obs_dt1, 40),
+            _obshydro.Observation(obs_dt2, 600000),
+        )
+        dtdeb = '2012-10-01 00:00'
+        dtfin = '2012-11-01 00:00'
+        dtprod = '2012-10-03 10:00'
+
+        serie = _obshydro.Serie(
+            entite=entite, grandeur=grandeur,
+            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, observations=obss)
+
+        serie_hcor = _qtoh.serieq_to_serieh(seriehydro=serie,
+                                            courbestarage=self.ctar_puissance,
+                                            pivots=False)
+        self.assertEqual(len(serie_hcor.observations), 2)
+
+        serie_hcor = _qtoh.serieq_to_serieh(seriehydro=serie,
+                                            courbestarage=self.ctar_puissance,
+                                            pivots=True)
+        debits = serie_hcor.observations['res'].tolist()
+        dtes = serie_hcor.observations.index.tolist()
+        self.assertEqual(len(serie_hcor.observations),
+                         len(self.ctar_puissance.pivots) + 2)
+        
+
+        for index in range(1, len(self.ctar_puissance.pivots)):
+            self.assertTrue(debits[index] < debits[index + 1])
+            self.assertTrue(dtes[index] < dtes[index + 1])
+
+        self.assertEqual(serie_hcor.observations['cnt'].tolist(),
+                         [4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8])
+        
+        serie.observations = _obshydro.Observations(
+            _obshydro.Observation(obs_dt1, 600000),
+            _obshydro.Observation(obs_dt2, 40),
+        )
+        serie_hcor = _qtoh.serieq_to_serieh(seriehydro=serie,
+                                            courbestarage=self.ctar_puissance,
+                                            pivots=True)
+        self.assertEqual(len(serie_hcor.observations),
+                         len(self.ctar_puissance.pivots) + 2)
+
+        debits = serie_hcor.observations['res'].tolist()
+        dtes = serie_hcor.observations.index.tolist()
+        for index in range(1, len(self.ctar_puissance.pivots)):
+            self.assertTrue(debits[index] > debits[index + 1])
+            self.assertTrue(dtes[index] < dtes[index + 1])
+
+        self.assertEqual(serie_hcor.observations['cnt'].tolist(),
+                         [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4])
+
+    def test_pivots_ct_03(self):
+        """Test check no points with same date"""
+        entite = _sitehydro.Capteur(
+            code='A12345678901', libelle='Le Rhône à Marseille'
+        )
+        grandeur = 'Q'
+        obs_dt1 = _datetime.datetime(2015, 1, 1, 0, 0, 0)
+        obs_dt2 = _datetime.datetime(2015, 1, 1, 0, 0, 5)
+        obss = _obshydro.Observations(
+            _obshydro.Observation(obs_dt1, 40),
+            _obshydro.Observation(obs_dt2, 600000),
+        )
+        dtdeb = '2012-10-01 00:00'
+        dtfin = '2012-11-01 00:00'
+        dtprod = '2012-10-03 10:00'
+
+        serie = _obshydro.Serie(
+            entite=entite, grandeur=grandeur,
+            dtdeb=dtdeb, dtfin=dtfin, dtprod=dtprod, observations=obss)
+
+        serie_hcor = _qtoh.serieq_to_serieh(seriehydro=serie,
+                                            courbestarage=self.ctar_puissance,
+                                            pivots=False)
+        self.assertEqual(len(serie_hcor.observations), 2)
+
+        serie_hcor = _qtoh.serieq_to_serieh(seriehydro=serie,
+                                            courbestarage=self.ctar_puissance,
+                                            pivots=True)
+        obss = serie_hcor.observations
+        self.assertTrue(len(obss) <= 6)
+        dtes = obss.index.to_pydatetime().tolist()
+        for index in range(1, len(dtes)):
+            self.assertTrue(dtes[index-1] < dtes[index])
+
+        serie.observations = _obshydro.Observations(
+            _obshydro.Observation(obs_dt1, 600000),
+            _obshydro.Observation(obs_dt2, 40),
+        )
+        serie_hcor = _qtoh.serieq_to_serieh(seriehydro=serie,
+                                            courbestarage=self.ctar_puissance,
+                                            pivots=True)
+        obss = serie_hcor.observations
+        self.assertTrue(len(obss) <= 6)
+        dtes = obss.index.to_pydatetime().tolist()
+        for index in range(1, len(dtes)):
+            self.assertTrue(dtes[index-1] < dtes[index])
 
     def test_error_01(self):
         """Test serie error"""

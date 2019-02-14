@@ -1133,3 +1133,102 @@ class TestSerieHToSerieQ(unittest.TestCase):
         with self.assertRaises(TypeError):
             _htoq.serieh_to_serieq(seriehydro=serie,
                                    courbestarage=[self.ctar_poly])
+
+
+class TestCTarGetPivotsBetweenDebits(unittest.TestCase):
+    """ctar_get_pivots_between_debits function tests."""
+
+    def test_ctar_get_pivots_between_debits_poly(self):
+        """Test function get_pivots_between_debits with ctar poly"""
+        hauteur1 = 100.6
+        debit1 = 2.3
+        pivot1 = PivotCTPoly(hauteur=hauteur1, debit=debit1)
+
+        hauteur2 = 145.2
+        debit2 = 3.4
+        pivot2 = PivotCTPoly(hauteur=hauteur2, debit=debit2)
+
+        hauteur3 = 160.1
+        debit3 = 4.8
+        pivot3 = PivotCTPoly(hauteur=hauteur3, debit=debit3)
+
+        code = 'tre'
+        libelle = 'libellé'
+        station = _sitehydro.Station(code='O123456789')
+
+        ctar = CourbeTarage(code=code, libelle=libelle, station=station,
+                            pivots=[pivot1, pivot2, pivot3])
+
+        pivots = _htoq.ctar_get_pivots_between_debits(ctar=ctar, qmin=2.3,
+                                                      qmax=3.4)
+        self.assertEqual(pivots, [pivot1, pivot2])
+
+        pivots = _htoq.ctar_get_pivots_between_debits(ctar=ctar, qmin=2.4,
+                                                      qmax=3.4)
+        self.assertEqual(pivots, [pivot2])
+
+        pivots = _htoq.ctar_get_pivots_between_debits(ctar=ctar, qmin=2.4,
+                                                      qmax=3.3)
+        self.assertEqual(pivots, [])
+
+        pivots = _htoq.ctar_get_pivots_between_debits(ctar=ctar, qmin=2,
+                                                      qmax=5)
+        self.assertEqual(pivots, [pivot1, pivot2, pivot3])
+
+        pivots = _htoq.ctar_get_pivots_between_debits(ctar=ctar, qmin=None,
+                                                      qmax=3.0)
+        self.assertEqual(pivots, [pivot1])
+
+        pivots = _htoq.ctar_get_pivots_between_debits(ctar=ctar, qmin=4,
+                                                      qmax=None)
+        self.assertEqual(pivots, [pivot3])
+
+        pivots = _htoq.ctar_get_pivots_between_debits(ctar=ctar, qmin=None,
+                                                      qmax=None)
+        self.assertEqual(pivots, [pivot1, pivot2, pivot3])
+
+    def test_ctar_get_pivots_between_debits_puissance(self):
+        """Test function get_pivots_between_debits with ctar puissance"""
+
+        pivots_ct = [PivotCTPuissance(hauteur=1860, qualif=20,
+                                      vara=1, varb=1, varh=1),
+                     PivotCTPuissance(hauteur=2050, qualif=20,
+                                      vara=0.001126, varb=1, varh=1814.7),
+                     PivotCTPuissance(hauteur=2205, qualif=20,
+                                      vara=0.005541, varb=1.1531, varh=2021.4)]
+        station = _sitehydro.Station(code='A123456789')
+        periode1 = PeriodeCT(dtdeb=_datetime.datetime(2015, 1, 1),
+                             dtfin=_datetime.datetime(2016, 1, 1))
+        periode2 = PeriodeCT(dtdeb=_datetime.datetime(2016, 2, 1),
+                             dtfin=_datetime.datetime(2017, 1, 1))
+        periodes = [periode1, periode2]
+
+        # débits des 3 pivots: 51.0078, 264.9478, 2259.7466]
+        ctar = CourbeTarage(code=-1, typect=4, station=station,
+                            libelle='toto', pivots=pivots_ct,
+                            periodes=periodes)
+
+        pivots = _htoq.ctar_get_pivots_between_debits(ctar=ctar, qmin=51,
+                                                      qmax=265)
+        self.assertEqual(pivots, [pivots_ct[0], pivots_ct[1]])
+        pivots = _htoq.ctar_get_pivots_between_debits(ctar=ctar, qmin=51.5,
+                                                      qmax=265)
+        self.assertEqual(pivots, [pivots_ct[1]])
+        pivots = _htoq.ctar_get_pivots_between_debits(ctar=ctar, qmin=51.5,
+                                                      qmax=264.8)
+        self.assertEqual(pivots, [])
+
+        pivots = _htoq.ctar_get_pivots_between_debits(ctar=ctar, qmin=50,
+                                                      qmax=2260)
+        self.assertEqual(pivots, [pivots_ct[0], pivots_ct[1], pivots_ct[2]])
+
+        pivots = _htoq.ctar_get_pivots_between_debits(ctar=ctar, qmin=None,
+                                                      qmax=2000)
+        self.assertEqual(pivots, [pivots_ct[0], pivots_ct[1]])
+
+        pivots = _htoq.ctar_get_pivots_between_debits(ctar=ctar, qmin=250,
+                                                      qmax=None)
+        self.assertEqual(pivots, [pivots_ct[1], pivots_ct[2]])
+        pivots = _htoq.ctar_get_pivots_between_debits(ctar=ctar, qmin=None,
+                                                      qmax=None)
+        self.assertEqual(pivots, [pivots_ct[0], pivots_ct[1], pivots_ct[2]])

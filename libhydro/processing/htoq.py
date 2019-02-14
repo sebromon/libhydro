@@ -388,3 +388,36 @@ def serieh_to_serieq(seriehydro=None, courbestarage=None,
         dtfin=seriehydro.dtfin,
         dtprod=_datetime.datetime.utcnow().replace(microsecond=0),
         observations=_obshydro.Observations(* obssq))
+
+
+def ctar_get_pivots_between_debits(ctar, qmin, qmax):
+    """Return pivots entre les débits qmin et qmax
+
+    Si qmin=None, retourne les points dont le débit est inférieure à qmax
+    Si qmax=None, retourne les points dont le débit est supérieure à qmin
+
+    Arguments:
+        ctar (CourbeTarage) = courbe de tarage
+        qmin (float or None) = borne inférieure
+        qmax (float or None) = borne supérieure
+
+    Retour:
+        a list of PivotCTPoly or PivotCTPuissance
+
+    """
+    if ctar is None:
+        raise ValueError('ctar have to be not None')
+    pivots = []
+    for pivot in ctar.pivots:
+        if ctar.typect == 0:
+            debit = pivot.debit
+        else:
+            debit = _debit_ctar_puissance(hauteur=pivot.hauteur, ctar=ctar)[0]
+        if qmin is not None:
+            if debit < qmin:
+                continue
+        if qmax is not None:
+            if debit > qmax:
+                break
+        pivots.append(pivot)
+    return pivots
