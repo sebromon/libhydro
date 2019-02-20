@@ -298,9 +298,9 @@ def _htov_ctar_poly(obsh1, obsh2, ctar):
         hauteur1 = hauteur2
         hauteur2 = obsh1['res'].item()
     statut = min(obsh1['statut'].item(), obsh2['statut'].item())
-    deb1, qal1 = _htoq._debit_ctar_poly(hauteur=hauteur1, ctar=ctar)
-    deb2, qal2 = _htoq._debit_ctar_poly(hauteur=hauteur2, ctar=ctar)
-    qal = min(qal1, qal2)
+    deb1 = ctar.debit(hauteur=hauteur1)
+    deb2 = ctar.debit(hauteur=hauteur2)
+    qal = min(obsh1['qal'].item(), obsh2['qal'].item())
     mth = 8
     cnt = 0
     index1 = index_pivot_calcul(ctar, hauteur1)

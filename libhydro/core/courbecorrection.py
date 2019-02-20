@@ -16,8 +16,9 @@ from __future__ import (
 )
 
 from . import (_composant, sitehydro as _sitehydro)
+import libhydro.processing.interpolation as _interpolation
 
-#-- strings -------------------------------------------------------------------
+# -- strings ------------------------------------------------------------------
 __author__ = """Sebastien ROMON"""
 __version__ = """0.1"""
 __date__ = """2017-06-21"""
@@ -240,6 +241,39 @@ class CourbeCorrection(object):
             if pivot.dtdesactivation is None:
                 pivots.append(pivot)
         return pivots
+
+    def hauteur_corrigee(self, dte, hauteur):
+        """Calcul de la hauteur corrigée à partir d'une date et d'une hauteur
+    
+        Arguments:
+            dte (datetime.datetime): date de la mesure à corriger
+            hauteur (float): hauteur à corriger
+    
+        Return: float or None: hauteur corrigée
+    
+        """
+        pi1 = None
+        pi2 = None
+        for pivot in self.pivots:
+            if pivot.dte == dte:
+                return hauteur + pivot.deltah
+            elif pivot.dte < dte:
+                pi1 = pivot
+            else:
+                pi2 = pivot
+                break
+        if pi1 is not None and pi2 is not None:
+            deltah = _interpolation.interpolation_date(dt=dte,
+                                                       dt1=pi1.dte, v1=pi1.deltah,
+                                                       dt2=pi2.dte, v2=pi2.deltah)
+            return hauteur + deltah
+    
+        # observation ultérieure au dernier point pivor
+        if pi1 is not None and pi2 is None:
+            return hauteur if pi1.deltah == 0 else None
+        # observation antérieure au premier point pivots
+        if pi1 is None and pi2 is not None:
+            return hauteur if pi2.deltah == 0 else None
 
     def __unicode__(self):
         """Return unicode representation."""

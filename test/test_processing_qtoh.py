@@ -166,31 +166,6 @@ class TestObsqToObsh(unittest.TestCase):
                                   courbestarage=[])
         self.assertTrue(_numpy.isnan(obsh['res'].item()))
 
-    @unittest.skip("ct error")
-    def test_error_01(self):
-        """Test wrong ct puissance"""
-        pivots = [PivotCTPuissance(hauteur=1860, qualif=20,
-                                   vara=1, varb=1, varh=1),
-                  PivotCTPuissance(hauteur=2050, qualif=20,
-                                   vara=0.001126, varb=1, varh=1814.7)]
-        station = _sitehydro.Station(code='A123456789')
-        periode1 = PeriodeCT(dtdeb=_datetime.datetime(2015, 1, 1),
-                             dtfin=_datetime.datetime(2016, 1, 1))
-        periode2 = PeriodeCT(dtdeb=_datetime.datetime(2016, 2, 1),
-                             dtfin=_datetime.datetime(2017, 1, 1))
-        periodes = [periode1, periode2]
-        ctar = CourbeTarage(code=-1, typect=4, station=station,
-                            libelle='toto', pivots=pivots, periodes=periodes)
-        debit = 200
-        hauteur, qualif = _qtoh._hauteur_ctar_puissance(debit=debit, ctar=ctar)
-        self.assertIsNotNone(hauteur)
-        ctar.pivots[1].vara = 0
-        with self.assertRaises(ValueError):
-            hauteur, qual = _qtoh._hauteur_ctar_puissance(debit=debit, ctar=ctar)
-        ctar.pivots[1].varb = 0
-        with self.assertRaises(ValueError):
-            hauteur, qual = _qtoh._hauteur_ctar_puissance(debit=debit, ctar=ctar)
-
 
 class TestSerieQToSerieH(unittest.TestCase):
     """serieq_to_serieh function tests."""

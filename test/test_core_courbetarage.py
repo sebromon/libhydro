@@ -618,6 +618,91 @@ class TestCourbeTarage(unittest.TestCase):
         pivots = ctar.get_pivots_between_hauteurs(hmin=None, hmax=None)
         self.assertEqual(pivots, [pivot1, pivot2, pivot3])
 
+    def test_debit_poly(self):
+        """test calcul débit courbe de tarage poly"""
+        hauteur1 = 10
+        debit1 = 20
+        pivot1 = PivotCTPoly(hauteur=hauteur1, debit=debit1)
+
+        hauteur2 = 30
+        debit2 = 60
+        pivot2 = PivotCTPoly(hauteur=hauteur2, debit=debit2)
+
+        pivots = [pivot1, pivot2]
+        periode1 = PeriodeCT(dtdeb=datetime(2015, 1, 1),
+                             dtfin=datetime(2016, 1, 1))
+        periode2 = PeriodeCT(dtdeb=datetime(2016, 2, 1),
+                             dtfin=datetime(2017, 1, 1))
+        periodes = [periode1, periode2]
+
+        code = 'tre'
+        libelle = 'libellé'
+        station = _sitehydro.Station(code='O123456789')
+        limiteinf = 11.3
+        limitesup = 28.7
+
+        ctar = CourbeTarage(code=code, libelle=libelle, station=station,
+                            limiteinf=limiteinf, limitesup=limitesup,
+                            pivots=pivots, periodes=periodes)
+
+        hauteurs = [10, 11.3, 15, 20, 28.6, 28.7, 28.9, 30]
+        expected = [20, 22.6, 30, 40, 57.2, 57.4, 57.8, 60]
+        for index, hauteur in enumerate(hauteurs):
+            debit = ctar.debit(hauteur=hauteur)
+            self.assertEqual(debit, expected[index])
+        hauteurs = [5, 40]
+        for index, hauteur in enumerate(hauteurs):
+            debit = ctar.debit(hauteur=hauteur)
+            self.assertIsNone(debit)
+
+    def test_debit_ctar(self):
+        """test calcul debit courbe de type puissance"""
+        pivots = [PivotCTPuissance(hauteur=1860, qualif=20,
+                                   vara=1, varb=1, varh=1),
+                  PivotCTPuissance(hauteur=2050, qualif=20,
+                                   vara=0.001126, varb=1, varh=1814.7),
+                  PivotCTPuissance(hauteur=2205, qualif=20,
+                                   vara=0.005541, varb=1.1531, varh=2021.4),
+                  PivotCTPuissance(hauteur=2410, qualif=20,
+                                   vara=2.916e-5, varb=1.9683, varh=1900.2),
+                  PivotCTPuissance(hauteur=2615, qualif=20,
+                                   vara=0.0007625, varb=1.5107, varh=2021.6),
+                  PivotCTPuissance(hauteur=3400, qualif=20,
+                                   vara=0.001033, varb=1.5212, varh=2149.9),
+                  PivotCTPuissance(hauteur=4010, qualif=20,
+                                   vara=0.001118, varb=1.5289, varh=2254.7),
+                  PivotCTPuissance(hauteur=4400, qualif=20,
+                                   vara=0.001702, varb=1.5289, varh=2676.8),
+                  PivotCTPuissance(hauteur=5000, qualif=20,
+                                   vara=0.002383, varb=1.5289, varh=3017.3),
+                  PivotCTPuissance(hauteur=5530, qualif=20,
+                                   vara=0.003782, varb=1.5289, varh=3534.3),
+                  PivotCTPuissance(hauteur=6000, qualif=20,
+                                   vara=0.004471, varb=1.5289, varh=3741.2)]
+        station = _sitehydro.Station(code='A123456789')
+        periode1 = PeriodeCT(dtdeb=datetime(2015, 1, 1),
+                             dtfin=datetime(2016, 1, 1))
+        periode2 = PeriodeCT(dtdeb=datetime(2016, 2, 1),
+                             dtfin=datetime(2017, 1, 1))
+        periodes = [periode1, periode2]
+        ct_puissance = CourbeTarage(code=-1, typect=4, station=station,
+                                    libelle='toto', pivots=pivots,
+                                    periodes=periodes)
+
+        hauteurs = [1860, 2000, 2050, 2060, 5800, 6000]
+
+        expected_debits = [51.0078, 208.6478, 264.9478,
+                           374.1812067, 520702.1351, 599996.0707]
+
+        for index, hauteur in enumerate(hauteurs):
+            debit = ct_puissance.debit(hauteur=hauteur)
+            self.assertAlmostEqual(debit, expected_debits[index], 4)
+
+        hauteurs = [1000, 1850, 6500]
+        for hauteur in hauteurs:
+            debit = ct_puissance.debit(hauteur=hauteur)
+            self.assertIsNone(debit)
+
     def test_str_01(self):
         """test __str__ strict mode"""
         code = 'courbe 123'
@@ -638,13 +723,14 @@ class TestCourbeTarage(unittest.TestCase):
         libelle = 'libelle'
         station = _sitehydro.Station(code='O123456789')
         typect = 16
-        ct = CourbeTarage(code=code, libelle=libelle, station=station, typect=typect, strict=False)
+        ct = CourbeTarage(code=code, libelle=libelle, station=station,
+                          typect=typect, strict=False)
         self.assertTrue(ct.__str__().rfind('polyligne') == -1)
         self.assertTrue(ct.__str__().rfind('<sans type>') > -1)
         typect = 4
-        ct = CourbeTarage(code=code, libelle=libelle, station=station, typect=typect)
+        ct = CourbeTarage(code=code, libelle=libelle, station=station,
+                          typect=typect)
         self.assertTrue(ct.__str__().rfind('fonction puissance') > -1)
-
 
     def test_error_01(self):
         """code error"""
@@ -694,11 +780,13 @@ class TestCourbeTarage(unittest.TestCase):
         libelle = 'libellé'
         station = _sitehydro.Station(code='O123456789')
         typect = 0
-        CourbeTarage(code=code, libelle=libelle, station=station, typect=typect)
+        CourbeTarage(code=code, libelle=libelle, station=station,
+                     typect=typect)
 
         typect = 2
         with self.assertRaises(ValueError) as context:
-            CourbeTarage(code=code, libelle=libelle, station=station, typect=typect)
+            CourbeTarage(code=code, libelle=libelle, station=station,
+                         typect=typect)
 
         self.assertEqual(str(context.exception),
                          'value should be in nomenclature 503')
@@ -728,7 +816,8 @@ class TestCourbeTarage(unittest.TestCase):
         libelle = 'libellé'
         station = _sitehydro.Station(code='O123456789')
         limiteinf = 15.5
-        ct = CourbeTarage(code=code, libelle=libelle, station=station, limiteinf=limiteinf)
+        ct = CourbeTarage(code=code, libelle=libelle, station=station,
+                          limiteinf=limiteinf)
 
         ct.limitesup = 30.1
         with self.assertRaises(ValueError) as context:
@@ -750,7 +839,8 @@ class TestCourbeTarage(unittest.TestCase):
         libelle = 'libellé'
         station = _sitehydro.Station(code='O123456789')
         limitesup = 15.5
-        ct = CourbeTarage(code=code, libelle=libelle, station=station, limitesup=limitesup)
+        ct = CourbeTarage(code=code, libelle=libelle, station=station,
+                          limitesup=limitesup)
 
         ct.limiteinf = 10.0
         with self.assertRaises(ValueError) as context:
@@ -801,7 +891,6 @@ class TestCourbeTarage(unittest.TestCase):
                          contact=contact)
         self.assertEqual(str(context.exception),
                          'contact incorrect')
-
 
     def test_error_07(self):
         """pivots error"""
@@ -880,13 +969,15 @@ class TestCourbeTarage(unittest.TestCase):
 
         dtmaj = 'ab'
         with self.assertRaises(ValueError) as context:
-            CourbeTarage(code=code, libelle=libelle, station=station, dtmaj=dtmaj)
+            CourbeTarage(code=code, libelle=libelle, station=station,
+                         dtmaj=dtmaj)
         self.assertEqual(str(context.exception),
                          'could not convert object to datetime.datetime')
 
         dtmaj = datetime.utcnow() + timedelta(minutes=1)
         with self.assertRaises(ValueError) as context:
-            CourbeTarage(code=code, libelle=libelle, station=station, dtmaj=dtmaj)
+            CourbeTarage(code=code, libelle=libelle, station=station,
+                         dtmaj=dtmaj)
         self.assertEqual(str(context.exception),
                          'dtmaj cannot be in the future')
 
@@ -920,6 +1011,51 @@ class TestCourbeTarage(unittest.TestCase):
                          typect=typect, pivots=pivots)
         self.assertEqual(str(context.exception),
                          'pivots contains pivots with same hauteur')
+
+    def test_error_11(self):
+        """Test wrong ct puissance"""
+        pivots = [PivotCTPuissance(hauteur=1860, qualif=20,
+                                   vara=1, varb=1, varh=1),
+                  PivotCTPuissance(hauteur=2050, qualif=20,
+                                   vara=0.001126, varb=1, varh=1814.7)]
+        station = _sitehydro.Station(code='A123456789')
+        periode1 = PeriodeCT(dtdeb=datetime(2015, 1, 1),
+                             dtfin=datetime(2016, 1, 1))
+        periode2 = PeriodeCT(dtdeb=datetime(2016, 2, 1),
+                             dtfin=datetime(2017, 1, 1))
+        periodes = [periode1, periode2]
+        ctar = CourbeTarage(code=-1, typect=4, station=station,
+                            libelle='toto', pivots=pivots, periodes=periodes)
+        hauteur = 2000
+        ctar.debit(hauteur=hauteur)
+
+        ctar.pivots[1].varh = 2100
+        with self.assertRaises(ValueError):
+            ctar.debit(hauteur=hauteur)
+
+    def test_error_12(self):
+        """Test wrong ct puissance"""
+        pivots = [PivotCTPuissance(hauteur=1860, qualif=20,
+                                   vara=1, varb=1, varh=1),
+                  PivotCTPuissance(hauteur=2050, qualif=20,
+                                   vara=0.001126, varb=1, varh=1814.7)]
+        station = _sitehydro.Station(code='A123456789')
+        periode1 = PeriodeCT(dtdeb=datetime(2015, 1, 1),
+                             dtfin=datetime(2016, 1, 1))
+        periode2 = PeriodeCT(dtdeb=datetime(2016, 2, 1),
+                             dtfin=datetime(2017, 1, 1))
+        periodes = [periode1, periode2]
+        ctar = CourbeTarage(code=-1, typect=4, station=station,
+                            libelle='toto', pivots=pivots, periodes=periodes)
+        debit = 200
+        hauteur = ctar.hauteur(debit=debit)
+        self.assertIsNotNone(hauteur)
+        ctar.pivots[1].vara = 0
+        with self.assertRaises(ValueError):
+            hauteur = ctar.hauteur(debit=debit)
+        ctar.pivots[1].varb = 0
+        with self.assertRaises(ValueError):
+            hauteur = ctar.hauteur(debit=debit)
 
 class TestHistoActivePeriode(unittest.TestCase):
     """HistoActivePeriode class tests."""

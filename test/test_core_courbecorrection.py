@@ -409,3 +409,143 @@ class TestCourbeCorrection(unittest.TestCase):
         pivot2.dtdesactivation = datetime(2016, 1, 2, 11, 49, 54)
         pivots = [pivot1, pivot2]
         CourbeCorrection(station=station, pivots=pivots)
+
+
+class TestHauteurCorrigee(unittest.TestCase):
+    """Classe de tests hauteur corrigée"""
+
+    def test_base_00(self):
+        """Check calculation hauteur corrigéee between two points pivots"""
+        dte = datetime(2017, 9, 23, 12, 10, 15)
+
+        dt1 = datetime(2010, 10, 18, 11, 10, 15)
+        deltah1 = -10
+        dt2 = datetime(2017, 9, 23, 12, 10, 15)
+        deltah2 = -20
+        dt3 = datetime(2018, 2, 14, 23, 41, 33)
+        deltah3 = -10
+        hauteur = 155.89
+        station = _sitehydro.Station(code='O123456789')
+
+        pivot1 = PivotCC(dte=dt1, deltah=deltah1)
+        pivot2 = PivotCC(dte=dt2, deltah=deltah2)
+        pivot3 = PivotCC(dte=dt3, deltah=deltah3)
+        pivots = [pivot1, pivot2, pivot3]
+        dtmaj = datetime(2017, 6, 21, 8, 37, 15)
+
+        ccor = CourbeCorrection(station=station, pivots=pivots, dtmaj=dtmaj)
+
+        hcor = ccor.hauteur_corrigee(dte=dte, hauteur=hauteur)
+        self.assertEqual(hcor, 135.89)
+
+    def test_base_01(self):
+        """Check calculation hauteur corrigéee between two points pivots"""
+        dte = datetime(2017, 9, 23, 12, 10, 15)
+        dt1 = datetime(2017, 9, 23, 11, 10, 15)
+        deltah1 = -10
+        dt2 = datetime(2017, 9, 23, 13, 10, 15)
+        deltah2 = -20
+        hauteur = 155.89
+        station = _sitehydro.Station(code='O123456789')
+
+        pivot1 = PivotCC(dte=dt1, deltah=deltah1)
+        pivot2 = PivotCC(dte=dt2, deltah=deltah2)
+        pivots = [pivot1, pivot2]
+        dtmaj = datetime(2017, 6, 21, 8, 37, 15)
+
+        ccor = CourbeCorrection(station=station, pivots=pivots, dtmaj=dtmaj)
+
+        hcor = ccor.hauteur_corrigee(dte=dte, hauteur=hauteur)
+        self.assertEqual(hcor, 140.89)
+
+    def test_base_02(self):
+        """Check calculation hauteur corrigéee right courbe
+        Last point deltah !=0
+        """
+        dte = datetime(2017, 9, 25, 12, 10, 15)
+
+        dt1 = datetime(2017, 9, 20, 11, 10, 15)
+        deltah1 = 0
+        dt2 = datetime(2017, 9, 23, 13, 10, 15)
+        deltah2 = -50
+        hauteur = 155.89
+        station = _sitehydro.Station(code='O123456789')
+
+        pivot1 = PivotCC(dte=dt1, deltah=deltah1)
+        pivot2 = PivotCC(dte=dt2, deltah=deltah2)
+        pivots = [pivot1, pivot2]
+        dtmaj = datetime(2017, 6, 21, 8, 37, 15)
+
+        ccor = CourbeCorrection(station=station, pivots=pivots, dtmaj=dtmaj)
+
+        hcor = ccor.hauteur_corrigee(dte=dte, hauteur=hauteur)
+        self.assertIsNone(hcor)
+
+    def test_base_03(self):
+        """Check calculation hauteur corrigéee right courbe
+        Last point deltah = 0
+        """
+        dte = datetime(2017, 9, 25, 12, 10, 15)
+
+        dt1 = datetime(2017, 9, 20, 11, 10, 15)
+        deltah1 = 0
+        dt2 = datetime(2017, 9, 23, 13, 10, 15)
+        deltah2 = 0
+        hauteur = 155.89
+        station = _sitehydro.Station(code='O123456789')
+
+        pivot1 = PivotCC(dte=dt1, deltah=deltah1)
+        pivot2 = PivotCC(dte=dt2, deltah=deltah2)
+        pivots = [pivot1, pivot2]
+        dtmaj = datetime(2017, 6, 21, 8, 37, 15)
+
+        ccor = CourbeCorrection(station=station, pivots=pivots, dtmaj=dtmaj)
+
+        hcor = ccor.hauteur_corrigee(dte=dte, hauteur=hauteur)
+        self.assertEqual(hcor, hauteur)
+
+    def test_base_04(self):
+        """Check calculation hauteur corrigéee left courbe
+        first point deltah = 0
+        """
+        dte = datetime(2010, 9, 25, 12, 10, 15)
+
+        dt1 = datetime(2015, 9, 20, 11, 10, 15)
+        deltah1 = 0
+        dt2 = datetime(2016, 9, 23, 13, 10, 15)
+        deltah2 = -50
+        hauteur = 155.89
+        station = _sitehydro.Station(code='O123456789')
+
+        pivot1 = PivotCC(dte=dt1, deltah=deltah1)
+        pivot2 = PivotCC(dte=dt2, deltah=deltah2)
+        pivots = [pivot1, pivot2]
+        dtmaj = datetime(2017, 6, 21, 8, 37, 15)
+
+        ccor = CourbeCorrection(station=station, pivots=pivots, dtmaj=dtmaj)
+
+        hcor = ccor.hauteur_corrigee(dte=dte, hauteur=hauteur)
+        self.assertEqual(hcor, hauteur)
+
+    def test_base_05(self):
+        """Check calculation hauteur corrigéee left courbe
+        first point deltah != 0
+        """
+        dte = datetime(2010, 9, 25, 12, 10, 15)
+
+        dt1 = datetime(2015, 9, 20, 11, 10, 15)
+        deltah1 = -10
+        dt2 = datetime(2016, 9, 23, 13, 10, 15)
+        deltah2 = -50
+        hauteur = 155.89
+        station = _sitehydro.Station(code='O123456789')
+
+        pivot1 = PivotCC(dte=dt1, deltah=deltah1)
+        pivot2 = PivotCC(dte=dt2, deltah=deltah2)
+        pivots = [pivot1, pivot2]
+        dtmaj = datetime(2017, 6, 21, 8, 37, 15)
+
+        ccor = CourbeCorrection(station=station, pivots=pivots, dtmaj=dtmaj)
+
+        hcor = ccor.hauteur_corrigee(dte=dte, hauteur=hauteur)
+        self.assertIsNone(hcor)

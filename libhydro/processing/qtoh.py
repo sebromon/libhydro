@@ -50,10 +50,8 @@ def obsq_to_obsh(obsq, courbestarage):
         debitmin = ctar.pivots[0].debit
         debitmax = ctar.pivots[-1].debit
     else:
-        debitmin = _htoq._debit_ctar_puissance(hauteur=ctar.pivots[0].hauteur,
-                                               ctar=ctar)[0]
-        debitmax = _htoq._debit_ctar_puissance(hauteur=ctar.pivots[-1].hauteur,
-                                               ctar=ctar)[0]
+        debitmin = ctar.debit(hauteur=ctar.pivots[0].hauteur)
+        debitmax = ctar.debit(hauteur=ctar.pivots[-1].hauteur)
 
     # Cas débit en dessous de la courbe
     if debit < debitmin:
@@ -73,12 +71,9 @@ def obsq_to_obsh(obsq, courbestarage):
                                      mth=methode, qal=qualif,
                                      cnt=cnt, statut=obsq['statut'].item())
 
-    if ctar.typect == 0:
-        hauteur, qualif_pivots = _hauteur_ctar_poly(debit, ctar)
-    else:
-        hauteur, qualif_pivots = _hauteur_ctar_puissance(debit, ctar)
+    hauteur = ctar.hauteur(debit=debit)
 
-    # Erreur de calcul 
+    # Erreur de calcul
     if hauteur is None:
         return _obshydro.Observation(dte=obsq['dte'].item(), res=None,
                                      mth=methode, qal=qualif,
@@ -87,7 +82,6 @@ def obsq_to_obsh(obsq, courbestarage):
     # calcul qualification entre la qualification des points pivots et celle
     # de l'observation'
     qualif = obsq['qal'].item() if obsq['qal'].item() is not None else 16
-    qualif = min(qualif, qualif_pivots)
 
     # Vérification que la hauteur est bien dans la zone d'utilisation
 
@@ -104,94 +98,6 @@ def obsq_to_obsh(obsq, courbestarage):
                                  qal=qualif,
                                  cnt=obsq['cnt'].item(),
                                  statut=obsq['statut'].item())
-
-
-def _hauteur_ctar_poly(debit, ctar):
-    """Calcul de la hauteur à partir d'une courbe de tarage active
-    de type poly
-
-    Arguments:
-        debit (float)
-        ctar (CourbeTarage) courbe de tarage poly à appliquer à la hauteur
-
-    Return tuple hauteur,qualif (float or  None, int or None)
-    """
-    prev_pivot = None
-    pivot = None
-    for pivot in ctar.pivots:
-        if pivot.debit == debit:
-            hauteur = pivot.hauteur
-            qualif = pivot.qualif if pivot.qualif is not None else 16
-            return (hauteur, qualif)
-        if prev_pivot is not None and pivot.debit == prev_pivot.debit:
-            raise ValueError("Points pivots avec même débit")
-        if pivot.debit > debit:
-            break
-        prev_pivot = pivot
-
-    # cas à gauche de la courbe
-    if prev_pivot is None or pivot is None:
-        return (None, None)
-    # cas à droite de la courbe
-    if pivot.debit < debit:
-        return (None, None)
-
-    # entre deux points pivots regression linéaire
-    # H = a Q + b entre les deux points pivots
-    coefa = (pivot.hauteur - prev_pivot.hauteur) / \
-        (pivot.debit - prev_pivot.debit)
-    coefb = pivot.hauteur - coefa * pivot.debit
-    hauteur = coefa * debit + coefb
-
-    qualif1 = prev_pivot.qualif if prev_pivot.qualif is not None else 16
-    qualif2 = pivot.qualif if pivot.qualif is not None else 16
-    qualif = min(qualif1, qualif2)
-
-    return (hauteur, qualif)
-
-
-def _hauteur_ctar_puissance(debit, ctar):
-    """Calcul de la hauteur à partir d'une courbe de tarage active
-    de type puissance
-
-    Arguments:
-        debit (float)
-        ctar (CourbeTarage) courbe de tarage puissance à appliquer à la hauteur
-
-    Return tuple hauteur,qualif (float or  None, int or None)
-    """
-    # Parcours des points pivots
-    # Recherche du premier pivot avec h >= hauteur
-    index = 0
-    pivot = None
-    for index, pivot in enumerate(ctar.pivots):
-        # on ignore le premier point
-        if index == 0:
-            continue
-        # calcul du débit du point pivot
-        pivot_debit = _htoq._debit_ctar_puissance(
-            hauteur=ctar.pivots[index].hauteur, ctar=ctar)[0]
-        if pivot_debit >= debit:
-            break
-
-    # à gauche de la courbe
-    if index == 0:
-        return
-    # A droite de la courbe
-    if index == (len(ctar.pivots) - 1) and pivot_debit < debit:
-        return (None, None)
-
-    # if hauteur < pivot.varh:
-    #     raise ValueError("hauteur {} inférieure à h0 {}".format(hauteur,
-    #                                                             pivot.varh))
-    if pivot.varb <= 0:
-        raise ValueError('var b must be stricly positive')
-    if pivot.vara <= 0:
-        raise ValueError('var a must be strictly positive')
-    hauteur = pivot.varh + (debit / (1000 * pivot.vara)) ** (1 / pivot.varb)
-    # debit = 1000 * pivot.vara * (hauteur-pivot.varh)**pivot.varb
-    qualif = pivot.qualif if pivot.qualif is not None else 16
-    return (hauteur, qualif)
 
 
 def annuler_correction_hauteurs(seriehydro, courbecorrection, pivots=False):
@@ -223,9 +129,8 @@ def annuler_correction_hauteurs(seriehydro, courbecorrection, pivots=False):
                             dt=pivot.dte, dt1=prev_obs.Index, v1=prev_obs.res,
                             dt2=obs.Index, v2=obs.res)
                      # obs.res or hcor can be nan
-                    hcor = _htoq.hauteur_corrigee(dte=pivot.dte,
-                                                  hauteur=hauteur,
-                                                  ccor=courbecorrection)
+                    hcor = courbecorrection.hauteur_corrigee(
+                        dte=pivot.dte, hauteur=hauteur)
                     if hcor is not None:
                         hsanscor = hauteur - (hcor - hauteur)
                         cnt = obs.cnt
@@ -239,9 +144,8 @@ def annuler_correction_hauteurs(seriehydro, courbecorrection, pivots=False):
         
         prev_obs = obs
         # obs.res or hcor can be nan
-        hcor = _htoq.hauteur_corrigee(dte=obs.Index,
-                                hauteur=obs.res,
-                                ccor=courbecorrection)
+        hcor = courbecorrection.hauteur_corrigee(
+            dte=obs.Index,hauteur=obs.res)
         if hcor is not None:
             hsanscor = obs.res - (hcor - obs.res)
             cnt = obs.cnt
@@ -319,8 +223,7 @@ def serieq_to_serieh(seriehydro=None, courbestarage=None,
                     if ctar.typect == 0:
                         debit_pivot = pivot.debit
                     else:
-                        debit_pivot = _htoq._debit_ctar_puissance(
-                            hauteur=pivot.hauteur, ctar=ctar)[0]
+                        debit_pivot = ctar.debit(hauteur=pivot.hauteur)
                     if debit_pivot > qmin and debit_pivot < qmax:
                         dte = _interpolation.interpolation_date_from_value(
                             val=debit_pivot, dt1=prev_obstuple.Index,

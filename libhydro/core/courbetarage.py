@@ -741,6 +741,181 @@ class CourbeTarage(object):
             pivots.append(pivot)
         return pivots
 
+    def _debit_poly(self, hauteur):
+        """Calcul du débit à partir d'une hauteur pour un coube de tarage
+        de type polyligne
+
+        Arguments:
+            hauteur (float)
+
+        Return debit(float or  None)
+        """
+        prev_pivot = None
+        pivot = None
+        for pivot in self.pivots:
+            if pivot.hauteur == hauteur:
+                debit = pivot.debit
+                return debit
+            if prev_pivot is not None and pivot.hauteur == prev_pivot.hauteur:
+                raise ValueError("Points pivots avec même hauteur")
+            if pivot.hauteur > hauteur:
+                break
+            prev_pivot = pivot
+
+        # cas à gauche de la courbe
+        if prev_pivot is None or pivot is None:
+            return None
+        # cas à droite de la courbe
+        if pivot.hauteur < hauteur:
+            return None
+
+        # entre deux points pivots regression linéaire
+        # Q = a H + b entre les deux points pivots
+        coefa = (pivot.debit - prev_pivot.debit) / \
+            (pivot.hauteur - prev_pivot.hauteur)
+        coefb = pivot.debit - coefa * pivot.hauteur
+        debit = coefa * hauteur + coefb
+
+        return debit
+
+    def _debit_puissance(self, hauteur):
+        """Calcul du débit à partir d'une hauteur pour un coube de tarage
+        de type puissance
+
+        Arguments:
+            hauteur (float)
+
+        Return debit(float or  None)
+        """
+        # Parcours des points pivots
+        # Recherche du premier pivot avec h >= hauteur
+        index = 0
+        pivot = None
+        for index, pivot in enumerate(self.pivots):
+            # h = hauteur du premier point
+            # le calcul est réalisé avec le 2ème point
+            if index == 0 and pivot.hauteur == hauteur:
+                continue
+            if pivot.hauteur >= hauteur:
+                break
+        # à gauche de la courbe
+        if index == 0:
+            return
+        # A droite de la courbe
+        if index == (len(self.pivots) - 1) and pivot.hauteur < hauteur:
+            return None
+        if hauteur < pivot.varh:
+            raise ValueError("hauteur {} inférieure à h0 {}".format(
+                hauteur, pivot.varh))
+        debit = 1000 * pivot.vara * (hauteur-pivot.varh)**pivot.varb
+
+        return debit
+
+    def debit(self, hauteur):
+        """Calcul du débit à partir d'une hauteur
+
+        Arguments:
+            hauteur (float)
+
+        Return debit(float or  None)
+        """
+        if self.typect == 0:
+            return self._debit_poly(hauteur)
+        else:
+            return self._debit_puissance(hauteur)
+
+    def _hauteur_poly(self, debit):
+        """Calcul de la hauteur à partir d'une courbe de tarage active
+        de type poly
+    
+        Arguments:
+            debit (float)
+    
+        Return hauteur (float or None)
+        """
+        prev_pivot = None
+        pivot = None
+        for pivot in self.pivots:
+            if pivot.debit == debit:
+                hauteur = pivot.hauteur
+                return hauteur
+            if prev_pivot is not None and pivot.debit == prev_pivot.debit:
+                raise ValueError("Points pivots avec même débit")
+            if pivot.debit > debit:
+                break
+            prev_pivot = pivot
+    
+        # cas à gauche de la courbe
+        if prev_pivot is None or pivot is None:
+            return None
+        # cas à droite de la courbe
+        if pivot.debit < debit:
+            return None
+    
+        # entre deux points pivots regression linéaire
+        # H = a Q + b entre les deux points pivots
+        coefa = (pivot.hauteur - prev_pivot.hauteur) / \
+            (pivot.debit - prev_pivot.debit)
+        coefb = pivot.hauteur - coefa * pivot.debit
+        hauteur = coefa * debit + coefb
+        
+        return hauteur
+
+    
+    def _hauteur_puissance(self, debit):
+        """Calcul de la hauteur à partir d'une courbe de tarage active
+        de type puissance
+    
+        Arguments:
+            debit (float)
+    
+        Return hauteur (float or None)
+        """
+        # Parcours des points pivots
+        # Recherche du premier pivot avec h >= hauteur
+        index = 0
+        pivot = None
+        for index, pivot in enumerate(self.pivots):
+            # on ignore le premier point
+            if index == 0:
+                continue
+            if pivot.varb <= 0:
+                raise ValueError('var b must be stricly positive')
+            if pivot.vara <= 0:
+                raise ValueError('var a must be strictly positive')
+            # calcul du débit du point pivot
+            pivot_debit = self.debit(hauteur=self.pivots[index].hauteur)
+            if pivot_debit >= debit:
+                break
+    
+        # à gauche de la courbe
+        if index == 0:
+            return None
+        # A droite de la courbe
+        if index == (len(self.pivots) - 1) and pivot_debit < debit:
+            return None
+    
+        # if hauteur < pivot.varh:
+        #     raise ValueError("hauteur {} inférieure à h0 {}".format(hauteur,
+        #                                                             pivot.varh))
+        hauteur = pivot.varh + (debit / (1000 * pivot.vara)) ** (1 / pivot.varb)
+        # debit = 1000 * pivot.vara * (hauteur-pivot.varh)**pivot.varb
+
+        return hauteur
+    
+    def hauteur(self, debit):
+        """Calcul d'une hauteur à partir d'un débit
+
+        Arguments:
+            debit (float)
+
+        Return hauteur(float or  None)
+        """
+        if self.typect == 0:
+            return self._hauteur_poly(debit)
+        else:
+            return self._hauteur_puissance(debit)
+
     # -- other methods --
     def __unicode__(self):
         """Return unicode representation."""
