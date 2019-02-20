@@ -24,7 +24,7 @@ Sont nécessaires et installés automatiquement si besoin:
 
   * numpy 1.12
   * pandas 0.19.2
-  * lxml.etree >= 3.2.3 pour le convertisseur xml
+  * lxml.etree (>= 3.2.3) pour le convertisseur xml
 
 Contact
 -------------------------------------------------------------------------------
