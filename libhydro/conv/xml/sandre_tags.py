@@ -103,6 +103,23 @@ class SandreTagsV1(object):
     valsseuilhydro = 'ValeursSeuilsStationHydro'
     valseuilhydro = 'ValeursSeuilStationHydro'
 
+    # Seuils météo
+    seuilmeteo = 'ValeurSeuilGrdMeteo'
+    cdseuilmeteo = 'CdSeuilGrdMeteo'
+    typseuilmeteo = 'TypSeuilGrdMeteo'
+    natureseuilmeteo = 'NatureSeuilGrdMeteo'
+    dureeseuilmeteo = 'DureeSeuilGrdMeteo'
+    lbusuelseuilmeteo = 'LbUsuelSeuilGrdMeteo'
+    mnseuilmeteo = 'MnSeuilGrdMeteo'
+    indicegraviteseuilmeteo = 'IndGraviteSeuilGrdMeteo'
+    dtmajseuilmeteo = 'DtMajSeuilGrdMeteo'
+    comseuilmeteo = 'ComSeuilGrdMeteo'
+    valvalseuilmeteo = 'ValSeuilGrdMeteo'
+    tolerancevalseuilmeteo = 'ToleranceSeuilGrdMeteo'
+    dtactivationvalseuilmeteo = 'DtActivationSeuilGrdMeteo'
+    dtdesactivationvalseuilmeteo = 'DtDesactivationSeuilGrdMeteo'
+
+
 class SandreTagsV2(object):
     """Balises Sandre V2"""
     serieshydro = 'SeriesObsHydro'
@@ -190,3 +207,19 @@ class SandreTagsV2(object):
     comseuilhydro = 'ComSeuilHydro'
     valsseuilhydro = 'ValsSeuilHydro'
     valseuilhydro = 'ValSeuilHydro'
+
+    # Seuils météo
+    seuilmeteo = 'SeuilMeteo'
+    cdseuilmeteo = 'CdSeuilMeteo'
+    typseuilmeteo = 'TypSeuilMeteo'
+    natureseuilmeteo = 'NatureSeuilMeteo'
+    dureeseuilmeteo = 'DureeSeuilMeteo'
+    lbusuelseuilmeteo = 'LbUsuelSeuilMeteo'
+    mnseuilmeteo = 'MnSeuilMeteo'
+    indicegraviteseuilmeteo = 'IndiceGraviteSeuilMeteo'
+    dtmajseuilmeteo = 'DtMajSeuilMeteo'
+    comseuilmeteo = 'ComSeuilMeteo'
+    valvalseuilmeteo = 'ValValSeuilMeteo'
+    tolerancevalseuilmeteo = 'ToleranceValSeuilMeteo'
+    dtactivationvalseuilmeteo = 'DtActivationValSeuilMeteo'
+    dtdesactivationvalseuilmeteo = 'DtDesactivationValSeuilMeteo'

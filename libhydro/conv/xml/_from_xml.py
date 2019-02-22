@@ -269,6 +269,7 @@ def _parse(src, ordered=True):
             # siteshydro: liste de sitehydro.Siteshydro
             # sitesmeteo: liste de sitehydro.Siteshydro
             # seuilshydro: liste de seuil.Seuilhydro
+            # seuilsmeteo: liste de seuil.Seuilmeteo
             # modelesprevision: liste de modelesprevision.Modeleprevision
             # evenements: liste d'evenements
             # courbestarage: liste de courbes de tarage
@@ -311,6 +312,12 @@ def _parse(src, ordered=True):
         seuilshydro = _seuilshydro_from_element_v2(
             element=tree.find('RefHyd/SeuilsHydro'), version=scenario.version,
             tags=tags)
+        sitesmeteo = _sitesmeteo_from_element_v2(
+            tree.find('RefHyd/SitesMeteo'), version=scenario.version,
+            tags=tags)
+        seuilsmeteo = _seuilsmeteo_from_element_v2(
+            element=tree.find('RefHyd/SeuilsMeteo'), version=scenario.version,
+            tags=tags)
     else:
         tags = _sandre_tags.SandreTagsV1
         # on récupére des obs élaboré depuis des séries météo
@@ -321,6 +328,9 @@ def _parse(src, ordered=True):
         seuilshydro = _seuilshydro_from_element(
             element=tree.find('RefHyd/SitesHydro'), version=scenario.version,
             tags=tags, ordered=ordered)
+        sitesmeteo, seuilsmeteo = _sitesmeteo_from_element(
+            tree.find('RefHyd/SitesMeteo'), version=scenario.version,
+            tags=tags)
 
     return {
         'scenario': scenario,
@@ -330,10 +340,9 @@ def _parse(src, ordered=True):
         'siteshydro': _siteshydro_from_element(tree.find('RefHyd/SitesHydro'),
                                                version=scenario.version,
                                                tags=tags),
-        'sitesmeteo': _sitesmeteo_from_element(
-            tree.find('RefHyd/SitesMeteo'), version=scenario.version,
-            tags=tags),
+        'sitesmeteo': sitesmeteo,
         'seuilshydro': seuilshydro,
+        'seuilsmeteo': seuilsmeteo,
         'modelesprevision': _modelesprevision_from_element(
             tree.find('RefHyd/ModelesPrevision')),
         'evenements': _evenements_from_element(
@@ -694,7 +703,7 @@ def _loistat_from_element(element, entite):
 
 
 def _sitemeteo_from_element(element, version, tags):
-    """Return a sitemeteo.Sitemeteo from a <SiteMeteo> element."""
+    """Return a sitemeteo.Sitemeteo and seuils from a <SiteMeteo> element."""
     if element is not None:
         # prepare args
         args = {}
@@ -751,12 +760,15 @@ def _sitemeteo_from_element(element, version, tags):
 
         # build a Sitemeteo
         sitemeteo = _sitemeteo.Sitemeteo(**args)
+        
+        seuils = []
         # add the Grandeurs
-        sitemeteo.grandeurs.extend([
-            _grandeur_from_element(e, sitemeteo, version, tags)
-            for e in element.findall('GrdsMeteo/GrdMeteo')])
+        for e in element.findall('GrdsMeteo/GrdMeteo'):
+            grandeur, grdseuils = _grandeur_from_element(e, sitemeteo, version, tags)
+            sitemeteo.grandeurs.append(grandeur)
+            seuils.extend(grdseuils)
         # return
-        return sitemeteo
+        return (sitemeteo, seuils)
 
 
 def _altitude_from_element(element, site):
@@ -1070,7 +1082,7 @@ def _capteur_from_element(element, version, tags):
 
 
 def _grandeur_from_element(element, sitemeteo=None, version=None, tags=None):
-    """Return a sitemeteo.Grandeur from a <GrdMeteo> element."""
+    """Return a sitemeteo.Grandeur and seuils from a <GrdMeteo> element."""
     if element is not None:
         # prepare args
         args = {}
@@ -1089,9 +1101,16 @@ def _grandeur_from_element(element, sitemeteo=None, version=None, tags=None):
             for e in element.findall(
                 'ClassesQualiteGrd/ClasseQualiteGrd')]
         args['dtmaj'] = _value(element, 'DtMajGrdMeteo')
-        # TODO version 1 récupérer les seuils
         # build a Grandeur and return
-        return _sitemeteo.Grandeur(**args)
+        grandeur = _sitemeteo.Grandeur(**args)
+        seuils = []
+        if version < '2':
+            # Récupéeration des seuils
+            seuils = [_seuilmeteo_from_element(
+                element=e, grandeurmeteo=grandeur, version=version, tags=tags)
+                for e in element.findall(
+                'ValeursSeuilsGrdMeteo/ValeurSeuilGrdMeteo')]
+        return (grandeur, seuils)
 
 
 def _classequalite_from_element(element):
@@ -1163,9 +1182,78 @@ def _seuilhydro_from_element(element, sitehydro=None, version=None, tags=None):
             args['valeurs'] = [
                 _valeurseuilhydro_from_element_v2(e, seuil, version, tags)
                 for e in element.findall('./ValsSeuilHydro/ValSeuilHydro')]
-        # build a Seuilhydro and return
-        # FIXME - why do we use a second Seuilhydro ????
-        return _seuil.Seuilhydro(**args)
+
+        # add valeurs and return
+        seuil.valeurs = args['valeurs']
+        return seuil
+
+
+def _seuilmeteo_from_element(element, grandeurmeteo=None, version=None,
+                             tags=None):
+    """Return a seuil.Seuilmeteo from a <SeuilMeteo> element."""
+    if element is not None:
+        # prepare args
+        args = {}
+
+        if version < '2':
+            args['grandeurmeteo'] = grandeurmeteo
+        else:
+            elsite = element.find('SiteMeteo')
+            sitemeteo = _sitemeteo_from_element(
+                    element=elsite, version=version, tags=tags)[0]
+            elgrd = element.find('GrdMeteo')
+            args['grandeurmeteo'] = _grandeur_from_element(
+                element=elgrd, sitemeteo=sitemeteo,
+                version=version, tags=tags)[0]
+
+        args['code'] = _value(element, tags.cdseuilmeteo)
+
+        typeseuil = _value(element, tags.typseuilmeteo)
+        if typeseuil is not None:
+            args['typeseuil'] = typeseuil
+        args['nature'] = _value(element, tags.natureseuilmeteo)
+        duree = _value(element, tags.dureeseuilmeteo, int)
+        if duree is not None:
+            args['duree'] = duree
+        args['libelle'] = _value(element, tags.lbusuelseuilmeteo)
+        args['mnemo'] = _value(element, tags.mnseuilmeteo)
+        args['gravite'] = _value(element, tags.indicegraviteseuilmeteo)
+        args['dtmaj'] = _value(element, tags.dtmajseuilmeteo)
+        args['commentaire'] = _value(element, tags.comseuilmeteo)
+        seuil = _seuil.Seuilmeteo(**args)
+
+        # add the values
+        if version < '2':
+            valeur = _valeurseuilmeteo_from_element(
+                element, seuil, version, tags)
+            args['valeurs'] = [valeur] if valeur is not None else []
+        else:
+            args['valeurs'] = [
+                _valeurseuilmeteo_from_element(e, seuil, version, tags)
+                for e in element.findall('./ValsSeuilMeteo/ValSeuilMeteo')]
+
+        # add valeurs and return
+        seuil.valeurs = args['valeurs']
+        return seuil
+
+
+def _valeurseuilmeteo_from_element(element=None, seuil=None,
+                                   version=None, tags=None):
+    """Return a seuil.Valeurseuil from a <ValSeuilMeteo> element."""
+    # TODO merge _valeurseuilmeteo and valeurseuilhydro
+    if element is None:
+        return
+    args = {'seuil': seuil,
+            'entite': seuil.grandeurmeteo}
+    args['valeur'] = _value(element, tags.valvalseuilmeteo)
+    if args['valeur'] is None and version < '2':
+        return
+    args['tolerance'] = _value(element, tags.tolerancevalseuilmeteo)
+    args['dtactivation'] = _value(
+            element, tags.dtactivationvalseuilmeteo)
+    args['dtdesactivation'] = _value(
+            element, tags.dtdesactivationvalseuilmeteo)
+    return _seuil.Valeurseuil(**args)
 
 
 def _valeurseuilsitehydro_from_element(element, sitehydro, seuil):
@@ -2065,11 +2153,23 @@ def _siteshydro_from_element(elem, version, tags):
 
 def _sitesmeteo_from_element(elem, version, tags):
     sitesmeteo = []
+    seuils = []
     if elem is not None:
         for item in elem.findall('./SiteMeteo'):
-            sitesmeteo.append(_sitemeteo_from_element(item, version, tags))
-    return sitesmeteo
+            sitemeteo, siteseuils = _sitemeteo_from_element(item, version,
+                                                            tags)
+            sitesmeteo.append(sitemeteo)
+            seuils.extend(siteseuils)
+    return sitesmeteo, seuils
 
+def _sitesmeteo_from_element_v2(elem, version, tags):
+    sitesmeteo = []
+    if elem is not None:
+        for item in elem.findall('./SiteMeteo'):
+            sitemeteo, siteseuils = _sitemeteo_from_element(item, version,
+                                                            tags)
+            sitesmeteo.append(sitemeteo)
+    return sitesmeteo
 
 # these 2 functions doesn't fit with the _global_function_builder :-\
 def _seuilshydro_from_element(element, version, tags, ordered=False):
@@ -2135,6 +2235,17 @@ def _seuilshydro_from_element_v2(element, version, tags):
         for item in element.findall('./SeuilHydro'):
             seuils.append(_seuilhydro_from_element(
                     element=item, version=version, tags=tags))
+    return seuils
+
+
+def _seuilsmeteo_from_element_v2(element, version, tags):
+    """Return a list of seuil.Seuilmeteo from a <SeuilsMeteo> element."""
+    seuils = []
+    if element is not None:
+        for item in element.findall('./SeuilMeteo'):
+            seuils.append(_seuilmeteo_from_element(
+                    element=item, grandeurmeteo=None, version=version,
+                    tags=tags))
     return seuils
 
 

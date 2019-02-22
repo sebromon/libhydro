@@ -102,7 +102,7 @@
                 <CdSeuilGrdMeteo>28</CdSeuilGrdMeteo>
                 <TypSeuilGrdMeteo>1</TypSeuilGrdMeteo>
                 <NatureSeuilGrdMeteo>11</NatureSeuilGrdMeteo>
-                <DureeSeuilGrdMeteo>60</DureeSeuilGrdMeteo>
+                <DureeSeuilGrdMeteo>0</DureeSeuilGrdMeteo>
                 <LbUsuelSeuilGrdMeteo>Vitesse maximale avant arrachement</LbUsuelSeuilGrdMeteo>
                 <MnSeuilGrdMeteo>V max</MnSeuilGrdMeteo>
                 <IndGraviteSeuilGrdMeteo>85</IndGraviteSeuilGrdMeteo>

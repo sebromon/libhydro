@@ -94,19 +94,19 @@
                 <DtFinClasseQualiteGrd>2015-04-05T08:55:00</DtFinClasseQualiteGrd>
               </ClasseQualiteGrd>
             </ClassesQualiteGrd>
-            <!-- <ValeursSeuilsGrdMeteo> -->
-            <!--   <ValeurSeuilGrdMeteo> -->
-            <!--     <CdSeuilGrdMeteo>28</CdSeuilGrdMeteo> -->
-            <!--     <TypSeuilGrdMeteo>1</TypSeuilGrdMeteo> -->
-            <!--     <NatureSeuilGrdMeteo>11</NatureSeuilGrdMeteo> -->
-            <!--     <DureeSeuilGrdMeteo>60</DureeSeuilGrdMeteo> -->
-            <!--     <LbUsuelSeuilGrdMeteo>Vitesse maximale avant arrachement</LbUsuelSeuilGrdMeteo> -->
-            <!--     <MnSeuilGrdMeteo>V max</MnSeuilGrdMeteo> -->
-            <!--     <IndGraviteSeuilGrdMeteo>85</IndGraviteSeuilGrdMeteo> -->
-            <!--     <ComSeuilGrdMeteo>Commentaire seuil</ComSeuilGrdMeteo> -->
-            <!--     <ValSeuilGrdMeteo>25.03</ValSeuilGrdMeteo> -->
-            <!--   </ValeurSeuilGrdMeteo> -->
-            <!-- </ValeursSeuilsGrdMeteo> -->
+            <ValeursSeuilsGrdMeteo>
+              <ValeurSeuilGrdMeteo>
+                <CdSeuilGrdMeteo>28</CdSeuilGrdMeteo>
+                <TypSeuilGrdMeteo>1</TypSeuilGrdMeteo>
+                <NatureSeuilGrdMeteo>11</NatureSeuilGrdMeteo>
+                <DureeSeuilGrdMeteo>0</DureeSeuilGrdMeteo>
+                <LbUsuelSeuilGrdMeteo>Vitesse maximale avant arrachement</LbUsuelSeuilGrdMeteo>
+                <MnSeuilGrdMeteo>V max</MnSeuilGrdMeteo>
+                <IndGraviteSeuilGrdMeteo>85</IndGraviteSeuilGrdMeteo>
+                <ComSeuilGrdMeteo>Commentaire seuil</ComSeuilGrdMeteo>
+                <ValSeuilGrdMeteo>25.03</ValSeuilGrdMeteo>
+              </ValeurSeuilGrdMeteo>
+            </ValeursSeuilsGrdMeteo>
           </GrdMeteo>
         </GrdsMeteo>
         <VisitesSiteMeteo>
