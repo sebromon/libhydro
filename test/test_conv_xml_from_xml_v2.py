@@ -1931,3 +1931,77 @@ class TestFromXmlSeuilsMeteos(unittest.TestCase):
 
         # check the values
         self.assertEqual(len(seuil.valeurs), 0)
+
+
+
+# -- class TestFromXmlModelesPrevision ----------------------------------------
+class TestFromXmlModelesPrevision(unittest.TestCase):
+
+    """FromXmlModelesPrevision class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '2', 'modelesprevision.xml'))
+
+    def test_base(self):
+        """Check Keys test."""
+        self.assertEqual(
+            set(self.data.keys()),
+            set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
+                 'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+                 'evenements', 'courbestarage', 'jaugeages',
+                 'courbescorrection', 'serieshydro', 'seriesmeteo',
+                 'seriesobselab', 'seriesobselabmeteo', 'simulations')))
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertEqual(self.data['intervenants'], [])
+        self.assertEqual(self.data['siteshydro'], [])
+        self.assertEqual(self.data['sitesmeteo'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertNotEqual(self.data['modelesprevision'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['seriesmeteo'], [])
+        self.assertEqual(self.data['simulations'], [])
+        # len
+        self.assertEqual(len(self.data['modelesprevision']), 2)
+
+    def test_scenario(self):
+        """Scenario test."""
+        scenario = self.data['scenario']
+        self.assertEqual(scenario.code, 'hydrometrie')
+        self.assertEqual(scenario.version, '2')
+        self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
+        self.assertEqual(scenario.dtprod,
+                         datetime.datetime(2012, 6, 4, 9, 22, 44))
+        self.assertEqual(scenario.emetteur.intervenant.code, 1537)
+        self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
+        self.assertEqual(scenario.emetteur.contact.code, '1')
+        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
+        self.assertEqual(scenario.destinataire.contact.code, '7')
+
+    def test_modeleprevision_0(self):
+        """Modeleprevision 0 test."""
+        modeleprevision = self.data['modelesprevision'][0]
+        self.assertEqual(modeleprevision.contact.code, '1234')
+        self.assertEqual(modeleprevision.code, '9876543210')
+        self.assertEqual(modeleprevision.libelle, 'Libellé du modèle')
+        self.assertEqual(modeleprevision.typemodele, 1)
+        self.assertEqual(modeleprevision.description, 'Description du modèle')
+        self.assertEqual(modeleprevision.dtmaj,
+                         datetime.datetime(2001, 12, 17, 4, 30, 47))
+        self.assertEqual(len(modeleprevision.siteshydro), 2)
+        self.assertEqual(modeleprevision.siteshydro[0].code, 'A1234567')
+        self.assertEqual(modeleprevision.siteshydro[1].code, 'Z7654321')
+
+    def test_modeleprevision_1(self):
+        """Modeleprevision 1 test."""
+        modeleprevision = self.data['modelesprevision'][1]
+        self.assertIsNone(modeleprevision.contact)
+        self.assertEqual(modeleprevision.code, '0123456789')
+        self.assertIsNone(modeleprevision.libelle)
+        self.assertEqual(modeleprevision.typemodele, 0)
+        self.assertIsNone(modeleprevision.description)
+        self.assertIsNone(modeleprevision.dtmaj)
+        self.assertEqual(modeleprevision.siteshydro, [])

@@ -19,20 +19,15 @@
   <RefHyd>
     <ModelesPrevision>
       <ModelePrevision>
-        <CdContact>token</CdContact>
-        <CdModelePrevision>token</CdModelePrevision>
-        <LbModelePrevision>String</LbModelePrevision>
-        <TypModelePrevision>0</TypModelePrevision>
-        <DescModelePrevision>String</DescModelePrevision>
+        <CdContact>1234</CdContact>
+        <CdModelePrevision>9876543210</CdModelePrevision>
+        <LbModelePrevision>Libellé du modèle</LbModelePrevision>
+        <TypModelePrevision>1</TypModelePrevision>
+        <DescModelePrevision>Description du modèle</DescModelePrevision>
         <DtMajModelePrevision>2001-12-17T04:30:47</DtMajModelePrevision>
       </ModelePrevision>
       <ModelePrevision>
-        <CdContact>token</CdContact>
-        <CdModelePrevision>token</CdModelePrevision>
-        <LbModelePrevision>String</LbModelePrevision>
-        <TypModelePrevision>0</TypModelePrevision>
-        <DescModelePrevision>String</DescModelePrevision>
-        <DtMajModelePrevision>2001-12-17T04:30:47</DtMajModelePrevision>
+        <CdModelePrevision>0123456789</CdModelePrevision>
       </ModelePrevision>
     </ModelesPrevision>
   </RefHyd>

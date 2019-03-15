@@ -234,7 +234,8 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
         # modelesprevision
         if args['modelesprevision'] is not None:
             sub.append(_modelesprevision_to_element(
-                args['modelesprevision'], bdhydro=bdhydro, strict=strict))
+                args['modelesprevision'], bdhydro=bdhydro, strict=strict,
+                version=version))
 
     # add the datas
     items = ORDERED_ACCEPTED_KEYS[7:]
@@ -1774,15 +1775,38 @@ def _modeleprevision_to_element(modeleprevision, bdhydro=False, strict=True, ver
         if strict:
             _required(modeleprevision, ['code'])
 
+        cdcontact = None
+        if modeleprevision.contact is not None:
+            cdcontact = modeleprevision.contact.code
         # template for modeleprevision simple elements
         story = _collections.OrderedDict((
+            ('CdContact', {'value': cdcontact}),
             ('CdModelePrevision', {'value': modeleprevision.code}),
             ('LbModelePrevision', {'value': modeleprevision.libelle}),
             ('TypModelePrevision', {'value': modeleprevision.typemodele}),
-            ('DescModelePrevision', {'value': modeleprevision.description})))
+            ('DescModelePrevision', {'value': modeleprevision.description}),
+            ('DtMajModelePrevision',
+             {'value': datetime2iso(modeleprevision.dtmaj)})))
+
+        if version >= '2' and len(modeleprevision.siteshydro) > 0:
+            story['SitesHydro'] = {'value': None, 'force': True}
 
         # make element <modeleprevision> and return
-        return _factory(root=_etree.Element('ModelePrevision'), story=story)
+        element = _factory(root=_etree.Element('ModelePrevision'), story=story)
+
+        if version >= '2' and len(modeleprevision.siteshydro) > 0:
+            child = element.find('SitesHydro')
+            for site in modeleprevision.siteshydro:
+                story = _collections.OrderedDict()
+                story['CdSiteHydro'] = {'value': site.code}
+                child.append(
+                        _factory(root=_etree.Element('SiteHydro'),
+                                 story=story))
+
+        return element
+
+
+
 
 def _evenement_to_element(evenement, bdhydro=False, strict=True, version='1.1'):
     """Return a <Evenement> element from a evenement.Evenement."""

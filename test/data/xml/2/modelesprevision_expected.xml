@@ -1,18 +1,18 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<hydrometrie>
+<?xml version="1.0" encoding="UTF-8"?>
+<hydrometrie xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/2/sandre_sc_hydrometrie.xsd">
+<!-- <hydrometrie> -->
   <Scenario>
     <CodeScenario>hydrometrie</CodeScenario>
-    <VersionScenario>1.1</VersionScenario>
+    <VersionScenario>2</VersionScenario>
     <NomScenario>Echange de données hydrométriques</NomScenario>
-    <DateHeureCreationFichier>2001-12-17T04:30:47</DateHeureCreationFichier>
-    <!-- <RefFichier>modele.xml</RefFichier> -->
+    <DateHeureCreationFichier>2012-06-04T09:22:44</DateHeureCreationFichier>
     <Emetteur>
-      <CdIntervenant schemeAgencyID="SANDRE">825</CdIntervenant>
-      <CdContact schemeAgencyID="SANDRE">222</CdContact>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact>1</CdContact>
     </Emetteur>
     <Destinataire>
       <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
-      <CdContact schemeAgencyID="SANDRE">2</CdContact>
+      <CdContact>7</CdContact>
     </Destinataire>
   </Scenario>
   <RefHyd>
@@ -24,6 +24,14 @@
         <TypModelePrevision>1</TypModelePrevision>
         <DescModelePrevision>Description du modèle</DescModelePrevision>
         <DtMajModelePrevision>2001-12-17T04:30:47</DtMajModelePrevision>
+        <SitesHydro>
+			<SiteHydro>
+				<CdSiteHydro>A1234567</CdSiteHydro>
+			</SiteHydro>
+			<SiteHydro>
+				<CdSiteHydro>Z7654321</CdSiteHydro>
+			</SiteHydro>
+        </SitesHydro>
       </ModelePrevision>
       <ModelePrevision>
         <CdModelePrevision>0123456789</CdModelePrevision>

@@ -344,7 +344,9 @@ def _parse(src, ordered=True):
         'seuilshydro': seuilshydro,
         'seuilsmeteo': seuilsmeteo,
         'modelesprevision': _modelesprevision_from_element(
-            tree.find('RefHyd/ModelesPrevision')),
+            tree.find('RefHyd/ModelesPrevision'),
+            version=scenario.version,
+            tags=tags),
         'evenements': _evenements_from_element(
             tree.find('Donnees/Evenements'), scenario.version, tags),
         'courbestarage': _courbestarage_from_element(
@@ -1328,16 +1330,27 @@ def _valeurseuilhydro_from_element_v2(element, seuil, version, tags):
         return _seuil.Valeurseuil(**args)
 
 
-def _modeleprevision_from_element(element):
+def _modeleprevision_from_element(element, version, tags):
     """Return a modeleprevision.Modeleprevision from a """
     """<ModelePrevision> element."""
     if element is not None:
         # prepare args
         args = {}
+        cdcontact = _value(element, 'CdContact')
+        if cdcontact is not None:
+            args['contact'] = _intervenant.Contact(code=cdcontact)
         args['code'] = _value(element, 'CdModelePrevision')
         args['libelle'] = _value(element, 'LbModelePrevision')
-        args['typemodele'] = _value(element, 'TypModelePrevision', int)
+        typemodele = _value(element, 'TypModelePrevision', int)
+        if typemodele is not None:
+            args['typemodele'] = typemodele
         args['description'] = _value(element, 'DescModelePrevision')
+        args['dtmaj'] = _value(element, 'DtMajModelePrevision')
+        if version >= '2':
+            args['siteshydro'] = []
+            for site in element.findall('SitesHydro/SiteHydro'):
+                code = _value(site, 'CdSiteHydro')
+                args['siteshydro'].append(_sitehydro.Sitehydro(code=code))
         # build a Modeleprevision and return
         return _modeleprevision.Modeleprevision(**args)
 
@@ -2070,8 +2083,8 @@ def _global_function_builder(xpath, func):
 # _sitesmeteo_from_element = _global_function_builder(
 #     './SiteMeteo', _sitemeteo_from_element)
 # return a list of Modeleprevision from a <ModelesPrevision> element
-_modelesprevision_from_element = _global_function_builder(
-    './ModelePrevision', _modeleprevision_from_element)
+# _modelesprevision_from_element = _global_function_builder(
+#     './ModelePrevision', _modeleprevision_from_element)
 # return a list of evenement.Evenement from a <Evenements> element
 # _evenements_from_element = _global_function_builder(
 #     './Evenement', _evenement_from_element)
@@ -2093,6 +2106,14 @@ _seriesmeteo_from_element_v2 = _global_function_builder(
 # return a list of simulation.Simulation from a <Simuls> element
 _simulations_from_element = _global_function_builder(
     './Simul', _simulation_from_element)
+
+
+def _modelesprevision_from_element(elem, version, tags):
+    modeles = []
+    if elem is not None:
+        for item in elem.findall('./ModelePrevision'):
+            modeles.append(_modeleprevision_from_element(item, version, tags))
+    return modeles
 
 
 def _intervenants_from_element(elem, version, tags):

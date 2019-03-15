@@ -1016,18 +1016,25 @@ class TestFromXmlModelesPrevision(unittest.TestCase):
     def test_modeleprevision_0(self):
         """Modeleprevision 0 test."""
         modeleprevision = self.data['modelesprevision'][0]
-        self.assertEqual(modeleprevision.code, 'token')
-        self.assertEqual(modeleprevision.libelle, 'String')
-        self.assertEqual(modeleprevision.typemodele, 0)
-        self.assertEqual(modeleprevision.description, 'String')
+        self.assertEqual(modeleprevision.contact.code, '1234')
+        self.assertEqual(modeleprevision.code, '9876543210')
+        self.assertEqual(modeleprevision.libelle, 'Libellé du modèle')
+        self.assertEqual(modeleprevision.typemodele, 1)
+        self.assertEqual(modeleprevision.description, 'Description du modèle')
+        self.assertEqual(modeleprevision.dtmaj,
+                         datetime.datetime(2001, 12, 17, 4, 30, 47))
+        self.assertEqual(modeleprevision.siteshydro, [])
 
     def test_modeleprevision_1(self):
         """Modeleprevision 1 test."""
         modeleprevision = self.data['modelesprevision'][1]
-        self.assertEqual(modeleprevision.code, 'token')
-        self.assertEqual(modeleprevision.libelle, 'String')
+        self.assertIsNone(modeleprevision.contact)
+        self.assertEqual(modeleprevision.code, '0123456789')
+        self.assertIsNone(modeleprevision.libelle)
         self.assertEqual(modeleprevision.typemodele, 0)
-        self.assertEqual(modeleprevision.description, 'String')
+        self.assertIsNone(modeleprevision.description)
+        self.assertIsNone(modeleprevision.dtmaj)
+        self.assertEqual(modeleprevision.siteshydro, [])
 
 
 # -- class TestFromXmlEvenements ----------------------------------------------
