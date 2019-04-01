@@ -168,17 +168,19 @@ class _Seuil(object):
     @valeurs.setter
     def valeurs(self, valeurs):
         """Set valeurs."""
-        # assert the navigability from valeur to seuil
-        if self._strict and (valeurs is not None):
-            try:
-                for valeur in valeurs:
-                    valeur.seuil = self
+        self._valeurs = []
+        if valeurs is None:
+            return
+        if isinstance(valeurs, Valeurseuil):
+            self._valeurs.append(valeurs)
+            return
 
-            except AttributeError:
-                raise TypeError('valeurs should be an iterable of Valeurseuil')
-
-        # all is well
-        self._valeurs = valeurs
+        for valeur in valeurs:
+            if not isinstance(valeur, Valeurseuil):
+                if self._strict:
+                    raise TypeError('valeurs should be an  Valeurseuil'
+                                    ' or an iterable of Valeurseuil')
+            self._valeurs.append(valeur)
 
     # -- other methods --
     def _check_typeseuil_and_duree(self):
@@ -327,6 +329,90 @@ class Seuilhydro(_Seuil):
     __hash__ = _composant.__hash__
 
 
+# -- class Seuilmeteo ---------------------------------------------------------
+class Seuilmeteo(_Seuil):
+
+    """Classe Seuilmeteo.
+
+    Proprietes:
+        code (string) = code seuil
+        grandeurmeteo (sitemeteo.Grandeur) = grandeur du site météo du seuil
+        typeseuil (entier parmi NOMENCLATURE[528]) = type du seuil
+        duree (numerique) = duree du seuil en minutes
+        nature (entier parmi NOMENCLATURE[529]) = nature du seuil
+        libelle (string[255]) = libelle du seuil
+        mnemo (string[50]) = mnemonique
+        gravite (0 < entier < 100)
+        commentaire (texte)
+        dtmaj (datetime.datetime) = date de mise a jour
+        valeurs (liste de Valeurseuil)
+
+        La duree n'est pertinente que pour les seuils de type gradient.
+        Le libelle et le mnemonique sont exclusifs.
+
+    """
+
+    def __init__(
+        self, code, grandeurmeteo=None, typeseuil=None, duree=None,
+        nature=None, libelle=None, mnemo=None, gravite=None, commentaire=None,
+        dtmaj=None, valeurs=None, strict=True
+    ):
+        """Initialisation.
+
+        Arguments:
+            code (string) = code seuil
+            grandeurmeteo (sitemeteo.Grandeur) = grandeur du site météo
+            typeseuil (entier parmi NOMENCLATURE[528]) = type du seuil
+            duree (numerique) = duree du seuil en minutes
+            nature (entier parmi NOMENCLATURE[529]) = nature du seuil
+            libelle (string[255]) = libelle du seuil
+            mnemo (string[50]) = mnemonique
+            gravite (0 < entier < 100)
+            commentaire (texte)
+            dtmaj (numpy.datetime64 string, datetime.datetime...) =
+                date de mise a jour
+            valeurs (liste de Valeurseuil)
+            strict (bool, defaut True) = strict or fuzzy mode
+
+        """
+        # -- super --
+        super(Seuilmeteo, self).__init__(
+            code=code, typeseuil=typeseuil, duree=duree,
+            nature=nature, libelle=libelle, mnemo=mnemo, gravite=gravite,
+            commentaire=commentaire, dtmaj=dtmaj, valeurs=valeurs,
+            strict=strict
+        )
+
+        # -- simple properties --
+        # FIXME - seuil.sitehydro should be  a full property
+        self._grandeurmeteo = None
+        self.grandeurmeteo = grandeurmeteo
+
+    # -- property grandeurmeteo --
+    @property
+    def grandeurmeteo(self):
+        """Return grandeurmeteo."""
+        return self._grandeurmeteo
+
+    @grandeurmeteo.setter
+    def grandeurmeteo(self, grandeurmeteo):
+        """Set grandeurmeteo."""
+        if not isinstance(grandeurmeteo, _sitemeteo.Grandeur):
+            raise TypeError(
+                'grandeur meteo must be an instance of _sitemeteo.Grandeur')
+        self._grandeurmeteo = grandeurmeteo
+
+    # -- special methods --
+    __all__attrs__ = (
+        'grandeurmeteo', 'code', 'typeseuil', 'duree', 'nature', 'libelle',
+        'mnemo', 'gravite', 'commentaire', 'publication', 'valeurforcee',
+        'dtmaj', 'valeurs'
+    )
+    __eq__ = _composant.__eq__
+    __ne__ = _composant.__ne__
+    __hash__ = _composant.__hash__
+
+
 # -- class Valeurseuil --------------------------------------------------------
 class Valeurseuil (object):
 
@@ -335,7 +421,7 @@ class Valeurseuil (object):
     Proprietes:
         valeur (numerique) = valeur du seuil
         seuil (Seuilhydro ou Seuilmeteo)
-        entite (Sitehydro, Station, Capteur ou Grandeurmeteo)
+        entite (Sitehydro, Station, Capteur ou sitemeteo.Grandeur)
         tolerance (numerique)
         dtactivation (datetime.datetime)
         dtdesactivation (datetime.datetime)
@@ -356,7 +442,7 @@ class Valeurseuil (object):
         Arguments:
             valeur (numerique) = valeur du seuil
             seuil (Seuilhydro ou Seuilmeteo)
-            entite (Sitehydro, Station, Capteur ou Grandeurmeteo)
+            entite (Sitehydro, Station, Capteur ou sitemeteo.Grandeur)
             tolerance (numerique)
             dtactivation (numpy.datetime64 string, datetime.datetime...)
             dtdesactivation (numpy.datetime64 string, datetime.datetime...)
@@ -367,15 +453,18 @@ class Valeurseuil (object):
 
         """
         # -- simple properties --
-        # TODO - all the Valeurseuil properties should be full properties
-        self.valeur = float(valeur)
+        self._strict = bool(strict)
+
+        # -- full properties --
+        self._valeur = valeur
+        self.valeur = valeur
         # TODO - Valeurseuil.seuil is required unless strict is False
         self.seuil = seuil
         # TODO - Valeurseuil.entite is required unless strict is False
         self._entite = None
         self.entite = entite
-        self.tolerance = float(tolerance) if tolerance else None
-        self._strict = bool(strict)
+        self._tolerance = None
+        self.tolerance = tolerance
 
         # -- descriptors --
         self.dtactivation = dtactivation
@@ -399,6 +488,32 @@ class Valeurseuil (object):
                             ' or a Capteur or Grandeur')
         self._entite = entite
 
+    # -- property valeur --
+    @property
+    def valeur(self):
+        """Return valeur."""
+        return self._valeur
+
+    @valeur.setter
+    def valeur(self, valeur):
+        """Set valeur."""
+        if valeur is None:
+            if self._strict:
+                raise TypeError('valeur is required')
+            self._valeur = None
+            return
+        self._valeur = float(valeur)
+
+    # -- property tolerance --
+    @property
+    def tolerance(self):
+        """Return tolerance."""
+        return self._tolerance
+
+    @tolerance.setter
+    def tolerance(self, tolerance):
+        """Set tolerance."""
+        self._tolerance = float(tolerance) if tolerance is not None else None
 
     # -- special methods --
     __all__attrs__ = (

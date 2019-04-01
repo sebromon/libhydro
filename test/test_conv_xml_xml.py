@@ -212,6 +212,7 @@ class TestMessage(unittest.TestCase):
         self.file_sith = os.path.join(FILES_PATH, 'siteshydro.xml')
         self.file_sitm = os.path.join(FILES_PATH, 'sitesmeteo.xml')
         self.file_seu = os.path.join(FILES_PATH, 'seuilshydro.xml')
+        self.file_seum = os.path.join(FILES_PATH, 'seuilsmeteo.xml')
         self.file_eve = os.path.join(FILES_PATH, 'evenements.xml')
         self.file_ct = os.path.join(FILES_PATH, 'courbestarage.xml')
         self.file_jaug = os.path.join(FILES_PATH, 'jaugeages.xml')
@@ -238,6 +239,7 @@ class TestMessage(unittest.TestCase):
         self.file_sitm_v2 = os.path.join(FILES_PATH_V2, 'sitesmeteo.xml')
         self.file_inter_v2 = os.path.join(FILES_PATH_V2, 'intervenants.xml')
         self.file_seu_v2 = os.path.join(FILES_PATH_V2, 'seuilshydro.xml')
+        self.file_seum_v2 = os.path.join(FILES_PATH_V2, 'seuilsmeteo.xml')
 
         self.tmp_dir = tempfile.mkdtemp(prefix='test_xml_')
         self.tmp_file = tempfile.mktemp(dir=self.tmp_dir)
@@ -454,6 +456,18 @@ class TestMessage(unittest.TestCase):
         msg = Message.from_file(self.file_seu_v2)
         msg.write(self.tmp_file, force=True, version='2')
         self.assertNotEqual(msg.seuilshydro, [])
+
+    def test_base_31(self):
+        """Message from file seuilsmeteo Sandre V2"""
+        msg = Message.from_file(self.file_seum_v2)
+        msg.write(self.tmp_file, force=True, version='2')
+        self.assertNotEqual(msg.seuilsmeteo, [])
+
+    def test_base_32(self):
+        """Message from file seuilsmeteo Sandre V1.1"""
+        msg = Message.from_file(self.file_seum)
+        msg.write(self.tmp_file, force=True, version='1.1')
+        self.assertNotEqual(msg.seuilsmeteo, [])
 
     def test_str_01(self):
         """Test __str__ method with basic values."""

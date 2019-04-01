@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hydrometrie>
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>1.1</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2010-02-26T08:05:56</DateHeureCreationFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1520</CdIntervenant>
+      <NomIntervenant>Service de Prévision des Crues (S.P.C.) Grand Delta</NomIntervenant>
+      <CdContact schemeAgencyID="SANDRE">26</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+    </Destinataire>
+  </Scenario>
+  <RefHyd>
+    <SitesMeteo>
+      <SiteMeteo>
+        <CdSiteMeteo>01072001</CdSiteMeteo>
+        <LbSiteMeteo>CEYZERIAT_PTC</LbSiteMeteo>
+        <CdCommune>35281</CdCommune>
+        <GrdsMeteo>
+          <GrdMeteo>
+            <CdGrdMeteo>RR</CdGrdMeteo>
+            <DtMiseServiceGrdMeteo>1994-04-05T16:00:00</DtMiseServiceGrdMeteo>
+          </GrdMeteo>
+          <GrdMeteo>
+            <CdGrdMeteo>VV</CdGrdMeteo>
+            <DtMiseServiceGrdMeteo>1998-04-05T16:00:00</DtMiseServiceGrdMeteo>
+            <DtFermetureServiceGrdMeteo>2008-04-05T16:00:00</DtFermetureServiceGrdMeteo>
+            <EssaiGrdMeteo>false</EssaiGrdMeteo>
+            <!--<PasDeTempsNominalGrdMeteo>9</PasDeTempsNominalGrdMeteo>-->
+            <ClassesQualiteGrd>
+              <ClasseQualiteGrd>
+                <CdqClasseQualiteGrd>4</CdqClasseQualiteGrd>
+                <DtVisiteSiteMeteo>1994-04-05T08:54:00</DtVisiteSiteMeteo>
+                <DtDebutClasseQualiteGrd>1994-04-05T08:52:00</DtDebutClasseQualiteGrd>
+                <DtFinClasseQualiteGrd>2015-04-05T08:55:00</DtFinClasseQualiteGrd>
+              </ClasseQualiteGrd>
+            </ClassesQualiteGrd>
+            <ValeursSeuilsGrdMeteo>
+              <ValeurSeuilGrdMeteo>
+                <CdSeuilGrdMeteo>28</CdSeuilGrdMeteo>
+                <TypSeuilGrdMeteo>1</TypSeuilGrdMeteo>
+                <NatureSeuilGrdMeteo>11</NatureSeuilGrdMeteo>
+                <DureeSeuilGrdMeteo>0</DureeSeuilGrdMeteo>
+                <LbUsuelSeuilGrdMeteo>Vitesse maximale avant arrachement</LbUsuelSeuilGrdMeteo>
+                <MnSeuilGrdMeteo>V max</MnSeuilGrdMeteo>
+                <IndGraviteSeuilGrdMeteo>85</IndGraviteSeuilGrdMeteo>
+                <ComSeuilGrdMeteo>Commentaire seuil</ComSeuilGrdMeteo>
+                <ValSeuilGrdMeteo>25.03</ValSeuilGrdMeteo>
+                <DtDesactivationSeuilGrdMeteo>2016-03-10T09:11:12</DtDesactivationSeuilGrdMeteo>
+                <DtActivationSeuilGrdMeteo>2015-06-27T11:37:41</DtActivationSeuilGrdMeteo>
+                <ToleranceSeuilGrdMeteo>1.2</ToleranceSeuilGrdMeteo>
+                <DtMajSeuilGrdMeteo>2017-12-03T15:24:13</DtMajSeuilGrdMeteo>
+              </ValeurSeuilGrdMeteo>
+              <ValeurSeuilGrdMeteo>
+                <CdSeuilGrdMeteo>29</CdSeuilGrdMeteo>
+                <TypSeuilGrdMeteo>2</TypSeuilGrdMeteo>
+                <NatureSeuilGrdMeteo>31</NatureSeuilGrdMeteo>
+                <DureeSeuilGrdMeteo>60</DureeSeuilGrdMeteo>
+                <LbUsuelSeuilGrdMeteo>Vitesse gradient</LbUsuelSeuilGrdMeteo>
+                <MnSeuilGrdMeteo>V grad</MnSeuilGrdMeteo>
+                <IndGraviteSeuilGrdMeteo>50</IndGraviteSeuilGrdMeteo>
+                <ComSeuilGrdMeteo>Commentaire</ComSeuilGrdMeteo>
+                <ValSeuilGrdMeteo>10.0</ValSeuilGrdMeteo>
+                <DtActivationSeuilGrdMeteo>2018-10-15T13:25:14</DtActivationSeuilGrdMeteo>
+                <DtMajSeuilGrdMeteo>2019-03-01T18:56:37</DtMajSeuilGrdMeteo>
+              </ValeurSeuilGrdMeteo>
+            </ValeursSeuilsGrdMeteo>
+          </GrdMeteo>
+        </GrdsMeteo>
+      </SiteMeteo>
+      <SiteMeteo>
+        <CdSiteMeteo>123456789</CdSiteMeteo>
+         <GrdsMeteo>
+          <GrdMeteo>
+            <CdGrdMeteo>RR</CdGrdMeteo>
+            <ValeursSeuilsGrdMeteo>
+              <ValeurSeuilGrdMeteo>
+                <CdSeuilGrdMeteo>1234</CdSeuilGrdMeteo>
+              </ValeurSeuilGrdMeteo>
+            </ValeursSeuilsGrdMeteo>
+          </GrdMeteo>
+        </GrdsMeteo>
+      </SiteMeteo>
+      <SiteMeteo>
+        <CdSiteMeteo>87654321</CdSiteMeteo>
+      </SiteMeteo>
+    </SitesMeteo>
+  </RefHyd>
+</hydrometrie>

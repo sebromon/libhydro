@@ -14,7 +14,7 @@ from __future__ import (
 )
 
 from . import _composant
-
+from libhydro.core import intervenant as _intervenant, sitehydro as _sitehydro
 
 # -- strings ------------------------------------------------------------------
 __author__ = """Philippe Gouin """ \
@@ -40,31 +40,33 @@ class Modeleprevision(object):
     Classe pour manipuler les modeles numeriques de prevision.
 
     Proprietes:
-        code (string <= 10) =
-        libelle (string)
-        typemodele (integer parmi NOMENCLATURE[525])
-        description (string)
+        code (string <= 10) = code modèle
+        libelle (string) = libellé du modèle
+        typemodele (integer parmi NOMENCLATURE[525]) = type de modèle
+        description (string) = description
+        contact (_intervenant.Contact or None) = contact
+        dtmaj (datetime.datetime or None) = date de mise à jour
+        siteshydro (iterable of _sitehydro.Sitehydro) = sites hydro
 
     """
 
-    # Modeleprevision other properties
-
-    # dtmaj
-    # auteur
-
     typemodele = _composant.Nomenclatureitem(nomenclature=525, required=False)
+    dtmaj = _composant.Datefromeverything(required=False)
 
     def __init__(
         self, code=None, libelle=None, typemodele=0, description=None,
-        strict=True
+        contact=None, dtmaj=None, siteshydro=None, strict=True
     ):
         """Initialisation.
 
         Arguments:
-            code (string <= 10)
-            libelle (string)
-            typemodele (integer parmi NOMENCLATURE[525], defaut 0)
-            description (string)
+            code (string <= 10) = code modèle
+            libelle (string) = libellé du modèle
+            typemodele (integer parmi NOMENCLATURE[525]) = type de modèle
+            description (string) = description
+            contact (_intervenant.Contact or None) = contact
+            dtmaj (datetime.datetime or None) = date de mise à jour
+            siteshydro (iterable of _sitehydro.Sitehydro) = sites hydro
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite du code et du type de modele
 
@@ -81,10 +83,16 @@ class Modeleprevision(object):
 
         # -- descriptors --
         self.typemodele = typemodele
+        self.dtmaj = dtmaj
 
         # -- full properties --
         self._code = None
         self.code = code
+        self._contact = None
+        self.contact = contact
+        self._siteshydro = []
+        self.siteshydro=siteshydro
+
 
     # -- property code --
     @property
@@ -104,9 +112,46 @@ class Modeleprevision(object):
         except:
             raise
 
+    # -- property contact --
+    @property
+    def contact(self):
+        """Return contact hydro."""
+        return self._contact
+
+    @contact.setter
+    def contact(self, contact):
+        """Set contact hydro."""
+        if contact is not None:
+            if not isinstance(contact, _intervenant.Contact):
+                raise TypeError(
+                    'contact must be an instance of intervenant.Contact')
+        self._contact = contact
+
+    # -- property siteshydro --
+    @property
+    def siteshydro(self):
+        """Return siteshydro hydro."""
+        return self._siteshydro
+
+    @siteshydro.setter
+    def siteshydro(self, siteshydro):
+        """Set siteshydro hydro."""
+        self._siteshydro = []
+        if siteshydro is None:
+            return
+        if isinstance(siteshydro, _sitehydro.Sitehydro):
+            siteshydro = [siteshydro]
+        for sitehydro in siteshydro:
+            if not isinstance(sitehydro, _sitehydro.Sitehydro):
+                raise TypeError(
+                    'siteshydro must be a _sitehydro.Sitehydro'
+                    ' or an iterable of _sitehydro.Sitehydro')
+            self._siteshydro.append(sitehydro)
+
     # -- special methods --
     __all__attrs__ = (
-        'code', 'libelle', 'typemodel', 'description'
+        'code', 'libelle', 'typemodele', 'description', 'contact', 'dtmaj',
+        'siteshydro'
     )
     __eq__ = _composant.__eq__
     __ne__ = _composant.__ne__

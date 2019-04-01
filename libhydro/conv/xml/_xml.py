@@ -67,6 +67,7 @@ class Message(object):
         siteshydro (liste de sitehydro.Sitehydro)
         sitesmeteo (liste de sitemeteo.Sitemeteo)
         seuilshydro (liste de seuil.Seuilhydro)
+        seuilsmeteo (liste de seuil.Seuilmeteo)
         modelesprevision (liste de modeleprevision.Modeleprevision)
         evenements (liste de evenement.Evenement)
         courbestarage (liste de courbetarage.CourbeTarage)
@@ -90,6 +91,7 @@ class Message(object):
     siteshydro = _composant.Rlistproperty(cls=_sitehydro.Sitehydro)
     sitesmeteo = _composant.Rlistproperty(cls=_sitemeteo.Sitemeteo)
     seuilshydro = _composant.Rlistproperty(cls=_seuil.Seuilhydro)
+    seuilsmeteo = _composant.Rlistproperty(cls=_seuil.Seuilmeteo)
     modelesprevision = _composant.Rlistproperty(
         cls=_modeleprevision.Modeleprevision)
     evenements = _composant.Rlistproperty(cls=_evenement.Evenement)
@@ -103,11 +105,11 @@ class Message(object):
     simulations = _composant.Rlistproperty(cls=_simulation.Simulation)
 
     def __init__(self, scenario, intervenants=None, siteshydro=None,
-                 sitesmeteo=None, seuilshydro=None, modelesprevision=None,
-                 evenements=None, courbestarage=None, jaugeages=None,
-                 courbescorrection=None, serieshydro=None, seriesmeteo=None,
-                 seriesobselab=None, seriesobselabmeteo=None, simulations=None,
-                 strict=True):
+                 sitesmeteo=None, seuilshydro=None, seuilsmeteo=None,
+                 modelesprevision=None, evenements=None, courbestarage=None,
+                 jaugeages=None, courbescorrection=None, serieshydro=None,
+                 seriesmeteo=None, seriesobselab=None, seriesobselabmeteo=None,
+                 simulations=None, strict=True):
         """Initialisation.
 
         Arguments:
@@ -116,6 +118,7 @@ class Message(object):
             siteshydro (sitehydro.Sitehydro iterable ou None)
             sitesmeteo (sitemeteo.Sitemeteo iterable ou None)
             seuilshydro (seuil.Seuilhydro iterable ou None)
+            seuilsmeteo (seuil.Seuilmeteo iterable ou None)
             modelesprevision (modeleprevision.Modeleprevision iterable ou None)
             evenements (evenement.Evenement iterable ou None)
             courbestarage (courbetarage.CourbeTarage iterable ou None)
@@ -144,6 +147,7 @@ class Message(object):
         self.siteshydro = siteshydro or []
         self.sitesmeteo = sitesmeteo or []
         self.seuilshydro = seuilshydro or []
+        self.seuilsmeteo = seuilsmeteo or []
         self.modelesprevision = modelesprevision or []
         self.evenements = evenements or []
         self.courbestarage = courbestarage or []
@@ -255,6 +259,12 @@ class Message(object):
             seuilshydro = _from_xml._seuilshydro_from_element_v2(
                 element=tree.find('RefHyd/SeuilsHydro'),
                 version=scenario.version, tags=tags)
+            sitesmeteo = _from_xml._sitesmeteo_from_element_v2(
+                tree.find('RefHyd/SitesMeteo'), version=scenario.version,
+                tags=tags)
+            seuilsmeteo = _from_xml._seuilsmeteo_from_element_v2(
+                element=tree.find('RefHyd/SeuilsMeteo'), version=scenario.version,
+                tags=tags)
         else:
             tags = _sandre_tags.SandreTagsV1
             seriesmeteo, seriesobselabmeteo = _from_xml._seriesmeteo_from_element(
@@ -264,6 +274,10 @@ class Message(object):
             seuilshydro = _from_xml._seuilshydro_from_element(
                 element=tree.find('RefHyd/SitesHydro'),
                 version=scenario.version, tags=tags, ordered=ordered)
+            sitesmeteo, seuilsmeteo = _from_xml._sitesmeteo_from_element(
+                tree.find('RefHyd/SitesMeteo'), version=scenario.version,
+                tags=tags)
+
 
         return Message(
             scenario=scenario,
@@ -271,11 +285,11 @@ class Message(object):
                 tree.find('RefHyd/Intervenants'), scenario.version, tags),
             siteshydro=_from_xml._siteshydro_from_element(
                 tree.find('RefHyd/SitesHydro'), scenario.version, tags),
-            sitesmeteo=_from_xml._sitesmeteo_from_element(
-                tree.find('RefHyd/SitesMeteo'), scenario.version, tags),
+            sitesmeteo=sitesmeteo,
             seuilshydro=seuilshydro,
+            seuilsmeteo=seuilsmeteo,
             modelesprevision=_from_xml._modelesprevision_from_element(
-                tree.find('RefHyd/ModelesPrevision')),
+                tree.find('RefHyd/ModelesPrevision'), scenario.version, tags),
             evenements=_from_xml._evenements_from_element(
                 tree.find('Donnees/Evenements'), scenario.version, tags),
             courbestarage=_from_xml._courbestarage_from_element(
@@ -315,6 +329,7 @@ class Message(object):
             siteshydro   = iterable de sitehydro.Sitehydro
             sitesmeteo   = iterable de sitemeteo.Sitemeteo
             seuilshydro  = iterable de seuil.Seuilhydro
+            seuilsmeteo  = iterable de seuil.Seuilmeteo
             modelesprevision = iterable de modeleprevision.Modeleprevision
             evenements   = iterable d'evenement.Evenement
             courbestarage = iterable de courbetarage.CourbeTarage
@@ -347,6 +362,7 @@ class Message(object):
                 siteshydro=self.siteshydro,
                 sitesmeteo=self.sitesmeteo,
                 seuilshydro=self.seuilshydro,
+                seuilsmeteo=self.seuilsmeteo,
                 modelesprevision=self.modelesprevision,
                 evenements=self.evenements,
                 courbestarage=self.courbestarage,
@@ -431,6 +447,7 @@ class Message(object):
                '{space}{siteshydro} siteshydro\n' \
                '{space}{sitesmeteo} sitesmeteo\n' \
                '{space}{seuilshydro} seuilshydro\n' \
+               '{space}{seuilsmeteo} seuilsmeteo\n' \
                '{space}{modelesprevision} modelesprevision\n' \
                '{space}{evenements} evenements\n' \
                '{space}{courbestarage} courbestarage\n' \
@@ -450,6 +467,8 @@ class Message(object):
                    else len(self.sitesmeteo),
                    seuilshydro=0 if self.seuilshydro is None
                    else len(self.seuilshydro),
+                   seuilsmeteo=0 if self.seuilsmeteo is None
+                   else len(self.seuilsmeteo),
                    modelesprevision=0 if self.modelesprevision is None
                    else len(self.modelesprevision),
                    evenements=0 if self.evenements is None

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <hydrometrie xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1/sandre_sc_hydrometrie.xsd"> -->
+<hydrometrie>
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>2</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2012-06-04T09:22:44</DateHeureCreationFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact schemeAgencyID="SANDRE">1</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact schemeAgencyID="SANDRE">7</CdContact>
+    </Destinataire>
+  </Scenario>
+  <RefHyd>
+    <SeuilsMeteo>
+      <!-- Full seuil -->
+      <SeuilMeteo>
+        <CdSeuilMeteo>2214</CdSeuilMeteo>
+        <SiteMeteo>
+            <CdSiteMeteo>12345678</CdSiteMeteo>
+            <LbSiteMeteo>Libéllé du site météo</LbSiteMeteo>
+        </SiteMeteo>
+        <GrdMeteo>
+          <DtMiseServiceGrdMeteo>1990-01-17T14:36:39</DtMiseServiceGrdMeteo>
+          <CdGrdMeteo>RR</CdGrdMeteo>
+        </GrdMeteo>
+        <TypSeuilMeteo>2</TypSeuilMeteo>
+        <NatureSeuilMeteo>32</NatureSeuilMeteo>
+        <DureeSeuilMeteo>60</DureeSeuilMeteo>
+        <LbUsuelSeuilMeteo>Libellé usuel</LbUsuelSeuilMeteo>
+        <MnSeuilMeteo>Mnémo</MnSeuilMeteo>
+        <IndiceGraviteSeuilMeteo>85</IndiceGraviteSeuilMeteo>
+        <DtMajSeuilMeteo>2015-04-02T11:29:01</DtMajSeuilMeteo>
+        <ComSeuilMeteo>Commentaire</ComSeuilMeteo>
+        <ValsSeuilMeteo>
+            <ValSeuilMeteo>
+                <ValValSeuilMeteo>50.5</ValValSeuilMeteo>
+                <ToleranceValSeuilMeteo>1.5</ToleranceValSeuilMeteo>
+                <DtActivationValSeuilMeteo>2000-08-14T15:10:02</DtActivationValSeuilMeteo>
+                <DtDesactivationValSeuilMeteo>2010-11-10T17:23:45</DtDesactivationValSeuilMeteo>
+            </ValSeuilMeteo>
+            <ValSeuilMeteo>
+                <ValValSeuilMeteo>52.0</ValValSeuilMeteo>
+                <DtActivationValSeuilMeteo>2011-03-13T07:10:14</DtActivationValSeuilMeteo>
+            </ValSeuilMeteo>
+        </ValsSeuilMeteo>
+      </SeuilMeteo>
+      <!-- Minimum seuil -->
+      <SeuilMeteo>
+        <CdSeuilMeteo>3505</CdSeuilMeteo>
+        <SiteMeteo>
+            <CdSiteMeteo>12345678</CdSiteMeteo>
+        </SiteMeteo>
+        <GrdMeteo>
+          <CdGrdMeteo>TA</CdGrdMeteo>
+        </GrdMeteo>
+      </SeuilMeteo>
+    </SeuilsMeteo>
+  </RefHyd>
+</hydrometrie>

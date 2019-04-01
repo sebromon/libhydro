@@ -74,10 +74,10 @@ __date__ = '2017-09-29'
 # order matters in XML, we must have the keys list !
 ORDERED_ACCEPTED_KEYS = [
     'scenario',
-    # line 140: [1:6]
+    # line 140: [1:7]
     'intervenants', 'siteshydro', 'sitesmeteo',
-    'seuilshydro', 'modelesprevision',
-    # line 180: [6:]
+    'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+    # line 180: [7:]
     'evenements', 'courbestarage', 'jaugeages', 'courbescorrection',
     'serieshydro', 'seriesmeteo', 'seriesobselab', 'seriesobselabmeteo',
     'simulations']
@@ -113,10 +113,10 @@ NS_ATTR = {
 
 # -- testsfunction ------------------------------------------------------------
 def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
-            seuilshydro=None, modelesprevision=None, evenements=None,
-            courbestarage=None, jaugeages=None, courbescorrection=None,
-            serieshydro=None, seriesmeteo=None, seriesobselab=None,
-            seriesobselabmeteo=None,
+            seuilshydro=None, seuilsmeteo=None, modelesprevision=None,
+            evenements=None, courbestarage=None, jaugeages=None,
+            courbescorrection=None, serieshydro=None, seriesmeteo=None,
+            seriesobselab=None, seriesobselabmeteo=None,
             simulations=None, bdhydro=False, strict=True, ordered=False,
             version=None):
     """Return a etree.Element a partir des donnees passes en argument.
@@ -130,6 +130,7 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
         siteshydro (sitehydro.Sitehydro collection) = iterable or None
         sitesmeteo (sitemeteo.Sitemeteo collection) = iterable or None
         seuilshydro (seuil.Seuilhydro collection) = iterable or None
+        seuilsmeteo (seuil.Seuilmeteo collection) = iterable or None
         modelesprevision (modeleprevision.Modeleprevision collection) =
             iterable or None
         evenements (evenement.Evenement collection) = iterable ou None
@@ -181,7 +182,7 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
                 version=version))
 
     # add the referentiel
-    items = ORDERED_ACCEPTED_KEYS[1:6]
+    items = ORDERED_ACCEPTED_KEYS[1:7]
     choice = len([args[i] for i in items if args[i] is not None]) > 0
     if choice:
         sub = _etree.SubElement(tree, 'RefHyd')
@@ -221,16 +222,23 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
         # sitesmeteo
         if args['sitesmeteo'] is not None:
             sub.append(_sitesmeteo_to_element(
-                args['sitesmeteo'], bdhydro=bdhydro, strict=strict,
+                args['sitesmeteo'], args['seuilsmeteo'], bdhydro=bdhydro,
+                strict=strict, version=version))
+
+        # seuilsmeteo
+        if args['seuilsmeteo'] is not None and version >= '2':
+            sub.append(_seuilsmeteo_to_element(
+                args['seuilsmeteo'], bdhydro=bdhydro, strict=strict,
                 version=version))
 
         # modelesprevision
         if args['modelesprevision'] is not None:
             sub.append(_modelesprevision_to_element(
-                args['modelesprevision'], bdhydro=bdhydro, strict=strict))
+                args['modelesprevision'], bdhydro=bdhydro, strict=strict,
+                version=version))
 
     # add the datas
-    items = ORDERED_ACCEPTED_KEYS[6:]
+    items = ORDERED_ACCEPTED_KEYS[7:]
     choice = len([args[i] for i in items if args[i] is not None]) > 0
     if choice:
         sub = _etree.SubElement(tree, 'Donnees')
@@ -796,7 +804,7 @@ def _codesitemeteo_to_value(sitemeteo, bdhydro=False, strict=True, version='1.1'
     return code
 
 
-def _sitemeteo_to_element(sitemeteo, bdhydro=False, strict=True, version='1.1'):
+def _sitemeteo_to_element(sitemeteo, seuilsmeteo=None, bdhydro=False, strict=True, version='1.1'):
     """Return a <SiteMeteo> element from a sitemeteo.Sitemeteo."""
 
     if sitemeteo is not None:
@@ -898,8 +906,10 @@ def _sitemeteo_to_element(sitemeteo, bdhydro=False, strict=True, version='1.1'):
         if len(sitemeteo.grandeurs) > 0:
             child = element.find('GrdsMeteo')
             for grandeur in sitemeteo.grandeurs:
-                child.append(_grandeur_to_element(grandeur, strict=strict,
-                                                  version=version))
+                child.append(_grandeur_to_element(
+                        grandeur,seuilsmeteo=seuilsmeteo, strict=strict,
+                        version=version))
+
 
         # add roles if necessary
         if len(sitemeteo.roles) > 0:
@@ -960,6 +970,78 @@ def _tronconvigilance_to_element(entitevigicrues, bdhydro=False, strict=True,
     # action !
     return _factory(
         root=_etree.Element(tags.entvigicru), story=story)
+
+
+def _seuilmeteo_to_element(seuilmeteo, bdhydro=False, strict=True,
+                           version='2'):
+    """Return a <SeuilMeteo> from a seuil.Seuilmeteo"""
+    if seuilmeteo is None:
+        return
+
+    if version >= '2':
+        tags = _sandre_tags.SandreTagsV2
+    else:
+        tags = _sandre_tags.SandreTagsV1
+
+    grd = seuilmeteo.grandeurmeteo
+    cdsitemeteo = _codesitemeteo_to_value(grd.sitemeteo, bdhydro, strict)
+
+    if version >= '2':
+        dicsite = _collections.OrderedDict((
+            ('CdSiteMeteo', {'value': cdsitemeteo}),
+            ('LbSiteMeteo', {'value': grd.sitemeteo.libelle})
+            ))
+        dicgrd = _collections.OrderedDict((
+            ('DtMiseServiceGrdMeteo',
+             {'value': datetime2iso(grd.dtmiseservice)}),
+            ('CdGrdMeteo', {'value': grd.typemesure})
+            ))
+        rulessite = {'value': None, 'sub': dicsite}
+        rulesgrd = {'value': None, 'sub': dicgrd}
+    else:
+        rulessite = {'value': None}
+        rulesgrd = {'value': None}
+    # template for seuilhydro simple element
+    story = _collections.OrderedDict((
+        (tags.cdseuilmeteo, {'value': seuilmeteo.code}),
+        ('SiteMeteo', rulessite),
+        ('GrdMeteo', rulesgrd),
+        (tags.typseuilmeteo, {'value': seuilmeteo.typeseuil}),
+        (tags.natureseuilmeteo, {'value': seuilmeteo.nature}),
+        (tags.dureeseuilmeteo, {'value': seuilmeteo.duree}),
+        (tags.lbusuelseuilmeteo, {'value': seuilmeteo.libelle}),
+        (tags.mnseuilmeteo, {'value': seuilmeteo.mnemo}),
+        (tags.indicegraviteseuilmeteo, {'value': seuilmeteo.gravite})))
+
+    if version >= '2':
+        story[tags.dtmajseuilmeteo] = {'value': datetime2iso(seuilmeteo.dtmaj)}
+        story[tags.comseuilmeteo] = {'value': seuilmeteo.commentaire}
+
+        if len(seuilmeteo.valeurs) > 0:
+            story['ValsSeuilMeteo'] = {'value': None, 'force': True}
+    else:
+        story[tags.comseuilmeteo] = {'value': seuilmeteo.commentaire}
+        # add value
+        if len(seuilmeteo.valeurs) > 0:
+            valeur = seuilmeteo.valeurs[0]
+            story[tags.valvalseuilmeteo] = {'value': valeur.valeur}
+            story[tags.dtdesactivationvalseuilmeteo] = {
+                    'value': datetime2iso(valeur.dtdesactivation)}
+            story[tags.dtactivationvalseuilmeteo] = {
+                    'value': datetime2iso(valeur.dtactivation)}
+            story[tags.tolerancevalseuilmeteo] = {'value': valeur.tolerance}
+
+        story[tags.dtmajseuilmeteo] = {'value': datetime2iso(seuilmeteo.dtmaj)}
+
+    # make element <SeuilMeteo> 
+    element = _factory(root=_etree.Element(tags.seuilmeteo), story=story)
+    
+    # add <ValSeuilMeteo>  if necessary
+    if len(seuilmeteo.valeurs) > 0 and version >= '2':
+        child = element.find('ValsSeuilMeteo')
+        for valeur in seuilmeteo.valeurs:
+            child.append(_valeurseuil_to_element_v2(valeur, strict=strict))
+    return element
 
 
 def _seuilhydro_to_element(seuilhydro, bdhydro=False, strict=True, version='1.1'):
@@ -1122,23 +1204,27 @@ def _valeurseuil_to_element_v2(valeurseuil, bdhydro=False,
         # prerequisites
         if strict:
             _required(valeurseuil, ['entite', 'valeur'])
-            _required(valeurseuil.entite, ['code'])
+            # _required(valeurseuil.entite, ['code'])
 
         if not isinstance(valeurseuil.entite,
                           (_sitehydro.Station, _sitehydro.Sitehydro,
-                           _sitehydro.Capteur)):
+                           _sitehydro.Capteur, _sitemeteo.Grandeur)):
             raise TypeError(
                 'valeurseuil.entite is not a Sitehydro'
-                ' or a Station or a Capteur')
+                ' or a Station or a Capteur or a Grandeur')
+        if isinstance(valeurseuil.entite, _sitemeteo.Grandeur):
+            typeseuil = 'SeuilMeteo'
+        else:
+            typeseuil = 'SeuilHydro'
 
         # template for valeurseuilstation simple element
         story = _collections.OrderedDict((
-            ('ValValSeuilHydro', {
+            ('ValVal'+ typeseuil, {
                 'value': valeurseuil.valeur}),
-            ('ToleranceValSeuilHydro', {'value': valeurseuil.tolerance}),
-            ('DtActivationValSeuilHydro', {
+            ('ToleranceVal'+ typeseuil, {'value': valeurseuil.tolerance}),
+            ('DtActivationVal'+ typeseuil, {
                 'value': datetime2iso(valeurseuil.dtactivation)}),
-            ('DtDesactivationValSeuilHydro', {
+            ('DtDesactivationVal'+ typeseuil, {
                 'value': datetime2iso(valeurseuil.dtdesactivation)})))
 
         if isinstance(valeurseuil.entite, _sitehydro.Station):
@@ -1159,7 +1245,7 @@ def _valeurseuil_to_element_v2(valeurseuil, bdhydro=False,
                     ('LbCapteur', {'value': valeurseuil.entite.libelle})))}
         # action !
         return _factory(
-            root=_etree.Element('ValSeuilHydro'), story=story)
+            root=_etree.Element('Val' + typeseuil), story=story)
 
 
 def _station_to_element(station, bdhydro=False, strict=True, version='1.1'):
@@ -1594,7 +1680,8 @@ def _capteur_to_element(capteur, bdhydro=False, strict=True, version='1.1'):
         return element
 
 
-def _grandeur_to_element(grandeur, bdhydro=False, strict=True, version='1.1'):
+def _grandeur_to_element(grandeur, seuilsmeteo=None, bdhydro=False,
+                         strict=True, version='1.1'):
     """Return a <GrdMeteo> element from a sitehydro.grandeur."""
 
     if grandeur is not None:
@@ -1615,6 +1702,12 @@ def _grandeur_to_element(grandeur, bdhydro=False, strict=True, version='1.1'):
             surveillance = bool2xml(grandeur.surveillance)
             delaiabsence = grandeur.delaiabsence
 
+        grdseuils = []
+        if version < '2'and seuilsmeteo is not None:
+            for seuil in seuilsmeteo:
+                if seuil.grandeurmeteo == grandeur:
+                    grdseuils.append(seuil)
+
         # template for grandeur simple element
         story = _collections.OrderedDict((
             ('CdGrdMeteo', {'value': grandeur.typemesure}),
@@ -1629,6 +1722,9 @@ def _grandeur_to_element(grandeur, bdhydro=False, strict=True, version='1.1'):
             ('ClassesQualiteGrd', {
                 'value': None,
                 'force': True if len(grandeur.classesqualite) > 0 else False}),
+            ('ValeursSeuilsGrdMeteo', {
+                'value': None,
+                'force': True if len(grdseuils) > 0 else False}),
             ('DtMajGrdMeteo', {'value': datetime2iso(grandeur.dtmaj)})))
 
         # action !
@@ -1638,6 +1734,13 @@ def _grandeur_to_element(grandeur, bdhydro=False, strict=True, version='1.1'):
             child = element.find('ClassesQualiteGrd')
             for classequalite in grandeur.classesqualite:
                 child.append(_classequalite_to_element(classequalite))
+
+        if len(grdseuils) > 0:
+            child = element.find('ValeursSeuilsGrdMeteo')
+            for seuilmeteo in grdseuils:
+                child.append(_seuilmeteo_to_element(
+                    seuilmeteo, bdhydro=bdhydro, strict=strict,
+                    version=version))
 
         return element
 
@@ -1672,15 +1775,38 @@ def _modeleprevision_to_element(modeleprevision, bdhydro=False, strict=True, ver
         if strict:
             _required(modeleprevision, ['code'])
 
+        cdcontact = None
+        if modeleprevision.contact is not None:
+            cdcontact = modeleprevision.contact.code
         # template for modeleprevision simple elements
         story = _collections.OrderedDict((
+            ('CdContact', {'value': cdcontact}),
             ('CdModelePrevision', {'value': modeleprevision.code}),
             ('LbModelePrevision', {'value': modeleprevision.libelle}),
             ('TypModelePrevision', {'value': modeleprevision.typemodele}),
-            ('DescModelePrevision', {'value': modeleprevision.description})))
+            ('DescModelePrevision', {'value': modeleprevision.description}),
+            ('DtMajModelePrevision',
+             {'value': datetime2iso(modeleprevision.dtmaj)})))
+
+        if version >= '2' and len(modeleprevision.siteshydro) > 0:
+            story['SitesHydro'] = {'value': None, 'force': True}
 
         # make element <modeleprevision> and return
-        return _factory(root=_etree.Element('ModelePrevision'), story=story)
+        element = _factory(root=_etree.Element('ModelePrevision'), story=story)
+
+        if version >= '2' and len(modeleprevision.siteshydro) > 0:
+            child = element.find('SitesHydro')
+            for site in modeleprevision.siteshydro:
+                story = _collections.OrderedDict()
+                story['CdSiteHydro'] = {'value': site.code}
+                child.append(
+                        _factory(root=_etree.Element('SiteHydro'),
+                                 story=story))
+
+        return element
+
+
+
 
 def _evenement_to_element(evenement, bdhydro=False, strict=True, version='1.1'):
     """Return a <Evenement> element from a evenement.Evenement."""
@@ -2383,8 +2509,22 @@ _intervenants_to_element = _global_function_builder(
 _siteshydro_to_element = _global_function_builder(
     'SitesHydro', _sitehydro_to_element)
 # return a <SitesMeteo> element from a list of sitemeteo.Sitemeteo
-_sitesmeteo_to_element = _global_function_builder(
-    'SitesMeteo', _sitemeteo_to_element)
+#_sitesmeteo_to_element = _global_function_builder(
+#     'SitesMeteo', _sitemeteo_to_element)
+
+def _sitesmeteo_to_element(sitesmeteo, seuilsmeteo=None,  bdhydro=False,
+                           strict=True, version='1.1'):
+    if sitesmeteo is None:
+        return
+    element = _etree.Element('SitesMeteo')
+    for sitemeteo in sitesmeteo:
+        element.append(_sitemeteo_to_element(
+                sitemeteo=sitemeteo, seuilsmeteo=seuilsmeteo, bdhydro=bdhydro,
+                strict=strict, version=version))
+    return element
+# return a <SeuilsMeteo> element from a list of seuil.Seuilmeteo
+_seuilsmeteo_to_element = _global_function_builder(
+    'SeuilsMeteo', _seuilmeteo_to_element)
 # return a <ModelesPrevision> element from a list of Modeleprevision
 _modelesprevision_to_element = _global_function_builder(
     'ModelesPrevision', _modeleprevision_to_element)

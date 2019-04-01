@@ -22,7 +22,7 @@ from __future__ import (
 import datetime
 import unittest
 
-from libhydro.core.seuil import Seuilhydro, Valeurseuil
+from libhydro.core.seuil import Seuilhydro, Seuilmeteo, Valeurseuil
 from libhydro.core import sitehydro, sitemeteo
 
 
@@ -56,7 +56,7 @@ class TestSeuilhydro(unittest.TestCase):
             ),
             (
                 code, None, None, None, None, None, None, None, None,
-                None, None, None, None
+                None, None, None, []
             )
         )
 
@@ -208,7 +208,7 @@ class TestSeuilhydro(unittest.TestCase):
         # non iterable values
         seuil._strict = other._strict = False
         self.assertEqual(seuil, other)
-        seuil.valeurs, other.valeurs = 5, 7
+        seuil.valeurs, other.valeurs = [5], [7]
         self.assertNotEqual(seuil, other)
 
     def test_error_01(self):
@@ -319,6 +319,89 @@ class TestSeuilhydro(unittest.TestCase):
         )
 
 
+# -- class TestSeuilmeteo -----------------------------------------------------
+class TestSeuilmeteo(unittest.TestCase):
+
+    """Seuilhydro class tests."""
+
+    def test_base_01(self):
+        """Minimum Seuilhydro."""
+        code = 'seuil 1'
+        site = sitemeteo.Sitemeteo(code='010000000')
+        grandeurmeteo = sitemeteo.Grandeur(typemesure='RR', sitemeteo=site)
+        seuil = Seuilmeteo(code, grandeurmeteo=grandeurmeteo)
+        self.assertEqual(
+            (
+                seuil.code, seuil.grandeurmeteo, seuil.typeseuil,
+                seuil.duree, seuil.nature, seuil.libelle,
+                seuil.mnemo, seuil.gravite, seuil.commentaire,
+                seuil.dtmaj, seuil.valeurs
+            ),
+            (
+                code, grandeurmeteo, None, None, None, None, None, None, None,
+                None, []
+            )
+        )
+
+    def test_base_02(self):
+        """Full Seuilhydro."""
+        code = 'seuil 1'
+        typeseuil = 2
+        duree = 60
+        nature = 24
+        libelle = 'Seuil météo'
+        mnemo = 'Météo'
+        gravite = 51
+        commentaire = 'Commentaire du seuil'
+        dtmaj = datetime.datetime(2016, 10, 11, 12, 13, 14)
+        site = sitemeteo.Sitemeteo(code='010000000')
+        grandeurmeteo = sitemeteo.Grandeur(typemesure='RR', sitemeteo=site)
+        valeurs = [Valeurseuil(valeur=150, entite=grandeurmeteo,
+                               tolerance=1.5)]
+        seuil = Seuilmeteo(code=code, grandeurmeteo=grandeurmeteo,
+                           typeseuil=typeseuil, duree=duree, nature=nature,
+                           libelle=libelle, mnemo=mnemo, gravite=gravite,
+                           commentaire=commentaire, dtmaj=dtmaj,
+                           valeurs=valeurs)
+
+        self.assertEqual(
+            (
+                seuil.code, seuil.grandeurmeteo, seuil.typeseuil,
+                seuil.duree, seuil.nature, seuil.libelle,
+                seuil.mnemo, seuil.gravite, seuil.commentaire,
+                seuil.dtmaj, seuil.valeurs
+            ),
+            (
+                code, grandeurmeteo, typeseuil, duree, nature, libelle, mnemo,
+                gravite, commentaire,
+                dtmaj, valeurs
+            )
+        )
+
+    def test_valeurs(self):
+        code = '555'
+        site = sitemeteo.Sitemeteo(code='010000000')
+        grandeurmeteo = sitemeteo.Grandeur(typemesure='RR', sitemeteo=site)
+        seuil = Seuilmeteo(code, grandeurmeteo=grandeurmeteo)
+        val0 = Valeurseuil(valeur=150, entite=grandeurmeteo, tolerance=1.5)
+        val1 = Valeurseuil(valeur=180, entite=grandeurmeteo, tolerance=3)
+        tabvaleurs = [None, [], val0, [val1], [val0, val1]]
+        expected = [[], [], [val0], [val1], [val0, val1]]
+        for index, valeurs in enumerate(tabvaleurs):
+            seuil.valeurs = valeurs
+            self.assertEqual(seuil.valeurs, expected[index])
+
+    def test_grandeurmeteo(self):
+        """test property grandeurmeteo"""
+        code = '156'
+        site = sitemeteo.Sitemeteo(code='010000000')
+        grandeurmeteo = sitemeteo.Grandeur(typemesure='RR', sitemeteo=site)
+        Seuilmeteo(code=code, grandeurmeteo=grandeurmeteo)
+        for grandeurmeteo in ['4321', 'toto', site]:
+            with self.assertRaises(TypeError):
+                Seuilmeteo(code=code, grandeurmeteo=grandeurmeteo)
+
+
 # -- class TestValeurseuil ----------------------------------------------------
 class TestValeurseuil(unittest.TestCase):
 
@@ -359,6 +442,12 @@ class TestValeurseuil(unittest.TestCase):
                 dtactivation, dtdesactivation
             )
         )
+
+    def test_fuzzy_01(self):
+        """test fuzzy mode"""
+        entite = sitehydro.Sitehydro(code='Z8250001')
+        valseuil = Valeurseuil(valeur=None, entite=entite, strict=False)
+        self.assertIsNone(valseuil.valeur)
 
     def test_str_01(self):
         """Test __str__ method."""

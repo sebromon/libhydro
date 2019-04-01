@@ -65,10 +65,10 @@ class TestFromXmlIntervenants(unittest.TestCase):
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
-                 'seuilshydro', 'modelesprevision', 'evenements',
-                 'courbestarage', 'jaugeages', 'courbescorrection',
-                 'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'seriesobselabmeteo', 'simulations')))
+                 'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+                 'evenements', 'courbestarage', 'jaugeages',
+                 'courbescorrection', 'serieshydro', 'seriesmeteo',
+                 'seriesobselab', 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertNotEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -215,10 +215,10 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
-                 'seuilshydro', 'modelesprevision', 'evenements',
-                 'courbestarage', 'jaugeages', 'courbescorrection',
-                 'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'seriesobselabmeteo', 'simulations')))
+                 'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+                 'evenements', 'courbestarage', 'jaugeages',
+                 'courbescorrection', 'serieshydro', 'seriesmeteo',
+                 'seriesobselab', 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertNotEqual(self.data['siteshydro'], [])
@@ -550,10 +550,10 @@ class TestFromXmlSeuilsHydros(unittest.TestCase):
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
-                 'seuilshydro', 'modelesprevision', 'evenements',
-                 'courbestarage', 'jaugeages', 'courbescorrection',
-                 'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'seriesobselabmeteo', 'simulations')))
+                 'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+                 'evenements', 'courbestarage', 'jaugeages',
+                 'courbescorrection', 'serieshydro', 'seriesmeteo',
+                 'seriesobselab', 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertNotEqual(self.data['siteshydro'], [])
@@ -734,10 +734,10 @@ class TestFromXmlSitesMeteo(unittest.TestCase):
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
-                 'seuilshydro', 'modelesprevision', 'evenements',
-                 'courbestarage', 'jaugeages', 'courbescorrection',
-                 'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'seriesobselabmeteo', 'simulations')))
+                 'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+                 'evenements', 'courbestarage', 'jaugeages',
+                 'courbescorrection', 'serieshydro', 'seriesmeteo',
+                 'seriesobselab', 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -852,6 +852,120 @@ class TestFromXmlSitesMeteo(unittest.TestCase):
         self.assertEqual(visite.modeop, 'Libellé libre')
 
 
+# -- class TestFromXmlSeuilsMeteo ---------------------------------------------
+class TestFromXmlSeuilsMeteos(unittest.TestCase):
+
+    """FromXmlSeuilsHydro class tests."""
+
+    def setUp(self):
+        """Hook method for setting up the test fixture before exercising it."""
+        self.data = from_xml._parse(
+            os.path.join('data', 'xml', '1.1', 'seuilsmeteo.xml'))
+
+    def test_base(self):
+        """Check Keys test."""
+        self.assertEqual(
+            set(self.data.keys()),
+            set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
+                 'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+                 'evenements', 'courbestarage', 'jaugeages',
+                 'courbescorrection', 'serieshydro', 'seriesmeteo',
+                 'seriesobselab', 'seriesobselabmeteo', 'simulations')))
+        self.assertNotEqual(self.data['scenario'], [])
+        self.assertEqual(self.data['intervenants'], [])
+        self.assertEqual(self.data['seuilshydro'], [])
+        self.assertEqual(self.data['evenements'], [])
+        self.assertEqual(self.data['serieshydro'], [])
+        self.assertEqual(self.data['simulations'], [])
+        self.assertEqual(len(self.data['siteshydro']), 0)
+        self.assertEqual(len(self.data['seuilshydro']), 0)
+        self.assertEqual(len(self.data['sitesmeteo']), 3)
+        self.assertEqual(len(self.data['seuilsmeteo']), 3)
+
+    def test_seuils_sitemeteo_0(self):
+        """Test seuils sitemeteo 0."""
+        # check the sitehydro
+        seuil = self.data['seuilsmeteo'][0]
+        grandeur = seuil.grandeurmeteo
+        self.assertEqual(grandeur.typemesure, 'VV')
+        self.assertEqual(grandeur.dtmiseservice,
+                         datetime.datetime(1998, 4, 5, 16, 0, 0))
+        self.assertEqual(grandeur.sitemeteo.code, '001072001')
+        self.assertEqual(grandeur.sitemeteo.libelle, 'CEYZERIAT_PTC')
+        self.assertEqual(seuil.code, '28')
+        self.assertEqual(seuil.typeseuil, 1)
+        self.assertEqual(seuil.nature, 11)
+        self.assertEqual(seuil.duree, 0)
+        self.assertEqual(seuil.libelle, 'Vitesse maximale avant arrachement')
+        self.assertEqual(seuil.mnemo, 'V max')
+        self.assertEqual(seuil.gravite, 85)
+        self.assertEqual(seuil.commentaire, 'Commentaire seuil')
+        self.assertEqual(len(seuil.valeurs), 1)
+        valeur = seuil.valeurs[0]
+        self.assertEqual(valeur.valeur, 25.03)
+        self.assertEqual(valeur.dtdesactivation,
+                         datetime.datetime(2016, 3, 10, 9, 11, 12))
+        self.assertEqual(valeur.dtactivation,
+                         datetime.datetime(2015, 6, 27, 11, 37, 41))
+        self.assertEqual(valeur.tolerance, 1.2,)
+        self.assertEqual(seuil.dtmaj,
+                         datetime.datetime(2017, 12, 3, 15, 24, 13))
+
+    def test_seuils_sitemeteo_1(self):
+        """Test seuils sitemeteo 0."""
+        # check the sitehydro
+        seuil = self.data['seuilsmeteo'][1]
+
+        grandeur = seuil.grandeurmeteo
+        self.assertEqual(grandeur.typemesure, 'VV')
+        self.assertEqual(grandeur.dtmiseservice,
+                         datetime.datetime(1998, 4, 5, 16, 0, 0))
+        self.assertEqual(grandeur.sitemeteo.code, '001072001')
+        self.assertEqual(grandeur.sitemeteo.libelle, 'CEYZERIAT_PTC')
+
+        self.assertEqual(seuil.code, '29')
+        self.assertEqual(seuil.typeseuil, 2)
+        self.assertEqual(seuil.nature, 31)
+        self.assertEqual(seuil.duree, 60)
+        self.assertEqual(seuil.libelle, 'Vitesse gradient')
+        self.assertEqual(seuil.mnemo, 'V grad')
+        self.assertEqual(seuil.gravite, 50)
+        self.assertEqual(seuil.commentaire, 'Commentaire')
+        self.assertEqual(len(seuil.valeurs), 1)
+        valeur = seuil.valeurs[0]
+        self.assertEqual(valeur.valeur, 10)
+        self.assertIsNone(valeur.dtdesactivation)
+        self.assertEqual(valeur.dtactivation,
+                         datetime.datetime(2018, 10, 15, 13, 25, 14))
+        self.assertIsNone(valeur.tolerance)
+        self.assertEqual(seuil.dtmaj,
+                         datetime.datetime(2019, 3, 1, 18, 56, 37))
+
+    def test_seuils_sitemeteo_2(self):
+        """Test seuils sitemeteo 0."""
+        # check the sitehydro
+        seuil = self.data['seuilsmeteo'][2]
+
+        grandeur = seuil.grandeurmeteo
+        self.assertEqual(grandeur.typemesure, 'RR')
+        self.assertIsNone(grandeur.dtmiseservice)
+        self.assertEqual(grandeur.sitemeteo.code, '123456789')
+        self.assertIsNone(grandeur.sitemeteo.libelle)
+
+        self.assertEqual(seuil.code, '1234')
+        self.assertIsNone(seuil.typeseuil)
+        self.assertIsNone(seuil.nature)
+        self.assertIsNone(seuil.duree)
+        self.assertIsNone(seuil.libelle)
+        self.assertIsNone(seuil.mnemo)
+        self.assertIsNone(seuil.gravite)
+        self.assertIsNone(seuil.commentaire)
+        self.assertEqual(len(seuil.valeurs), 0)
+        self.assertIsNone(seuil.dtmaj)
+
+
+
+
 # -- class TestFromXmlModelesPrevision ----------------------------------------
 class TestFromXmlModelesPrevision(unittest.TestCase):
 
@@ -867,10 +981,10 @@ class TestFromXmlModelesPrevision(unittest.TestCase):
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
-                 'seuilshydro', 'modelesprevision', 'evenements',
-                 'courbestarage', 'jaugeages', 'courbescorrection',
-                 'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'seriesobselabmeteo', 'simulations')))
+                 'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+                 'evenements', 'courbestarage', 'jaugeages',
+                 'courbescorrection', 'serieshydro', 'seriesmeteo',
+                 'seriesobselab', 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -902,18 +1016,25 @@ class TestFromXmlModelesPrevision(unittest.TestCase):
     def test_modeleprevision_0(self):
         """Modeleprevision 0 test."""
         modeleprevision = self.data['modelesprevision'][0]
-        self.assertEqual(modeleprevision.code, 'token')
-        self.assertEqual(modeleprevision.libelle, 'String')
-        self.assertEqual(modeleprevision.typemodele, 0)
-        self.assertEqual(modeleprevision.description, 'String')
+        self.assertEqual(modeleprevision.contact.code, '1234')
+        self.assertEqual(modeleprevision.code, '9876543210')
+        self.assertEqual(modeleprevision.libelle, 'Libellé du modèle')
+        self.assertEqual(modeleprevision.typemodele, 1)
+        self.assertEqual(modeleprevision.description, 'Description du modèle')
+        self.assertEqual(modeleprevision.dtmaj,
+                         datetime.datetime(2001, 12, 17, 4, 30, 47))
+        self.assertEqual(modeleprevision.siteshydro, [])
 
     def test_modeleprevision_1(self):
         """Modeleprevision 1 test."""
         modeleprevision = self.data['modelesprevision'][1]
-        self.assertEqual(modeleprevision.code, 'token')
-        self.assertEqual(modeleprevision.libelle, 'String')
+        self.assertIsNone(modeleprevision.contact)
+        self.assertEqual(modeleprevision.code, '0123456789')
+        self.assertIsNone(modeleprevision.libelle)
         self.assertEqual(modeleprevision.typemodele, 0)
-        self.assertEqual(modeleprevision.description, 'String')
+        self.assertIsNone(modeleprevision.description)
+        self.assertIsNone(modeleprevision.dtmaj)
+        self.assertEqual(modeleprevision.siteshydro, [])
 
 
 # -- class TestFromXmlEvenements ----------------------------------------------
@@ -931,10 +1052,10 @@ class TestFromXmlEvenements(unittest.TestCase):
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
-                 'seuilshydro', 'modelesprevision', 'evenements',
-                 'courbestarage', 'jaugeages', 'courbescorrection',
-                 'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'seriesobselabmeteo', 'simulations')))
+                 'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+                 'evenements', 'courbestarage', 'jaugeages',
+                 'courbescorrection', 'serieshydro', 'seriesmeteo',
+                 'seriesobselab', 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -1051,10 +1172,10 @@ class TestFromXmlJaugeages(unittest.TestCase):
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
-                 'seuilshydro', 'modelesprevision', 'evenements',
-                 'courbestarage', 'jaugeages', 'courbescorrection',
-                 'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'seriesobselabmeteo', 'simulations')))
+                 'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+                 'evenements', 'courbestarage', 'jaugeages',
+                 'courbescorrection', 'serieshydro', 'seriesmeteo',
+                 'seriesobselab', 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -1159,10 +1280,10 @@ class TestFromXmlCourbesTarage(unittest.TestCase):
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
-                 'seuilshydro', 'modelesprevision', 'evenements',
-                 'courbestarage', 'jaugeages', 'courbescorrection',
-                 'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'seriesobselabmeteo', 'simulations')))
+                 'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+                 'evenements', 'courbestarage', 'jaugeages',
+                 'courbescorrection', 'serieshydro', 'seriesmeteo',
+                 'seriesobselab', 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -1310,10 +1431,10 @@ class TestFromXmlCourbesCorrection(unittest.TestCase):
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
-                 'seuilshydro', 'modelesprevision', 'evenements',
-                 'courbestarage', 'jaugeages', 'courbescorrection',
-                 'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'seriesobselabmeteo', 'simulations')))
+                 'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+                 'evenements', 'courbestarage', 'jaugeages',
+                 'courbescorrection', 'serieshydro', 'seriesmeteo',
+                 'seriesobselab', 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -1390,10 +1511,10 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
-                 'seuilshydro', 'modelesprevision', 'evenements',
-                 'courbestarage', 'jaugeages', 'courbescorrection',
-                 'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'seriesobselabmeteo', 'simulations')))
+                 'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+                 'evenements', 'courbestarage', 'jaugeages',
+                 'courbescorrection', 'serieshydro', 'seriesmeteo',
+                 'seriesobselab', 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -1469,10 +1590,10 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
-                 'seuilshydro', 'modelesprevision', 'evenements',
-                 'courbestarage', 'jaugeages', 'courbescorrection',
-                 'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'seriesobselabmeteo', 'simulations')))
+                 'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+                 'evenements', 'courbestarage', 'jaugeages',
+                 'courbescorrection', 'serieshydro', 'seriesmeteo',
+                 'seriesobselab', 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -1571,10 +1692,10 @@ class TestFromXmlSimulations(unittest.TestCase):
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
-                 'seuilshydro', 'modelesprevision', 'evenements',
-                 'courbestarage', 'jaugeages', 'courbescorrection',
-                 'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'seriesobselabmeteo', 'simulations')))
+                 'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+                 'evenements', 'courbestarage', 'jaugeages',
+                 'courbescorrection', 'serieshydro', 'seriesmeteo',
+                 'seriesobselab', 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -1711,10 +1832,10 @@ class TestFromXmlObssElab(unittest.TestCase):
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
-                 'seuilshydro', 'modelesprevision', 'evenements',
-                 'courbestarage', 'jaugeages', 'courbescorrection',
-                 'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'seriesobselabmeteo', 'simulations')))
+                 'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+                 'evenements', 'courbestarage', 'jaugeages',
+                 'courbescorrection', 'serieshydro', 'seriesmeteo',
+                 'seriesobselab', 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])
@@ -1773,10 +1894,10 @@ class TestFromXmlObssElabMeteo(unittest.TestCase):
         self.assertEqual(
             set(self.data.keys()),
             set(('scenario', 'intervenants', 'siteshydro', 'sitesmeteo',
-                 'seuilshydro', 'modelesprevision', 'evenements',
-                 'courbestarage', 'jaugeages', 'courbescorrection',
-                 'serieshydro', 'seriesmeteo', 'seriesobselab',
-                 'seriesobselabmeteo', 'simulations')))
+                 'seuilshydro', 'seuilsmeteo', 'modelesprevision',
+                 'evenements', 'courbestarage', 'jaugeages',
+                 'courbescorrection', 'serieshydro', 'seriesmeteo',
+                 'seriesobselab', 'seriesobselabmeteo', 'simulations')))
         self.assertNotEqual(self.data['scenario'], [])
         self.assertEqual(self.data['intervenants'], [])
         self.assertEqual(self.data['siteshydro'], [])

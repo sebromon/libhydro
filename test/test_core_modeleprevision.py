@@ -20,8 +20,10 @@ from __future__ import (
 )
 
 import unittest
+import datetime as _datetime
 
-from libhydro.core import modeleprevision
+from libhydro.core import (modeleprevision, intervenant as _intervenant,
+                           sitehydro as _sitehydro)
 
 
 # -- strings ------------------------------------------------------------------
@@ -45,8 +47,9 @@ class TestModeleprevision(unittest.TestCase):
         typemodele = 0
         m = modeleprevision.Modeleprevision()
         self.assertEqual(
-            (m.code, m.libelle, m.typemodele, m.description),
-            (code, libelle, typemodele, description)
+            (m.code, m.libelle, m.typemodele, m.description, m.contact,
+             m.dtmaj, m.siteshydro),
+            (code, libelle, typemodele, description, None, None, [])
         )
 
     def test_base_02(self):
@@ -55,13 +58,20 @@ class TestModeleprevision(unittest.TestCase):
         libelle = 'Maree SHOM'
         typemodele = 5
         description = 'Les predictions de maree du SHOM.'
+        contact = _intervenant.Contact(code='125')
+        dtmaj = _datetime.datetime(2014, 10, 3, 11, 17, 54)
+        siteshydro = [_sitehydro.Sitehydro(code='A1234567'),
+                      _sitehydro.Sitehydro(code='Z7654321')]
         m = modeleprevision.Modeleprevision(
             code=code, libelle=libelle,
-            typemodele=typemodele, description=description
+            typemodele=typemodele, description=description, contact=contact,
+            dtmaj=dtmaj, siteshydro=siteshydro
         )
         self.assertEqual(
-            (m.code, m.libelle, m.typemodele, m.description),
-            (code, libelle, typemodele, description)
+            (m.code, m.libelle, m.typemodele, m.description, m.contact,
+             m.dtmaj, m.siteshydro),
+            (code, libelle, typemodele, description, contact,
+             dtmaj, siteshydro)
         )
 
     def test_base_03(self):
@@ -113,3 +123,24 @@ class TestModeleprevision(unittest.TestCase):
             modeleprevision.Modeleprevision,
             **{'typemodele': 1000}
         )
+
+    def test_error_03(self):
+        """Contact error."""
+        code = '0123456789'
+        for contact in [None, _intervenant.Contact(code='9999')]:
+            modeleprevision.Modeleprevision(code=code, contact=contact)
+        for contact in ['4321', 'toto']:
+            with self.assertRaises(TypeError):
+                modeleprevision.Modeleprevision(code=code, contact=contact)
+
+    def test_error_04(self):
+        """Siteshydro error."""
+        code = '0123456789'
+        site0 = _sitehydro.Sitehydro(code='A1234567')
+        site1 = _sitehydro.Sitehydro(code='Z7654321')
+        for siteshydro in [None, [], site0, [site0], [site0, site1]]:
+            modeleprevision.Modeleprevision(code=code, siteshydro=siteshydro)
+        for siteshydro in ['A1234567', [site0, 'Z7654321']]:
+            with self.assertRaises(TypeError):
+                modeleprevision.Modeleprevision(code=code,
+                                                siteshydro=siteshydro)
