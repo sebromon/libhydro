@@ -85,11 +85,11 @@ class TestFromXmlIntervenants(unittest.TestCase):
         self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
         self.assertEqual(
             scenario.dtprod, datetime.datetime(2001, 12, 17, 4, 30, 47))
-        self.assertEqual(scenario.emetteur.intervenant.code, 1537)
+        self.assertEqual(scenario.emetteur.intervenant.code, '1537')
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
         self.assertEqual(scenario.emetteur.contact.code, '525')
         self.assertEqual(
-            scenario.destinataire.intervenant.code, 12345671234567)
+            scenario.destinataire.intervenant.code, '12345671234567')
         self.assertEqual(scenario.destinataire.intervenant.origine, 'SIRET')
         self.assertEqual(scenario.destinataire.contact.code, '2')
 
@@ -98,7 +98,7 @@ class TestFromXmlIntervenants(unittest.TestCase):
         # intervenant
         i = self.data['intervenants'][0]
         i_adr = i.adresse
-        self.assertEqual(i.code, 11)
+        self.assertEqual(i.code, '11')
         self.assertEqual(i.origine, 'SANDRE')
         self.assertEqual(i.nom, 'Nom')
         self.assertEqual(i.statut, 'Gelé')
@@ -123,7 +123,7 @@ class TestFromXmlIntervenants(unittest.TestCase):
         self.assertEqual(i.telephone, '0600')
         self.assertEqual(i.fax, '0000')
         self.assertEqual(i.siteweb, 'http://toto.fr')
-        self.assertEqual(i.pere.code, 33)
+        self.assertEqual(i.pere.code, '33')
         self.assertEqual(i.pere.origine, 'SANDRE')
         # contacts
         self.assertEqual(len(i.contacts), 3)
@@ -185,7 +185,7 @@ class TestFromXmlIntervenants(unittest.TestCase):
         """intervenant 1 test."""
         # intervenant
         i = self.data['intervenants'][1]
-        self.assertEqual(i.code, 12345671234567)
+        self.assertEqual(i.code, '12345671234567')
         self.assertEqual(i.origine, 'SIRET')
         self.assertEqual(i.nom, 'Nom Sirét')
         self.assertEqual(i.mnemo, 'Captâîn Mnémo')
@@ -236,9 +236,9 @@ class TestFromXmlSitesHydros(unittest.TestCase):
         self.assertEqual(
             scenario.dtprod, datetime.datetime(2010, 2, 26, 12, 53, 10))
         self.assertEqual(scenario.emetteur.contact.code, '1069')
-        self.assertEqual(scenario.emetteur.intervenant.code, 25)
+        self.assertEqual(scenario.emetteur.intervenant.code, '25')
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.code, '1537')
         self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
 
     def test_sitehydro_0(self):
@@ -759,9 +759,9 @@ class TestFromXmlSitesMeteo(unittest.TestCase):
         self.assertEqual(scenario.dtprod,
                          datetime.datetime(2010, 2, 26, 8, 5, 56))
         self.assertEqual(scenario.emetteur.contact.code, '26')
-        self.assertEqual(scenario.emetteur.intervenant.code, 1520)
+        self.assertEqual(scenario.emetteur.intervenant.code, '1520')
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.code, '1537')
         self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
 
     def test_sitemeteo_0(self):
@@ -1006,10 +1006,10 @@ class TestFromXmlModelesPrevision(unittest.TestCase):
         self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
         self.assertEqual(scenario.dtprod,
                          datetime.datetime(2001, 12, 17, 4, 30, 47))
-        self.assertEqual(scenario.emetteur.intervenant.code, 825)
+        self.assertEqual(scenario.emetteur.intervenant.code, '825')
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
         self.assertEqual(scenario.emetteur.contact.code, '222')
-        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.code, '1537')
         self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
         self.assertEqual(scenario.destinataire.contact.code, '2')
 
@@ -1073,9 +1073,9 @@ class TestFromXmlEvenements(unittest.TestCase):
         self.assertEqual(scenario.dtprod,
                          datetime.datetime(2010, 2, 26, 7, 5))
         self.assertEqual(scenario.emetteur.contact.code, '26')
-        self.assertEqual(scenario.emetteur.intervenant.code, 1520)
+        self.assertEqual(scenario.emetteur.intervenant.code, '1520')
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.code, '1537')
         self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
 
     def test_evenement_0(self):
@@ -1302,9 +1302,9 @@ class TestFromXmlCourbesTarage(unittest.TestCase):
         self.assertEqual(scenario.dtprod,
                          datetime.datetime(2017, 6, 20, 7, 47, 48))
         self.assertEqual(scenario.emetteur.contact.code, '74')
-        self.assertEqual(scenario.emetteur.intervenant.code, 1178)
+        self.assertEqual(scenario.emetteur.intervenant.code, '1178')
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.code, '1537')
         self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
 
     def test_courbetarage_0(self):
@@ -1455,9 +1455,9 @@ class TestFromXmlCourbesCorrection(unittest.TestCase):
         self.assertEqual(scenario.dtprod,
                          datetime.datetime(2017, 6, 20, 7, 47, 48))
         self.assertEqual(scenario.emetteur.contact.code, '74')
-        self.assertEqual(scenario.emetteur.intervenant.code, 1178)
+        self.assertEqual(scenario.emetteur.intervenant.code, '1178')
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.code, '1537')
         self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
 
     def test_courbecorrection_0(self):
@@ -1531,9 +1531,9 @@ class TestFromXmlSeriesHydro(unittest.TestCase):
         self.assertEqual(scenario.nom, 'Echange de données hydrométriques')
         self.assertEqual(scenario.dtprod, datetime.datetime(2010, 2, 26, 7, 5))
         self.assertEqual(scenario.emetteur.contact.code, '26')
-        self.assertEqual(scenario.emetteur.intervenant.code, 1520)
+        self.assertEqual(scenario.emetteur.intervenant.code, '1520')
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.code, '1537')
         self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
 
     def test_serie_0(self):
@@ -1615,9 +1615,9 @@ class TestFromXmlSeriesMeteo(unittest.TestCase):
         self.assertEqual(scenario.dtprod,
                          datetime.datetime(2010, 2, 26, 23, 55, 30))
         self.assertEqual(scenario.emetteur.contact.code, '1')
-        self.assertEqual(scenario.emetteur.intervenant.code, 1537)
+        self.assertEqual(scenario.emetteur.intervenant.code, '1537')
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.destinataire.intervenant.code, 1537)
+        self.assertEqual(scenario.destinataire.intervenant.code, '1537')
         self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
 
     def test_serie_RR(self):
@@ -1713,9 +1713,9 @@ class TestFromXmlSimulations(unittest.TestCase):
         self.assertEqual(scenario.dtprod,
                          datetime.datetime(2010, 2, 26, 9, 30))
         self.assertEqual(scenario.emetteur.contact.code, '41')
-        self.assertEqual(scenario.emetteur.intervenant.code, 1537)
+        self.assertEqual(scenario.emetteur.intervenant.code, '1537')
         self.assertEqual(scenario.emetteur.intervenant.origine, 'SANDRE')
-        self.assertEqual(scenario.destinataire.intervenant.code, 14)
+        self.assertEqual(scenario.destinataire.intervenant.code, '14')
         self.assertEqual(scenario.destinataire.intervenant.origine, 'SANDRE')
 
     def test_simulation_0(self):

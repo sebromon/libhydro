@@ -46,7 +46,7 @@ class Intervenant(object):
     Classe pour manipuler les intervenants Sandre.
 
     Proprietes:
-        code (int) = code SIRET (14 chiffres) ou Sandre
+        code (string) = code SIRET (14 chiffres) ou Sandre
         origine (string in (SIRET, SANDRE)) = origine du code
         nom (string) = nom de l'intervenant
         mnemo (string) = mnemonique
@@ -57,7 +57,7 @@ class Intervenant(object):
     dtcreation = _composant.Datefromeverything(required=False)
     dtmaj = _composant.Datefromeverything(required=False)
 
-    def __init__(self, code=0, origine=None, nom=None, statut=None,
+    def __init__(self, code='0', origine=None, nom=None, statut=None,
                  dtcreation=None, dtmaj=None, auteur=None, mnemo=None,
                  adresse=None, commentaire=None, activite=None,
                  nominternational=None, commune=None, siret=None,
@@ -66,7 +66,7 @@ class Intervenant(object):
         """Initialisation.
 
         Arguments:
-            code (int, defaut 0) = code SIRET (14 chiffres) ou Sandre
+            code (string, defaut '0') = code SIRET (14 chiffres) ou Sandre
             origine (string in ((S)I(RET), (S)A(NDRE)), defaut SIRET pour un
                 code a 14 chiffres, sinon SANDRE) = origine du code
             nom (string) = nom de l'intervenant
@@ -123,14 +123,14 @@ class Intervenant(object):
 
         # other cases
         try:
-            code = int(code)
+            code = str(code)
             if self._origine is None:
-                if len(str(code)) == 14:
+                if len(code) == 14:
                     self._origine = 'SIRET'
                 else:
                     self._origine = 'SANDRE'
             elif self._origine == 'SIRET':
-                if len(str(code)) != 14:
+                if len(code) != 14:
                     raise ValueError('SIRET code must be 14 bytes long')
             # else:  # self.origine == 'SANDRE'
 

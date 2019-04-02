@@ -48,7 +48,7 @@ class TestIntervenant(unittest.TestCase):
              i.auteur, i.mnemo, i.adresse, i.commentaire, i.activite,
              i.nominternational, i.commune, i.siret, i.contacts, i.telephone,
              i.fax, i.siteweb, i.pere),
-            (0, 'SANDRE', None, None, None, None,
+            ('0', 'SANDRE', None, None, None, None,
              None, None, None, None, None,
              None, None, None, [], None,
              None, None, None))
@@ -57,11 +57,11 @@ class TestIntervenant(unittest.TestCase):
         """SIRET auto Intervenant."""
         code = 12345678901234
         i = intervenant.Intervenant(code=code)
-        self.assertEqual((i.code, i.origine), (code, 'SIRET'))
+        self.assertEqual((i.code, i.origine), (str(code), 'SIRET'))
 
     def test_base_03(self):
         """SIRET Intervenant."""
-        code = 12345678901234
+        code = '12345678901234'
         origine = 'SIRET'
         nom = 'Service Central de la Pluie'
         statut = 'Gelé'
@@ -101,13 +101,13 @@ class TestIntervenant(unittest.TestCase):
 
     def test_base_04(self):
         """SANDRE auto Intervenant."""
-        code = 33
+        code = '33'
         i = intervenant.Intervenant(code=code)
         self.assertEqual((i.code, i.origine), (code, 'SANDRE'))
 
     def test_base_05(self):
         """SANDRE Intervenant."""
-        code = 123
+        code = '123'
         origine = 'SANDRE'
         nom = 'Service Central de la Pluie'
         mnemo = 'SCHAPI'
