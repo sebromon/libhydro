@@ -19,7 +19,7 @@ from __future__ import (
 import unittest
 from datetime import datetime
 
-from libhydro.core import intervenant, _composant_site
+from libhydro.core import intervenant, _composant_site, zonehydro as _zonehydro
 
 
 # -- strings ------------------------------------------------------------------
@@ -259,8 +259,10 @@ class TestContact(unittest.TestCase):
         i = intervenant.Intervenant(code=5)
         fonction = 'Hydromètre'
         dtmaj = datetime(2017, 12, 15, 10, 54, 37)
-        profil1 = intervenant.ProfilAdminLocal(profil='GEST', zoneshydro='A123')
-        profil2 = intervenant.ProfilAdminLocal(profil='JAU', zoneshydro='R444')
+        profil1 = intervenant.ProfilAdminLocal(
+            profil='GEST', zoneshydro=_zonehydro.Zonehydro('A123'))
+        profil2 = intervenant.ProfilAdminLocal(
+            profil='JAU', zoneshydro=_zonehydro.Zonehydro('R444'))
         profilsadmin = [profil1, profil2]
         c = intervenant.Contact(
             code=code, nom=nom, prenom=prenom, civilite=civilite,
@@ -419,8 +421,10 @@ class TestContact(unittest.TestCase):
                 intervenant.Contact(code='9999', adresse=adresse)
 
     def test_profilsadmin(self):
-        profil1 = intervenant.ProfilAdminLocal(profil='GEST', zoneshydro='A123')
-        profil2 = intervenant.ProfilAdminLocal(profil='JAU', zoneshydro='R444')
+        profil1 = intervenant.ProfilAdminLocal(
+            profil='GEST', zoneshydro=_zonehydro.Zonehydro('A123'))
+        profil2 = intervenant.ProfilAdminLocal(
+            profil='JAU', zoneshydro=_zonehydro.Zonehydro('R444'))
         for profilsadmin in [None, [], profil1, [profil1, profil2]]:
             intervenant.Contact(code='9999', profilsadmin=profilsadmin)
         for profilsadmin in ['JAU', [profil1, 'GEST']]:
@@ -492,7 +496,7 @@ class TestProfilAdminLocal(unittest.TestCase):
     """Contact class tests."""
     def test_simple(self):
         profil = 'GEST'
-        zoneshydro = ['A123']
+        zoneshydro = [_zonehydro.Zonehydro('A123')]
         pal = intervenant.ProfilAdminLocal(profil=profil,
                                            zoneshydro=zoneshydro)
         self.assertEqual((pal.profil, pal.zoneshydro, pal.dtactivation,
@@ -501,7 +505,8 @@ class TestProfilAdminLocal(unittest.TestCase):
 
     def test_full(self):
         profil = 'JAU'
-        zoneshydro = ['A123', 'Z987']
+        zoneshydro = [_zonehydro.Zonehydro('A123'),
+                      _zonehydro.Zonehydro('Z987')]
         dtactivation = datetime(2015, 10, 14, 10, 20, 30)
         dtdesactivation = datetime(2017, 1, 17, 18, 19, 15)
         pal = intervenant.ProfilAdminLocal(profil=profil,
@@ -513,7 +518,7 @@ class TestProfilAdminLocal(unittest.TestCase):
                          (profil, zoneshydro, dtactivation, dtdesactivation))
 
     def test_profil(self):
-        zoneshydro = 'B000'
+        zoneshydro = _zonehydro.Zonehydro('B000')
         for profil in ['JAU', 'GEST']:
             intervenant.ProfilAdminLocal(profil=profil, zoneshydro=zoneshydro)
         for profil in [None, 'Gestionnaire']:
@@ -523,24 +528,28 @@ class TestProfilAdminLocal(unittest.TestCase):
 
     def test_zonehydro(self):
         profil = 'GEST'
-        for zoneshydro in ['A123', ['A123'], ['A123', 'B456']]:
+        zone1 =  _zonehydro.Zonehydro('A123')
+        zone2 = _zonehydro.Zonehydro('B456')
+        for zoneshydro in [zone1, [zone1], [zone1, zone2]]:
             intervenant.ProfilAdminLocal(profil=profil, zoneshydro=zoneshydro)
-        for zoneshydro in [None, [], ['A'], ['A12345'], ['A123', 'B12']]:
+        for zoneshydro in [None, [], ['A'], ['A123'], [zone1, 'A123']]:
             with self.assertRaises(Exception):
                 intervenant.ProfilAdminLocal(profil=profil,
                                              zoneshydro=zoneshydro)
 
     def test_str_01(self):
         profil = 'GEST'
-        zoneshydro = 'A123'
+        code = 'A123'
+        zoneshydro = _zonehydro.Zonehydro(code)
         pal = intervenant.ProfilAdminLocal(profil=profil, zoneshydro=zoneshydro)
         palstr = pal.__str__()
-        self.assertTrue(palstr.find(zoneshydro) > -1)
+        self.assertTrue(palstr.find(code) > -1)
         self.assertTrue(palstr.find(profil) > -1)
 
     def test_str_02(self):
         profil = 'GEST'
-        zoneshydro = ['A123', 'Z999']
+        zoneshydro = [_zonehydro.Zonehydro('A123'),
+                      _zonehydro.Zonehydro('Z999')]
         dtactivation = datetime(2015, 10, 14, 10, 20, 30)
         dtdesactivation = datetime(2017, 1, 17, 18, 19, 15)
         pal = intervenant.ProfilAdminLocal(profil=profil, zoneshydro=zoneshydro,
@@ -548,7 +557,7 @@ class TestProfilAdminLocal(unittest.TestCase):
                                            dtdesactivation=dtdesactivation)
         palstr = pal.__unicode__()
         for zonehydro in zoneshydro:
-            self.assertTrue(palstr.find(zonehydro) > -1)
+            self.assertTrue(palstr.find(zonehydro.code) > -1)
         self.assertTrue(palstr.find(profil) > -1)
         self.assertTrue(palstr.find(str(dtactivation)) > -1)
         self.assertTrue(palstr.find(str(dtdesactivation)) > -1)

@@ -31,7 +31,7 @@ from libhydro.core import (
     courbetarage as _courbetarage, courbecorrection as _courbecorrection,
     jaugeage as _jaugeage, obselaboreehydro as _obselaboreehydro,
     obselaboreemeteo as _obselaboreemeteo, nomenclature as _nomenclature,
-    _composant_site, rolecontact as _rolecontact)
+    _composant_site, rolecontact as _rolecontact, zonehydro as _zonehydro)
 
 from libhydro.conv.xml import sandre_tags as _sandre_tags
 
@@ -403,7 +403,7 @@ def _intervenant_from_element(element, version, tags):
     if element is not None:
         # prepare args
         args = {}
-        args['code'] = _value(element, 'CdIntervenant', int)
+        args['code'] = _value(element, 'CdIntervenant')
         args['origine'] = element.find('CdIntervenant').attrib[
             'schemeAgencyID']
         args['nom'] = _value(element, 'NomIntervenant')
@@ -419,20 +419,26 @@ def _intervenant_from_element(element, version, tags):
         args['nominternational'] = _value(
             element, 'NomInternationalIntervenant')
         args['siret'] = _value(element, 'CdSIRETRattacheIntervenant')
+
         if version < '2':
             cdcommune = _value(element, 'CdCommune')
+            lbcommune = None
         else:
             cdcommune = _value(element, 'Commune/CdCommune')
+            lbcommune = _value(element, 'Commune/LbCommune')
         if cdcommune is not None:
-            args['commune'] = _composant_site.Commune(code=cdcommune)
+            args['commune'] = _composant_site.Commune(
+                code=cdcommune, libelle=lbcommune)
+
         args['telephone'] = _value(element, 'TelephoneComplementIntervenant')
         args['fax'] = _value(element, 'FaxComplementIntervenant')
         args['siteweb'] = _value(element, 'SiteWebComplementIntervenant')
 
-        cdpere = _value(element, 'IntervenantPere/CdIntervenant')
-        if cdpere is not None:
-            args['pere'] = _intervenant.Intervenant(code=cdpere)
-        args['contacts'] = [_contact_from_element(e)
+        if version < '2':
+            cdpere = _value(element, 'IntervenantPere/CdIntervenant')
+            if cdpere is not None:
+                args['pere'] = _intervenant.Intervenant(code=cdpere)
+        args['contacts'] = [_contact_from_element(element=e, version=version)
                             for e in element.findall('Contacts/Contact')]
         # build an Intervenant
         intervenant = _intervenant.Intervenant(**args)
@@ -444,7 +450,7 @@ def _intervenant_from_element(element, version, tags):
 
 
 
-def _contact_from_element(element, intervenant=None):
+def _contact_from_element(element, intervenant=None, version='1.1'):
     """Return a intervenant.Contact from a <Contact> element."""
     if element is not None:
         # prepare args
@@ -465,7 +471,7 @@ def _contact_from_element(element, intervenant=None):
         args['mel'] = _value(element, 'MelContact')
         args['dtmaj'] = _value(element, 'DateMajContact')
         args['profilsadmin'] = [
-            _contact_profiladmin_from_element(ele)
+            _contact_profiladmin_from_element(ele, version)
             for ele in element.findall(
                                     'ProfilsAdminLocal/ProfilAdminLocal')]
         args['alias'] = _value(element, 'AliasContact')
@@ -505,7 +511,7 @@ def _adresse_from_element(element, entite):
 
 
 
-def _contact_profiladmin_from_element(element):
+def _contact_profiladmin_from_element(element, version):
     """Return a intervenant.ProfilAdminLocal
     from a <ProfilAdminLocal> element
     """
@@ -513,12 +519,27 @@ def _contact_profiladmin_from_element(element):
         return
     args = {}
     args['profil'] = _value(element, 'CdProfilAdminLocal')
-    args['zoneshydro'] = [
-        str(e.text) for e in element.findall('ZonesHydro/CdZoneHydro')]
+    if version < '2':
+        args['zoneshydro'] = [
+                _zonehydro.Zonehydro(str(e.text)) for e in element.findall('ZonesHydro/CdZoneHydro')]
+    else:
+        args['zoneshydro'] = [
+             _zonehydro_from_element(e) for e in element.findall(
+                'ZonesHydro/ZoneHydro')]
     args['dtactivation'] = _value(element, 'DtActivationProfilAdminLocal')
     args['dtdesactivation'] = _value(
         element, 'DtDesactivationProfilAdminLocal')
     return _intervenant.ProfilAdminLocal(**args)
+
+
+def _zonehydro_from_element(element):
+    """Return a ZoneHydro from <ZoneHydro"""
+    if element is None:
+        return
+    args = {}
+    args['code'] = _value(element, 'CdZoneHydro')
+    args['libelle'] = _value(element, 'LbZoneHydro')
+    return _zonehydro.Zonehydro(**args)
 
 
 def _sitehydro_from_element(element, version, tags):

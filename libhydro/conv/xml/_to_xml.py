@@ -362,7 +362,9 @@ def _intervenant_to_element(intervenant, bdhydro=False, strict=True, version='1.
                 story['Commune'] = {
                     'value': None,
                     'sub': _collections.OrderedDict((
-                            ('CdCommune', {'value': cdcommune}), ))}
+                            ('CdCommune', {'value': cdcommune}),
+                            ('LbCommune', {
+                                'value': intervenant.commune.libelle})))}
         story['Contacts'] = {
                 'value': None,
                 'force': True if (len(intervenant.contacts) > 0) else False}
@@ -372,7 +374,7 @@ def _intervenant_to_element(intervenant, bdhydro=False, strict=True, version='1.
         story['FaxComplementIntervenant'] = {'value': intervenant.fax}
         story['SiteWebComplementIntervenant'] = {'value': intervenant.siteweb}
         
-        if intervenant.pere is not None:
+        if version < '2' and intervenant.pere is not None:
             pere = {'CdIntervenant': {
                 'value': intervenant.pere.code,
                 'attr': {'schemeAgencyID': intervenant.pere.origine}}}
@@ -389,7 +391,7 @@ def _intervenant_to_element(intervenant, bdhydro=False, strict=True, version='1.
             for contact in intervenant.contacts:
                 child.append(
                     _contact_to_element(
-                        contact, bdhydro=bdhydro, strict=strict))
+                        contact, bdhydro=bdhydro, strict=strict, version=version))
 
         # return
         return element
@@ -449,13 +451,13 @@ def _contact_to_element(contact, bdhydro=False, strict=True, version='1.1'):
         if len(contact.profilsadmin) > 0:
             child = element.find('ProfilsAdminLocal')
             for profiladmin in contact.profilsadmin:
-                child.append(_contactprofiladmin_to_element(profiladmin))
+                child.append(_contactprofiladmin_to_element(profiladmin, version))
 
         # return
         return element
 
 
-def _contactprofiladmin_to_element(profil):
+def _contactprofiladmin_to_element(profil, version):
     """Return a <ProfilAdminLocal> element
     from _intervenant.ProfilAdminLocal
     """
@@ -465,15 +467,32 @@ def _contactprofiladmin_to_element(profil):
         ('CdProfilAdminLocal', {'value': profil.profil}),
         ('ZonesHydro', {
             'value': None,
-            'sub': _collections.OrderedDict((
-                    ('CdZoneHydro', {'value': profil.zoneshydro}), ))}),
+            'force': True if len(profil.zoneshydro) > 0 else False}),
         ('DtActivationProfilAdminLocal', {
             'value': datetime2iso(profil.dtactivation)}),
         ('DtDesactivationProfilAdminLocal', {
             'value': datetime2iso(profil.dtdesactivation)})
         ))
 
-    return _factory(root=_etree.Element('ProfilAdminLocal'), story=story)
+    # make element <ProfilAdminLocal>
+    element = _factory(root=_etree.Element('ProfilAdminLocal'), story=story)
+    # add zoneshydro
+    if len(profil.zoneshydro) > 0:
+        child = element.find('ZonesHydro')
+        for zonehydro in profil.zoneshydro:
+            if version < '2':
+                _etree.SubElement(child, 'CdZoneHydro').text = zonehydro.code
+            else:
+                child.append(_zonehydro_to_element(zonehydro))
+
+    return element
+
+
+def _zonehydro_to_element(zonehydro):
+    story = _collections.OrderedDict((
+        ('CdZoneHydro', {'value': zonehydro.code}),
+        ('LbZoneHydro', {'value': zonehydro.libelle})))
+    return _factory(root=_etree.Element('ZoneHydro'), story=story)
 
 
 def _sitehydro_to_element(sitehydro, seuilshydro=None,

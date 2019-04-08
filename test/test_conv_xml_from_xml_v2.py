@@ -117,13 +117,13 @@ class TestFromXmlIntervenants(unittest.TestCase):
         self.assertEqual(i.nominternational, 'International')
         self.assertEqual(i.siret, 12345678901234)
         self.assertEqual(i.commune.code, '32001')
+        self.assertEqual(i.commune.libelle, 'Commune')
         self.assertEqual(i_adr.pays, 'FR')
         self.assertEqual(i_adr.adresse2, 'Adresse étrangère')
         self.assertEqual(i.telephone, '0600')
         self.assertEqual(i.fax, '0000')
         self.assertEqual(i.siteweb, 'http://toto.fr')
-        self.assertEqual(i.pere.code, '33')
-        self.assertEqual(i.pere.origine, 'SANDRE')
+        self.assertIsNone(i.pere)
         # contacts
         self.assertEqual(len(i.contacts), 3)
         c = i.contacts[0]
@@ -149,14 +149,22 @@ class TestFromXmlIntervenants(unittest.TestCase):
         self.assertEqual(len(c.profilsadmin), 2)
         profil0 = c.profilsadmin[0]
         self.assertEqual(profil0.profil, 'GEST')
-        self.assertEqual(profil0.zoneshydro, ['A123', 'Z987'])
+        self.assertEqual(len(profil0.zoneshydro), 2)
+        self.assertEqual(
+            (profil0.zoneshydro[0].code, profil0.zoneshydro[0].libelle,
+             profil0.zoneshydro[1].code, profil0.zoneshydro[1].libelle),
+            ('A123', 'Libellé zone', 'Z987', None))
         self.assertEqual(profil0.dtactivation,
                          datetime.datetime(2004, 4, 15, 17, 18, 19))
         self.assertEqual(profil0.dtdesactivation,
                          datetime.datetime(2005, 8, 10, 13, 36, 43))
         profil1 = c.profilsadmin[1]
         self.assertEqual(profil1.profil, 'JAU')
-        self.assertEqual(profil1.zoneshydro, ['L000', 'K444'])
+        self.assertEqual(len(profil1.zoneshydro), 2)
+        self.assertEqual(
+            (profil1.zoneshydro[0].code, profil1.zoneshydro[0].libelle,
+             profil1.zoneshydro[1].code, profil1.zoneshydro[1].libelle),
+            ('L000', None, 'K444', 'Libellé2 zone'))
         self.assertIsNone(profil1.dtactivation)
         self.assertIsNone(profil1.dtdesactivation)
         self.assertEqual(c.alias, 'ALIAS')

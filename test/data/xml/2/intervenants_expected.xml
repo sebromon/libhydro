@@ -40,6 +40,7 @@
         <CdSIRETRattacheIntervenant>12345678901234</CdSIRETRattacheIntervenant>
         <Commune>
             <CdCommune>32001</CdCommune>
+            <LbCommune>Commune</LbCommune>
         </Commune>
         <Contacts>
           <Contact>
@@ -63,8 +64,13 @@
               <ProfilAdminLocal>
                 <CdProfilAdminLocal>GEST</CdProfilAdminLocal>
                 <ZonesHydro>
-                  <CdZoneHydro>A123</CdZoneHydro>
-                  <CdZoneHydro>Z987</CdZoneHydro>
+                  <ZoneHydro>
+                    <CdZoneHydro>A123</CdZoneHydro>
+                    <LbZoneHydro>Libellé zone</LbZoneHydro>
+                  </ZoneHydro>
+                  <ZoneHydro>
+                    <CdZoneHydro>Z987</CdZoneHydro>
+                  </ZoneHydro>
                 </ZonesHydro>
                 <DtActivationProfilAdminLocal>2004-04-15T17:18:19</DtActivationProfilAdminLocal>
                 <DtDesactivationProfilAdminLocal>2005-08-10T13:36:43</DtDesactivationProfilAdminLocal>
@@ -72,8 +78,13 @@
               <ProfilAdminLocal>
                 <CdProfilAdminLocal>JAU</CdProfilAdminLocal>
                 <ZonesHydro>
-                  <CdZoneHydro>L000</CdZoneHydro>
-                  <CdZoneHydro>K444</CdZoneHydro>
+                  <ZoneHydro>
+                    <CdZoneHydro>L000</CdZoneHydro>
+                  </ZoneHydro>
+                  <ZoneHydro>
+                    <CdZoneHydro>K444</CdZoneHydro>
+                    <LbZoneHydro>Libellé2 zone</LbZoneHydro>
+                  </ZoneHydro>
                 </ZonesHydro>
               </ProfilAdminLocal>
             </ProfilsAdminLocal>
@@ -134,9 +145,6 @@
         <TelephoneComplementIntervenant>0600</TelephoneComplementIntervenant>
         <FaxComplementIntervenant>0000</FaxComplementIntervenant>
         <SiteWebComplementIntervenant>http://toto.fr</SiteWebComplementIntervenant>
-        <IntervenantPere>
-          <CdIntervenant schemeAgencyID="SANDRE">33</CdIntervenant>
-        </IntervenantPere>
       </Intervenant>
       <!-- intervenant 1 -->
       <Intervenant>

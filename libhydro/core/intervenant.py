@@ -12,7 +12,7 @@ from __future__ import (
     division as _division, print_function as _print_function)
 
 from .nomenclature import NOMENCLATURE as _NOMENCLATURE
-from . import _composant, _composant_site
+from . import _composant, _composant_site, zonehydro as _zonehydro
 
 
 # -- strings ------------------------------------------------------------------
@@ -709,16 +709,16 @@ class ProfilAdminLocal(object):
         self._zoneshydro = []
         if zoneshydro is None:
             raise TypeError('zoneshydro is required')
-        if isinstance(zoneshydro, str):
+        if isinstance(zoneshydro, _zonehydro.Zonehydro):
             zoneshydro = [zoneshydro]
         if len(zoneshydro) == 0:
             raise ValueError('zoneshydro should not be empty')
         for zonehydro in zoneshydro:
-            zonehydro = str(zonehydro)
-            if len(zonehydro) != 4:
-                raise ValueError(
-                    'length of zone hydro ({}) must be 4'.format(zonehydro))
+            if not isinstance(zonehydro, _zonehydro.Zonehydro):
+                raise TypeError('zones must be a Zonehydro'
+                                ' or an iterable of Zonehydro')
             self._zoneshydro.append(zonehydro)
+
 
     def __unicode__(self):
         """Return unicode representation."""
@@ -732,7 +732,8 @@ class ProfilAdminLocal(object):
         if len(self.zoneshydro) == 1:
             zones = 'la zone hydro {}'.format(self.zoneshydro[0])
         elif len(self.zoneshydro) > 1:
-            zones = 'des zones hydro: ({})'.format(', '.join(self.zoneshydro))
+            zonesit = [str(zone) for zone in self.zoneshydro]
+            zones = 'des zones hydro: ({})'.format(', '.join(zonesit))
         else:
             zones = '<sans zone hydro>'
         return 'Profil {0} sur {1} de {2}{3}'.format(

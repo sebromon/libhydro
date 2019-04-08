@@ -150,14 +150,20 @@ class TestFromXmlIntervenants(unittest.TestCase):
         self.assertEqual(len(c.profilsadmin), 2)
         profil0 = c.profilsadmin[0]
         self.assertEqual(profil0.profil, 'GEST')
-        self.assertEqual(profil0.zoneshydro, ['A123', 'Z987'])
+        self.assertEqual(len(profil0.zoneshydro), 2)
+        self.assertEqual(
+            (profil0.zoneshydro[0].code, profil0.zoneshydro[1].code),
+            ('A123', 'Z987'))
         self.assertEqual(profil0.dtactivation,
                          datetime.datetime(2004, 4, 15, 17, 18, 19))
         self.assertEqual(profil0.dtdesactivation,
                          datetime.datetime(2005, 8, 10, 13, 36, 43))
         profil1 = c.profilsadmin[1]
         self.assertEqual(profil1.profil, 'JAU')
-        self.assertEqual(profil1.zoneshydro, ['L000', 'K444'])
+        self.assertEqual(len(profil1.zoneshydro), 2)
+        self.assertEqual(
+            (profil1.zoneshydro[0].code, profil1.zoneshydro[1].code),
+            ('L000', 'K444'))
         self.assertIsNone(profil1.dtactivation)
         self.assertIsNone(profil1.dtdesactivation)
         self.assertEqual(c.alias, 'ALIAS')
