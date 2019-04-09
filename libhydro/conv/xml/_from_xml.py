@@ -1919,37 +1919,44 @@ def _serieobselab_from_element_v2(element):
     return serie
 
 
+def _xmlcast(text, cast=str):
+    """Cast tag content"""
+    if text is None:
+        return None
+    if cast == bool:
+        return (str(text.lower()) in ('true', 'vrai', '1'))
+    return cast(text)
+
+
 def _obsshydro_from_element(element, statut, version, tags):
     """Return a sorted obshydro.Observations from a <ObssHydro> element."""
     if element is not None:
         # prepare a list of Observation
         observations = []
+        mapping = {'DtObsHydro': ('dte', str),
+                   'ResObsHydro': ('res', float),
+                   'MethObsHydro': ('mth', int),
+                   'QualifObsHydro': ('qal', int), 
+                   'ContObsHydro':  ('cnt', bool)
+                   }
+        if version >= '2':
+            mapping['ContObsHydro'] = ('cnt', int)
+            mapping[tags.statutobshydro] = ('statut', int)
+        else:
+            mapping['ContObsHydro'] = ('cnt', bool)
         for o in element:
             args = {}
-            args['dte'] = _value(o, 'DtObsHydro')
-            args['res'] = _value(o, 'ResObsHydro')
+            for child in o:
+                tmp = mapping[child.tag]
+                # print(child.tag)
+                args[tmp[0]] = _xmlcast(child.text, tmp[1])
+            if 'mth' in args and args['mth'] == 12:
+                args['mth'] = 8
+            # Sandre V1.1 to V2 statut moves to obshydro
+            if version < '2':
+                args['statut'] = statut
             if args['res'] is None:
                 continue
-            mth = _value(o, 'MethObsHydro', int)
-            if mth is not None:
-                # chgt de liste Sandre V1.1 -> V2
-                if mth == 12:
-                    mth = 8
-                args['mth'] = mth
-            qal = _value(o, 'QualifObsHydro', int)
-            if qal is not None:
-                args['qal'] = qal
-            if version == '2':
-                continuite = _value(o, 'ContObsHydro', int)
-                statut = _value(o, tags.statutobshydro)
-                if statut is not None:
-                    args['statut'] = statut
-            else:
-                continuite = _value(o, 'ContObsHydro', bool)
-                if statut is not None:
-                    args['statut'] = statut  # statut de la série
-            if continuite is not None:
-                args['cnt'] = continuite
 
             observations.append(_obshydro.Observation(**args))
         # build the Observations and return
