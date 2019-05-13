@@ -31,7 +31,8 @@ from libhydro.core import (
     courbetarage as _courbetarage, courbecorrection as _courbecorrection,
     jaugeage as _jaugeage, obselaboreehydro as _obselaboreehydro,
     obselaboreemeteo as _obselaboreemeteo, nomenclature as _nomenclature,
-    _composant_site, rolecontact as _rolecontact, zonehydro as _zonehydro)
+    _composant_site, rolecontact as _rolecontact, zonehydro as _zonehydro,
+    gradienthydro as _gradienthydro)
 
 from libhydro.conv.xml import sandre_tags as _sandre_tags
 
@@ -364,7 +365,9 @@ def _parse(src, ordered=True):
         'seriesmeteo': seriesmeteo,
         'seriesobselab': seriesobselab,
         'seriesobselabmeteo': seriesobselabmeteo,
-        # 'gradshydro'
+        'seriesgradients': _seriesgradients_from_element(
+            tree.find('Donnees/GradsHydro'), version=scenario.version,
+            tags=tags),
         # 'qualifsannee'
         # 'alarmes'
         'simulations': _simulations_from_element(tree.find('Donnees/Simuls'))}
@@ -2455,6 +2458,63 @@ def _serieobselabmeteo_from_element_v2(element):
         serie.observations = _obselaboreemeteo.ObssElabMeteo(
             *observations).sort_index()
     return serie
+
+
+def _seriesgradients_from_element(element, version, tags):
+    """Return an iterable of SerieGradients.
+    from a GradsHydro element.
+    """
+    seriesgradients = []
+    if element is None:
+        return seriesgradients
+    serieslistgradients = {}
+    series = _collections.OrderedDict()
+    for grdgrad in element.findall('GrdsGradHydro'):
+        grd = _value(grdgrad, 'GrdGradHydro')
+        for grad in grdgrad.findall('GradHydro'):
+            args = {}
+            dtprod = _value(grad, 'DtProdGradHydro')
+            dtprod = _datetime.datetime.strptime(
+                dtprod, '%Y-%m-%dT%H:%M:%S')
+            args['dte'] = _value(grad, 'DtObsGradHydro')
+            duree = _value(grad, 'DureeGradHydro', int)
+            args['res'] = _value(grad, 'ResGradHydro', float)
+            args['statut'] = _value(grad, tags.stgradhydro, int)
+            args['qal'] = _value(grad, 'QualifGradHydro', int)
+            args['mth'] = _value(grad, 'MethQualifGradHydro', int)
+
+            gradient = _gradienthydro.Gradient(**args)
+
+            cdentite = _value(grad, 'CdStationHydro')
+            if cdentite is not None:
+                entite = _sitehydro.Station(code=cdentite)
+            else:
+                cdentite = _value(grad, 'CdSiteHydro')
+                if cdentite is not None:
+                    entite = _sitehydro.Sitehydro(code=cdentite)
+                else:
+                    cdentite = _value(grad, 'CdCapteur')
+                    entite = _sitehydro.Capteur(code=cdentite)
+            cdcontact = _value(grad, 'CdContact')
+            if cdcontact is not None:
+                contact = _intervenant.Contact(code=cdcontact)
+            else:
+                contact = None
+            key = (grd, cdentite, duree, cdcontact)
+            if key not in series:
+                serieslistgradients[key] = [gradient]
+                series[key] = _gradienthydro.SerieGradients(
+                    entite=entite, grd=grd, dtprod=dtprod, duree=duree,
+                    contact=contact)
+            else:
+                if series[key].dtprod < dtprod:
+                    series[key].dtprod = dtprod
+                serieslistgradients[key].append(gradient)
+    for key, serie in series.items():
+        serie.gradients = _gradienthydro.Gradients(*serieslistgradients[key])
+        seriesgradients.append(serie)
+
+    return seriesgradients
 
 
 # -- utility functions --------------------------------------------------------

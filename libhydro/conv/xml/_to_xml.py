@@ -80,7 +80,7 @@ ORDERED_ACCEPTED_KEYS = [
     # line 180: [7:]
     'evenements', 'courbestarage', 'jaugeages', 'courbescorrection',
     'serieshydro', 'seriesmeteo', 'seriesobselab', 'seriesobselabmeteo',
-    'simulations']
+    'simulations', 'seriesgradients']
 
 PREV_PROBABILITY = {
     50: 'ResMoyPrev',
@@ -117,8 +117,8 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
             evenements=None, courbestarage=None, jaugeages=None,
             courbescorrection=None, serieshydro=None, seriesmeteo=None,
             seriesobselab=None, seriesobselabmeteo=None,
-            simulations=None, bdhydro=False, strict=True, ordered=False,
-            version=None):
+            simulations=None, seriesgradients=None, bdhydro=False, strict=True,
+            ordered=False, version=None):
     """Return a etree.Element a partir des donnees passes en argument.
 
     Cette fonction est privee et les utilisateurs sont invites a utiliser la
@@ -143,6 +143,8 @@ def _to_xml(scenario=None, intervenants=None, siteshydro=None, sitesmeteo=None,
         seriesobselab(obselaboreehydro.SerieObsElab collection) =
             iterable or None
         seriesobselabmeteo(obselaboreemeteo.SerieObsElabMeteo collection) =
+            iterable or None
+        seriesgradients(gradienthydro.Seriesgradients collection) = 
             iterable or None
         simulations (simulation.Simulation collection) = iterable or None
         bdhydro (bool, defaut False) = controle de conformite bdhydro
@@ -2997,6 +2999,54 @@ def _previsions_to_element(previsions, bdhydro=False, strict=True, version='1.1'
 
     # return
     return element
+
+
+def _seriesgradients_to_element(seriesgradients, bdhydro=False, strict=True,
+                                version='1.1'):
+    """Return a <GradsHydro> element
+    from a list of gradienthydro.SerieGradients.
+    """
+    if seriesgradients is None:
+        return
+    if version == '2':
+        tags = _sandre_tags.SandreTagsV2
+    else:
+        tags = _sandre_tags.SandreTagsV1
+    element = _etree.Element('GradsHydro')
+    grd_series = {}
+    for serie in seriesgradients:
+        if serie.grd in grd_series:
+            grd_series[serie.grd].append(serie)
+        else:
+            grd_series[serie.grd] = [serie]
+    for grd, series in grd_series.items():
+        grds_element = _etree.Element('GrdsGradHydro')
+        element.append(grds_element)
+        grds_element.append(_make_element(tag_name='GrdGradHydro', text=grd))
+        for serie in series:
+            dtprod = datetime2iso(serie.dtprod)
+            for grad in serie.gradients.itertuples():
+                # template for seuilhydro simple element
+                story = _collections.OrderedDict((
+                    ('DtProdGradHydro', {'value': dtprod}),
+                    ('DtObsGradHydro', {'value': datetime2iso(grad.Index)}),
+                    ('DureeGradHydro', {'value': serie.duree}),
+                    ('ResGradHydro', {'value': grad.res}),
+                    (tags.stgradhydro, {'value': grad.statut}),
+                    ('QualifGradHydro', {'value': grad.qal}),
+                    ('MethQualifGradHydro', {'value': grad.mth})))
+                if isinstance(serie.entite, _sitehydro.Sitehydro):
+                    story['CdSiteHydro'] = {'value': serie.entite.code}
+                elif isinstance(serie.entite, _sitehydro.Station):
+                    story['CdStationHydro'] = {'value': serie.entite.code}
+                elif isinstance(serie.entite, _sitehydro.Capteur):
+                    story['CdCapteur'] = {'value': serie.entite.code}
+                if serie.contact is not None:
+                    story['CdContact'] = {'value': serie.contact.code}
+                grds_element.append(_factory(root=_etree.Element('GradHydro'),
+                                             story=story))
+    return element
+
 
 # -- utility functions --------------------------------------------------------
 def _factory(root, story):

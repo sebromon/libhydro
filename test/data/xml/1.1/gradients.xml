@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <hydrometrie xmlns="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1 http://xml.sandre.eaufrance.fr/scenario/hydrometrie/1.1/sandre_sc_hydrometrie.xsd"> -->
+<hydrometrie>
+  <Scenario>
+    <CodeScenario>hydrometrie</CodeScenario>
+    <VersionScenario>1.1</VersionScenario>
+    <NomScenario>Echange de données hydrométriques</NomScenario>
+    <DateHeureCreationFichier>2010-02-26T23:55:30</DateHeureCreationFichier>
+    <RefFichier>meteoplus-rr1_2010-02-26_15-13.xml</RefFichier>
+    <Emetteur>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+      <CdContact>1</CdContact>
+    </Emetteur>
+    <Destinataire>
+      <CdIntervenant schemeAgencyID="SANDRE">1537</CdIntervenant>
+    </Destinataire>
+  </Scenario>
+  <Donnees>
+      <GradsHydro>
+          <GrdsGradHydro>
+              <GrdGradHydro>Q</GrdGradHydro>
+              <GradHydro>
+                  <DtProdGradHydro>2008-12-15T10:07:54</DtProdGradHydro>
+                  <DtObsGradHydro>2008-12-15T09:00:00</DtObsGradHydro>
+                  <DureeGradHydro>60</DureeGradHydro>
+                  <ResGradHydro>150.8</ResGradHydro>
+                  <StatutGradHydro>4</StatutGradHydro>
+                  <QualifGradHydro>16</QualifGradHydro>
+                  <MethQualifGradHydro>8</MethQualifGradHydro>
+                  <CdSiteHydro>A1234567</CdSiteHydro>
+                  <CdContact>158</CdContact>
+              </GradHydro>
+              <GradHydro>
+                  <DtProdGradHydro>2008-12-15T11:07:54</DtProdGradHydro>
+                  <DtObsGradHydro>2008-12-15T10:00:00</DtObsGradHydro>
+                  <DureeGradHydro>60</DureeGradHydro>
+                  <ResGradHydro>130.2</ResGradHydro>
+                  <StatutGradHydro>8</StatutGradHydro>
+                  <QualifGradHydro>12</QualifGradHydro>
+                  <MethQualifGradHydro>4</MethQualifGradHydro>
+                  <CdSiteHydro>A1234567</CdSiteHydro>
+                  <CdContact>158</CdContact>
+              </GradHydro>
+          </GrdsGradHydro>
+          <GrdsGradHydro>
+              <GrdGradHydro>H</GrdGradHydro>
+              <GradHydro>
+                  <DtProdGradHydro>2009-12-15T11:07:54</DtProdGradHydro>
+                  <DtObsGradHydro>2009-12-15T09:00:00</DtObsGradHydro>
+                  <DureeGradHydro>30</DureeGradHydro>
+                  <ResGradHydro>15.8</ResGradHydro>
+                  <StatutGradHydro>12</StatutGradHydro>
+                  <QualifGradHydro>20</QualifGradHydro>
+                  <MethQualifGradHydro>0</MethQualifGradHydro>
+                  <CdStationHydro>A123456789</CdStationHydro>
+                  <CdContact>130</CdContact>
+              </GradHydro>
+              <GradHydro>
+                  <DtProdGradHydro>2009-12-15T11:07:54</DtProdGradHydro>
+                  <DtObsGradHydro>2009-12-15T10:30:00</DtObsGradHydro>
+                  <DureeGradHydro>30</DureeGradHydro>
+                  <ResGradHydro>13.2</ResGradHydro>
+                  <StatutGradHydro>16</StatutGradHydro>
+                  <QualifGradHydro>16</QualifGradHydro>
+                  <MethQualifGradHydro>14</MethQualifGradHydro>
+                  <CdCapteur>A12345678901</CdCapteur>
+                  <CdContact>130</CdContact>
+              </GradHydro>
+          </GrdsGradHydro>
+      </GradsHydro>
+  </Donnees>
+</hydrometrie>

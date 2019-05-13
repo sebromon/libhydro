@@ -119,6 +119,8 @@ class SandreTagsV1(object):
     dtactivationvalseuilmeteo = 'DtActivationSeuilGrdMeteo'
     dtdesactivationvalseuilmeteo = 'DtDesactivationSeuilGrdMeteo'
 
+    # Gradients hydro
+    stgradhydro = 'StatutGradHydro'
 
 class SandreTagsV2(object):
     """Balises Sandre V2"""
@@ -223,3 +225,6 @@ class SandreTagsV2(object):
     tolerancevalseuilmeteo = 'ToleranceValSeuilMeteo'
     dtactivationvalseuilmeteo = 'DtActivationValSeuilMeteo'
     dtdesactivationvalseuilmeteo = 'DtDesactivationValSeuilMeteo'
+
+    # Gradients hydro
+    stgradhydro = 'StGradHydro'

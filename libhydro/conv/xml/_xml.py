@@ -31,7 +31,8 @@ from libhydro.core import (
     simulation as _simulation,
     jaugeage as _jaugeage,
     obselaboreehydro as _obselaboreehydro,
-    obselaboreemeteo as _obselaboreemeteo)
+    obselaboreemeteo as _obselaboreemeteo,
+    gradienthydro as _gradienthydro)
 
 
 # -- strings ------------------------------------------------------------------
@@ -77,13 +78,13 @@ class Message(object):
         seriesmeteo (liste de obsmeteo.Serie)
         seriesobselab (liste de obselaboree.SerieObsElab)
         seriesobselabmeteo (liste de obselaboreemeteo.SerieObsElabMeteo)
+        seriesgradient (liste de gradienthydro.SeriesGradients)
         simulations (liste de simulation.Simulation)
 
     """
 
     # 'jaugeages'
     # 'obsselab'
-    # 'gradshydro'
     # 'qualifsannee'
     # 'alarmes'
 
@@ -102,6 +103,7 @@ class Message(object):
     seriesmeteo = _composant.Rlistproperty(cls=_obsmeteo.Serie)
     seriesobselab = _composant.Rlistproperty(cls=_obselaboreehydro.SerieObsElab)
     seriesobselabmeteo = _composant.Rlistproperty(cls=_obselaboreemeteo.SerieObsElabMeteo)
+    seriesgradients = _composant.Rlistproperty(cls=_gradienthydro.SerieGradients)
     simulations = _composant.Rlistproperty(cls=_simulation.Simulation)
 
     def __init__(self, scenario, intervenants=None, siteshydro=None,
@@ -109,7 +111,7 @@ class Message(object):
                  modelesprevision=None, evenements=None, courbestarage=None,
                  jaugeages=None, courbescorrection=None, serieshydro=None,
                  seriesmeteo=None, seriesobselab=None, seriesobselabmeteo=None,
-                 simulations=None, strict=True):
+                 seriesgradients=None, simulations=None, strict=True):
         """Initialisation.
 
         Arguments:
@@ -128,6 +130,7 @@ class Message(object):
             seriesmeteo (obsmeteo.Serie iterable ou None)
             seriesobselab (obselaboreehydro.SerieObsElab iterable ou None)
             seriesobselabmeteo (obselaboreemeteo.SerieObsElabMeteo iterable ou None)
+            seriesgradients (gradienthydro.SeriesGradients iterable ou None)
             simulations (simulation.Simulation iterable ou None)
             strict (bool, defaut True) = le mode permissif permet de lever les
                 controles de validite des elements
@@ -157,6 +160,7 @@ class Message(object):
         self.seriesmeteo = seriesmeteo or []
         self.seriesobselab = seriesobselab or []
         self.seriesobselabmeteo = seriesobselabmeteo or []
+        self.seriesgradients = seriesgradients or []
         self.simulations = simulations or []
 
         # -- full properties --
@@ -307,6 +311,9 @@ class Message(object):
             seriesmeteo=seriesmeteo,
             seriesobselab=seriesobselab,
             seriesobselabmeteo=seriesobselabmeteo,
+            seriesgradients=_from_xml._seriesgradients_from_element(
+                    tree.find('Donnees/GradsHydro'), version=scenario.version,
+                    tags=tags),
             simulations=_from_xml._simulations_from_element(
                 tree.find('Donnees/Simuls')))
 
